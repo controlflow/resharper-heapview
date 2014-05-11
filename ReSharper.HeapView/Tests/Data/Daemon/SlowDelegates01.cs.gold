@@ -245,112 +245,112 @@ class Program
   static void PassMeGenericDelegate<U>(Action<U> action) { GC.KeepAlive(action); }
 }
 ---------------------------------------------------------
-(0): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(1): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'TimeSpan' to reference type 'object'
-(2): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(3): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(4): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(5): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(6): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(7): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(8): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(9): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(10): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(11): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(12): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(13): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(14): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(15): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(16): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(17): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(18): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(19): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(20): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(21): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(22): ReSharper Error Highlighting: Slow delegate creation: delegate from interface 'IBar' method
-(23): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(24): ReSharper Error Highlighting: Slow delegate creation: delegate from interface 'IBar' method
-(25): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(26): ReSharper Error Highlighting: Slow delegate creation: delegate from interface 'IBar' method
-(27): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(28): ReSharper Error Highlighting: Slow delegate creation: delegate from interface 'IBar' method
-(29): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(30): ReSharper Error Highlighting: Slow delegate creation: delegate from interface 'IBar' method
-(31): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(32): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(33): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(34): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(35): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(36): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(37): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(38): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(39): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(40): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(41): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(42): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(43): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(44): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(45): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(46): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(47): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(48): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(49): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(50): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(51): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(52): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(53): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(54): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(55): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(56): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(57): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(58): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(59): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(60): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(61): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(62): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(63): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(64): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(65): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(66): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(67): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(68): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(69): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(70): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(71): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(72): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(73): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(74): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(75): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(76): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(77): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(0): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(1): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'TimeSpan' to reference type 'object'
+(2): ReSharper Heap Allocation: Object allocation: reference type creation
+(3): ReSharper Heap Allocation: Object allocation: reference type creation
+(4): ReSharper Heap Allocation: Object allocation: reference type creation
+(5): ReSharper Heap Allocation: Delegate allocation: from method group
+(6): ReSharper Heap Allocation: Delegate allocation: from method group
+(7): ReSharper Heap Allocation: Delegate allocation: from method group
+(8): ReSharper Heap Allocation: Delegate allocation: from method group
+(9): ReSharper Heap Allocation: Delegate allocation: from method group
+(10): ReSharper Heap Allocation: Delegate allocation: from method group
+(11): ReSharper Heap Allocation: Delegate allocation: from method group
+(12): ReSharper Heap Allocation: Delegate allocation: from method group
+(13): ReSharper Heap Allocation: Delegate allocation: from method group
+(14): ReSharper Heap Allocation: Delegate allocation: from method group
+(15): ReSharper Heap Allocation: Delegate allocation: from method group
+(16): ReSharper Heap Allocation: Delegate allocation: from method group
+(17): ReSharper Heap Allocation: Delegate allocation: from method group
+(18): ReSharper Heap Allocation: Delegate allocation: from method group
+(19): ReSharper Heap Allocation: Delegate allocation: from method group
+(20): ReSharper Heap Allocation: Delegate allocation: from method group
+(21): ReSharper Heap Allocation: Delegate allocation: from method group
+(22): ReSharper Error Highlighting: Slow delegate creation: from interface 'IBar' method
+(23): ReSharper Heap Allocation: Delegate allocation: from method group
+(24): ReSharper Error Highlighting: Slow delegate creation: from interface 'IBar' method
+(25): ReSharper Heap Allocation: Delegate allocation: from method group
+(26): ReSharper Error Highlighting: Slow delegate creation: from interface 'IBar' method
+(27): ReSharper Heap Allocation: Delegate allocation: from method group
+(28): ReSharper Error Highlighting: Slow delegate creation: from interface 'IBar' method
+(29): ReSharper Heap Allocation: Delegate allocation: from method group
+(30): ReSharper Error Highlighting: Slow delegate creation: from interface 'IBar' method
+(31): ReSharper Heap Allocation: Delegate allocation: from method group
+(32): ReSharper Heap Allocation: Delegate allocation: from method group
+(33): ReSharper Heap Allocation: Delegate allocation: from method group
+(34): ReSharper Heap Allocation: Delegate allocation: from method group
+(35): ReSharper Heap Allocation: Delegate allocation: from method group
+(36): ReSharper Heap Allocation: Delegate allocation: from method group
+(37): ReSharper Heap Allocation: Delegate allocation: from method group
+(38): ReSharper Heap Allocation: Delegate allocation: from method group
+(39): ReSharper Heap Allocation: Delegate allocation: from method group
+(40): ReSharper Heap Allocation: Delegate allocation: from method group
+(41): ReSharper Heap Allocation: Delegate allocation: from method group
+(42): ReSharper Heap Allocation: Delegate allocation: from method group
+(43): ReSharper Heap Allocation: Delegate allocation: from method group
+(44): ReSharper Heap Allocation: Delegate allocation: from method group
+(45): ReSharper Heap Allocation: Object allocation: reference type creation
+(46): ReSharper Heap Allocation: Object allocation: reference type creation
+(47): ReSharper Heap Allocation: Delegate allocation: from method group
+(48): ReSharper Heap Allocation: Delegate allocation: from method group
+(49): ReSharper Heap Allocation: Delegate allocation: from method group
+(50): ReSharper Heap Allocation: Delegate allocation: from method group
+(51): ReSharper Heap Allocation: Delegate allocation: from method group
+(52): ReSharper Heap Allocation: Delegate allocation: from method group
+(53): ReSharper Heap Allocation: Delegate allocation: from method group
+(54): ReSharper Heap Allocation: Delegate allocation: from method group
+(55): ReSharper Heap Allocation: Delegate allocation: from method group
+(56): ReSharper Heap Allocation: Delegate allocation: from method group
+(57): ReSharper Heap Allocation: Delegate allocation: from method group
+(58): ReSharper Heap Allocation: Delegate allocation: from method group
+(59): ReSharper Heap Allocation: Delegate allocation: from method group
+(60): ReSharper Heap Allocation: Delegate allocation: from method group
+(61): ReSharper Heap Allocation: Delegate allocation: from method group
+(62): ReSharper Heap Allocation: Delegate allocation: from method group
+(63): ReSharper Heap Allocation: Delegate allocation: from method group
+(64): ReSharper Heap Allocation: Delegate allocation: from method group
+(65): ReSharper Heap Allocation: Delegate allocation: from method group
+(66): ReSharper Heap Allocation: Delegate allocation: from method group
+(67): ReSharper Heap Allocation: Delegate allocation: from method group
+(68): ReSharper Heap Allocation: Delegate allocation: from method group
+(69): ReSharper Heap Allocation: Delegate allocation: from method group
+(70): ReSharper Heap Allocation: Delegate allocation: from method group
+(71): ReSharper Heap Allocation: Object allocation: reference type creation
+(72): ReSharper Heap Allocation: Object allocation: reference type creation
+(73): ReSharper Heap Allocation: Delegate allocation: from method group
+(74): ReSharper Heap Allocation: Delegate allocation: from method group
+(75): ReSharper Heap Allocation: Delegate allocation: from method group
+(76): ReSharper Heap Allocation: Delegate allocation: from method group
+(77): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (78): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(79): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(79): ReSharper Heap Allocation: Delegate allocation: from method group
 (80): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of method 'GenericTest2'
-(81): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(81): ReSharper Heap Allocation: Delegate allocation: from method group
 (82): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of method 'GenericTest3'
-(83): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(84): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(83): ReSharper Heap Allocation: Delegate allocation: from method group
+(84): ReSharper Heap Allocation: Delegate allocation: from method group
 (85): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of method 'GenericTest5'
-(86): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(87): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(86): ReSharper Heap Allocation: Delegate allocation: from method group
+(87): ReSharper Heap Allocation: Delegate allocation: from method group
 (88): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(89): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(89): ReSharper Heap Allocation: Delegate allocation: from method group
 (90): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(91): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(92): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(91): ReSharper Heap Allocation: Delegate allocation: from method group
+(92): ReSharper Heap Allocation: Delegate allocation: from method group
 (93): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(94): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(95): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(94): ReSharper Heap Allocation: Delegate allocation: from method group
+(95): ReSharper Heap Allocation: Delegate allocation: from method group
 (96): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(97): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(97): ReSharper Heap Allocation: Delegate allocation: from method group
 (98): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(99): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(100): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(101): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(102): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(103): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(104): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
-(105): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(99): ReSharper Heap Allocation: Delegate allocation: from method group
+(100): ReSharper Heap Allocation: Delegate allocation: from method group
+(101): ReSharper Heap Allocation: Delegate allocation: from method group
+(102): ReSharper Heap Allocation: Delegate allocation: from method group
+(103): ReSharper Heap Allocation: Delegate allocation: from method group
+(104): ReSharper Heap Allocation: Delegate allocation: from method group
+(105): ReSharper Heap Allocation: Delegate allocation: from method group
 (106): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'
-(107): ReSharper Heap Allocation: Heap allocation: delegate instantiation from method group
+(107): ReSharper Heap Allocation: Delegate allocation: from method group
 (108): ReSharper Error Highlighting: Slow delegate creation: method group parametrized with type parameter 'T' of type 'Some'

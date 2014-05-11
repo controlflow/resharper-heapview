@@ -169,7 +169,7 @@ class Closures
     }
   }
 
-  public void M11(|int arg|(54))
+  public void M11(int |arg|(54))
   {
     F(() |=>|(55)
     {
@@ -220,7 +220,7 @@ class Closures
              ||select|(80)|(81) y + t;
   }
 
-  public void M15(|int arg|(82))
+  public void M15(int |arg|(82))
   {
     var y = F(() |=>|(83) X + arg);
     F(z |=>|(84) y);
@@ -275,7 +275,7 @@ class Closures
                                   where x < 0
                                   select F(() |=>|(100) x);
 
-  public void M17(|int arg|(101))
+  public void M17(int |arg|(101))
   {
     Expression<Func<int, int>> e = x |=>|(102) x;
 
@@ -300,113 +300,113 @@ class Closures
   private static void F(Func<int, int> f) { }
 }
 ---------------------------------------------------------
-(0): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'xs' variables)
-(1): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(2): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'xs' variable)
-(3): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(4): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(5): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(6): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(7): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(8): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(9): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(10): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 't1', 't7' variables)
-(11): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(12): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(13): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 't1' variable)
-(14): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(15): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(16): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(17): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(18): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(19): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(20): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(21): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(22): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 't7' variable)
-(23): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
-(24): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'j' variables and 'this' reference)
-(25): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
-(26): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable and 'this' reference)
-(27): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable and 'this' reference)
-(28): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable)
-(29): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(30): ReSharper Heap Allocation: Heap allocation: closure instantiation ('j' variable)
-(31): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable)
-(32): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'j' variables)
-(33): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(34): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable)
-(35): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
-(36): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable)
-(37): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
-(38): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
-(39): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
-(40): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
-(41): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
-(42): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
-(43): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
-(44): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
-(45): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
-(46): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
-(47): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
-(48): ReSharper Heap Allocation: Heap allocation: closure instantiation ('c', 'd' variables + (outer closure of 'a' variable))
-(49): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a', 'c' variables)
-(50): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a', 'd' variables)
-(51): ReSharper Heap Allocation: Heap allocation: closure instantiation ('b' variable)
-(52): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
-(53): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
-(54): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter)
-(55): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter)
-(56): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter)
-(57): ReSharper Heap Allocation: Heap allocation: closure instantiation ('u' parameter + (outer closure of 'arg' parameter))
-(58): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg', 'u' parameters)
-(59): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable and 'this' reference)
-(60): ReSharper Heap Allocation: Heap allocation: closure instantiation ('j' variable + (outer closure of 'i' variable and 'this' reference))
-(61): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i', 'j' variables and 'this' reference)
-(62): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
-(63): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
-(64): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(0): ReSharper Heap Allocation: Closure allocation: 'i', 'xs' variables
+(1): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(2): ReSharper Heap Allocation: Delegate allocation: capture of 'xs' variable
+(3): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(4): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(5): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(6): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(7): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(8): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(9): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(10): ReSharper Heap Allocation: Closure allocation: 'i', 't1', 't7' variables
+(11): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(12): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(13): ReSharper Heap Allocation: Delegate allocation: capture of 't1' variable
+(14): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(15): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(16): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(17): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(18): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(19): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(20): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(21): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(22): ReSharper Heap Allocation: Delegate allocation: capture of 't7' variable
+(23): ReSharper Heap Allocation: Delegate allocation: capture of 'x' parameter
+(24): ReSharper Heap Allocation: Closure allocation: 'i', 'j' variables and 'this' reference
+(25): ReSharper Heap Allocation: Delegate allocation: capture of 'this' reference
+(26): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable and 'this' reference
+(27): ReSharper Heap Allocation: Delegate allocation: capture of 'j' variable and 'this' reference
+(28): ReSharper Heap Allocation: Closure allocation: 'i' variable
+(29): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(30): ReSharper Heap Allocation: Closure allocation: 'j' variable
+(31): ReSharper Heap Allocation: Delegate allocation: capture of 'j' variable
+(32): ReSharper Heap Allocation: Closure allocation: 'i', 'j' variables
+(33): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(34): ReSharper Heap Allocation: Delegate allocation: capture of 'j' variable
+(35): ReSharper Heap Allocation: Delegate allocation: capture of 'this' reference
+(36): ReSharper Heap Allocation: Closure allocation: 'i' variable
+(37): ReSharper Heap Allocation: Delegate allocation: capture of 'i' variable
+(38): ReSharper Heap Allocation: Closure allocation: 'a' variable
+(39): ReSharper Heap Allocation: Delegate allocation: capture of 'a' variable
+(40): ReSharper Heap Allocation: Delegate allocation: capture of 'a' variable
+(41): ReSharper Heap Allocation: Closure allocation: 'a' variable
+(42): ReSharper Heap Allocation: Delegate allocation: capture of 'a' variable
+(43): ReSharper Heap Allocation: Delegate allocation: capture of 'a' variable
+(44): ReSharper Heap Allocation: Delegate allocation: capture of 'b' variable
+(45): ReSharper Heap Allocation: Delegate allocation: capture of 'b' variable
+(46): ReSharper Heap Allocation: Closure allocation: 'a' variable
+(47): ReSharper Heap Allocation: Delegate allocation: capture of 'a' variable
+(48): ReSharper Heap Allocation: Closure allocation: 'c', 'd' variables + (outer closure of 'a' variable)
+(49): ReSharper Heap Allocation: Delegate allocation: capture of 'a', 'c' variables
+(50): ReSharper Heap Allocation: Delegate allocation: capture of 'a', 'd' variables
+(51): ReSharper Heap Allocation: Closure allocation: 'b' variable
+(52): ReSharper Heap Allocation: Delegate allocation: capture of 'b' variable
+(53): ReSharper Heap Allocation: Delegate allocation: capture of 'b' variable
+(54): ReSharper Heap Allocation: Closure allocation: 'arg' parameter
+(55): ReSharper Heap Allocation: Delegate allocation: capture of 'arg' parameter
+(56): ReSharper Heap Allocation: Delegate allocation: capture of 'arg' parameter
+(57): ReSharper Heap Allocation: Closure allocation: 'u' parameter + (outer closure of 'arg' parameter)
+(58): ReSharper Heap Allocation: Delegate allocation: capture of 'arg', 'u' parameters
+(59): ReSharper Heap Allocation: Closure allocation: 'i' variable and 'this' reference
+(60): ReSharper Heap Allocation: Closure allocation: 'j' variable + (outer closure of 'i' variable and 'this' reference)
+(61): ReSharper Heap Allocation: Delegate allocation: capture of 'i', 'j' variables and 'this' reference
+(62): ReSharper Heap Allocation: Delegate allocation: capture of 'this' reference
+(63): ReSharper Heap Allocation: Delegate allocation: capture of 'this' reference
+(64): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (65): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(66): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(66): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (67): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(68): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(68): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (69): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(70): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(70): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (71): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(72): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(73): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(72): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(73): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (74): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(75): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(75): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (76): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(77): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(77): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (78): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(79): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
-(80): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(79): ReSharper Heap Allocation: Object allocation: transparent identifier anonymous type instantiation
+(80): ReSharper Heap Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (81): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(82): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter, 'y' variable and 'this' reference)
-(83): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter and 'this' reference)
-(84): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' variable)
-(85): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
-(86): ReSharper Heap Allocation: Heap allocation: closure instantiation ('value' parameter)
-(87): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'value' parameter)
-(88): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' parameter and 'this' reference)
-(89): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' parameter, 'y' variable and 'this' reference)
-(90): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
-(91): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
-(92): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
-(93): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' variable)
-(94): ReSharper Heap Allocation: Heap allocation: closure instantiation ('x' parameter)
-(95): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
-(96): ReSharper Heap Allocation: Heap allocation: closure instantiation ('x' parameter)
-(97): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
-(98): ReSharper Heap Allocation: Heap allocation: closure instantiation ('y' parameter)
-(99): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' parameter)
-(100): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
-(101): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter)
-(102): ReSharper Heap Allocation: Heap allocation: expression tree construction
-(103): ReSharper Heap Allocation: Heap allocation: expression tree construction
-(104): ReSharper Heap Allocation: Heap allocation: expression tree construction
-(105): ReSharper Heap Allocation: Heap allocation: expression tree construction
-(106): ReSharper Heap Allocation: Heap allocation: closure instantiation ('t' parameter + (outer closure of 'arg' parameter))
-(107): ReSharper Heap Allocation: Heap allocation: expression tree construction
-(108): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg', 't' parameters)
-(109): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(82): ReSharper Heap Allocation: Closure allocation: 'arg' parameter, 'y' variable and 'this' reference
+(83): ReSharper Heap Allocation: Delegate allocation: capture of 'arg' parameter and 'this' reference
+(84): ReSharper Heap Allocation: Delegate allocation: capture of 'y' variable
+(85): ReSharper Heap Allocation: Delegate allocation: capture of 'this' reference
+(86): ReSharper Heap Allocation: Closure allocation: 'value' parameter
+(87): ReSharper Heap Allocation: Delegate allocation: capture of 'value' parameter
+(88): ReSharper Heap Allocation: Closure allocation: 'i' parameter and 'this' reference
+(89): ReSharper Heap Allocation: Closure allocation: 'i' parameter, 'y' variable and 'this' reference
+(90): ReSharper Heap Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(91): ReSharper Heap Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(92): ReSharper Heap Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(93): ReSharper Heap Allocation: Delegate allocation: capture of 'y' variable
+(94): ReSharper Heap Allocation: Closure allocation: 'x' parameter
+(95): ReSharper Heap Allocation: Delegate allocation: capture of 'x' parameter
+(96): ReSharper Heap Allocation: Closure allocation: 'x' parameter
+(97): ReSharper Heap Allocation: Delegate allocation: capture of 'x' parameter
+(98): ReSharper Heap Allocation: Closure allocation: 'y' parameter
+(99): ReSharper Heap Allocation: Delegate allocation: capture of 'y' parameter
+(100): ReSharper Heap Allocation: Delegate allocation: capture of 'x' parameter
+(101): ReSharper Heap Allocation: Closure allocation: 'arg' parameter
+(102): ReSharper Heap Allocation: Object allocation: expression tree construction
+(103): ReSharper Heap Allocation: Object allocation: expression tree construction
+(104): ReSharper Heap Allocation: Object allocation: expression tree construction
+(105): ReSharper Heap Allocation: Object allocation: expression tree construction
+(106): ReSharper Heap Allocation: Closure allocation: 't' parameter + (outer closure of 'arg' parameter)
+(107): ReSharper Heap Allocation: Object allocation: expression tree construction
+(108): ReSharper Heap Allocation: Delegate allocation: capture of 'arg', 't' parameters
+(109): ReSharper Heap Allocation: Object allocation: expression tree construction

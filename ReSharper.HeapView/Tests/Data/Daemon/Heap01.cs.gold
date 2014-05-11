@@ -116,48 +116,48 @@ class TestAttribute : Attribute
   public TestAttribute(Type[] xs, int a, params Type[] ys) { }
 }
 ---------------------------------------------------------
-(0): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(1): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(2): ReSharper Heap Allocation: Heap allocation: possible reference type instantiation
-(3): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(4): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(5): ReSharper Heap Allocation: Heap allocation: array instantiation
-(6): ReSharper Heap Allocation: Heap allocation: array instantiation
-(7): ReSharper Heap Allocation: Heap allocation: array instantiation
-(8): ReSharper Heap Allocation: Heap allocation: array instantiation
-(9): ReSharper Heap Allocation: Heap allocation: array instantiation
-(10): ReSharper Heap Allocation: Heap allocation: array instantiation
-(11): ReSharper Heap Allocation: Heap allocation: array instantiation
-(12): ReSharper Heap Allocation: Heap allocation: array instantiation
-(13): ReSharper Heap Allocation: Heap allocation: array instantiation
-(14): ReSharper Heap Allocation: Heap allocation: array instantiation
-(15): ReSharper Heap Allocation: Heap allocation: array instantiation
-(16): ReSharper Heap Allocation: Heap allocation: array instantiation
-(17): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(18): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(19): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(20): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(21): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(22): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
-(23): ReSharper Heap Allocation: Heap allocation: iterator method call
-(24): ReSharper Heap Allocation: Heap allocation: iterator property access
-(25): ReSharper Heap Allocation: Heap allocation: reference type instantiation
-(26): ReSharper Heap Allocation: Heap allocation: possible enumerator allocation (except iterators and collection with cached enumerator)
-(27): ReSharper Heap Allocation: Heap allocation: string concatenation
-(28): ReSharper Heap Allocation: Heap allocation: string concatenation (3 operands)
-(29): ReSharper Heap Allocation: Heap allocation: string concatenation (4 operands)
-(30): ReSharper Heap Allocation: Heap allocation: parameters array 'values' allocation
-(31): ReSharper Heap Allocation: Heap allocation: string concatenation (5 operands) + params array allocation
-(32): ReSharper Heap Allocation: Heap allocation: string concatenation (5 operands) + params array allocation
-(33): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
-(34): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
-(35): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
-(36): ReSharper Heap Allocation: Heap allocation: string concatenation
-(37): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(38): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(39): ReSharper Heap Allocation: Heap allocation: string concatenation
-(40): ReSharper Heap Allocation: Heap allocation: string concatenation
-(41): ReSharper Heap Allocation: Heap allocation: string concatenation
-(42): ReSharper Heap Allocation: Heap allocation: string concatenation
-(43): ReSharper Heap Allocation: Heap allocation: string concatenation
-(44): ReSharper Heap Allocation: Heap allocation: string concatenation
+(0): ReSharper Heap Allocation: Object allocation: reference type creation
+(1): ReSharper Heap Allocation: Object allocation: reference type creation
+(2): ReSharper Heap Allocation: Object allocation: possible reference type creation
+(3): ReSharper Heap Allocation: Object allocation: reference type creation
+(4): ReSharper Heap Allocation: Object allocation: reference type instantiation
+(5): ReSharper Heap Allocation: Object allocation: array instantiation
+(6): ReSharper Heap Allocation: Object allocation: array instantiation
+(7): ReSharper Heap Allocation: Object allocation: array creation
+(8): ReSharper Heap Allocation: Object allocation: array creation
+(9): ReSharper Heap Allocation: Object allocation: array creation
+(10): ReSharper Heap Allocation: Object allocation: array creation
+(11): ReSharper Heap Allocation: Object allocation: array creation
+(12): ReSharper Heap Allocation: Object allocation: array creation
+(13): ReSharper Heap Allocation: Object allocation: array creation
+(14): ReSharper Heap Allocation: Object allocation: array creation
+(15): ReSharper Heap Allocation: Object allocation: array instantiation
+(16): ReSharper Heap Allocation: Object allocation: array instantiation
+(17): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(18): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(19): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(20): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(21): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(22): ReSharper Heap Allocation: Object allocation: parameters array 'xs'
+(23): ReSharper Heap Allocation: Object allocation: iterator method call
+(24): ReSharper Heap Allocation: Object allocation: iterator property access
+(25): ReSharper Heap Allocation: Object allocation: reference type creation
+(26): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
+(27): ReSharper Heap Allocation: Object allocation: string concatenation
+(28): ReSharper Heap Allocation: Object allocation: string concatenation (3 operands)
+(29): ReSharper Heap Allocation: Object allocation: string concatenation (4 operands)
+(30): ReSharper Heap Allocation: Object allocation: parameters array 'values'
+(31): ReSharper Heap Allocation: Object allocation: string concatenation (5 operands) + params array allocation
+(32): ReSharper Heap Allocation: Object allocation: string concatenation (5 operands) + params array allocation
+(33): ReSharper Heap Allocation: Object allocation: string concatenation (6 operands) + params array allocation
+(34): ReSharper Heap Allocation: Object allocation: string concatenation (6 operands) + params array allocation
+(35): ReSharper Heap Allocation: Object allocation: string concatenation (6 operands) + params array allocation
+(36): ReSharper Heap Allocation: Object allocation: string concatenation
+(37): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(38): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(39): ReSharper Heap Allocation: Object allocation: string concatenation
+(40): ReSharper Heap Allocation: Object allocation: string concatenation
+(41): ReSharper Heap Allocation: Object allocation: string concatenation
+(42): ReSharper Heap Allocation: Object allocation: string concatenation
+(43): ReSharper Heap Allocation: Object allocation: string concatenation
+(44): ReSharper Heap Allocation: Object allocation: string concatenation

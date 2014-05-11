@@ -136,13 +136,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (typeElement is IClass || (typeParameter != null && typeParameter.IsClassType))
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "reference type instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "reference type creation"),
           newKeyword.GetDocumentRange());
       }
       else if (typeParameter != null && !typeParameter.IsValueType)
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "possible reference type instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "possible reference type creation"),
           newKeyword.GetDocumentRange());
       }
     }
@@ -165,7 +165,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         var newKeyword = arrayCreation.NewKeyword.NotNull();
 
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "array instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "array creation"),
           newKeyword.GetDocumentRange());
       }
     }
@@ -235,8 +235,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
             var anchor = paramsArgument ?? invocation.InvokedExpression;
             consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(anchor, string.Format(
-                "parameters array '{0}' allocation", lastParameter.ShortName)),
+              new ObjectAllocationHighlighting(
+                anchor, string.Format("parameters array '{0}'", lastParameter.ShortName)),
               anchor.GetExpressionRange());
           }
         }
@@ -433,7 +433,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(foreachStatement,
-              "possible enumerator allocation (except iterators and collection with cached enumerator)"),
+              "possible enumerator allocation (except iterators or collection with cached enumerator)"),
             range);
         }
 

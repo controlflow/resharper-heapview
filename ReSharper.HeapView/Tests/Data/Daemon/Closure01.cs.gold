@@ -17,7 +17,7 @@ namespace ConsoleApplication2
   {
     public string P { get; set; }
 
-    public void Foo(|int bbb|(0))
+    public void Foo(int |bbb|(0))
     {
       const int aaa = 0;
       int cc = 2 + 2;
@@ -52,12 +52,12 @@ namespace ConsoleApplication2
   }
 }
 ---------------------------------------------------------
-(0): ReSharper Heap Allocation: Heap allocation: closure instantiation ('bbb' parameter, 'cc' variable and 'this' reference)
-(1): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'bbb' parameter, 'cc' variable and 'this' reference)
-(2): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(3): ReSharper Heap Allocation: Heap allocation: closure instantiation ('s' variable)
-(4): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(5): ReSharper Heap Allocation: Heap allocation: string concatenation
-(6): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 's' variable)
-(7): ReSharper Heap Allocation: Heap allocation: string concatenation
-(8): ReSharper Heap Allocation: Heap allocation: possible enumerator allocation (except iterators and collection with cached enumerator)
+(0): ReSharper Heap Allocation: Closure allocation: 'bbb' parameter, 'cc' variable and 'this' reference
+(1): ReSharper Heap Allocation: Delegate allocation: capture of 'bbb' parameter, 'cc' variable and 'this' reference
+(2): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(3): ReSharper Heap Allocation: Closure allocation: 's' variable
+(4): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(5): ReSharper Heap Allocation: Object allocation: string concatenation
+(6): ReSharper Heap Allocation: Delegate allocation: capture of 's' variable
+(7): ReSharper Heap Allocation: Object allocation: string concatenation
+(8): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)

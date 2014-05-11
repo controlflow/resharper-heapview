@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (usingStatement != null) return;
 
           var description = BakeDescription(
-            "implicit conversion from value type '{0}' to reference type '{1}'",
+            "conversion from value type '{0}' to reference type '{1}'",
             expressionType, targetType);
 
           consumer.AddHighlighting(
