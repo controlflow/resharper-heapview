@@ -244,7 +244,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var method = declaredElement as IMethod;
       if (method != null)
       {
-        if (method.IsIterator)
+        if (method.IsIterator) // todo: may be perf issue
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(invocation, "iterator method call"),

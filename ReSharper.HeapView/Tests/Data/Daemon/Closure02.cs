@@ -299,21 +299,3 @@ class Closures
   private static void F(Action<int> f) { }
   private static void F(Func<int, int> f) { }
 }
-
-namespace JetBrains.Annotations
-{
-  [AttributeUsage(AttributeTargets.Method)]
-  public sealed class LinqTunnelAttribute : Attribute { }
-}
-
-namespace System.Linq
-{
-  public static class Enumerable
-  {
-    [JetBrains.Annotations.LinqTunnel]
-    public static IEnumerable<T> Concat<T>(this IEnumerable<T> source1, IEnumerable<T> source2)
-    {
-      yield break;
-    }
-  }
-}

@@ -37,9 +37,9 @@ namespace ConsoleApplication2
       foreach (var x in |s1|(10)) Console.WriteLine(x);
       foreach (var x |in|(11) s2) Console.WriteLine(x);
 
-      |s1|(12).|Select|(13)(x => x + 1)
-        .|Where|(14)(x => x > 0)
-        .|Select|(15)(x => |new|(16)[] { x })
+      |s1|(12).Select(x => x + 1)
+        .Where(x => x > 0)
+        .Select(x => |new|(13)[] { x })
         .ToList()
         .ForEach(_ => { });
 
@@ -68,7 +68,7 @@ namespace ConsoleApplication2
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-      yield return |3|(17);
+      yield return |3|(14);
     }
   }
 
@@ -83,7 +83,7 @@ namespace ConsoleApplication2
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-      yield return |2|(18);
+      yield return |2|(15);
     }
   }
 
@@ -110,9 +110,6 @@ namespace ConsoleApplication2
 (10): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'S1' to reference type 'IEnumerable'
 (11): ReSharper Heap Allocation: Heap allocation: possible enumerator allocation (except iterators and collection with cached enumerator)
 (12): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'S1' to reference type 'IEnumerable<int>'
-(13): ReSharper Heap Allocation: Heap allocation: LINQ method call
-(14): ReSharper Heap Allocation: Heap allocation: LINQ method call
-(15): ReSharper Heap Allocation: Heap allocation: LINQ method call
-(16): ReSharper Heap Allocation: Heap allocation: array instantiation
-(17): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
-(18): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
+(13): ReSharper Heap Allocation: Heap allocation: array instantiation
+(14): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
+(15): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
