@@ -20,6 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BDF400-83F8-4413-88B0-D3BBA3A9647A}"
 	ProjectSection(SolutionItems) = preProject
 		Content\Changelog.md = Content\Changelog.md
+		Content\Example.png = Content\Example.png
 		Readme.md = Readme.md
 		ReSharper.HeapView.nuspec = ReSharper.HeapView.nuspec
 	EndProjectSection
