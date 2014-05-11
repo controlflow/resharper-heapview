@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/controlflow/resharper-heapview</projectUrl>
     <iconUrl>https://raw.github.com/controlflow/resharper-heapview/master/Content/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Highlights local object allocations, explicit and hidden under language constructs, boxing and closure creations points.</description>
+    <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
 &#8226; Initial release.
     </releaseNotes>
