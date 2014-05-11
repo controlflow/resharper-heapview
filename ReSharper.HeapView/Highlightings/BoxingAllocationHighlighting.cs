@@ -1,15 +1,18 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.TextControl.DocumentMarkup;
+#if RESHARPER8
+using JetBrains.ReSharper.Daemon;
+#elif RESHARPER9
+using JetBrains.ReSharper.Feature.Services.Daemon;
+#endif
 
-[assembly: RegisterHighlighter(
-  id: BoxingAllocationHighlighting.HIGHLIGHTING_ID,
-  EffectColor = "Green",
-  EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX,
-  VSPriority = VSPriority.IDENTIFIERS)]
+// todo: use in 9.0
+//[assembly: RegisterHighlighter(
+//  id: BoxingAllocationHighlighting.HIGHLIGHTING_ID,
+//  EffectColor = "Green",
+//  EffectType = EffectType.SOLID_UNDERLINE,
+//  Layer = HighlighterLayer.SYNTAX,
+//  VSPriority = VSPriority.IDENTIFIERS)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

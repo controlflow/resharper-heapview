@@ -1,8 +1,5 @@
 ﻿using System;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
-using JetBrains.ReSharper.Daemon.Stages;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -11,6 +8,14 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+#if RESHARPER8
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Daemon.Stages;
+#elif RESHARPER9
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
+#endif
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {

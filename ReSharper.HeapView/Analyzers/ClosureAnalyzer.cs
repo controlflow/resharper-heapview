@@ -4,14 +4,19 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
-using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+#if RESHARPER8
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Daemon.Stages;
+#elif RESHARPER9
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
+#endif
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {

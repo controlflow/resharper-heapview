@@ -16,7 +16,6 @@
     </releaseNotes>
     <dependencies>
       <dependency id="ReSharper" version="8.1" />
-      <!-- VS10 dependency! -->
     </dependencies>
     <tags>heap view allocations performance boxing closures lambda display class</tags>
   </metadata>

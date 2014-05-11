@@ -1,0 +1,415 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+
+// ReSharper disable TooWideLocalVariableScope
+// ReSharper disable UnusedVariable
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedMember.Local
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable ConvertToLambdaExpression
+
+class Closures
+{
+  public void M2()
+  {
+    |var i|(0) = I;
+    var xs = XS;
+    var t1 = from x in xs
+             |select|(1) i + 123; // closure
+    var t2 = from x in xs
+             select x + 123; // nothing
+    var t3 = from x in xs
+             from y |in|(2) xs // closure
+             |select|(3) i;    // closure
+    var t4 = from x in xs
+             from y in XS  // nothing
+             select y + x; // nothing
+    var t5 = from x in xs
+             from |y|(4) in XS // anonymous type
+             from z in YS // nothing
+             select x + y + z;
+    var t6 = from x in xs
+             |let|(5) |y|(6) = 123 + i  // anonymous + closure
+             from z in XS // nothing
+             select x + y + z; // nothing
+    var t7 = from x in xs
+             from |y|(7) in XS // anonymous type
+             where x > 0  // nothing
+             select x + y; // nothing
+    var t8 = from x in xs
+             from |y|(8) in XS // anonymous type
+             from |z|(9) in YS // anonymous type
+             from w in YS
+             select x + y + z;
+  }
+  
+  public void M3()
+  {
+    |var i|(10) = I;
+    var t1 = from x in XS
+             from |y|(11) in XS // anonymous type
+             from |z|(12) in XS // anonymous type
+             where x > 0
+             select x + z;
+    var t2 = from x in XS
+             from y |in|(13) YS.|Concat|(14)(t1)
+             select x into y
+             |select|(15) y + i;
+    var t3 = from x in XS
+             group x |by|(16) x / 10 + i;
+    var t4 = from x in XS
+             |group|(17) x + i by x / 10;
+    var t5 = from x in XS
+             group x by x / 10 into g
+             |select|(18) g.Key + i;
+    var t6 = from x in XS
+             join y in YS |on|(19) x + i |equals|(20) y + i
+             |select|(21) x + y + i;
+    var t7 = from x in XS
+             join y in YS |on|(22) x + i equals y
+             into z select x;
+  
+    var t8 = from x in XS select (
+               from y in YS select y);
+    var t9 = from x in XS |select|(23) (
+               from y in YS.|Concat|(24)(t7)
+               |select|(25) y + x + 123);
+  }
+
+  public void M4()
+  {
+    |int i|(26) = I, j = I;
+    F(() |=>|(27) M() + X);
+    F(() |=>|(28) M() + X + i);
+    F(() |=>|(29) X + j);
+  }
+
+  public void M5()
+  {
+    |var i|(30) = I;
+    F(() |=>|(31) i);
+
+    {
+      |var j|(32) = I;
+      F(() |=>|(33) j);
+    }
+  }
+
+  public void M6()
+  {
+    |var i|(34) = I;
+    F(() |=>|(35) i);
+
+    var j = I;
+    F(() |=>|(36) j);
+  }
+
+  public void M7()
+  {
+    F(() |=>|(37)
+    {
+      M();
+      |var i|(38) = I;
+      F(() |=>|(39) i);
+    });
+  }
+
+  public void M8(bool b)
+  {
+    |int a|(40);
+    Console.WriteLine();
+    if (b)
+    {
+      a = I;
+      F(() |=>|(41) a);
+      F(() |=>|(42) a);
+    }
+  }
+
+  public void M9(bool t)
+  {
+    if (t)
+    {
+      |var a|(43) = I;
+      F(() |=>|(44) a);
+      F(() |=>|(45) a);
+    }
+    else
+    {
+      int z = I, b = I;
+      F(() |=>|(46) b);
+      F(() |=>|(47) b);
+    }
+  }
+
+  public void M10(bool t)
+  {
+    if (t)
+    {
+      |var a|(48) = I;
+      F(() |=>|(49) a);
+
+      {
+        |var c|(50) = I;
+        F(() |=>|(51) a + c);
+
+        var d = I;
+        F(() |=>|(52) a + d);
+      }
+    }
+    else
+    {
+      |var b|(53) = I;
+      F(() |=>|(54) b);
+      F(() |=>|(55) b);
+    }
+  }
+
+  public void M11(|int arg|(56))
+  {
+    F(() |=>|(57)
+    {
+      F(|delegate|(58)(|int u|(59))
+      {
+        F(t |=>|(60) arg + t + u);
+      });
+    });
+  }
+
+  public void M12()
+  {
+    |var i|(61) = I;
+    {
+      |var j|(62) = I;
+      {
+        F(() |=>|(63)
+        {
+          M();
+          return i + j;
+        });
+      }
+    }
+  }
+
+  public void M13()
+  {
+    F(() |=>|(64)
+    {
+      F(() |=>|(65)
+      {
+        M();
+        M();
+      });
+    });
+  }
+
+  public void M14<T>()
+  {
+    F(() ||=>|(66)|(67) { });
+
+    var xs = from x in XS
+             ||where|(68)|(69) x > 0
+             ||group|(70)|(71) x + 1 ||by|(72)|(73) x + 2
+             into x // should not be highlighted
+             join |y|(74) in YS ||on|(75)|(76) x.Key ||equals|(77)|(78) y
+             ||let|(79)|(80) |t|(81) = 1
+             ||select|(82)|(83) y + t;
+  }
+
+  public void M15(|int arg|(84))
+  {
+    var y = F(() |=>|(85) X + arg);
+    F(z |=>|(86) y);
+  }
+
+  public Action M16
+  {
+    get
+    {
+      return () |=>|(87) {
+        var x = X;
+      };
+    }
+    |set|(88)
+    {
+      F(() |=>|(89) value);
+    }
+  }
+
+  public Action this[||int i|(90)|(91)]
+  {
+    get
+    {
+      return () |=>|(92)
+        F(() |=>|(93) X + i);
+    }
+    set
+    {
+      var y = F(() |=>|(94) X + i);
+      F(z |=>|(95) y);
+    }
+  }
+
+  private Action<int>
+    f = |x|(96) =>
+    {
+
+      F(() |=>|(97) x);
+    },
+    g = |x|(98) =>
+    {
+      F(() |=>|(99) x);
+    };
+
+  private Action<int, int, int>
+    tt = (x, |y|(100), z) =>
+    {
+      F(() |=>|(101) y);
+    };
+
+  private IEnumerable<int> xsss = from x in Enumerable.Range(0, 100)
+                                  where x < 0
+                                  select F(() |=>|(102) x);
+
+  public void M17(|int arg|(103))
+  {
+    Expression<Func<int, int>> e = x |=>|(104) x;
+
+    var xs = Enumerable.Range(0, 10).|AsQueryable|(105)();
+    var ys = from x in xs
+             |where|(106) x > 0
+             |select|(107) x + 1;
+
+    Expression<Func<int>> f = () |=>|(108) arg;
+    Expression<Action<int>> g = |t|(109) |=>|(110) F(() |=>|(111) t + arg);
+    Expression<Func<int, int>> u = t |=>|(112) 1;
+  }
+
+  private static int I { get; set; }
+  private int X { get; set; }
+  private static List<int> XS { get; set; }
+  private static List<int> YS { get; set; }
+  private int M() { return 0; }
+  private static void F(Action f) { }
+  private static int F<T>(Func<T> f) { return 0; }
+  private static void F(Action<int> f) { }
+  private static void F(Func<int, int> f) { }
+}
+---------------------------------------------------------
+(0): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'xs' variables)
+(1): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(2): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'xs' variable)
+(3): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(4): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(5): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(6): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(7): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(8): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(9): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(10): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 't1', 't7' variables)
+(11): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(12): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(13): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 't1' variable)
+(14): ReSharper Heap Allocation: Heap allocation: LINQ method call
+(15): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(16): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(17): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(18): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(19): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(20): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(21): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(22): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(23): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 't7' variable)
+(24): ReSharper Heap Allocation: Heap allocation: LINQ method call
+(25): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
+(26): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'j' variables and 'this' reference)
+(27): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
+(28): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable and 'this' reference)
+(29): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable and 'this' reference)
+(30): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable)
+(31): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(32): ReSharper Heap Allocation: Heap allocation: closure instantiation ('j' variable)
+(33): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable)
+(34): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i', 'j' variables)
+(35): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(36): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'j' variable)
+(37): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
+(38): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable)
+(39): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' variable)
+(40): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
+(41): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
+(42): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
+(43): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
+(44): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
+(45): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
+(46): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
+(47): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
+(48): ReSharper Heap Allocation: Heap allocation: closure instantiation ('a' variable)
+(49): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a' variable)
+(50): ReSharper Heap Allocation: Heap allocation: closure instantiation ('c', 'd' variables + (outer closure of 'a' variable))
+(51): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a', 'c' variables)
+(52): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'a', 'd' variables)
+(53): ReSharper Heap Allocation: Heap allocation: closure instantiation ('b' variable)
+(54): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
+(55): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'b' variable)
+(56): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter)
+(57): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter)
+(58): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter)
+(59): ReSharper Heap Allocation: Heap allocation: closure instantiation ('u' parameter + (outer closure of 'arg' parameter))
+(60): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg', 'u' parameters)
+(61): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' variable and 'this' reference)
+(62): ReSharper Heap Allocation: Heap allocation: closure instantiation ('j' variable + (outer closure of 'i' variable and 'this' reference))
+(63): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i', 'j' variables and 'this' reference)
+(64): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
+(65): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
+(66): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(67): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(68): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(69): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(70): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(71): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(72): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(73): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(74): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(75): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(76): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(77): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(78): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(79): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(80): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(81): ReSharper Heap Allocation: Heap allocation: transparent identifier anonymous type instantiation
+(82): ReSharper Heap Allocation: Heap allocation: delegate instantiation from generic anonymous function (always non cached)
+(83): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(84): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter, 'y' variable and 'this' reference)
+(85): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg' parameter and 'this' reference)
+(86): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' variable)
+(87): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'this' reference)
+(88): ReSharper Heap Allocation: Heap allocation: closure instantiation ('value' parameter)
+(89): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'value' parameter)
+(90): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' parameter and 'this' reference)
+(91): ReSharper Heap Allocation: Heap allocation: closure instantiation ('i' parameter, 'y' variable and 'this' reference)
+(92): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
+(93): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
+(94): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'i' parameter and 'this' reference)
+(95): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' variable)
+(96): ReSharper Heap Allocation: Heap allocation: closure instantiation ('x' parameter)
+(97): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
+(98): ReSharper Heap Allocation: Heap allocation: closure instantiation ('x' parameter)
+(99): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
+(100): ReSharper Heap Allocation: Heap allocation: closure instantiation ('y' parameter)
+(101): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'y' parameter)
+(102): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'x' parameter)
+(103): ReSharper Heap Allocation: Heap allocation: closure instantiation ('arg' parameter)
+(104): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(105): ReSharper Heap Allocation: Heap allocation: LINQ method call
+(106): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(107): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(108): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(109): ReSharper Heap Allocation: Heap allocation: closure instantiation ('t' parameter + (outer closure of 'arg' parameter))
+(110): ReSharper Heap Allocation: Heap allocation: expression tree construction
+(111): ReSharper Heap Allocation: Heap allocation: delegate instantiation (capture of 'arg', 't' parameters)
+(112): ReSharper Heap Allocation: Heap allocation: expression tree construction

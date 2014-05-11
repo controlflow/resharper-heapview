@@ -67,6 +67,14 @@
       <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Util.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.CSharp">
+      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Engine">
+      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="JetBrains.ReSharper.Feature.Services">
       <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.dll</HintPath>
       <Private>False</Private>
@@ -124,6 +132,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\BoxingOccuranceAnalyzer.cs" />
+    <Compile Include="Analyzers\ClosureAnalyzer.cs" />
+    <Compile Include="Analyzers\HeapAllocationAnalyzer.cs" />
+    <Compile Include="Analyzers\SlowDelegateCreationAnalyzer.cs" />
+    <Compile Include="ExpressionRangeUtils.cs" />
+    <Compile Include="Highlightings\BoxingAllocationHighlighting.cs" />
+    <Compile Include="Highlightings\ObjectAllocationHighlighting.cs" />
+    <Compile Include="Highlightings\PerformanceHighlightingBase.cs" />
+    <Compile Include="Highlightings\PerformanceHighlightingGroupIds.cs" />
+    <Compile Include="Highlightings\SlowDelegateCreationHighlighting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <PropertyGroup>

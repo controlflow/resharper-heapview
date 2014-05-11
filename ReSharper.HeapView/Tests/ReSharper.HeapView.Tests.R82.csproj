@@ -65,7 +65,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PostfixTestsAssembly.cs" />
+    <None Include="Data\Daemon\Boxing01.cs" />
+    <None Include="Data\Daemon\Boxing02.cs" />
+    <None Include="Data\Daemon\Closure01.cs" />
+    <None Include="Data\Daemon\Closure02.cs" />
+    <None Include="Data\Daemon\Heap01.cs" />
+    <None Include="Data\Daemon\Heap02.cs" />
+    <Compile Include="HeapViewTests.cs" />
+    <Compile Include="HeapViewTestsAssembly.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +98,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\Daemon\Boxing01.cs.gold" />
+    <None Include="Data\Daemon\Boxing02.cs.gold" />
+    <None Include="Data\Daemon\Closure01.cs.gold" />
+    <None Include="Data\Daemon\Closure02.cs.gold" />
+    <None Include="Data\Daemon\Heap01.cs.gold" />
+    <None Include="Data\Daemon\Heap02.cs.gold" />
     <None Include="packages.ReSharper.HeapView.Tests.R82.config" />
   </ItemGroup>
   <ItemGroup>

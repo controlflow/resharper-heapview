@@ -1,0 +1,163 @@
+﻿using System;
+using System.Collections.Generic;
+
+[Test(
+  new [] { typeof(HeapAllocations) },
+  new int(), typeof(string))]
+class HeapAllocations
+{
+  // ReSharper disable UnusedVariable
+  // ReSharper disable UnusedVariable.Compiler
+  // ReSharper disable InconsistentNaming
+
+  public void M1<T, U, V>()
+    where T : new()
+    where U : class, new()
+    where V : struct
+  {
+    var t0 = new int();
+    var t1 = |new|(0) string('a', 100);
+    var t2 = |new|(1) object();
+    var t3 = |new|(2) T();
+    var t4 = |new|(3) U();
+    var t5 = new V();
+    var t6 = |new|(4) {Foo = 123};
+  }
+
+  private static readonly int[] |xs0 =|(5) {1, 2, 3};
+  private int[] |xs1 =|(6) {1, 2, 3};
+  private static readonly int[] xs2 = |new|(7)[] {1, 2, 3};
+  private int[] xs3 = |new|(8)[] {1, 2, 3};
+
+  public void M2()
+  {
+    var ts0 = |new|(9) int[] {};
+    var ts1 = |new|(10) int[0];
+    var ts2 = |new|(11) int[100];
+    var ts3 = |new|(12) string[] { };
+    var ts4 = |new|(13)[] {1, 2, 3};
+    var ts5 = |new|(14) int[2, 2];
+    int[] |ts6 =|(15) {},
+          |ts7 =|(16) {1,2,3};
+  }
+
+  public void M3()
+  {
+    |P0|(17)();
+    P0(|1|(18), 2);
+    P0(|1|(19), 2, 3);
+    P0(null); // nothing
+    P0(xs2); // nothing
+    |P1|(20)(1, "abc");
+    P1(1, "abc", |1|(21));
+    P1(1, "abc", xs0); // nothing
+    P1(1, "abc", null); // nothing
+    P2(null); // nothing
+    P2(|null|(22), null);
+    P3<int>(xs0); // nothing
+  }
+
+  public void M4()
+  {
+    var ts0 = |I0|(23)();
+    var ts1 = |I1|(24);
+    I1 = null; // nothing
+  }
+
+  public void M5()
+  {
+    var xs = |new|(25) List<int>();
+    IList<int> ys = xs;
+
+    foreach (var i in xs) { }
+    foreach (var i |in|(26) ys) { }
+  }
+
+  public void M6(string s, int i)
+  {
+    GC.KeepAlive("aa" + "bb");
+    const string bb = "bb";
+    GC.KeepAlive("aa" + bb);
+    GC.KeepAlive("aa" + null);
+    GC.KeepAlive(null + "bb");
+    GC.KeepAlive("bb" |+|(27) s);
+    GC.KeepAlive("bb" |+|(28) s + s);
+    GC.KeepAlive("bb" |+|(29) s + s + s);
+    GC.KeepAlive(string.Concat(|"bb"|(30), s, s, s, s));
+    GC.KeepAlive("bb" |+|(31) s + s + s + s);
+    GC.KeepAlive("bb" |+|(32) s + ("bb" + "cvcv" + s) + s);
+    GC.KeepAlive("bb" |+|(33) s + s + s + s + s);
+    GC.KeepAlive("bb" |+|(34) s + s + (s + s + s));
+    GC.KeepAlive("bb" |+|(35) (s + s) + s + (s + s));
+    GC.KeepAlive("aa" |+|(36) |i|(37));
+    GC.KeepAlive(|i|(38) |+|(39) "aa");
+
+    string t = "asas";
+    t |+=|(40) "sdsdsd";
+    t |+=|(41) "sdsdsd";
+
+    s |+=|(42) "aaa";
+    s |+=|(43) "bb";
+
+    GC.KeepAlive(t |+|(44) s);
+  }
+
+  private static void P0(params int[] xs) { }
+  private static void P1(int a, string b, params int[] xs) { }
+  private static void P2(params string[] xs) { }
+  private static void P3<T>(params T[] xs) { }
+
+  private IEnumerable<int> I0() { yield break; }
+  private IEnumerable<int> I1 { get { yield break; } set { } }
+}
+
+class TestAttribute : Attribute
+{
+  public TestAttribute(Type[] xs, int a, params Type[] ys) { }
+}
+---------------------------------------------------------
+(0): ReSharper Heap Allocation: Heap allocation: reference type instantiation
+(1): ReSharper Heap Allocation: Heap allocation: reference type instantiation
+(2): ReSharper Heap Allocation: Heap allocation: possible reference type instantiation
+(3): ReSharper Heap Allocation: Heap allocation: reference type instantiation
+(4): ReSharper Heap Allocation: Heap allocation: reference type instantiation
+(5): ReSharper Heap Allocation: Heap allocation: array instantiation
+(6): ReSharper Heap Allocation: Heap allocation: array instantiation
+(7): ReSharper Heap Allocation: Heap allocation: array instantiation
+(8): ReSharper Heap Allocation: Heap allocation: array instantiation
+(9): ReSharper Heap Allocation: Heap allocation: array instantiation
+(10): ReSharper Heap Allocation: Heap allocation: array instantiation
+(11): ReSharper Heap Allocation: Heap allocation: array instantiation
+(12): ReSharper Heap Allocation: Heap allocation: array instantiation
+(13): ReSharper Heap Allocation: Heap allocation: array instantiation
+(14): ReSharper Heap Allocation: Heap allocation: array instantiation
+(15): ReSharper Heap Allocation: Heap allocation: array instantiation
+(16): ReSharper Heap Allocation: Heap allocation: array instantiation
+(17): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(18): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(19): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(20): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(21): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(22): ReSharper Heap Allocation: Heap allocation: parameters array 'xs' allocation
+(23): ReSharper Heap Allocation: Heap allocation: iterator method call
+(24): ReSharper Heap Allocation: Heap allocation: iterator property access
+(25): ReSharper Heap Allocation: Heap allocation: reference type instantiation
+(26): ReSharper Heap Allocation: Heap allocation: possible enumerator allocation (except iterators and collection with cached enumerator)
+(27): ReSharper Heap Allocation: Heap allocation: string concatenation
+(28): ReSharper Heap Allocation: Heap allocation: string concatenation (3 operands)
+(29): ReSharper Heap Allocation: Heap allocation: string concatenation (4 operands)
+(30): ReSharper Heap Allocation: Heap allocation: parameters array 'values' allocation
+(31): ReSharper Heap Allocation: Heap allocation: string concatenation (5 operands) + params array allocation
+(32): ReSharper Heap Allocation: Heap allocation: string concatenation (5 operands) + params array allocation
+(33): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
+(34): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
+(35): ReSharper Heap Allocation: Heap allocation: string concatenation (6 operands) + params array allocation
+(36): ReSharper Heap Allocation: Heap allocation: string concatenation
+(37): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
+(38): ReSharper Boxing Occurance: Boxing: implicit conversion from value type 'int' to reference type 'object'
+(39): ReSharper Heap Allocation: Heap allocation: string concatenation
+(40): ReSharper Heap Allocation: Heap allocation: string concatenation
+(41): ReSharper Heap Allocation: Heap allocation: string concatenation
+(42): ReSharper Heap Allocation: Heap allocation: string concatenation
+(43): ReSharper Heap Allocation: Heap allocation: string concatenation
+(44): ReSharper Heap Allocation: Heap allocation: string concatenation
