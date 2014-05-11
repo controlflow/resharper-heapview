@@ -1,4 +1,3 @@
-
 using System.Reflection;
 using JetBrains.Application.PluginSupport;
 
@@ -7,11 +6,11 @@ using JetBrains.Application.PluginSupport;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Shvedov Alexander")]
 [assembly: AssemblyProduct("ReSharper Heap Allocations Viewer")]
-[assembly: AssemblyCopyright("Copyright Â© Shvedov Alexander, 2013")]
+[assembly: AssemblyCopyright("Copyright © Shvedov Alexander, 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("2.0.1")]
+[assembly: AssemblyVersion("0.9.1")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: PluginTitle("ReSharper Heap Allocations Viewer")]

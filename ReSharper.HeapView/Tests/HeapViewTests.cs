@@ -15,16 +15,6 @@ namespace JetBrains.ReSharper.HeapView
   {
     protected override string RelativeTestDataPath { get { return "Daemon"; } }
 
-    protected override void DoTestSolution(params string[] fileSet)
-    {
-      ExecuteWithinSettingsTransaction(store =>
-      {
-        //RunGuarded(() => store.SetValue(HighlightingSettingsAccessor.PerformanceInspections, true));
-
-        base.DoTestSolution(fileSet);
-      });
-    }
-
     protected override bool HighlightingPredicate(
       IHighlighting highlighting, IContextBoundSettingsStore settingsStore)
     {
@@ -41,5 +31,7 @@ namespace JetBrains.ReSharper.HeapView
 
     [Test] public void TestHeap01() { DoNamedTest2(); }
     [Test] public void TestHeap02() { DoNamedTest2(); }
+
+    [Test] public void TestSlowDelegates01() { DoNamedTest2(); }
   }
 }

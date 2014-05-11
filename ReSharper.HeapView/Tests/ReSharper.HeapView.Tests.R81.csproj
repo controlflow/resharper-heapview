@@ -71,6 +71,7 @@
     <None Include="Data\Daemon\Closure02.cs" />
     <None Include="Data\Daemon\Heap01.cs" />
     <None Include="Data\Daemon\Heap02.cs" />
+    <None Include="Data\Daemon\SlowDelegates01.cs" />
     <Compile Include="HeapViewTests.cs" />
     <Compile Include="HeapViewTestsAssembly.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +111,7 @@
     <None Include="Data\Daemon\Closure02.cs.gold" />
     <None Include="Data\Daemon\Heap01.cs.gold" />
     <None Include="Data\Daemon\Heap02.cs.gold" />
+    <None Include="Data\Daemon\SlowDelegates01.cs.gold" />
     <None Include="packages.ReSharper.HeapView.Tests.R81.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

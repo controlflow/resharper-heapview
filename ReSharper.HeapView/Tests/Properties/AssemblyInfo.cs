@@ -10,7 +10,7 @@ using JetBrains.Application.PluginSupport;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("2.0.1")]
+[assembly: AssemblyVersion("0.9.1")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: PluginTitle("ReSharper Heap Allocations Viewer")]
