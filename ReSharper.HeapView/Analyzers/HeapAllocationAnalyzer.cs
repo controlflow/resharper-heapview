@@ -205,6 +205,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var reference = invocation.InvocationExpressionReference;
       if (reference == null) return;
 
+      var invokedExpression = invocation.InvokedExpression;
+
       var declaredElement = reference.Resolve().DeclaredElement;
       var parametersOwner = declaredElement as IParametersOwner;
       if (parametersOwner != null)
@@ -233,10 +235,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               }
             }
 
-            var anchor = paramsArgument ?? invocation.InvokedExpression;
+            var anchor = invokedExpression as IReferenceExpression ?? paramsArgument ?? invokedExpression;
             consumer.AddHighlighting(
               new ObjectAllocationHighlighting(
-                anchor, string.Format("parameters array '{0}'", lastParameter.ShortName)),
+                anchor, string.Format("parameters array '{0}' creation", lastParameter.ShortName)),
               anchor.GetExpressionRange());
           }
         }
@@ -249,7 +251,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(invocation, "iterator method call"),
-            invocation.InvokedExpression.GetExpressionRange());
+            invokedExpression.GetExpressionRange());
         }
         else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
         {
@@ -258,7 +260,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           {
             consumer.AddHighlighting(
               new ObjectAllocationHighlighting(invocation, "LINQ method call"),
-              invocation.InvokedExpression.GetExpressionRange());
+              invokedExpression.GetExpressionRange());
           }
         }
       }

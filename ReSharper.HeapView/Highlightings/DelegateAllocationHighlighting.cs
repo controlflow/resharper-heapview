@@ -1,8 +1,12 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
+#if RESHARPER8
+using JetBrains.ReSharper.Daemon;
+#elif RESHARPER9
+using JetBrains.ReSharper.Feature.Services.Daemon;
+#endif
 
 [assembly: RegisterConfigurableSeverity(
   DelegateAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
