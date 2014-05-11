@@ -1,0 +1,917 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{03FAC09B-5DDE-4631-B165-82761D37A6FE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
+    <AssemblyName>ReSharper.HeapView.Tests82</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>12.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BaseIntermediateOutputPath>obj.R90\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin.R90\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;JET_MODE_ASSERT;RESHARPER9</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin.R90\Release\</OutputPath>
+    <DefineConstants>TRACE;RESHARPER9</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="JetBrains.Platform.ReSharper.ActivityTracking, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ActivityTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ActivityTracking.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ActivityTracking.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.BuildTasksResolved">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.BuildTasksResolved.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ComponentModel, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ComponentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ComponentModel.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ComponentModel.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Diagramming">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Diagramming.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Document.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Document.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.DocumentManager, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.DocumentManager.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.DocumentModel, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.DocumentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.IDE, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.IDE.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.IDE.TestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.IDE.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Interop.WinApi, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Interop.WinApi.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Metadata, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Metadata.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Metadata.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ProjectDocuments.Standalone">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectDocuments.Standalone.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ProjectModel, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ProjectModel.MsBuild">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectModel.MsBuild.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ProjectModel.TestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectModel.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.ProjectModel.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectModel.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Shell, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Shell.Extensions">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Shell.Solution.Tests.Integration">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.Solution.Tests.Integration.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Shell.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Shell.Tests.Integration">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.Tests.Integration.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Symbols">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Symbols.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Symbols.TestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Symbols.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Symbols.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Symbols.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.TestFramework, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\Obj\Test.Framework\Debug\JetBrains.Platform.ReSharper.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.TextControl">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.TextControl.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.TextControl.Standalone, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.TextControl.Standalone.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.TextControl.TestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.TextControl.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.TextControl.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.TextControl.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.UI">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.UI.Standalone, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.UI.Standalone.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.UI.TestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.UI.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.UI.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.UI.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Util, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.ReSharper.Util.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Util.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Architecture.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Architecture.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.AspTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.AspTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.BuildScriptTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.BuildScriptTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.CssTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.CssTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Asp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Asp.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Asp.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Asp.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Asp.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Asxx">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Asxx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.BuildScripts">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.BuildScripts.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Css">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Engine, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Html">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Razor">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Razor.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Razor.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Resx">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Resx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Specific">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Specific.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.VB, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Web">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.WebConfig">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.WebConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Xaml">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Daemon.Xml">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Daemon.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.DaemonTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.DaemonTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.DebuggerVisualizers">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExtendedTestFramework">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExtendedTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExternalProcessStorage, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExternalProcessStorage.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExternalProcessStorage.Process">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExternalProcessStorage.Process.exe</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExternalSources, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExternalSources.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExternalSources.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExternalSources.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.ExternalSources.VS">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.ExternalSources.VS.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asp.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asp.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asp.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asp.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asp.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asp.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asp.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asp.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asxx">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asxx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Asxx.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Asxx.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.BuildScripts">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.BuildScripts.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Css, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Css.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Css.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.ExternalSources, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.ExternalSources.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.ExternalSources.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.ExternalSources.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.ExternalSources.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.ExternalSources.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Html, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Html.Javascript, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Html.Javascript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Html.Tests, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Html.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.JavaScript, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Razor">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Razor.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Razor.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Razor.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Razor.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Resx">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Resx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Tests.Basic">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Tests.Basic.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Tests.Common, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Tests.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.VB, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Web, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Web.WinRT">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Web.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.WebConfig, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.WebConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Xaml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Xaml.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Xaml.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Xaml.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Xaml.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Xaml.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Xaml.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Feature.Services.Xml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Altering">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Altering.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Diagramming, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Diagramming.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Environment">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Environment.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Inspections, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Inspections.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Intellisense, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Intellisense.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Intellisense.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Intellisense.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Internal, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Internal.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Navigation, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Navigation.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Navigation.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Navigation.VS">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Navigation.VS.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.NuGet, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.NuGet.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.SolBuilderDuo">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.SolBuilderDuo.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.SolBuilderDuo.UI">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.SolBuilderDuo.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.StructuralSearch">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.StructuralSearch.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Web">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Features.Xml">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Features.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.FeaturesTestFramework, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\Obj\Test.Framework.Features\Debug\JetBrains.ReSharper.FeaturesTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.Asp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.Asp.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.Asp.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.Asp.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.Asp.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.Integration">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.Integration.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Services.Xaml">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Services.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.I18n.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.I18n.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp.CSharp.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.CSharp.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Asp.VB.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Asp.VB.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.BuildScripts, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.BuildScripts.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Css, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Html">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Html.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Html.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.JavaScript.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.JavaScript.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.JavaScript.WinRT">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.JavaScript.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Razor">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Razor.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Razor.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Razor.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Razor.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Resx, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Resx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.VB, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.VB.Tests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.VB.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Web, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.WebConfig, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.WebConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Xaml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Intentions.Xml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Intentions.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.IntentionsTests, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.IntentionsTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.JavaScriptTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.JavaScriptTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.Asp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.Html">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.Razor">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.Resx">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.Resx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplates.Xml">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplatesTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplatesTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.LiveTemplatesTests.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplatesTests.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.NewRefactorings, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.NewRefactorings.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Product.UI">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Product.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asp.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asp.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asp.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asp.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asxx, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asxx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asxx.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asxx.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Asxx.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Asxx.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.BuildScripts, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.BuildScripts.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.BuildScripts.MSBuild, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.BuildScripts.MSBuild.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.BuildScripts.NAnt, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.BuildScripts.NAnt.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Css, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Css.Extensions">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Css.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Html, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.IL, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.IL.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.JavaScript, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.JavaScript.Extensions">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.JavaScript.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Razor, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Razor.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Razor.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Resx, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Resx.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.VB, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.VB.ConstantCalculatorLib, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.VB.ConstantCalculatorLib.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Web, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Web.CSharp, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Web.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Web.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Web.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Web.WinRT, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Web.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Xaml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Xaml.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Xaml.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Xaml.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Xaml.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Psi.Xml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.PsiTests, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.PsiTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.PsiTestsBasic">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.PsiTestsBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Asp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Asp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.BuildScripts">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.BuildScripts.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Html">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Razor">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Razor.CSharp">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Razor.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Test">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Test.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Test.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.VB, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.WebConfig">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.WebConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.Xaml, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Refactorings.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Resources, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Resources.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.TaskRunnerFramework, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.TaskRunnerFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.TestFramework, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\Obj\Test.Framework.Services\Debug\JetBrains.ReSharper.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.TestResources, Version=8.1.23.523, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.TestResources.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestExplorer">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestExplorer.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestFramework, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTesting.Analysis">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTesting.Analysis.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTesting.Analysis.VB">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTesting.Analysis.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTesting.Features">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTesting.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.MSTest">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.MSTest.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.MSTest09">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.MSTest09.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.MSTest10">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.MSTest10.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.MSTest11">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.MSTest11.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.MSTest12">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.MSTest12.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestProvider.nUnit">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestProvider.nUnit.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.JavaScript">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.MSTest09">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.MSTest09.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.MSTest10">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.MSTest10.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.MSTest11">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.MSTest11.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.MSTest12">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.MSTest12.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestRunner.nUnit">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestRunner.nUnit.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.UnitTestSupportTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.UnitTestSupportTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.VSIntegrationTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.VSIntegrationTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Web.VSIntegrationTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.ReSharper.Web.VSIntegrationTests.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.TestIntegration.Helpers">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.TestIntegration.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.UnitTesting.VSIntegrationTests">
+      <HintPath>..\..\..\ReSharper\bin\JetBrains.UnitTesting.VSIntegrationTests.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ReSharper\bin\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PostfixTestsAssembly.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReSharper.HeapView.R90.csproj">
+      <Project>{4dd44801-150f-4922-8835-cea0fb1dc2de}</Project>
+      <Name>ReSharper.HeapView.R90</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
