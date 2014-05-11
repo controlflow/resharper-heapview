@@ -21,14 +21,8 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    elementTypes: new[] {
-      typeof(ICSharpFunctionDeclaration),
-      typeof(IFieldDeclaration)
-    },
-    HighlightingTypes = new[] {
-      typeof(ObjectAllocationHighlighting),
-      typeof(SlowDelegateCreationHighlighting),
-    })]
+    elementTypes: new[] { typeof(ICSharpFunctionDeclaration), typeof(IFieldDeclaration) },
+    HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting), typeof(SlowDelegateCreationHighlighting) })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -66,9 +60,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     private static void ReportClosureAllocations(
-      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement,
-      [CanBeNull] ILocalScope topScope, [NotNull] ClosureInspector inspector,
-      [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement, [CanBeNull] ILocalScope topScope,
+      [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
       var captureScopes = new Dictionary<ILocalScope, JetHashSet<IDeclaredElement>>();
@@ -125,8 +118,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             {
               consumer.AddHighlighting(
                 new ObjectAllocationHighlighting(closure.Key,
-                  string.Format("delegate instantiation (capture of {0})",
-                  FormatClosureDescription(closure.Value))),
+                  string.Format("delegate instantiation (capture of {0})", FormatClosureDescription(closure.Value))),
                 highlightingRange);
             }
           }
@@ -192,8 +184,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     [NotNull]
-    private static string FormatClosureDescription(
-      [NotNull] JetHashSet<IDeclaredElement> elements)
+    private static string FormatClosureDescription([NotNull] JetHashSet<IDeclaredElement> elements)
     {
       int parameters = 0, vars = 0;
       var hasThis = false;
@@ -322,14 +313,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (highlightingRange.IsValid())
           {
             consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(lambda,
-                "delegate instantiation from generic " +
-                "anonymous function (always non cached)"),
+              new ObjectAllocationHighlighting(
+                lambda, "delegate instantiation from generic anonymous function (always non cached)"),
               highlightingRange);
 
             consumer.AddHighlighting(
-              new SlowDelegateCreationHighlighting(lambda,
-                "anonymous function in generic method is generic itself"),
+              new SlowDelegateCreationHighlighting(
+                lambda, "anonymous function in generic method is generic itself"),
               highlightingRange);
           }
         }

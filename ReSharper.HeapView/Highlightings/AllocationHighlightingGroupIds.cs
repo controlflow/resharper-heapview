@@ -5,13 +5,13 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
 
-[assembly: RegisterStaticHighlightingsGroup(
-  AllocationHighlightingGroupIds.PERFORMANCE_HINTS, "C# allocation hints", isVisible: true)]
+[assembly: RegisterConfigurableHighlightingsGroup(
+  AllocationHighlightingGroupIds.ID, "[Heap Allocations Plugin] Allocation hints")]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   public static class AllocationHighlightingGroupIds
   {
-    public const string PERFORMANCE_HINTS = "AllocationHints";
+    public const string ID = "AllocationHints";
   }
 }

@@ -15,10 +15,10 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
     [NotNull] private readonly ITreeNode myElement;
 
     protected PerformanceHighlightingBase(
-      [NotNull] ITreeNode element, [NotNull] string issue, [NotNull] string description)
+      [NotNull] ITreeNode element, [NotNull] string format, [NotNull] string description)
     {
       myElement = element;
-      myDescription = string.Format("{0}: {1}", issue, description);
+      myDescription = string.Format(format, description);
     }
 
     public bool IsValid() { return myElement.IsValid(); }

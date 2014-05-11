@@ -74,6 +74,9 @@
       <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="JetBrains.ReSharper.Resources">
+      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Resources.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
