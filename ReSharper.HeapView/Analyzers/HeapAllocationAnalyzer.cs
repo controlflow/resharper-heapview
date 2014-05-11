@@ -32,10 +32,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       typeof(IArrayInitializer),
       typeof(IForeachStatement),
       typeof(IAdditiveExpression),
-      typeof(IAssignmentExpression),
+      typeof(IAssignmentExpression)
     },
     HighlightingTypes = new[] {
-      typeof(ObjectAllocationHighlighting)
+      typeof(ObjectAllocationHighlighting),
+      typeof(DelegateAllocationHighlighting)
     })]
   public sealed class HeapAllocationAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
@@ -287,8 +288,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (type != null && !type.IsUnknown && type.GetTypeElement() is IDelegate)
         {
           consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(referenceExpression,
-              "delegate instantiation from method group"),
+            new DelegateAllocationHighlighting(referenceExpression, "from method group"),
             referenceExpression.NameIdentifier.GetDocumentRange());
         }
       }
@@ -317,8 +317,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         var operandsCount = concatenations.Count + 1;
         var description = "string concatenation"
-                          + (operandsCount <= 2 ? null : string.Format(" ({0} operands)", operandsCount))
-                          + (operandsCount <= 4 ? null : " + params array allocation");
+          + (operandsCount <= 2 ? null : string.Format(" ({0} operands)", operandsCount))
+          + (operandsCount <= 4 ? null : " + params array allocation");
 
         consumer.AddHighlighting(
           new ObjectAllocationHighlighting(concatenation, description),
@@ -433,8 +433,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(foreachStatement,
-              "possible enumerator allocation (except iterators " +
-              "and collection with cached enumerator)"), range);
+              "possible enumerator allocation (except iterators and collection with cached enumerator)"),
+            range);
         }
 
         break;

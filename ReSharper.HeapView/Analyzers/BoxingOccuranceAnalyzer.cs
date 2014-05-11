@@ -23,12 +23,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   // because of another C# highlighting (iteration var can be made of more specific type)
 
   [ElementProblemAnalyzer(
-    elementTypes: new[] {
-      typeof(ICSharpExpression)
-    },
-    HighlightingTypes = new[] {
-      typeof(BoxingAllocationHighlighting)
-    })]
+    elementTypes: new[] { typeof(ICSharpExpression) },
+    HighlightingTypes = new[] { typeof(BoxingAllocationHighlighting) })]
   public sealed class BoxingOccuranceAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
     protected override void Run(

@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var methodType = method.GetContainingType();
       if (methodType is IInterface)
       {
-        message = string.Format("delegate from interface '{0}' method", methodType.ShortName);
+        message = string.Format("from interface '{0}' method", methodType.ShortName);
         consumer.AddHighlighting(
           new SlowDelegateCreationHighlighting(methodReference, message),
           methodReference.GetExpressionRange());

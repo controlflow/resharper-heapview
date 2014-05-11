@@ -20,9 +20,16 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
+  // check expression tree + real closure
+
   [ElementProblemAnalyzer(
     elementTypes: new[] { typeof(ICSharpFunctionDeclaration), typeof(IFieldDeclaration) },
-    HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting), typeof(SlowDelegateCreationHighlighting) })]
+    HighlightingTypes = new[] {
+      typeof(ObjectAllocationHighlighting),
+      typeof(ClosureAllocationHighlighting),
+      typeof(DelegateAllocationHighlighting),
+      typeof(SlowDelegateCreationHighlighting)
+    })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -117,8 +124,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             else
             {
               consumer.AddHighlighting(
-                new ObjectAllocationHighlighting(closure.Key,
-                  string.Format("delegate instantiation (capture of {0})", FormatClosureDescription(closure.Value))),
+                new DelegateAllocationHighlighting(closure.Key, "capture of " + FormatClosureDescription(closure.Value)),
                 highlightingRange);
             }
           }
@@ -163,8 +169,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         if (outerCaptures != null)
         {
-          scopeClosure += string.Format(" + (outer closure of {0})",
-            FormatClosureDescription(outerCaptures));
+          scopeClosure += string.Format(" + (outer closure of {0})", FormatClosureDescription(outerCaptures));
         }
 
         if (firstCapture != null)
@@ -175,8 +180,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (anchor != null && highlightingRange.IsValid())
           {
             consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(anchor,
-                string.Format("closure instantiation ({0})", scopeClosure)),
+              new ClosureAllocationHighlighting(anchor, scopeClosure),
               highlightingRange);
           }
         }
@@ -276,7 +280,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var parameter = declaration as IRegularParameterDeclaration;
       if (parameter != null)
       {
-        range = parameter.TypeUsage.GetDocumentRange().SetEndTo(nameEndOffset);
+        if (range.TextRange.Length < 3)
+          range = parameter.TypeUsage.GetDocumentRange().SetEndTo(nameEndOffset);
+
         return parameter;
       }
 
@@ -309,19 +315,16 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         {
           if (IsExpressionLambda(lambda)) continue;
 
-          var highlightingRange = GetClosureRange(lambda);
-          if (highlightingRange.IsValid())
-          {
-            consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(
-                lambda, "delegate instantiation from generic anonymous function (always non cached)"),
-              highlightingRange);
+          var range = GetClosureRange(lambda);
+          if (!range.IsValid()) continue;
 
-            consumer.AddHighlighting(
-              new SlowDelegateCreationHighlighting(
-                lambda, "anonymous function in generic method is generic itself"),
-              highlightingRange);
-          }
+          consumer.AddHighlighting(
+            new DelegateAllocationHighlighting(lambda, "from generic anonymous function (always non cached)"),
+            range);
+
+          consumer.AddHighlighting(
+            new SlowDelegateCreationHighlighting(lambda, "anonymous function in generic method is generic itself"),
+            range);
         }
       }
 
@@ -370,8 +373,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       foreach (var queryClause in inspector.AnonymousTypes)
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(queryClause,
-            "transparent identifier anonymous type instantiation"),
+          new ObjectAllocationHighlighting(
+            queryClause, "transparent identifier anonymous type instantiation"),
           queryClause.GetDocumentRange());
       }
     }
