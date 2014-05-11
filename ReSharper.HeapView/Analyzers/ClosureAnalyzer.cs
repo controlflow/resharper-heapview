@@ -3,8 +3,8 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Daemon.CSharp.Errors;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       typeof(IFieldDeclaration)
     },
     HighlightingTypes = new[] {
-      typeof(HeapAllocationHighlighting),
+      typeof(ObjectAllocationHighlighting),
       typeof(SlowDelegateCreationHighlighting),
     })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
@@ -118,13 +118,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             if (IsExpressionLambda(closure.Key))
             {
               consumer.AddHighlighting(
-                new HeapAllocationHighlighting(closure.Key, "expression tree construction"),
+                new ObjectAllocationHighlighting(closure.Key, "expression tree construction"),
                 highlightingRange);
             }
             else
             {
               consumer.AddHighlighting(
-                new HeapAllocationHighlighting(closure.Key,
+                new ObjectAllocationHighlighting(closure.Key,
                   string.Format("delegate instantiation (capture of {0})",
                   FormatClosureDescription(closure.Value))),
                 highlightingRange);
@@ -183,7 +183,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (anchor != null && highlightingRange.IsValid())
           {
             consumer.AddHighlighting(
-              new HeapAllocationHighlighting(anchor,
+              new ObjectAllocationHighlighting(anchor,
                 string.Format("closure instantiation ({0})", scopeClosure)),
               highlightingRange);
           }
@@ -322,7 +322,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (highlightingRange.IsValid())
           {
             consumer.AddHighlighting(
-              new HeapAllocationHighlighting(lambda,
+              new ObjectAllocationHighlighting(lambda,
                 "delegate instantiation from generic " +
                 "anonymous function (always non cached)"),
               highlightingRange);
@@ -343,7 +343,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (highlightingRange.IsValid())
         {
           consumer.AddHighlighting(
-            new HeapAllocationHighlighting(lambda, "expression tree construction"),
+            new ObjectAllocationHighlighting(lambda, "expression tree construction"),
             highlightingRange);
         }
       }
@@ -380,7 +380,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       foreach (var queryClause in inspector.AnonymousTypes)
       {
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(queryClause,
+          new ObjectAllocationHighlighting(queryClause,
             "transparent identifier anonymous type instantiation"),
           queryClause.GetDocumentRange());
       }

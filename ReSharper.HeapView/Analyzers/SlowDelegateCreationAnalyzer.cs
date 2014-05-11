@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 #if RESHARPER8
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.Stages;
 #elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;

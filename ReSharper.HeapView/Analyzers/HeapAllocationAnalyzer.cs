@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Daemon.CSharp.Errors;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -15,7 +15,6 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 #if RESHARPER8
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.Stages;
 #elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -36,7 +35,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       typeof(IAssignmentExpression),
     },
     HighlightingTypes = new[] {
-      typeof(HeapAllocationHighlighting)
+      typeof(ObjectAllocationHighlighting)
     })]
   public sealed class HeapAllocationAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
@@ -107,7 +106,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           && IsStringConcatenation(assignmentExpression))
       {
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
+          new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
           assignmentExpression.OperatorSign.GetDocumentRange());
       }
 
@@ -136,13 +135,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (typeElement is IClass || (typeParameter != null && typeParameter.IsClassType))
       {
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(newKeyword, "reference type instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "reference type instantiation"),
           newKeyword.GetDocumentRange());
       }
       else if (typeParameter != null && !typeParameter.IsValueType)
       {
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(newKeyword, "possible reference type instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "possible reference type instantiation"),
           newKeyword.GetDocumentRange());
       }
     }
@@ -153,7 +152,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
       consumer.AddHighlighting(
-        new HeapAllocationHighlighting(newKeyword, "reference type instantiation"),
+        new ObjectAllocationHighlighting(newKeyword, "reference type instantiation"),
         newKeyword.GetDocumentRange());
     }
 
@@ -165,7 +164,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         var newKeyword = arrayCreation.NewKeyword.NotNull();
 
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(newKeyword, "array instantiation"),
+          new ObjectAllocationHighlighting(newKeyword, "array instantiation"),
           newKeyword.GetDocumentRange());
       }
     }
@@ -194,7 +193,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         var endOffset = end.GetDocumentRange().TextRange.EndOffset;
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(arrayInitializer, "array instantiation"),
+          new ObjectAllocationHighlighting(arrayInitializer, "array instantiation"),
           start.GetDocumentRange().SetEndTo(endOffset));
       }
     }
@@ -235,7 +234,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
             var anchor = paramsArgument ?? invocation.InvokedExpression;
             consumer.AddHighlighting(
-              new HeapAllocationHighlighting(anchor, string.Format(
+              new ObjectAllocationHighlighting(anchor, string.Format(
                 "parameters array '{0}' allocation", lastParameter.ShortName)),
               anchor.GetExpressionRange());
           }
@@ -248,7 +247,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (method.IsIterator)
         {
           consumer.AddHighlighting(
-            new HeapAllocationHighlighting(invocation, "iterator method call"),
+            new ObjectAllocationHighlighting(invocation, "iterator method call"),
             invocation.InvokedExpression.GetExpressionRange());
         }
         else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
@@ -257,7 +256,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (annotationsCache.IsPure(method) && annotationsCache.GetLinqTunnel(method))
           {
             consumer.AddHighlighting(
-              new HeapAllocationHighlighting(invocation, "LINQ method call"),
+              new ObjectAllocationHighlighting(invocation, "LINQ method call"),
               invocation.InvokedExpression.GetExpressionRange());
           }
         }
@@ -277,7 +276,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (accessType == ReferenceAccessType.READ)
         {
           consumer.AddHighlighting(
-            new HeapAllocationHighlighting(referenceExpression, "iterator property access"),
+            new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
             referenceExpression.NameIdentifier.GetDocumentRange());
         }
       }
@@ -288,7 +287,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (type != null && !type.IsUnknown && type.GetTypeElement() is IDelegate)
         {
           consumer.AddHighlighting(
-            new HeapAllocationHighlighting(referenceExpression,
+            new ObjectAllocationHighlighting(referenceExpression,
               "delegate instantiation from method group"),
             referenceExpression.NameIdentifier.GetDocumentRange());
         }
@@ -322,7 +321,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
                           + (operandsCount <= 4 ? null : " + params array allocation");
 
         consumer.AddHighlighting(
-          new HeapAllocationHighlighting(concatenation, description),
+          new ObjectAllocationHighlighting(concatenation, description),
           mostLeftConcatSign);
       }
     }
@@ -433,7 +432,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             range = collection.GetExpressionRange();
 
           consumer.AddHighlighting(
-            new HeapAllocationHighlighting(foreachStatement,
+            new ObjectAllocationHighlighting(foreachStatement,
               "possible enumerator allocation (except iterators " +
               "and collection with cached enumerator)"), range);
         }

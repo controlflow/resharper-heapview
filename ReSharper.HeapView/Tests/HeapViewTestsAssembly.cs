@@ -2,11 +2,12 @@
 using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.ReSharper.HeapView.Analyzers;
 using JetBrains.Threading;
 using JetBrains.Util;
 using NUnit.Framework;
 
-[assembly: TestDataPathBase(@".\Data\Daemon")]
+[assembly: TestDataPathBase(@".\Data")]
 
 // ReSharper disable once CheckNamespace
 [SetUpFixture]
@@ -15,7 +16,7 @@ public class HeapViewTestsAssembly : ReSharperTestEnvironmentAssembly
   [NotNull]
   private static IEnumerable<Assembly> GetAssembliesToLoad()
   {
-    //yield return typeof(PostfixTemplatesManager).Assembly;
+    yield return typeof(ClosureAnalyzer).Assembly;
     yield return Assembly.GetExecutingAssembly();
   }
 

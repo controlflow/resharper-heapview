@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [StaticSeverityHighlighting(
     severity: Severity.INFO,
-    group: PerformanceHighlightingGroupIds.PERFORMANCE_HINTS,
+    group: AllocationHighlightingGroupIds.PERFORMANCE_HINTS,
     OverlapResolve = OverlapResolveKind.NONE,
     AttributeId = HighlightingAttributeIds.UNRESOLVED_ERROR_ATTRIBUTE,
     ShowToolTipInStatusBar = true)]

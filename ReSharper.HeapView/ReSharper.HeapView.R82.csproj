@@ -55,8 +55,8 @@
     <Compile Include="Analyzers\HeapAllocationAnalyzer.cs" />
     <Compile Include="ExpressionRangeUtils.cs" />
     <Compile Include="Analyzers\SlowDelegateCreationAnalyzer.cs" />
+    <Compile Include="Highlightings\AllocationHighlightingGroupIds.cs" />
     <Compile Include="Highlightings\BoxingAllocationHighlighting.cs" />
-    <Compile Include="Highlightings\PerformanceHighlightingGroupIds.cs" />
     <Compile Include="Highlightings\ObjectAllocationHighlighting.cs" />
     <Compile Include="Highlightings\PerformanceHighlightingBase.cs" />
     <Compile Include="Highlightings\SlowDelegateCreationHighlighting.cs" />

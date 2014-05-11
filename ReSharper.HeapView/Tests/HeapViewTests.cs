@@ -1,12 +1,17 @@
 ﻿using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.CSharp;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using NUnit.Framework;
+#if RESHARPER8
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp;
+#elif RESHARPER9
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+#endif
 
 namespace JetBrains.ReSharper.HeapView
 {
-  public class CSharpPerformanceHighlightingTest : CSharpHighlightingTestNet4Base
+  public class HeapViewHighlightingTest : CSharpHighlightingTestNet4Base
   {
     protected override string RelativeTestDataPath { get { return "Daemon"; } }
 
