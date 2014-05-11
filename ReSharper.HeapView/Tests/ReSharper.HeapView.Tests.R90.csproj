@@ -869,15 +869,10 @@
     <Reference Include="JetBrains.TestIntegration.Helpers">
       <HintPath>..\..\..\ReSharper\bin\JetBrains.TestIntegration.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.UnitTesting.VSIntegrationTests">
-      <HintPath>..\..\..\ReSharper\bin\JetBrains.UnitTesting.VSIntegrationTests.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
     <Reference Include="System" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Daemon\Boxing01.cs" />

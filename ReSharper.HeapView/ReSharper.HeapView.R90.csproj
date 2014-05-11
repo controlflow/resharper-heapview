@@ -42,25 +42,12 @@
       <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.DocumentModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="JetBrains.Platform.ReSharper.Metadata">
-      <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="JetBrains.Platform.ReSharper.ProjectModel">
       <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.ProjectModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="JetBrains.Platform.ReSharper.Shell">
       <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.Shell.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.Platform.ReSharper.TextControl">
-      <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.TextControl.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.Platform.ReSharper.UI, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\ReSharper\bin\JetBrains.Platform.ReSharper.UI.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="JetBrains.Platform.ReSharper.Util">
@@ -79,22 +66,6 @@
       <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="JetBrains.ReSharper.Feature.Services.CSharp">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Feature.Services.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.Features.Intellisense">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Features.Intellisense.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.LiveTemplates">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.LiveTemplates.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.NewRefactorings">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.NewRefactorings.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="JetBrains.ReSharper.Psi">
       <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.dll</HintPath>
       <Private>False</Private>
@@ -103,33 +74,9 @@
       <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="JetBrains.ReSharper.Psi.Html">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Html.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.Psi.Razor">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Razor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.Psi.Web">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Psi.Web.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="JetBrains.ReSharper.Resources">
-      <HintPath>..\..\ReSharper\bin\JetBrains.ReSharper.Resources.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analyzers\BoxingOccuranceAnalyzer.cs" />
