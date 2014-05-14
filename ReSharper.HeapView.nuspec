@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>ReSharper.HeapView</id>
-    <version>0.9.1</version>
+    <version>0.9.2-beta</version>
     <!-- update plugin ver in AssemblyInfo.cs plz -->
     <title>Heap Allocations Viewer</title>
     <authors>Alexander Shvedov</authors>
