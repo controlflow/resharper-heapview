@@ -185,6 +185,7 @@
     <Compile Include="Highlightings\PerformanceHighlightingBase.cs" />
     <Compile Include="Highlightings\SlowDelegateCreationHighlighting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZoneMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compatibility.R90.cs" />

@@ -31,3 +31,7 @@ namespace JetBrains.ReSharper.HeapView
     }
   }
 }
+
+namespace JetBrains.ReSharper.HeapView
+{
+}

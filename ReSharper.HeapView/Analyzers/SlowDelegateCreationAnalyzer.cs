@@ -14,9 +14,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
-  [ElementProblemAnalyzer(
-    elementTypes: new[] { typeof(IReferenceExpression) },
-    HighlightingTypes = new[] { typeof(SlowDelegateCreationHighlighting) })]
+  [ElementProblemAnalyzer(typeof(IReferenceExpression), HighlightingTypes = new[] { typeof(SlowDelegateCreationHighlighting) })]
   public class SlowDelegateCreationAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
     protected override void Run(
