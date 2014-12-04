@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 #if RESHARPER8
@@ -41,8 +40,7 @@ namespace JetBrains.ReSharper.HeapView
     };
 
     [NotNull] private static readonly string[] HighlightingIds = {
-      ObjectAllocationHighlighting.HIGHLIGHTING_ID,
-      BoxingAllocationHighlighting.HIGHLIGHTING_ID
+      Compatibility.BOXING_HIGHLIGHTING_ID, Compatibility.ALLOCATION_HIGHLIGHTING_ID
     };
 
     public ConfigurableSeverityHacks()

@@ -8,12 +8,6 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
 
-// TODO: use this in 9.0 with SharedShell
-//[assembly: RegisterHighlighter(
-//  id: ObjectAllocationHighlighting.HIGHLIGHTING_ID,
-//  EffectColor = "Blue", EffectType = EffectType.SOLID_UNDERLINE,
-//  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
-
 [assembly: RegisterConfigurableSeverity(
   ObjectAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
   "Object allocation", "Highlights language construct or expression where object allocation happens",
@@ -22,11 +16,10 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name, AttributeId = HIGHLIGHTING_ID,
+    SEVERITY_ID, CSharpLanguage.Name, AttributeId = Compatibility.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
   public class ObjectAllocationHighlighting : PerformanceHighlightingBase
   {
-    public const string HIGHLIGHTING_ID = "ReSharper Heap Allocation";
     public const string SEVERITY_ID = "HeapView.ObjectAllocation";
     public const string MESSAGE = "Object allocation: {0}";
 

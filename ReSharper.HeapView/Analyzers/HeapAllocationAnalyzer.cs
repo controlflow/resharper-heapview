@@ -23,17 +23,15 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    elementTypes: new[] {
-      typeof(IReferenceExpression),
-      typeof(IObjectCreationExpression),
-      typeof(IAnonymousObjectCreationExpression),
-      typeof(IArrayCreationExpression),
-      typeof(IInvocationExpression),
-      typeof(IArrayInitializer),
-      typeof(IForeachStatement),
-      typeof(IAdditiveExpression),
-      typeof(IAssignmentExpression)
-    },
+    typeof(IReferenceExpression),
+    typeof(IObjectCreationExpression),
+    typeof(IAnonymousObjectCreationExpression),
+    typeof(IArrayCreationExpression),
+    typeof(IInvocationExpression),
+    typeof(IArrayInitializer),
+    typeof(IForeachStatement),
+    typeof(IAdditiveExpression),
+    typeof(IAssignmentExpression),
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
       typeof(DelegateAllocationHighlighting)
@@ -117,12 +115,12 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (foreachStatement != null)
       {
         CheckForeachDeclaration(foreachStatement, consumer);
+        // ReSharper disable once RedundantJumpStatement
         return;
       }
     }
 
-    private static void CheckObjectCreation(
-      [NotNull] IObjectCreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckObjectCreation([NotNull] IObjectCreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
     {
       var typeReference = objectCreation.TypeReference;
       if (typeReference == null) return;
@@ -147,8 +145,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void CheckAnonymousObjectCreation(
-      [NotNull] ICreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckAnonymousObjectCreation([NotNull] ICreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
     {
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
@@ -157,8 +154,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         newKeyword.GetDocumentRange());
     }
 
-    private static void CheckArrayCreation(
-      [NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckArrayCreation([NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)
     {
       if (arrayCreation.GetContainingNode<IAttribute>() == null)
       {
@@ -170,15 +166,14 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void CheckArrayInitializer(
-      [NotNull] IArrayInitializer arrayInitializer, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckArrayInitializer([NotNull] IArrayInitializer arrayInitializer, [NotNull] IHighlightingConsumer consumer)
     {
       ITreeNode start = null, end = null;
       var variableDeclaration = LocalVariableDeclarationNavigator.GetByInitial(arrayInitializer);
-      if (variableDeclaration != null && variableDeclaration.AssignmentSign != null)
+      if (variableDeclaration != null && variableDeclaration.EquivalenceSign() != null)
       {
         start = variableDeclaration.NameIdentifier;
-        end = variableDeclaration.AssignmentSign;
+        end = variableDeclaration.EquivalenceSign();
       }
       else
       {
@@ -199,12 +194,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void CheckInvocation(
-      [NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckInvocation([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
     {
-      var reference = invocation.InvocationExpressionReference;
-      if (reference == null) return;
-
+      var reference = invocation.InvocationExpressionReference.NotNull("reference != null");
       var invokedExpression = invocation.InvokedExpression;
 
       var declaredElement = reference.Resolve().DeclaredElement;
@@ -329,8 +321,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     private static bool CollectStringConcatenation(
-      [NotNull] IAdditiveExpression concatenation,
-      [NotNull] List<IAdditiveExpression> parts, ref bool allConstants)
+      [NotNull] IAdditiveExpression concatenation, [NotNull] List<IAdditiveExpression> parts, ref bool allConstants)
     {
       var lhsOperand = concatenation.LeftOperand;
       var rhsOperand = concatenation.RightOperand;
@@ -414,8 +405,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (typeElement == null) return;
 
       // search for GetEnumerator() method
-      var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(
-        typeElement, SymbolTableMode.FULL, typeElement.Module);
+      var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(typeElement, SymbolTableMode.FULL, typeElement.Module);
 
       foreach (var symbolInfo in symbolTable.GetSymbolInfos("GetEnumerator"))
       {

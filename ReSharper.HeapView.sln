@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R81", "ReSharper.HeapView\ReSharper.HeapView.R81.csproj", "{50365433-AAE1-4755-9562-B777F23B7C23}"
 EndProject
@@ -19,6 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BDF400-83F8-4413-88B0-D3BBA3A9647A}"
 	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
 		Content\Changelog.md = Content\Changelog.md
 		Content\Example.png = Content\Example.png
 		Readme.md = Readme.md

@@ -23,12 +23,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   // check expression tree + real closure
 
   [ElementProblemAnalyzer(
-    elementTypes: new[] { typeof(ICSharpFunctionDeclaration), typeof(IFieldDeclaration) },
+    typeof(ICSharpFunctionDeclaration), typeof(IFieldDeclaration),
     HighlightingTypes = new[] {
-      typeof(ObjectAllocationHighlighting),
-      typeof(ClosureAllocationHighlighting),
-      typeof(DelegateAllocationHighlighting),
-      typeof(SlowDelegateCreationHighlighting)
+      typeof(ObjectAllocationHighlighting), typeof(ClosureAllocationHighlighting),
+      typeof(DelegateAllocationHighlighting), typeof(SlowDelegateCreationHighlighting)
     })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
@@ -373,8 +371,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       foreach (var queryClause in inspector.AnonymousTypes)
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(
-            queryClause, "transparent identifier anonymous type instantiation"),
+          new ObjectAllocationHighlighting(queryClause, "transparent identifier anonymous type instantiation"),
           queryClause.GetDocumentRange());
       }
     }
@@ -385,7 +382,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (lambdaExpression != null)
       {
         var type = lambdaExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (type != null && !type.IsUnknown) return type.IsExpression();
+        if (type != null && !type.IsUnknown) return type.IsLinqExpression();
       }
 
       var parameterPlatform = function as IQueryParameterPlatform;
@@ -395,7 +392,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (matchingParameter != null)
         {
           var type = matchingParameter.Substitution[matchingParameter.Element.Type];
-          if (!type.IsUnknown) return type.IsExpression();
+          if (!type.IsUnknown) return type.IsLinqExpression();
         }
       }
 
