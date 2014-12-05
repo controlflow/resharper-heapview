@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Daemon;
 #elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
+// ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
   DelegateAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,

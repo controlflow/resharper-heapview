@@ -36,22 +36,24 @@ namespace JetBrains.ReSharper.HeapView
   public class ConfigurableSeverityHacks
   {
     [NotNull] private static readonly Severity[] Severities = {
-      Severity.HINT, Severity.WARNING
+      Severity.HINT,
+      Severity.WARNING
     };
 
     [NotNull] private static readonly string[] HighlightingIds = {
-      Compatibility.BOXING_HIGHLIGHTING_ID, Compatibility.ALLOCATION_HIGHLIGHTING_ID
+      Compatibility.BOXING_HIGHLIGHTING_ID,
+      Compatibility.ALLOCATION_HIGHLIGHTING_ID
     };
 
     public ConfigurableSeverityHacks()
     {
-      var ids = HighlightingAttributeIds.ValidHighlightingsForSeverity;
-      lock (ids)
+      var severityIds = HighlightingAttributeIds.ValidHighlightingsForSeverity;
+      lock (severityIds)
       {
         foreach (var severity in Severities)
         {
           ICollection<string> collection;
-          if (!ids.TryGetValue(severity, out collection)) continue;
+          if (!severityIds.TryGetValue(severity, out collection)) continue;
 
           foreach (var highlightingId in HighlightingIds)
           {
