@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  Compatibility.BOXING_HIGHLIGHTING_ID, null, AllocationHighlightingGroupIds.ID,
+  BoxingAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
   "Boxing allocation", "Highlights language construct or expression where boxing happens",
   Severity.HINT, solutionAnalysisRequired: false)]
 

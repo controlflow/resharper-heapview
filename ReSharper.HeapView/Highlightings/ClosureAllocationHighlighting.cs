@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  Compatibility.ALLOCATION_HIGHLIGHTING_ID, null, AllocationHighlightingGroupIds.ID,
+  ClosureAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
   "Closure allocation", "Highlights places where closure class creation happens",
   Severity.HINT, solutionAnalysisRequired: false)]
 
