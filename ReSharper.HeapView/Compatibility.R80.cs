@@ -20,5 +20,10 @@ namespace JetBrains.ReSharper.HeapView
     {
       return type.IsExpression();
     }
+
+    public static bool IsCSharp6Supported(this ITreeNode treeNode)
+    {
+      return false;
+    }
   }
 }

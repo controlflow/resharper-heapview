@@ -125,22 +125,23 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var typeReference = objectCreation.TypeReference;
       if (typeReference == null) return;
 
-      if (objectCreation.GetContainingNode<IAttribute>() != null) return;
+      if (IsIgnoredContext(objectCreation)) return;
 
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
       var typeElement = typeReference.Resolve().DeclaredElement as ITypeElement;
+
       var typeParameter = typeElement as ITypeParameter;
       if (typeElement is IClass || (typeParameter != null && typeParameter.IsClassType))
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "reference type creation"),
+          new ObjectAllocationEvidentHighlighting(newKeyword, "reference type creation"),
           newKeyword.GetDocumentRange());
       }
       else if (typeParameter != null && !typeParameter.IsValueType)
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "possible reference type creation"),
+          new ObjectAllocationPossibleHighlighting(newKeyword, "reference type creation"),
           newKeyword.GetDocumentRange());
       }
     }
@@ -150,20 +151,19 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
       consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(newKeyword, "reference type instantiation"),
+        new ObjectAllocationEvidentHighlighting(newKeyword, "reference type instantiation"),
         newKeyword.GetDocumentRange());
     }
 
     private static void CheckArrayCreation([NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)
     {
-      if (arrayCreation.GetContainingNode<IAttribute>() == null)
-      {
-        var newKeyword = arrayCreation.NewKeyword.NotNull();
+      if (IsIgnoredContext(arrayCreation)) return;
 
-        consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(newKeyword, "array creation"),
-          newKeyword.GetDocumentRange());
-      }
+      var newKeyword = arrayCreation.NewKeyword.NotNull();
+
+      consumer.AddHighlighting(
+        new ObjectAllocationEvidentHighlighting(newKeyword, "array creation"),
+        newKeyword.GetDocumentRange());
     }
 
     private static void CheckArrayInitializer([NotNull] IArrayInitializer arrayInitializer, [NotNull] IHighlightingConsumer consumer)
@@ -189,11 +189,12 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         var endOffset = end.GetDocumentRange().TextRange.EndOffset;
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(arrayInitializer, "array instantiation"),
+          new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation"),
           start.GetDocumentRange().SetEndTo(endOffset));
       }
     }
 
+    // todo: generalize for indexer invocations, object creation expressions, collection initializers
     private static void CheckInvocation([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
     {
       var reference = invocation.InvocationExpressionReference.NotNull("reference != null");
@@ -226,6 +227,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
                 break;
               }
             }
+
+            // todo: not in C# 6.0!
 
             var anchor = invokedExpression as IReferenceExpression ?? paramsArgument ?? invokedExpression;
             consumer.AddHighlighting(
@@ -264,22 +267,29 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
 
       var property = declaredElement as IProperty;
-      if (property != null && property.Getter != null && property.Getter.IsIterator)
+      if (property != null)
       {
-        var service = referenceExpression.Language.LanguageServiceNotNull();
-        var accessType = service.GetReferenceAccessType(referenceExpression.Reference);
-        if (accessType == ReferenceAccessType.READ)
+        var getter = property.Getter;
+        if (getter != null && getter.IsIterator)
         {
-          consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
-            referenceExpression.NameIdentifier.GetDocumentRange());
+          var languageService = referenceExpression.Language.LanguageServiceNotNull();
+
+          var accessType = languageService.GetReferenceAccessType(referenceExpression.Reference);
+          if (accessType == ReferenceAccessType.READ)
+          {
+            consumer.AddHighlighting(
+              new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
+              referenceExpression.NameIdentifier.GetDocumentRange());
+          }
         }
       }
 
       if (declaredElement is IMethod)
       {
-        var type = referenceExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (type != null && !type.IsUnknown && type.GetTypeElement() is IDelegate)
+        // todo: check inside delegate invocation
+
+        var declaredType = referenceExpression.GetImplicitlyConvertedTo() as IDeclaredType;
+        if (declaredType != null && declaredType.GetTypeElement() is IDelegate)
         {
           consumer.AddHighlighting(
             new DelegateAllocationHighlighting(referenceExpression, "from method group"),
@@ -296,7 +306,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       // do not inspect inner concatenations
       var parent = concatenation.GetContainingParenthesizedExpression();
       var parentConcatention = AdditiveExpressionNavigator.GetByLeftOperand(parent)
-                               ?? AdditiveExpressionNavigator.GetByRightOperand(parent);
+                            ?? AdditiveExpressionNavigator.GetByRightOperand(parent);
       if (parentConcatention != null && IsStringConcatenation(parentConcatention)) return;
 
       // collect all operands
@@ -357,8 +367,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static bool IsStringConcatenation([NotNull] IAdditiveExpression concatenation)
     {
       var leftOperand = concatenation.LeftOperand;
+      if (leftOperand == null) return false;
+
       var rightOperand = concatenation.RightOperand;
-      if (leftOperand == null || rightOperand == null) return false;
+      if (rightOperand == null) return false;
 
       return IsStringConcatOperatorReference(concatenation.OperatorReference);
     }
@@ -426,14 +438,21 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           else
             range = collection.GetExpressionRange();
 
-          consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(foreachStatement,
-              "possible enumerator allocation (except iterators or collection with cached enumerator)"),
-            range);
+          var highlighting = new ObjectAllocationPossibleHighlighting(
+            foreachStatement, "enumerator allocation (except iterators or collection with cached enumerator)");
+          consumer.AddHighlighting(highlighting, range);
         }
 
         break;
       }
+    }
+
+    public static bool IsIgnoredContext([NotNull] ITreeNode context)
+    {
+      var attribute = context.GetContainingNode<IAttribute>();
+      if (attribute != null) return true;
+
+      return false;
     }
   }
 }

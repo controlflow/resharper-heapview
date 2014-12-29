@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
   public class ObjectAllocationPossibleHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ObjectAllocation.Possible";
-    public const string MESSAGE = "Object allocation: {0}";
+    public const string MESSAGE = "Possible object allocation: {0}";
 
     public ObjectAllocationPossibleHighlighting([NotNull] ITreeNode element, [NotNull] string description)
       : base(element, MESSAGE, description) { }
