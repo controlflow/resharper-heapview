@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 [assembly: RegisterConfigurableSeverity(
   SlowDelegateCreationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
   "Slow delegate creation", "Highlights delegate creation that is slow because of CLR x86 JIT",
-  Severity.ERROR, solutionAnalysisRequired: false)]
+  Severity.WARNING, solutionAnalysisRequired: false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
