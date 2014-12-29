@@ -60,4 +60,4 @@ namespace ConsoleApplication2
 (5): ReSharper Heap Allocation: Object allocation: string concatenation
 (6): ReSharper Heap Allocation: Delegate allocation: capture of 's' variable
 (7): ReSharper Heap Allocation: Object allocation: string concatenation
-(8): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
+(8): ReSharper Heap Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)

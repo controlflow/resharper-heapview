@@ -118,7 +118,7 @@ class TestAttribute : Attribute
 ---------------------------------------------------------
 (0): ReSharper Heap Allocation: Object allocation: reference type creation
 (1): ReSharper Heap Allocation: Object allocation: reference type creation
-(2): ReSharper Heap Allocation: Object allocation: possible reference type creation
+(2): ReSharper Heap Allocation: Possible object allocation: reference type creation
 (3): ReSharper Heap Allocation: Object allocation: reference type creation
 (4): ReSharper Heap Allocation: Object allocation: reference type instantiation
 (5): ReSharper Heap Allocation: Object allocation: array instantiation
@@ -142,7 +142,7 @@ class TestAttribute : Attribute
 (23): ReSharper Heap Allocation: Object allocation: iterator method call
 (24): ReSharper Heap Allocation: Object allocation: iterator property access
 (25): ReSharper Heap Allocation: Object allocation: reference type creation
-(26): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
+(26): ReSharper Heap Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
 (27): ReSharper Heap Allocation: Object allocation: string concatenation
 (28): ReSharper Heap Allocation: Object allocation: string concatenation (3 operands)
 (29): ReSharper Heap Allocation: Object allocation: string concatenation (4 operands)
