@@ -32,8 +32,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     typeof(IForeachStatement),
     typeof(IAdditiveExpression),
     typeof(IAssignmentExpression),
+    typeof(IElementAccessExpression),
+    typeof(IConstructorInitializer),
+    typeof(ICollectionElementInitializer),
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
+      typeof(ObjectAllocationEvidentHighlighting),
+      typeof(ObjectAllocationPossibleHighlighting),
       typeof(DelegateAllocationHighlighting)
     })]
   public sealed class HeapAllocationAnalyzer : ElementProblemAnalyzer<ITreeNode>
@@ -45,6 +50,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (objectCreation != null)
       {
         CheckObjectCreation(objectCreation, consumer);
+        CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
         return;
       }
 
@@ -74,10 +80,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       // F(); when F(params T[] xs);
       // F(); when F is iterator
-      var invocation = element as IInvocationExpression;
-      if (invocation != null)
+      var invocationExpression = element as IInvocationExpression;
+      if (invocationExpression != null)
       {
-        CheckInvocation(invocation, consumer);
+        CheckInvocationExpression(invocationExpression, consumer);
         return;
       }
 
@@ -115,7 +121,30 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (foreachStatement != null)
       {
         CheckForeachDeclaration(foreachStatement, consumer);
-        // ReSharper disable once RedundantJumpStatement
+        return;
+      }
+
+      // ["params", "arg"]
+      var elementAccessExpression = element as IElementAccessExpression;
+      if (elementAccessExpression != null)
+      {
+        CheckInvocationInfo(elementAccessExpression, null, consumer);
+        return;
+      }
+
+      // : base("params", "arg")
+      var constructorInitializer = element as IConstructorInitializer;
+      if (constructorInitializer != null)
+      {
+        CheckInvocationInfo(constructorInitializer, constructorInitializer.Instance, consumer);
+        return;
+      }
+
+      // new C { {"params", "arg"} }
+      var collectionElementInitializer = element as ICollectionElementInitializer;
+      if (collectionElementInitializer != null)
+      {
+        CheckInvocationInfo(collectionElementInitializer, null, consumer);
         return;
       }
     }
@@ -188,77 +217,92 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (start != null && end != null)
       {
         var endOffset = end.GetDocumentRange().TextRange.EndOffset;
-        consumer.AddHighlighting(
-          new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation"),
-          start.GetDocumentRange().SetEndTo(endOffset));
+        var highlighting = new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation");
+        var documentRange = start.GetDocumentRange().SetEndTo(endOffset);
+
+        consumer.AddHighlighting(highlighting, documentRange);
       }
     }
 
-    // todo: generalize for indexer invocations, object creation expressions, collection initializers
-    private static void CheckInvocation([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckInvocationExpression([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
     {
-      var reference = invocation.InvocationExpressionReference.NotNull("reference != null");
       var invokedExpression = invocation.InvokedExpression;
+      if (invokedExpression == null) return;
 
-      var declaredElement = reference.Resolve().DeclaredElement;
-      var parametersOwner = declaredElement as IParametersOwner;
-      if (parametersOwner != null)
+      CheckInvocationInfo(invocation, invokedExpression as IReferenceExpression, consumer);
+
+      var invocationReference = invocation.InvocationExpressionReference.NotNull("reference != null");
+
+      var resolveResult = invocationReference.Resolve();
+      if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return;
+
+      var method = resolveResult.DeclaredElement as IMethod;
+      if (method == null) return;
+
+      if (method.IsIterator)
       {
-        var parameters = parametersOwner.Parameters;
-        if (parameters.Count > 0)
-        {
-          var lastParameter = parameters[parameters.Count - 1];
-          if (lastParameter.IsParameterArray)
-          {
-            ICSharpExpression paramsArgument = null;
-            foreach (var argument in invocation.ArgumentsEnumerable)
-            {
-              var parameter = argument.MatchingParameter;
-              if (parameter != null && Equals(parameter.Element, lastParameter))
-              {
-                var parameterType = parameter.Substitution[parameter.Element.Type];
-                var convertedTo = argument.GetImplicitlyConvertedTo();
-                if (!convertedTo.IsUnknown)
-                {
-                  if (convertedTo.Equals(parameterType)) return;
-                  paramsArgument = argument.Value;
-                }
-
-                break;
-              }
-            }
-
-            // todo: not in C# 6.0!
-
-            var anchor = invokedExpression as IReferenceExpression ?? paramsArgument ?? invokedExpression;
-            consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(
-                anchor, string.Format("parameters array '{0}' creation", lastParameter.ShortName)),
-              anchor.GetExpressionRange());
-          }
-        }
+        consumer.AddHighlighting(
+          new ObjectAllocationHighlighting(invocation, "iterator method call"),
+          invokedExpression.GetExpressionRange());
       }
-
-      var method = declaredElement as IMethod;
-      if (method != null)
+      else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
       {
-        if (method.IsIterator) // todo: may be perf issue
+        var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
+        if (annotationsCache.IsPure(method) && annotationsCache.GetLinqTunnel(method))
         {
           consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(invocation, "iterator method call"),
+            new ObjectAllocationHighlighting(invocation, "LINQ method call"),
             invokedExpression.GetExpressionRange());
         }
-        else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
-        {
-          var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
-          if (annotationsCache.IsPure(method) && annotationsCache.GetLinqTunnel(method))
-          {
-            consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(invocation, "LINQ method call"),
-              invokedExpression.GetExpressionRange());
-          }
-        }
       }
+    }
+
+    private static void CheckInvocationInfo(
+      [NotNull] ICSharpInvocationInfo invocationInfo, [CanBeNull] ITreeNode invocationAnchor, [NotNull] IHighlightingConsumer consumer)
+    {
+      var invocationReference = invocationInfo.Reference;
+      if (invocationReference == null) return;
+
+      var resolveResult = invocationReference.Resolve();
+
+      var parametersOwner = resolveResult.DeclaredElement as IParametersOwner;
+      if (parametersOwner == null) return;
+
+      if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return;
+
+      var parameters = parametersOwner.Parameters;
+      if (parameters.Count == 0) return;
+
+      var lastParameter = parameters[parameters.Count - 1];
+      if (!lastParameter.IsParameterArray) return;
+
+      ICSharpExpression paramsArgument = null;
+      foreach (var argumentInfo in invocationInfo.Arguments)
+      {
+        var parameter = ArgumentsUtil.GetParameter(argumentInfo);
+        if (parameter == null) continue;
+
+        if (!Equals(parameter.Element, lastParameter)) continue;
+
+        // found explicit array pass
+        if (parameter.Expanded == ArgumentsUtil.ExpandedKind.None) return;
+
+        var argument = argumentInfo as ICSharpArgument;
+        if (argument != null) paramsArgument = argument.Value;
+
+        break;
+      }
+
+      // todo: not always in C# 6.0!
+
+      var anchor = invocationAnchor ?? paramsArgument ?? invocationInfo as ICSharpExpression;
+      if (anchor == null) return;
+
+      var expression = anchor as ICSharpExpression;
+      var paramsRange = expression != null ? expression.GetExpressionRange() : anchor.GetDocumentRange();
+
+      var description = string.Format("parameters array '{0}' creation", lastParameter.ShortName);
+      consumer.AddHighlighting(new ObjectAllocationHighlighting(anchor, description), paramsRange);
     }
 
     private static void CheckReferenceExpression(

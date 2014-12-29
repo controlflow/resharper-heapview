@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.HeapView
 
     [Test] public void TestHeap01() { DoNamedTest2(); }
     [Test] public void TestHeap02() { DoNamedTest2(); }
+    [Test] public void TestHeap03() { DoNamedTest2(); }
 
     [Test] public void TestSlowDelegates01() { DoNamedTest2(); }
   }
