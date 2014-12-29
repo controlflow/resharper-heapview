@@ -12,8 +12,10 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; ReSharper 9.0 EAP support
-    </releaseNotes>
+&#8226; ReSharper 9.0 RTM support;
+&#8226; Inspection colors are now configurable with 'ReSharper HeapView Boxing' and 'ReSharper HeapView Allocation' items in Visual Studio fonts &amp; colors settings;
+&#8226; 'Slow delegate creation' downgraded to warning severity.
+  </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />
     </dependencies>
