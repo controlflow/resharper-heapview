@@ -153,8 +153,8 @@ class TestAttribute : Attribute
 (34): ReSharper Heap Allocation: Object allocation: string concatenation (6 operands) + params array allocation
 (35): ReSharper Heap Allocation: Object allocation: string concatenation (6 operands) + params array allocation
 (36): ReSharper Heap Allocation: Object allocation: string concatenation
-(37): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(38): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(37): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(38): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
 (39): ReSharper Heap Allocation: Object allocation: string concatenation
 (40): ReSharper Heap Allocation: Object allocation: string concatenation
 (41): ReSharper Heap Allocation: Object allocation: string concatenation

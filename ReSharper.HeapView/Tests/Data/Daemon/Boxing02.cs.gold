@@ -76,47 +76,47 @@ static class A {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
+(0): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (1): ReSharper Heap Allocation: Delegate allocation: from method group
 (2): ReSharper Heap Allocation: Delegate allocation: from method group
-(3): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
+(3): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
 (4): ReSharper Heap Allocation: Delegate allocation: from method group
-(5): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
+(5): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
 (6): ReSharper Heap Allocation: Delegate allocation: from method group
-(7): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
+(7): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
 (8): ReSharper Heap Allocation: Delegate allocation: from method group
 (9): ReSharper Heap Allocation: Object allocation: array creation
-(10): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(11): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(12): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(10): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(11): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(12): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
 (13): ReSharper Heap Allocation: Object allocation: string concatenation (3 operands)
-(14): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S' to reference type 'object'
-(15): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'char' to reference type 'object'
-(16): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S' to reference type 'object'
-(17): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S?' to reference type 'object'
-(18): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S' to reference type 'ValueType'
-(19): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S?' to reference type 'ValueType'
-(20): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'E' to reference type 'Enum'
-(21): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'E?' to reference type 'Enum'
-(22): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S' to reference type 'I'
-(23): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S?' to reference type 'I'
-(24): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
+(14): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S' to reference type 'object'
+(15): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'char' to reference type 'object'
+(16): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S' to reference type 'object'
+(17): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S?' to reference type 'object'
+(18): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S' to reference type 'ValueType'
+(19): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S?' to reference type 'ValueType'
+(20): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'E' to reference type 'Enum'
+(21): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'E?' to reference type 'Enum'
+(22): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S' to reference type 'I'
+(23): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S?' to reference type 'I'
+(24): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (25): ReSharper Heap Allocation: Delegate allocation: from method group
-(26): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'E' instance method to 'Func<int>' delegate type
+(26): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'E' instance method to 'Func<int>' delegate type
 (27): ReSharper Heap Allocation: Delegate allocation: from method group
-(28): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S' to reference type 'I'
-(29): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(30): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(31): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(32): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
-(33): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T' to reference type 'object'
-(34): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T?' to reference type 'object'
-(35): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T' to reference type 'ValueType'
-(36): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T?' to reference type 'ValueType'
-(37): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T' to reference type 'I'
-(38): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T?' to reference type 'I'
-(39): ReSharper Boxing Occurance: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
+(28): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S' to reference type 'I'
+(29): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(30): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(31): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(32): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(33): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T' to reference type 'object'
+(34): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T?' to reference type 'object'
+(35): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T' to reference type 'ValueType'
+(36): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T?' to reference type 'ValueType'
+(37): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T' to reference type 'I'
+(38): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T?' to reference type 'I'
+(39): ReSharper Boxing Occurrance: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
 (40): ReSharper Heap Allocation: Delegate allocation: from method group
 (41): ReSharper Error Highlighting: Slow delegate creation: from interface 'I' method
-(42): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'T' to reference type 'I'
-(43): ReSharper Boxing Occurance: Boxing allocation: inherited System.Object virtual method call on value type instance
+(42): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'T' to reference type 'I'
+(43): ReSharper Boxing Occurrance: Boxing allocation: inherited System.Object virtual method call on value type instance

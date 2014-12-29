@@ -99,17 +99,17 @@ namespace ConsoleApplication2
 ---------------------------------------------------------
 (0): ReSharper Heap Allocation: Object allocation: reference type instantiation
 (1): ReSharper Heap Allocation: Object allocation: reference type instantiation
-(2): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(3): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(2): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(3): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
 (4): ReSharper Heap Allocation: Object allocation: string concatenation
-(5): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(5): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
 (6): ReSharper Heap Allocation: Object allocation: reference type creation
 (7): ReSharper Heap Allocation: Object allocation: reference type creation
 (8): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
 (9): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
-(10): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable'
+(10): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable'
 (11): ReSharper Heap Allocation: Object allocation: possible enumerator allocation (except iterators or collection with cached enumerator)
-(12): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable<int>'
+(12): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable<int>'
 (13): ReSharper Heap Allocation: Object allocation: array creation
-(14): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(15): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(14): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(15): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'

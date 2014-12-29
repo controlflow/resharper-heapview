@@ -245,8 +245,8 @@ class Program
   static void PassMeGenericDelegate<U>(Action<U> action) { GC.KeepAlive(action); }
 }
 ---------------------------------------------------------
-(0): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(1): ReSharper Boxing Occurance: Boxing allocation: conversion from value type 'TimeSpan' to reference type 'object'
+(0): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(1): ReSharper Boxing Occurrance: Boxing allocation: conversion from value type 'TimeSpan' to reference type 'object'
 (2): ReSharper Heap Allocation: Object allocation: reference type creation
 (3): ReSharper Heap Allocation: Object allocation: reference type creation
 (4): ReSharper Heap Allocation: Object allocation: reference type creation
