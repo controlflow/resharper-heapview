@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.HeapView;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
