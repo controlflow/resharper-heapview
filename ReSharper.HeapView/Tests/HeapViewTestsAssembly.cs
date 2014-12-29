@@ -4,8 +4,12 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.HeapView.Analyzers;
 using JetBrains.Threading;
-using JetBrains.Util;
 using NUnit.Framework;
+#if RESHARPER8
+using JetBrains.Util;
+#elif RESHARPER9
+using JetBrains.TestFramework;
+#endif
 
 [assembly: TestDataPathBase(@".\Data")]
 

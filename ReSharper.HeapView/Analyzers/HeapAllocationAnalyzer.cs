@@ -366,8 +366,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static bool IsStringConcatenation([NotNull] IAssignmentExpression concatenation)
     {
       var sourceOperand = concatenation.Source;
-      var destOperand = concatenation.Dest;
-      if (sourceOperand == null || destOperand == null) return false;
+      if (sourceOperand == null) return false;
+
+      var destinationOperand = concatenation.Dest;
+      if (destinationOperand == null) return false;
 
       return IsStringConcatOperatorReference(concatenation.OperatorReference);
     }
@@ -411,6 +413,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         var method = symbolInfo.GetDeclaredElement() as IMethod;
         if (method == null) continue;
+
         if (!CSharpDeclaredElementUtil.IsForeachEnumeratorPatternMember(method)) continue;
 
         // with ref-return

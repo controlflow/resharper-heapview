@@ -10,15 +10,22 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  DelegateAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
-  "Delegate allocation", "Highlights places where delegate instance creation happens",
-  Severity.HINT, solutionAnalysisRequired: false)]
+  id: DelegateAllocationHighlighting.SEVERITY_ID,
+  compoundItemName: null,
+  group: AllocationHighlightingGroupIds.ID,
+  title: "Delegate allocation",
+  description: "Highlights places where delegate instance creation happens",
+  defaultSeverity: Severity.HINT,
+  solutionAnalysisRequired: false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name, AttributeId = Compatibility.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    configurableSeverityId: SEVERITY_ID,
+    languages: CSharpLanguage.Name,
+    AttributeId = Compatibility.ALLOCATION_HIGHLIGHTING_ID,
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class DelegateAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.DelegateAllocation";

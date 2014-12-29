@@ -6,7 +6,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
 
 [assembly: RegisterConfigurableHighlightingsGroup(
-  AllocationHighlightingGroupIds.ID, "[Heap Allocations Plugin] Allocation hints")]
+  key: AllocationHighlightingGroupIds.ID,
+  title: "[Heap Allocations Plugin] Allocation hints")]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

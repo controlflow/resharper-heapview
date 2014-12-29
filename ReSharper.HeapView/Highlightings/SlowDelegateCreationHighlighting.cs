@@ -10,15 +10,22 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  SlowDelegateCreationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
-  "Slow delegate creation", "Highlights delegate creation that is slow because of CLR x86 JIT",
-  Severity.WARNING, solutionAnalysisRequired: false)]
+  id: SlowDelegateCreationHighlighting.SEVERITY_ID,
+  compoundItemName: null,
+  group: AllocationHighlightingGroupIds.ID,
+  title: "Slow delegate creation",
+  description: "Highlights delegate creation that is slow because of CLR x86 JIT",
+  defaultSeverity: Severity.WARNING,
+  solutionAnalysisRequired: false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    configurableSeverityId: SEVERITY_ID,
+    languages: CSharpLanguage.Name,
     AttributeId = HighlightingAttributeIds.UNRESOLVED_ERROR_ATTRIBUTE,
-    OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false,
+    OverlapResolve = OverlapResolveKind.NONE,
+    ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]
   public class SlowDelegateCreationHighlighting : PerformanceHighlightingBase
   {

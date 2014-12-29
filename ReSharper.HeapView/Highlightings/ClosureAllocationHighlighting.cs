@@ -10,15 +10,22 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  ClosureAllocationHighlighting.SEVERITY_ID, null, AllocationHighlightingGroupIds.ID,
-  "Closure allocation", "Highlights places where closure class creation happens",
-  Severity.HINT, solutionAnalysisRequired: false)]
+  id: ClosureAllocationHighlighting.SEVERITY_ID,
+  compoundItemName: null,
+  group: AllocationHighlightingGroupIds.ID,
+  title: "Closure allocation",
+  description: "Highlights places where closure class creation happens",
+  defaultSeverity: Severity.HINT,
+  solutionAnalysisRequired: false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name, AttributeId = Compatibility.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    configurableSeverityId: SEVERITY_ID,
+    languages: CSharpLanguage.Name,
+    AttributeId = Compatibility.ALLOCATION_HIGHLIGHTING_ID,
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class ClosureAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ClosureAllocation";
