@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.Psi.CSharp;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -17,46 +16,67 @@ using JetBrains.ReSharper.Daemon.Stages;
 #elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Psi.CSharp;
+
 #endif
+// ReSharper disable ConvertClosureToMethodGroup
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
-  // check expression tree + real closure
-
   [ElementProblemAnalyzer(
-    typeof(ICSharpFunctionDeclaration), typeof(IFieldDeclaration),
+    typeof(ICSharpFunctionDeclaration),
+    typeof(IFieldDeclaration),
+    typeof(IEventDeclaration),
+#if RESHARPER9
+    typeof(IExpressionBodyOwnerDeclaration), // C# 6.0 expression-bodied members
+    typeof(IPropertyDeclaration), // C# 6.0 property initializers
+#endif
     HighlightingTypes = new[] {
-      typeof(ObjectAllocationHighlighting), typeof(ClosureAllocationHighlighting),
-      typeof(DelegateAllocationHighlighting), typeof(SlowDelegateCreationHighlighting)
+      typeof(ObjectAllocationHighlighting),
+      typeof(ClosureAllocationHighlighting),
+      typeof(DelegateAllocationHighlighting),
+      typeof(SlowDelegateCreationHighlighting)
     })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      IFunction thisElement = null;
+      IFunction function = null;
       ILocalScope topScope = null;
-      var function = element as ICSharpFunctionDeclaration;
-      if (function != null)
+
+      var functionDeclaration = element as ICSharpFunctionDeclaration;
+      if (functionDeclaration != null)
       {
-        thisElement = function.DeclaredElement;
-        topScope = function.Body as ILocalScope;
+        function = functionDeclaration.DeclaredElement;
+        topScope = functionDeclaration.Body as ILocalScope;
       }
 
-      // todo: C# 6.0 expression-bodied members
+#if RESHARPER9
+      var expressionBodyOwner = element as IExpressionBodyOwnerDeclaration;
+      if (expressionBodyOwner != null)
+      {
+        var arrowExpression = expressionBodyOwner.ArrowExpression;
+        if (arrowExpression != null)
+        {
+          function = expressionBodyOwner.GetFunction();
+          topScope = arrowExpression;
+        }
+      }
+#endif
 
-      var inspector = new ClosureInspector(element, thisElement);
+      var inspector = new ClosureInspector(element, function);
       element.ProcessDescendants(inspector);
 
       // report closures allocations
       if (inspector.Closures.Count > 0)
       {
-        ReportClosureAllocations(element, thisElement, topScope, inspector, consumer);
+        ReportClosureAllocations(element, function, topScope, inspector, consumer);
       }
 
       // report non-cached generic lambda expressions
       if (function != null && inspector.ClosurelessLambdas.Count > 0)
       {
-        ReportClosurelessAllocations(function, inspector, consumer);
+        ReportClosurelessAllocations(element, function, inspector, consumer);
       }
 
       // report anonymous types in query expressions
@@ -104,7 +124,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           JetHashSet<IDeclaredElement> captures;
           if (!captureScopes.TryGetValue(scope, out captures))
+          {
             captureScopes[scope] = captures = new JetHashSet<IDeclaredElement>();
+          }
 
           captures.Add(capture);
           scopesMap[capture] = scope;
@@ -178,9 +200,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           var anchor = GetCaptureHighlightingRange(topDeclaration, thisElement, firstCapture, out highlightingRange);
           if (anchor != null && highlightingRange.IsValid())
           {
-            consumer.AddHighlighting(
-              new ClosureAllocationHighlighting(anchor, scopeClosure),
-              highlightingRange);
+            consumer.AddHighlighting(new ClosureAllocationHighlighting(anchor, scopeClosure), highlightingRange);
           }
         }
       }
@@ -202,7 +222,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var buf = new StringBuilder();
       if (parameters > 0)
       {
-        var parameterElements = declaredElements.Where(IsParameter);
+        var parameterElements = declaredElements.Where(element => IsParameter(element));
         buf.Append(FormatOrderedByStartOffset(parameterElements)).Append(' ')
            .Append(NounUtil.ToPluralOrSingular("parameter", parameters));
       }
@@ -235,16 +255,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static string FormatOrderedByStartOffset([NotNull] IEnumerable<IDeclaredElement> elements)
     {
       return elements
-        // ReSharper disable once ConvertClosureToMethodGroup
         .OrderBy(element => GetCaptureStartOffset(element))
-        .AggregateString(", ", (builder, element) =>
-          builder.Append("'").Append(element.ShortName).Append("'"));
+        .AggregateString(", ", (sb, e) => sb.Append("'").Append(e.ShortName).Append("'"));
     }
 
     [CanBeNull]
     private static ITreeNode GetCaptureHighlightingRange(
-      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement,
-      [NotNull] IDeclaredElement capture, out DocumentRange range)
+      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement, [NotNull] IDeclaredElement capture, out DocumentRange range)
     {
       var declarations = capture.GetDeclarations();
       if (declarations.Count == 0) // accessors 'value' parameter
@@ -307,29 +324,27 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     private static void ReportClosurelessAllocations(
-      [NotNull] ICSharpFunctionDeclaration declaration, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ITreeNode element, [NotNull] IFunction function, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
-      var parametersOwner = declaration.DeclaredElement as ITypeParametersOwner;
-      if (parametersOwner != null && parametersOwner.TypeParameters.Count != 0)
+      var typeParametersOwner = function as ITypeParametersOwner;
+      if (typeParametersOwner != null && typeParametersOwner.TypeParameters.Count != 0)
       {
         foreach (var lambda in inspector.ClosurelessLambdas)
         {
           if (IsExpressionLambda(lambda)) continue;
 
-          var range = GetClosureRange(lambda);
-          if (!range.IsValid()) continue;
+          var closureRange = GetClosureRange(lambda);
+          if (!closureRange.IsValid()) continue;
 
           // note: Roslyn compiler implements caching of such closures
-          if (!declaration.IsCSharp6Supported())
+          if (!element.IsCSharp6Supported())
           {
             consumer.AddHighlighting(
-              new DelegateAllocationHighlighting(lambda, "from generic anonymous function (always non cached)"),
-              range);
+              new DelegateAllocationHighlighting(lambda, "from generic anonymous function (always non cached)"), closureRange);
           }
 
           consumer.AddHighlighting(
-            new SlowDelegateCreationHighlighting(lambda, "anonymous function in generic method is generic itself"),
-            range);
+            new SlowDelegateCreationHighlighting(lambda, "anonymous function in generic method is generic itself"), closureRange);
         }
       }
 
@@ -337,12 +352,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         if (!IsExpressionLambda(lambda)) continue;
 
-        var highlightingRange = GetClosureRange(lambda);
-        if (highlightingRange.IsValid())
+        var closureRange = GetClosureRange(lambda);
+        if (closureRange.IsValid())
         {
           consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(lambda, "expression tree construction"),
-            highlightingRange);
+            new ObjectAllocationHighlighting(lambda, "expression tree construction"), closureRange);
         }
       }
     }
@@ -376,9 +390,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     {
       foreach (var queryClause in inspector.AnonymousTypes)
       {
-        consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(queryClause, "transparent identifier anonymous type instantiation"),
-          queryClause.GetDocumentRange());
+        var highlighting = new ObjectAllocationHighlighting(queryClause, "transparent identifier anonymous type instantiation");
+        consumer.AddHighlighting(highlighting, queryClause.GetDocumentRange());
       }
     }
 
@@ -387,8 +400,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var lambdaExpression = function as ILambdaExpression;
       if (lambdaExpression != null)
       {
-        var type = lambdaExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (type != null && !type.IsUnknown) return type.IsLinqExpression();
+        var declaredType = lambdaExpression.GetImplicitlyConvertedTo() as IDeclaredType;
+        if (declaredType != null && !declaredType.IsUnknown)
+          return declaredType.IsLinqExpression();
       }
 
       var parameterPlatform = function as IQueryParameterPlatform;
@@ -398,7 +412,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (matchingParameter != null)
         {
           var type = matchingParameter.Substitution[matchingParameter.Element.Type];
-          if (!type.IsUnknown) return type.IsLinqExpression();
+          if (!type.IsUnknown)
+            return type.IsLinqExpression();
         }
       }
 
@@ -458,6 +473,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       private void AddThisCapture()
       {
         if (myFunction == null) return;
+
         foreach (var closureKey in myClosures)
         {
           AddCapture(closureKey, myFunction);
@@ -468,7 +484,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         JetHashSet<IDeclaredElement> captures;
         if (!Closures.TryGetValue(closure, out captures))
+        {
           Closures.Add(closure, captures = new JetHashSet<IDeclaredElement>());
+        }
 
         captures.Add(element);
       }
