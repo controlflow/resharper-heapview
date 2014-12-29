@@ -20,6 +20,8 @@ namespace JetBrains.ReSharper.HeapView
     {
       return highlighting is BoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
+          || highlighting is ObjectAllocationEvidentHighlighting
+          || highlighting is ObjectAllocationPossibleHighlighting
           || highlighting is ClosureAllocationHighlighting
           || highlighting is DelegateAllocationHighlighting
           || highlighting is SlowDelegateCreationHighlighting;
@@ -27,6 +29,7 @@ namespace JetBrains.ReSharper.HeapView
 
     [Test] public void TestBoxing01() { DoNamedTest2(); }
     [Test] public void TestBoxing02() { DoNamedTest2(); }
+    [Test] public void TestBoxing03() { DoNamedTest2(); }
 
     [Test] public void TestClosure01() { DoNamedTest2(); }
     [Test] public void TestClosure02() { DoNamedTest2(); }

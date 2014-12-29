@@ -342,6 +342,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (!lhsConstant.IsString() && !lhsConstant.IsPureNull(concatenation.Language))
       {
         allConstants = false;
+
         var left = lhsOperand.GetOperandThroughParenthesis() as IAdditiveExpression;
         if (left != null && IsStringConcatenation(concatenation))
         {
@@ -353,6 +354,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (!rhsConstant.IsString() && !rhsConstant.IsPureNull(concatenation.Language))
       {
         allConstants = false;
+
         var right = rhsOperand.GetOperandThroughParenthesis() as IAdditiveExpression;
         if (right != null && IsStringConcatenation(concatenation))
         {

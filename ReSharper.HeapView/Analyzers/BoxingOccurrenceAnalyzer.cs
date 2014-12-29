@@ -25,8 +25,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   [ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes = new[] { typeof(BoxingAllocationHighlighting) })]
   public sealed class BoxingOccurrenceAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
-    protected override void Run(
-      ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
       var invocationExpression = expression as IInvocationExpression;
       if (invocationExpression != null)
@@ -41,6 +40,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       [NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var expressionReference = invocationExpression.InvocationExpressionReference;
+      // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+      // ReSharper disable once HeuristicUnreachableCode
       if (expressionReference == null) return;
 
       var method = expressionReference.Resolve().DeclaredElement as IMethod;
@@ -77,8 +78,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void CheckExpression(
-      [NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckExpression([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
     {
       var targetType = expression.GetImplicitlyConvertedTo();
       if (!targetType.IsReferenceType()) return;
@@ -114,8 +114,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (sourceType.IsValueType())
           {
             var description = BakeDescription(
-              "conversion of value type '{0}' instance method to '{1}' delegate type",
-              sourceType, targetType);
+              "conversion of value type '{0}' instance method to '{1}' delegate type", sourceType, targetType);
 
             consumer.AddHighlighting(
               new BoxingAllocationHighlighting(expression, description),
@@ -127,13 +126,14 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         if (targetType.IsUnknown || targetType.Equals(expressionType)) return;
 
-        var rule = expression.GetTypeConversionRule();
-        if (rule.IsBoxingConversion(expressionType, targetType))
+        var conversionRule = expression.GetTypeConversionRule();
+        if (conversionRule.IsBoxingConversion(expressionType, targetType))
         {
           // there is no boxing conversion here: using (new DisposableStruct()) { }
-          var usingStatement = UsingStatementNavigator.GetByExpression(
-            expression.GetContainingParenthesizedExpression());
+          var usingStatement = UsingStatementNavigator.GetByExpression(expression.GetContainingParenthesizedExpression());
           if (usingStatement != null) return;
+
+          if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
 
           var description = BakeDescription("conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
 
@@ -143,10 +143,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static string BakeDescription(string format, params IType[] types)
+    [StringFormatMethod(formatParameterName: "format")]
+    private static string BakeDescription([NotNull] string format, [NotNull] params IType[] types)
     {
-      return string.Format(format, Array.ConvertAll(
-        types, t => (object)t.GetPresentableName(CSharpLanguage.Instance)));
+      return string.Format(format, Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance)));
     }
   }
 }

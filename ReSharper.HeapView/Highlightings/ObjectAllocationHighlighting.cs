@@ -28,11 +28,11 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   solutionAnalysisRequired: false)]
 
 [assembly: RegisterConfigurableSeverity(
-  id: ObjectAllocationEvidentHighlighting.SEVERITY_ID,
+  id: ObjectAllocationPossibleHighlighting.SEVERITY_ID,
   compoundItemName: null,
   group: AllocationHighlightingGroupIds.ID,
   title: "Object allocation (possible)",
-  description: "Highlights language construct or expression where possible object allocation happens",
+  description: "Highlights language construct where object allocation can possibly happens",
   defaultSeverity: Severity.HINT,
   solutionAnalysisRequired: false)]
 
