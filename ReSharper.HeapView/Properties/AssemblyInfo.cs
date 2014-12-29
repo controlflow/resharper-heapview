@@ -12,7 +12,7 @@ using JetBrains.Application.PluginSupport;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.9.5")]
+[assembly: AssemblyVersion("0.9.6")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 #if RESHARPER8

@@ -21,9 +21,16 @@ namespace JetBrains.ReSharper.HeapView
       return type.IsExpression();
     }
 
+    // ReSharper disable once UnusedParameter.Global
     public static bool IsCSharp6Supported(this ITreeNode treeNode)
     {
       return false;
+    }
+
+    [NotNull]
+    public static PredefinedType GetPredefinedType(this ITreeNode treeNode)
+    {
+      return treeNode.GetPsiModule().GetPredefinedType(treeNode.GetResolveContext());
     }
   }
 }

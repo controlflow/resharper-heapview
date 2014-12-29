@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Psi.Util;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -293,10 +294,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         break;
       }
 
-      // todo: not always in C# 6.0!
-
       var anchor = invocationAnchor ?? paramsArgument ?? invocationInfo as ICSharpExpression;
       if (anchor == null) return;
+
+      if (IsCachedEmptyArrayAvailable(anchor)) return;
 
       var expression = anchor as ICSharpExpression;
       var paramsRange = expression != null ? expression.GetExpressionRange() : anchor.GetDocumentRange();
@@ -305,8 +306,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       consumer.AddHighlighting(new ObjectAllocationHighlighting(anchor, description), paramsRange);
     }
 
-    private static void CheckReferenceExpression(
-      [NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckReferenceExpression([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
 
@@ -342,8 +342,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void CheckStringConcatenation(
-      [NotNull] IAdditiveExpression concatenation, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckStringConcatenation([NotNull] IAdditiveExpression concatenation, [NotNull] IHighlightingConsumer consumer)
     {
       if (!IsStringConcatenation(concatenation)) return;
 
@@ -449,8 +448,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       return false;
     }
 
-    private static void CheckForeachDeclaration(
-      [NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckForeachDeclaration([NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)
     {
       var collection = foreachStatement.Collection;
       if (collection == null) return;
@@ -470,6 +468,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       foreach (var symbolInfo in symbolTable.GetSymbolInfos("GetEnumerator"))
       {
         var method = symbolInfo.GetDeclaredElement() as IMethod;
+        // ReSharper disable once UseNullPropagation
         if (method == null) continue;
 
         if (!CSharpDeclaredElementUtil.IsForeachEnumeratorPatternMember(method)) continue;
@@ -497,6 +496,27 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     {
       var attribute = context.GetContainingNode<IAttribute>();
       if (attribute != null) return true;
+
+      return false;
+    }
+
+    private static bool IsCachedEmptyArrayAvailable([NotNull] ITreeNode context)
+    {
+      if (!context.IsCSharp6Supported()) return false;
+
+      var systemArrayType = context.GetPredefinedType().Array;
+      var classType = systemArrayType.GetTypeElement() as IClass;
+      if (classType == null) return false;
+
+      foreach (var typeMember in classType.EnumerateMembers("Empty", caseSensitive: false))
+      {
+        var method = typeMember as IMethod;
+        if (method == null) continue;
+
+        if (method.Parameters.Count == 0
+          && method.TypeParameters.Count == 1
+          && method.GetAccessRights() == AccessRights.PUBLIC) return true;
+      }
 
       return false;
     }
