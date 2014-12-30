@@ -67,8 +67,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (isValueType && method.GetContainingType() is IClass && !method.IsStatic)
       {
         // do not produce possible false positive when type is type parameter type
-        if (!typeParameterType || string.Equals(
-          method.ShortName, "GetType", StringComparison.Ordinal))
+        if (!typeParameterType || string.Equals(method.ShortName, "GetType", StringComparison.Ordinal))
         {
           consumer.AddHighlighting(
             new BoxingAllocationHighlighting(

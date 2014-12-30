@@ -54,6 +54,7 @@
     <Compile Include="Analyzers\ClosureAnalyzer.cs" />
     <Compile Include="Analyzers\HeapAllocationAnalyzer.cs" />
     <Compile Include="Analyzers\SlowDelegateCreationAnalyzer.cs" />
+    <Compile Include="Analyzers\StructCopyAnalyzer.cs" />
     <Compile Include="Compatibility.R80.cs" />
     <Compile Include="ExpressionRangeUtils.cs" />
     <Compile Include="Highlightings\BoxingAllocationHighlighting.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Highlightings\PerformanceHighlightingBase.cs" />
     <Compile Include="Highlightings\AllocationHighlightingGroupIds.cs" />
     <Compile Include="Highlightings\SlowDelegateCreationHighlighting.cs" />
+    <Compile Include="Highlightings\StructCopyHighlighting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

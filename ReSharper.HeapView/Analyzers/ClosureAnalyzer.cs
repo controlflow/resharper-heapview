@@ -17,7 +17,6 @@ using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Psi.CSharp;
-
 #endif
 // ReSharper disable ConvertClosureToMethodGroup
 

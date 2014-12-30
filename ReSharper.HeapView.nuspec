@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>$PackageId$</id>
-    <version>0.9.5</version>
+    <version>0.9.6.2</version>
     <!-- update plugin ver in AssemblyInfo.cs plz -->
     <title>Heap Allocations Viewer</title>
     <authors>Alexander Shvedov</authors>

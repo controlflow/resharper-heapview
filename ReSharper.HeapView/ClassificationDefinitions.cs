@@ -7,14 +7,27 @@ using Microsoft.VisualStudio.Utilities;
 // ReSharper disable UnassignedField.Global
 
 [assembly: RegisterHighlighter(
-  Compatibility.BOXING_HIGHLIGHTING_ID,
-  EffectColor = "Red", EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
+  id: Compatibility.BOXING_HIGHLIGHTING_ID,
+  EffectColor = "Red",
+  EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX,
+  VSPriority = VSPriority.IDENTIFIERS)]
 
 [assembly: RegisterHighlighter(
   Compatibility.ALLOCATION_HIGHLIGHTING_ID,
-  EffectColor = "Yellow", EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
+  EffectColor = "Yellow",
+  EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX,
+  VSPriority = VSPriority.IDENTIFIERS)]
+
+[assembly: RegisterHighlighter(
+  id: Compatibility.STRUCT_COPY_ID,
+  EffectColor = "Yellow",
+  EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX,
+  VSPriority = VSPriority.IDENTIFIERS)]
+
+// todo: extract constants
 
 namespace JetBrains.ReSharper.HeapView
 {
@@ -32,9 +45,7 @@ namespace JetBrains.ReSharper.HeapView
       ForegroundColor = Colors.Red;
     }
 
-    [Export]
-    [Name(Compatibility.BOXING_HIGHLIGHTING_ID)]
-    [BaseDefinition("formal language")]
+    [Export, Name(Compatibility.BOXING_HIGHLIGHTING_ID), BaseDefinition("formal language")]
     internal ClassificationTypeDefinition ClassificationTypeDefinition;
   }
 
@@ -52,9 +63,25 @@ namespace JetBrains.ReSharper.HeapView
       ForegroundColor = Colors.Orange;
     }
 
-    [Export]
-    [Name(Compatibility.ALLOCATION_HIGHLIGHTING_ID)]
-    [BaseDefinition("formal language")]
+    [Export, Name(Compatibility.ALLOCATION_HIGHLIGHTING_ID), BaseDefinition("formal language")]
+    internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  }
+
+  [ClassificationType(ClassificationTypeNames = Compatibility.STRUCT_COPY_ID)]
+  [Order(After = "Formal Language Priority", Before = "Natural Language Priority")]
+  [Export(typeof(EditorFormatDefinition))]
+  [Name(Compatibility.STRUCT_COPY_ID)]
+  [DisplayName(Compatibility.STRUCT_COPY_ID)]
+  [UserVisible(true)]
+  internal class ReSharperStructCopyClassificationDefinition : ClassificationFormatDefinition
+  {
+    public ReSharperStructCopyClassificationDefinition()
+    {
+      DisplayName = Compatibility.STRUCT_COPY_ID;
+      ForegroundColor = Colors.SkyBlue;
+    }
+
+    [Export, Name(Compatibility.STRUCT_COPY_ID), BaseDefinition("formal language")]
     internal ClassificationTypeDefinition ClassificationTypeDefinition;
   }
 }

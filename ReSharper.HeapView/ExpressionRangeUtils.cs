@@ -42,7 +42,8 @@ namespace JetBrains.ReSharper.HeapView
 
     [NotNull] private static readonly string[] HighlightingIds = {
       Compatibility.BOXING_HIGHLIGHTING_ID,
-      Compatibility.ALLOCATION_HIGHLIGHTING_ID
+      Compatibility.ALLOCATION_HIGHLIGHTING_ID,
+      Compatibility.STRUCT_COPY_ID
     };
 
     public ConfigurableSeverityHacks()

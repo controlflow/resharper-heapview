@@ -10,6 +10,8 @@ namespace JetBrains.ReSharper.HeapView
     // ReSharper disable once StringLiteralTypo
     public const string BOXING_HIGHLIGHTING_ID = "ReSharper Boxing Occurrance";
     public const string ALLOCATION_HIGHLIGHTING_ID = "ReSharper Heap Allocation";
+    // note: can't introduce new attribute ids in 8.x build...
+    public const string STRUCT_COPY_ID = ALLOCATION_HIGHLIGHTING_ID;
 
     public static ITokenNode EquivalenceSign([NotNull] this ILocalVariableDeclaration variableDeclaration)
     {
