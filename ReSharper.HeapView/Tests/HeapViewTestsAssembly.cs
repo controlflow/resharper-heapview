@@ -3,6 +3,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.HeapView.Analyzers;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Threading;
 using NUnit.Framework;
 #if RESHARPER8
@@ -15,7 +16,11 @@ using JetBrains.TestFramework;
 
 // ReSharper disable once CheckNamespace
 [SetUpFixture]
+#if RESHARPER8
 public class HeapViewTestsAssembly : ReSharperTestEnvironmentAssembly
+#elif RESHARPER9
+public class HeapViewTestsAssembly : TestEnvironmentAssembly<JetBrains.ReSharper.HeapView.IHeapViewTestEnvironmentZone>
+#endif
 {
   [NotNull]
   private static IEnumerable<Assembly> GetAssembliesToLoad()
