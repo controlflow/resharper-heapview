@@ -1,12 +1,13 @@
-﻿using JetBrains.Application.Settings;
-using JetBrains.ReSharper.HeapView.Highlightings;
+﻿using JetBrains.ReSharper.HeapView.Highlightings;
 using NUnit.Framework;
 #if RESHARPER8
+using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp;
 #elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Psi;
 #endif
 
 namespace JetBrains.ReSharper.HeapView
@@ -15,8 +16,11 @@ namespace JetBrains.ReSharper.HeapView
   {
     protected override string RelativeTestDataPath { get { return "Daemon"; } }
 
-    protected override bool HighlightingPredicate(
-      IHighlighting highlighting, IContextBoundSettingsStore settingsStore)
+    #if RESHARPER8
+    protected override bool HighlightingPredicate(IHighlighting highlighting, IContextBoundSettingsStore settingsStore)
+    #elif RESHARPER9
+    protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+    #endif
     {
       return highlighting is BoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
