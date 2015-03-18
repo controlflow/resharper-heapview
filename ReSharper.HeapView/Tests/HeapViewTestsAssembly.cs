@@ -3,13 +3,13 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.HeapView.Analyzers;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Threading;
 using NUnit.Framework;
 #if RESHARPER8
 using JetBrains.Util;
 #elif RESHARPER9
 using JetBrains.TestFramework;
+using JetBrains.ReSharper.Resources.Shell;
 #endif
 
 [assembly: TestDataPathBase(@".\Data")]
