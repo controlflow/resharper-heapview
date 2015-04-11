@@ -36,8 +36,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       CheckExpression(expression, consumer);
     }
 
-    private static void CheckInvocation(
-      [NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckInvocation([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var expressionReference = invocationExpression.InvocationExpressionReference;
       // ReSharper disable once ConditionIsAlwaysTrueOrFalse
@@ -145,7 +144,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     [StringFormatMethod(formatParameterName: "format")]
     private static string BakeDescription([NotNull] string format, [NotNull] params IType[] types)
     {
-      return string.Format(format, Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance)));
+      var args = Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance));
+      return string.Format(format, args);
     }
   }
 }

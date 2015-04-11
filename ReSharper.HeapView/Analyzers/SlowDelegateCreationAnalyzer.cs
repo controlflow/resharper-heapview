@@ -42,16 +42,17 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (methodType is IInterface)
       {
         message = string.Format("from interface '{0}' method", methodType.ShortName);
-        consumer.AddHighlighting(
-          new SlowDelegateCreationHighlighting(methodReference, message),
-          methodReference.GetExpressionRange());
+        var highlighting = new SlowDelegateCreationHighlighting(methodReference, message);
+        consumer.AddHighlighting(highlighting, methodReference.GetExpressionRange());
         return;
       }
 
       // there is not lags if method is instance method
-      if (!method.IsStatic &&
-          methodReference.QualifierExpression != null &&
-          methodReference.QualifierExpression.IsClassifiedAsVariable) return;
+      if (!method.IsStatic)
+      {
+        var qualifierExpression = methodReference.QualifierExpression;
+        if (qualifierExpression != null && qualifierExpression.IsClassifiedAsVariable) return;
+      }
 
       var substitution = methodReference.Reference.Resolve().Result.Substitution;
       var typeParameters = new JetHashSet<ITypeParameter>();
@@ -69,18 +70,20 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       // get the delegate creation owner type, if member is not static
       var delegateCreationMember = methodReference.GetContainingTypeMemberDeclaration();
-      if (delegateCreationMember == null || delegateCreationMember.DeclaredElement == null) return;
+      if (delegateCreationMember == null) return;
+
+      var typeMember = delegateCreationMember.DeclaredElement;
+      if (typeMember == null) return;
 
       ITypeElement delegateCreationOwnerType = null;
-      if (!delegateCreationMember.DeclaredElement.IsStatic)
+      if (!typeMember.IsStatic)
       {
-        delegateCreationOwnerType = delegateCreationMember.DeclaredElement.GetContainingType();
+        delegateCreationOwnerType = typeMember.GetContainingType();
       }
 
       // look for implicit qualification with the type parameters
       ITypeElement lastType = null;
-      for (var qualifier = methodReference; qualifier != null;
-           qualifier = qualifier.QualifierExpression as IReferenceExpression)
+      for (var qualifier = methodReference; qualifier != null; qualifier = qualifier.QualifierExpression as IReferenceExpression)
       {
         if (qualifier.IsClassifiedAsVariable)
         {
@@ -125,9 +128,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       if (message != null)
       {
-        consumer.AddHighlighting(
-          new SlowDelegateCreationHighlighting(methodReference, message),
-          methodReference.GetExpressionRange());
+        var highlighting = new SlowDelegateCreationHighlighting(methodReference, message);
+        consumer.AddHighlighting(highlighting, methodReference.GetExpressionRange());
       }
     }
   }

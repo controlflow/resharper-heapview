@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
-  [ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes = new []{ typeof(StructCopyHighlighting) })]
+  //[ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes = new []{ typeof(StructCopyHighlighting) })]
   public sealed class StructCopyAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
     protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -22,8 +22,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (expression is IParenthesizedExpression) return;
       if (expression is IUncheckedExpression) return;
       if (expression is ICheckedExpression) return;
-
-
 
       var declaredType = expression.Type() as IDeclaredType;
       if (declaredType != null)
@@ -40,9 +38,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             {
               if (!expression.IsClassifiedAsVariable)
               {
-                consumer.AddHighlighting(
-                  new StructCopyHighlighting(expression, "method invocation"),
-                  referenceExpression.NameIdentifier.GetDocumentRange());
+                //consumer.AddHighlighting(
+                //  new StructCopyHighlighting(expression, "method invocation"),
+                //  referenceExpression.NameIdentifier.GetDocumentRange());
                 return;
               }
             }
@@ -53,16 +51,16 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           {
             if (!expression.IsClassifiedAsVariable)
             {
-              consumer.AddHighlighting(
-                new StructCopyHighlighting(expression, "element access"),
-                elementAccessExpression.LBracket.GetDocumentRange());
+              //consumer.AddHighlighting(
+              //  new StructCopyHighlighting(expression, "element access"),
+              //  elementAccessExpression.LBracket.GetDocumentRange());
               return;
             }
           }
 
-          consumer.AddHighlighting(
-            new StructCopyHighlighting(expression, "of type " + declaredType.GetLongPresentableName(expression.Language)),
-            expression.GetExpressionRange());
+          //consumer.AddHighlighting(
+          //  new StructCopyHighlighting(expression, "of type " + declaredType.GetLongPresentableName(expression.Language)),
+          //  expression.GetExpressionRange());
         }
       }
     }
