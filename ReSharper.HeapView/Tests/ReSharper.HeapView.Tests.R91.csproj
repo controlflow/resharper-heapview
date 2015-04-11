@@ -68,8 +68,7 @@
     <Compile Include="HeapViewTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Data\Daemon\SlowDelegates01.cs.gold" />
-    <None Include="packages.config" />
-    <None Include="packages.ReSharper.HeapView.Tests.R90.config">
+    <None Include="packages.ReSharper.HeapView.Tests.R91.config">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
