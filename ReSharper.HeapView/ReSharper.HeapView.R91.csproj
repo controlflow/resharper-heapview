@@ -16,6 +16,7 @@
     <TargetFrameworkProfile />
     <BaseIntermediateOutputPath>obj.R91\</BaseIntermediateOutputPath>
     <NuGetPackageImportStamp>26df2380</NuGetPackageImportStamp>
+    <JetReferencesPrivate>True</JetReferencesPrivate>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

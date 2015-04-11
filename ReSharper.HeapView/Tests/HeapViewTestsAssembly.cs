@@ -5,22 +5,13 @@ using JetBrains.Application;
 using JetBrains.ReSharper.HeapView.Analyzers;
 using JetBrains.Threading;
 using NUnit.Framework;
-#if RESHARPER8
 using JetBrains.Util;
-#elif RESHARPER9
-using JetBrains.TestFramework;
-using JetBrains.ReSharper.Resources.Shell;
-#endif
 
 [assembly: TestDataPathBase(@".\Data")]
 
 // ReSharper disable once CheckNamespace
 [SetUpFixture]
-#if RESHARPER8
 public class HeapViewTestsAssembly : ReSharperTestEnvironmentAssembly
-#elif RESHARPER9
-public class HeapViewTestsAssembly : TestEnvironmentAssembly<JetBrains.ReSharper.HeapView.IHeapViewTestEnvironmentZone>
-#endif
 {
   [NotNull]
   private static IEnumerable<Assembly> GetAssembliesToLoad()
@@ -44,7 +35,7 @@ public class HeapViewTestsAssembly : TestEnvironmentAssembly<JetBrains.ReSharper
       var assemblyManager = Shell.Instance.GetComponent<AssemblyManager>();
       assemblyManager.UnloadAssemblies(GetType().Name, GetAssembliesToLoad());
     });
-
+  
     base.TearDown();
   }
 }

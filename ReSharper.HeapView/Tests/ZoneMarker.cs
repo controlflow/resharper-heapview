@@ -1,6 +1,4 @@
-﻿#if RESHARPER9
-
-using JetBrains.Application.BuildScript.Application.Zones;
+﻿using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ReSharper.Feature.Services;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
@@ -14,5 +12,3 @@ namespace JetBrains.ReSharper.HeapView
   [ZoneMarker]
   public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<IHeapViewTestEnvironmentZone> { }
 }
-
-#endif
