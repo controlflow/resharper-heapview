@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>$PackageId$</id>
-    <version>0.9.6.2</version>
+    <version>0.9.7</version>
     <!-- update plugin ver in AssemblyInfo.cs plz -->
     <title>Heap Allocations Viewer</title>
     <authors>Alexander Shvedov</authors>
@@ -12,9 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; ReSharper 9.0 RTM support;
-&#8226; Inspection colors are now configurable with 'ReSharper HeapView Boxing' and 'ReSharper HeapView Allocation' items in Visual Studio fonts &amp; colors settings;
-&#8226; 'Slow delegate creation' downgraded to warning severity.
+&#8226; ReSharper 9.1 RTM support
   </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />
@@ -25,5 +23,6 @@
     <file src="ReSharper.HeapView\bin.R81\$Configuration$\ReSharper.HeapView.*" target="ReSharper\v8.1\plugins\" />
     <file src="ReSharper.HeapView\bin.R82\$Configuration$\ReSharper.HeapView.*" target="ReSharper\v8.2\plugins\" />
     <file src="ReSharper.HeapView\bin.R90\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
+    <file src="ReSharper.HeapView\bin.R91\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
   </files>
 </package>
