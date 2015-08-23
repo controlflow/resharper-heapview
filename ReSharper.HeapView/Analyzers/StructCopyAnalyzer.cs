@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 #endif
 
+/*
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   // todo: do not show in initializers?
@@ -203,3 +204,4 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
   }
 }
+*/

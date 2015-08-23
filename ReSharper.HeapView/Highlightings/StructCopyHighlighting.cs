@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
 // ReSharper disable MemberCanBePrivate.Global
 
+/*
 [assembly: RegisterConfigurableSeverity(
   id: StructCopyHighlighting.SEVERITY_ID,
   compoundItemName: null,
@@ -35,3 +36,4 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 }
+*/
