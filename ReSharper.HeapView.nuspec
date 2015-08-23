@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>$PackageId$</id>
-    <version>0.9.8.1</version>
+    <version>0.9.9.0</version>
     <!-- update plugin ver in AssemblyInfo.cs plz -->
     <title>Heap Allocations Viewer</title>
     <authors>Alexander Shvedov</authors>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; ReSharper 9.1 RTM support
+&#8226; ReSharper 9.2 RTM support
   </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />
@@ -24,5 +24,6 @@
     <file src="ReSharper.HeapView\bin.R82\$Configuration$\ReSharper.HeapView.*" target="ReSharper\v8.2\plugins\" />
     <file src="ReSharper.HeapView\bin.R90\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
     <file src="ReSharper.HeapView\bin.R91\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
+    <file src="ReSharper.HeapView\bin.R92\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
   </files>
 </package>

@@ -28,6 +28,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R91", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R91", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R91.csproj", "{03FAC09B-5DDE-4631-B165-82761D37A6FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R92", "ReSharper.HeapView\ReSharper.HeapView.R92.csproj", "{79A15662-77DC-4C79-BD54-3646B6C5374B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R92", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R92.csproj", "{EC2877CE-5702-4712-A92F-4810B9A52BB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +66,14 @@ Global
 		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,5 +82,6 @@ Global
 		{6DC588F6-B12C-447E-92D7-9C21A003179C} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{1278D396-5565-4262-B758-B5599CB4A82A} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{03FAC09B-5DDE-4631-B165-82761D37A6FE} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{EC2877CE-5702-4712-A92F-4810B9A52BB1} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal
