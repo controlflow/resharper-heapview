@@ -60,6 +60,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           function = expressionBodyOwner.GetFunction();
           topScope = arrowExpression;
         }
+        else
+        {
+          if (element is IAccessorOwnerDeclaration) return;
+        }
       }
 #endif
 
