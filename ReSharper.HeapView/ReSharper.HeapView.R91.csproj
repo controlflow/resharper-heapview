@@ -155,23 +155,21 @@
     <Compile Include="Analyzers\BoxingOccurrenceAnalyzer.cs" />
     <Compile Include="Analyzers\ClosureAnalyzer.cs" />
     <Compile Include="Analyzers\HeapAllocationAnalyzer.cs" />
-    <Compile Include="Analyzers\SlowDelegateCreationAnalyzer.cs" />
     <Compile Include="Analyzers\StructCopyAnalyzer.cs" />
-    <Compile Include="ClassificationDefinitions.cs" />
+    <Compile Include="Highlightings\ClassificationDefinitions.cs" />
     <Compile Include="ExpressionRangeUtils.cs" />
-    <Compile Include="Highlightings\AllocationHighlightingGroupIds.cs" />
+    <Compile Include="Highlightings\HeapViewHighlightingsGroupIds.cs" />
     <Compile Include="Highlightings\BoxingAllocationHighlighting.cs" />
     <Compile Include="Highlightings\ClosureAllocationHighlighting.cs" />
     <Compile Include="Highlightings\DelegateAllocationHighlighting.cs" />
     <Compile Include="Highlightings\ObjectAllocationHighlighting.cs" />
     <Compile Include="Highlightings\PerformanceHighlightingBase.cs" />
-    <Compile Include="Highlightings\SlowDelegateCreationHighlighting.cs" />
     <Compile Include="Highlightings\StructCopyHighlighting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoneMarker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compatibility.R90.cs" />
+    <Compile Include="Highlightings\HeapViewAttributeIds.cs" />
     <None Include="packages.ReSharper.HeapView.R91.config" />
   </ItemGroup>
   <PropertyGroup>

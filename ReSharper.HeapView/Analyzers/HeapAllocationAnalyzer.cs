@@ -15,27 +15,25 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
-#if RESHARPER8
-using JetBrains.ReSharper.Daemon.Stages;
-#elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
-#endif
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    typeof(IReferenceExpression),
-    typeof(IObjectCreationExpression),
-    typeof(IAnonymousObjectCreationExpression),
-    typeof(IArrayCreationExpression),
-    typeof(IInvocationExpression),
-    typeof(IArrayInitializer),
-    typeof(IForeachStatement),
-    typeof(IAdditiveExpression),
-    typeof(IAssignmentExpression),
-    typeof(IElementAccessExpression),
-    typeof(IConstructorInitializer),
-    typeof(ICollectionElementInitializer),
+    elementTypes: new[] {
+      typeof(IReferenceExpression),
+      typeof(IObjectCreationExpression),
+      typeof(IAnonymousObjectCreationExpression),
+      typeof(IArrayCreationExpression),
+      typeof(IInvocationExpression),
+      typeof(IArrayInitializer),
+      typeof(IForeachStatement),
+      typeof(IAdditiveExpression),
+      typeof(IAssignmentExpression),
+      typeof(IElementAccessExpression),
+      typeof(IConstructorInitializer),
+      typeof(ICollectionElementInitializer),
+    },
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
       typeof(ObjectAllocationEvidentHighlighting),
@@ -200,10 +198,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     {
       ITreeNode start = null, end = null;
       var variableDeclaration = LocalVariableDeclarationNavigator.GetByInitial(arrayInitializer);
-      if (variableDeclaration != null && variableDeclaration.EquivalenceSign() != null)
+      if (variableDeclaration != null && variableDeclaration.EquivalenceSign != null)
       {
         start = variableDeclaration.NameIdentifier;
-        end = variableDeclaration.EquivalenceSign();
+        end = variableDeclaration.EquivalenceSign;
       }
       else
       {

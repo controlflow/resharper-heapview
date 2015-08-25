@@ -1,17 +1,15 @@
 ﻿using JetBrains.ReSharper.HeapView.Highlightings;
-#if RESHARPER8
-using JetBrains.ReSharper.Daemon;
-#elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
-#endif
+// ReSharper disable RedundantArgumentName
+// ReSharper disable RedundantArgumentNameForLiteralExpression
 
 [assembly: RegisterConfigurableHighlightingsGroup(
-  key: AllocationHighlightingGroupIds.ID,
+  key: HeapViewHighlightingsGroupIds.ID,
   title: "[Heap Allocations Plugin] Allocation hints")]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
-  public static class AllocationHighlightingGroupIds
+  public static class HeapViewHighlightingsGroupIds
   {
     public const string ID = "AllocationHints";
   }

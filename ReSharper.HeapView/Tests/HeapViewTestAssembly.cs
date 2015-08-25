@@ -8,4 +8,4 @@ using JetBrains.TestFramework;
 
 // ReSharper disable once CheckNamespace
 [SetUpFixture]
-public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<IHeapViewTestEnvironmentZone> { }
+public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<HeapViewTestEnvironmentZone> { }

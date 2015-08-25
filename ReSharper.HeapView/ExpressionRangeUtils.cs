@@ -2,13 +2,10 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.DocumentModel;
+using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-#if RESHARPER8
-using JetBrains.ReSharper.Daemon;
-#elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
-#endif
 
 namespace JetBrains.ReSharper.HeapView
 {
@@ -41,9 +38,9 @@ namespace JetBrains.ReSharper.HeapView
     };
 
     [NotNull] private static readonly string[] HighlightingIds = {
-      Compatibility.BOXING_HIGHLIGHTING_ID,
-      Compatibility.ALLOCATION_HIGHLIGHTING_ID,
-      Compatibility.STRUCT_COPY_ID
+      HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+      HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+      HeapViewAttributeIds.STRUCT_COPY_ID
     };
 
     public ConfigurableSeverityHacks()

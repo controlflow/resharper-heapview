@@ -9,13 +9,8 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-#if RESHARPER8
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Daemon.Stages;
-#elif RESHARPER9
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-#endif
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
@@ -39,9 +34,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static void CheckInvocation([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var expressionReference = invocationExpression.InvocationExpressionReference;
-      // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-      // ReSharper disable once HeuristicUnreachableCode
-      if (expressionReference == null) return;
 
       var method = expressionReference.Resolve().DeclaredElement as IMethod;
       if (method == null || method.IsExtensionMethod) return;

@@ -7,8 +7,8 @@ using JetBrains.TestFramework.Application.Zones;
 namespace JetBrains.ReSharper.HeapView
 {
   [ZoneDefinition]
-  public class IHeapViewTestEnvironmentZone : ITestsZone, IRequire<PsiFeatureTestZone> { }
+  public class HeapViewTestEnvironmentZone : ITestsZone, IRequire<PsiFeatureTestZone> { }
 
   [ZoneMarker]
-  public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<IHeapViewTestEnvironmentZone> { }
+  public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<HeapViewTestEnvironmentZone> { }
 }

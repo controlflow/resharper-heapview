@@ -10,31 +10,26 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
-#if RESHARPER8
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
-using JetBrains.ReSharper.Daemon.Stages;
-#elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Psi.CSharp;
-#endif
 // ReSharper disable ConvertClosureToMethodGroup
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    typeof(ICSharpFunctionDeclaration),
-    typeof(IFieldDeclaration),
-    typeof(IEventDeclaration),
-#if RESHARPER9
-    typeof(IExpressionBodyOwnerDeclaration), // C# 6.0 expression-bodied members
-    typeof(IPropertyDeclaration), // C# 6.0 property initializers
-#endif
+    elementTypes: new[] {
+      typeof(ICSharpFunctionDeclaration), // constructors, methods, operators, accessors
+      typeof(IFieldDeclaration), typeof(IEventDeclaration), // field/event initializers
+      typeof(IExpressionBodyOwnerDeclaration), // C# 6.0 expression-bodied members
+      typeof(IPropertyDeclaration), // C# 6.0 property initializers
+    },
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
+      typeof(ObjectAllocationEvidentHighlighting),
+      typeof(ObjectAllocationPossibleHighlighting),
       typeof(ClosureAllocationHighlighting),
-      typeof(DelegateAllocationHighlighting),
-      typeof(SlowDelegateCreationHighlighting)
+      typeof(DelegateAllocationHighlighting)
     })]
   public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
   {
@@ -50,7 +45,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         topScope = functionDeclaration.Body as ILocalScope;
       }
 
-#if RESHARPER9
       var expressionBodyOwner = element as IExpressionBodyOwnerDeclaration;
       if (expressionBodyOwner != null)
       {
@@ -65,7 +59,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           if (element is IAccessorOwnerDeclaration) return;
         }
       }
-#endif
 
       var inspector = new ClosureInspector(element, function);
       element.ProcessDescendants(inspector);
@@ -345,9 +338,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             consumer.AddHighlighting(
               new DelegateAllocationHighlighting(lambda, "from generic anonymous function (always non cached)"), closureRange);
           }
-
-          consumer.AddHighlighting(
-            new SlowDelegateCreationHighlighting(lambda, "anonymous function in generic method is generic itself"), closureRange);
         }
       }
 
