@@ -2,16 +2,10 @@
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
-using NUnit.Framework;
-#if RESHARPER8
-using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.CSharp;
-#elif RESHARPER9
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
-#endif
+using NUnit.Framework;
 
 namespace JetBrains.ReSharper.HeapView
 {
@@ -19,11 +13,7 @@ namespace JetBrains.ReSharper.HeapView
   {
     protected override string RelativeTestDataPath { get { return "Daemon"; } }
 
-    #if RESHARPER8
-    protected override bool HighlightingPredicate(IHighlighting highlighting, IContextBoundSettingsStore settingsStore)
-    #elif RESHARPER9
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-    #endif
     {
       return highlighting is BoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
@@ -44,8 +34,6 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestHeap02() { DoNamedTest2(); }
     [Test] public void TestHeap03() { DoNamedTest2(); }
 
-#if RESHARPER9
-
     protected override void DoTest(IProject project)
     {
       var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
@@ -54,7 +42,5 @@ namespace JetBrains.ReSharper.HeapView
         base.DoTest(project);
       });
     }
-
-#endif
   }
 }

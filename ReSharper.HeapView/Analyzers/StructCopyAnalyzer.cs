@@ -115,9 +115,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       {
         var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
 
-#if RESHARPER9
         if (referenceExpression.IsPartOfConditionalAccess()) return false;
-#endif
 
         if (declaredElement is ILocalVariable) return true;
         if (declaredElement is IParameter) return true;
@@ -136,9 +134,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var elementAccessExpression = expression as IElementAccessExpression;
       if (elementAccessExpression != null)
       {
-#if RESHARPER9
         if (elementAccessExpression.IsPartOfConditionalAccess()) return false;
-#endif
 
         var operand = elementAccessExpression.Operand;
         if (operand != null)
