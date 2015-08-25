@@ -57,7 +57,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HeapViewTestAssemblyR9.cs" />
+    <Compile Include="HeapViewTestAssembly.cs" />
     <Compile Include="ZoneMarker.cs" />
     <None Include="Data\Daemon\Boxing01.cs" />
     <None Include="Data\Daemon\Boxing02.cs" />

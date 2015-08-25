@@ -20,9 +20,6 @@
     <tags>heap allocations performance boxing closure lambda</tags>
   </metadata>
   <files>
-    <file src="ReSharper.HeapView\bin.R81\$Configuration$\ReSharper.HeapView.*" target="ReSharper\v8.1\plugins\" />
-    <file src="ReSharper.HeapView\bin.R82\$Configuration$\ReSharper.HeapView.*" target="ReSharper\v8.2\plugins\" />
-    <file src="ReSharper.HeapView\bin.R90\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
     <file src="ReSharper.HeapView\bin.R91\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
     <file src="ReSharper.HeapView\bin.R92\$Configuration$\ReSharper.HeapView.*" target="dotFiles\" />
   </files>
