@@ -1,4 +1,7 @@
-﻿using JetBrains.ReSharper.HeapView.Highlightings;
+﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.HeapView.Highlightings;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using NUnit.Framework;
 #if RESHARPER8
 using JetBrains.Application.Settings;
@@ -43,5 +46,18 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestHeap03() { DoNamedTest2(); }
 
     [Test] public void TestSlowDelegates01() { DoNamedTest2(); }
+
+#if RESHARPER9
+
+    protected override void DoTest(IProject project)
+    {
+      var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
+      languageLevelProjectProperty.ExecuteWithLanguageLevel(project, CSharpLanguageLevel.CSharp50, () =>
+      {
+        base.DoTest(project);
+      });
+    }
+
+#endif
   }
 }

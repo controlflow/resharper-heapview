@@ -8,7 +8,7 @@
     <ProjectGuid>{79A15662-77DC-4C79-BD54-3646B6C5374B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <HostFullIdentifier>ReSharperPlatformVs12Exp</HostFullIdentifier>
+    <HostFullIdentifier>ReSharperPlatformVs12Plugin</HostFullIdentifier>
     <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
     <AssemblyName>ReSharper.HeapView</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
