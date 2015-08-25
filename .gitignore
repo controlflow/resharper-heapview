@@ -50,6 +50,7 @@ ipch/
 _ReSharper*
 
 packages/*
+ReSharper.HeapView/Tests/packages/*
 
 # Installshield output folder
 [Ee]xpress
