@@ -1,19 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R81", "ReSharper.HeapView\ReSharper.HeapView.R81.csproj", "{50365433-AAE1-4755-9562-B777F23B7C23}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R82", "ReSharper.HeapView\ReSharper.HeapView.R82.csproj", "{92A32691-9FF3-481E-A15D-52C3BBC4F98C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R90", "ReSharper.HeapView\ReSharper.HeapView.R90.csproj", "{4DD44801-150F-4922-8835-CEA0FB1DC2DE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B1DB157D-4A9E-449C-98FD-3449DB17F12E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R81", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R81.csproj", "{6DC588F6-B12C-447E-92D7-9C21A003179C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R82", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R82.csproj", "{1278D396-5565-4262-B758-B5599CB4A82A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BDF400-83F8-4413-88B0-D3BBA3A9647A}"
 	ProjectSection(SolutionItems) = preProject
@@ -38,26 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{50365433-AAE1-4755-9562-B777F23B7C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50365433-AAE1-4755-9562-B777F23B7C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50365433-AAE1-4755-9562-B777F23B7C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50365433-AAE1-4755-9562-B777F23B7C23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92A32691-9FF3-481E-A15D-52C3BBC4F98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92A32691-9FF3-481E-A15D-52C3BBC4F98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92A32691-9FF3-481E-A15D-52C3BBC4F98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92A32691-9FF3-481E-A15D-52C3BBC4F98C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DD44801-150F-4922-8835-CEA0FB1DC2DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DD44801-150F-4922-8835-CEA0FB1DC2DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DD44801-150F-4922-8835-CEA0FB1DC2DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DD44801-150F-4922-8835-CEA0FB1DC2DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DC588F6-B12C-447E-92D7-9C21A003179C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DC588F6-B12C-447E-92D7-9C21A003179C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DC588F6-B12C-447E-92D7-9C21A003179C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DC588F6-B12C-447E-92D7-9C21A003179C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1278D396-5565-4262-B758-B5599CB4A82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1278D396-5565-4262-B758-B5599CB4A82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1278D396-5565-4262-B758-B5599CB4A82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1278D396-5565-4262-B758-B5599CB4A82A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,8 +49,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6DC588F6-B12C-447E-92D7-9C21A003179C} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
-		{1278D396-5565-4262-B758-B5599CB4A82A} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{03FAC09B-5DDE-4631-B165-82761D37A6FE} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{EC2877CE-5702-4712-A92F-4810B9A52BB1} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
