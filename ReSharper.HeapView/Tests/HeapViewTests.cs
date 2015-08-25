@@ -30,8 +30,7 @@ namespace JetBrains.ReSharper.HeapView
           || highlighting is ObjectAllocationEvidentHighlighting
           || highlighting is ObjectAllocationPossibleHighlighting
           || highlighting is ClosureAllocationHighlighting
-          || highlighting is DelegateAllocationHighlighting
-          || highlighting is SlowDelegateCreationHighlighting;
+          || highlighting is DelegateAllocationHighlighting;
     }
 
     [Test] public void TestBoxing01() { DoNamedTest2(); }
@@ -44,8 +43,6 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestHeap01() { DoNamedTest2(); }
     [Test] public void TestHeap02() { DoNamedTest2(); }
     [Test] public void TestHeap03() { DoNamedTest2(); }
-
-    [Test] public void TestSlowDelegates01() { DoNamedTest2(); }
 
 #if RESHARPER9
 
