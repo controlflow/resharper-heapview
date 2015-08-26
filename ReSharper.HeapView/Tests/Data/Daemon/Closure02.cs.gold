@@ -209,84 +209,84 @@ class Closures
 
   public void M14<T>()
   {
-    F(() ||=>|(64)|(65) { });
+    F(() |=>|(64) { });
 
     var xs = from x in XS
-             ||where|(66)|(67) x > 0
-             ||group|(68)|(69) x + 1 ||by|(70)|(71) x + 2
+             |where|(65) x > 0
+             |group|(66) x + 1 |by|(67) x + 2
              into x // should not be highlighted
-             join |y|(72) in YS ||on|(73)|(74) x.Key ||equals|(75)|(76) y
-             ||let|(77)|(78) |t|(79) = 1
-             ||select|(80)|(81) y + t;
+             join |y|(68) in YS |on|(69) x.Key |equals|(70) y
+             |let|(71) |t|(72) = 1
+             |select|(73) y + t;
   }
 
-  public void M15(int |arg|(82))
+  public void M15(int |arg|(74))
   {
-    var y = F(() |=>|(83) X + arg);
-    F(z |=>|(84) y);
+    var y = F(() |=>|(75) X + arg);
+    F(z |=>|(76) y);
   }
 
   public Action M16
   {
     get
     {
-      return () |=>|(85) {
+      return () |=>|(77) {
         var x = X;
       };
     }
-    |set|(86)
+    |set|(78)
     {
-      F(() |=>|(87) value);
+      F(() |=>|(79) value);
     }
   }
 
-  public Action this[||int i|(88)|(89)]
+  public Action this[||int i|(80)|(81)]
   {
     get
     {
-      return () |=>|(90)
-        F(() |=>|(91) X + i);
+      return () |=>|(82)
+        F(() |=>|(83) X + i);
     }
     set
     {
-      var y = F(() |=>|(92) X + i);
-      F(z |=>|(93) y);
+      var y = F(() |=>|(84) X + i);
+      F(z |=>|(85) y);
     }
   }
 
   private Action<int>
-    f = |x|(94) =>
+    f = |x|(86) =>
     {
 
-      F(() |=>|(95) x);
+      F(() |=>|(87) x);
     },
-    g = |x|(96) =>
+    g = |x|(88) =>
     {
-      F(() |=>|(97) x);
+      F(() |=>|(89) x);
     };
 
   private Action<int, int, int>
-    tt = (x, |y|(98), z) =>
+    tt = (x, |y|(90), z) =>
     {
-      F(() |=>|(99) y);
+      F(() |=>|(91) y);
     };
 
   private IEnumerable<int> xsss = from x in Enumerable.Range(0, 100)
                                   where x < 0
-                                  select F(() |=>|(100) x);
+                                  select F(() |=>|(92) x);
 
-  public void M17(int |arg|(101))
+  public void M17(int |arg|(93))
   {
-    Expression<Func<int, int>> e = x |=>|(102) x;
+    Expression<Func<int, int>> e = x |=>|(94) x;
 
     var xs = Enumerable.Range(0, 10).AsQueryable();
     var ys = from x in xs
-             |where|(103) x > 0
-             |select|(104) x + 1;
+             |where|(95) x > 0
+             |select|(96) x + 1;
 
-    Expression<Func<int>> f = () |=>|(105) arg;
-    Expression<Action<int>> g = |t|(106) |=>|(107) F(() |=>|(108) t + arg);
-    Expression<Func<int, int>> u = t |=>|(109) 1;
+    Expression<Func<int>> f = () |=>|(97) arg;
+    Expression<Action<int>> g = |t|(98) |=>|(99) F(() |=>|(100) t + arg);
+    Expression<Func<int, int>> u = t |=>|(101) 1;
   }
 
   private static int I { get; set; }
@@ -365,48 +365,40 @@ class Closures
 (62): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
 (63): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
 (64): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(65): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(65): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (66): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(67): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(68): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(69): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(67): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
+(68): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
+(69): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (70): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(71): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
+(71): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
 (72): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
 (73): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(74): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(75): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(76): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(77): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(78): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(79): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(80): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(81): ReSharper Error Highlighting: Slow delegate creation: anonymous function in generic method is generic itself
-(82): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter, 'y' variable and 'this' reference
-(83): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg' parameter and 'this' reference
-(84): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
-(85): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(86): ReSharper HeapView Allocation: Closure allocation: 'value' parameter
-(87): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
-(88): ReSharper HeapView Allocation: Closure allocation: 'i' parameter and 'this' reference
-(89): ReSharper HeapView Allocation: Closure allocation: 'i' parameter, 'y' variable and 'this' reference
-(90): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(91): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(92): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(93): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
-(94): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(95): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(96): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(97): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(98): ReSharper HeapView Allocation: Closure allocation: 'y' parameter
-(99): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' parameter
-(100): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(101): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter
-(102): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(103): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(104): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(105): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(106): ReSharper HeapView Allocation: Closure allocation: 't' parameter + (outer closure of 'arg' parameter)
-(107): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(108): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg', 't' parameters
-(109): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(74): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter, 'y' variable and 'this' reference
+(75): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg' parameter and 'this' reference
+(76): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
+(77): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
+(78): ReSharper HeapView Allocation: Closure allocation: 'value' parameter
+(79): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
+(80): ReSharper HeapView Allocation: Closure allocation: 'i' parameter and 'this' reference
+(81): ReSharper HeapView Allocation: Closure allocation: 'i' parameter, 'y' variable and 'this' reference
+(82): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(83): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(84): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
+(85): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
+(86): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(87): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(88): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(89): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(90): ReSharper HeapView Allocation: Closure allocation: 'y' parameter
+(91): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' parameter
+(92): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(93): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter
+(94): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(95): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(96): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(97): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(98): ReSharper HeapView Allocation: Closure allocation: 't' parameter + (outer closure of 'arg' parameter)
+(99): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(100): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg', 't' parameters
+(101): ReSharper HeapView Allocation: Object allocation: expression tree construction

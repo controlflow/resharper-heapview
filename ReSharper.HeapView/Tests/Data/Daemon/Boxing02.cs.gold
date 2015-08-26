@@ -62,9 +62,9 @@ static class A {
     ValueType v1 = |s|(35), v2 = |(T?) s|(36);
     I         i1 = |s|(37), i2 = |(T?) s|(38);
 
-    Action f = s.|||M|(39)|(40)|(41);
-    |s|(42).E();
-    s.|GetType|(43)();
+    Action f = s.||M|(39)|(40);
+    |s|(41).E();
+    s.|GetType|(42)();
 
     // possible
     s.GetHashCode();
@@ -117,6 +117,5 @@ static class A {
 (38): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'T?' to reference type 'I'
 (39): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
 (40): ReSharper HeapView Allocation: Delegate allocation: from method group
-(41): ReSharper Error Highlighting: Slow delegate creation: from interface 'I' method
-(42): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'T' to reference type 'I'
-(43): ReSharper HeapView Boxing: Boxing allocation: inherited System.Object virtual method call on value type instance
+(41): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'T' to reference type 'I'
+(42): ReSharper HeapView Boxing: Boxing allocation: inherited System.Object virtual method call on value type instance
