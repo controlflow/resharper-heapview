@@ -14,11 +14,12 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Psi.CSharp;
 // ReSharper disable ConvertClosureToMethodGroup
+// ReSharper disable RedundantExplicitParamsArrayCreation
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    elementTypes: new[] {
+    new[] {
       typeof(ICSharpFunctionDeclaration), // constructors, methods, operators, accessors
       typeof(IFieldDeclaration), typeof(IEventDeclaration), // field/event initializers
       typeof(IExpressionBodyOwnerDeclaration), // C# 6.0 expression-bodied members

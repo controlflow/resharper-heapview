@@ -16,11 +16,12 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+// ReSharper disable RedundantExplicitParamsArrayCreation
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    elementTypes: new[] {
+    new[] {
       typeof(IReferenceExpression),
       typeof(IObjectCreationExpression),
       typeof(IAnonymousObjectCreationExpression),

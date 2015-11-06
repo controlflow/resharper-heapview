@@ -7,25 +7,19 @@ using Microsoft.VisualStudio.Utilities;
 // ReSharper disable UnassignedField.Global
 
 [assembly: RegisterHighlighter(
-  id: HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
-  EffectColor = "Red",
-  EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX,
-  VSPriority = VSPriority.IDENTIFIERS)]
+  HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+  EffectColor = "Red", EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 [assembly: RegisterHighlighter(
   HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-  EffectColor = "Yellow",
-  EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX,
-  VSPriority = VSPriority.IDENTIFIERS)]
+  EffectColor = "Yellow", EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 [assembly: RegisterHighlighter(
-  id: HeapViewAttributeIds.STRUCT_COPY_ID,
-  EffectColor = "Yellow",
-  EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX,
-  VSPriority = VSPriority.IDENTIFIERS)]
+  HeapViewAttributeIds.STRUCT_COPY_ID,
+  EffectColor = "Yellow", EffectType = EffectType.SOLID_UNDERLINE,
+  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 // todo: extract constants
 

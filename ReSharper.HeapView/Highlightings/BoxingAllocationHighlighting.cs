@@ -6,19 +6,17 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
-  id: BoxingAllocationHighlighting.SEVERITY_ID,
-  compoundItemName: null,
-  group: HeapViewHighlightingsGroupIds.ID,
-  title: "Boxing allocation",
-  description: "Highlights language construct or expression where boxing happens",
-  defaultSeverity: Severity.HINT,
-  solutionAnalysisRequired: false)]
+  BoxingAllocationHighlighting.SEVERITY_ID,
+  null,
+  HeapViewHighlightingsGroupIds.ID,
+  "Boxing allocation",
+  "Highlights language construct or expression where boxing happens",
+  Severity.HINT, false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    configurableSeverityId: SEVERITY_ID,
-    languages: CSharpLanguage.Name,
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]

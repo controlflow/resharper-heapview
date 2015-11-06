@@ -4,23 +4,17 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable RedundantArgumentName
-// ReSharper disable RedundantArgumentNameForLiteralExpression
 
 [assembly: RegisterConfigurableSeverity(
-  id: ClosureAllocationHighlighting.SEVERITY_ID,
-  compoundItemName: null,
-  group: HeapViewHighlightingsGroupIds.ID,
-  title: "Closure allocation",
-  description: "Highlights places where closure class creation happens",
-  defaultSeverity: Severity.HINT,
-  solutionAnalysisRequired: false)]
+  ClosureAllocationHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Closure allocation",
+  "Highlights places where closure class creation happens",
+  Severity.HINT, false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    configurableSeverityId: SEVERITY_ID,
-    languages: CSharpLanguage.Name,
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]

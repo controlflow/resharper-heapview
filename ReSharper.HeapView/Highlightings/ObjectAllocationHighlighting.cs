@@ -4,41 +4,29 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable RedundantArgumentName
-// ReSharper disable RedundantArgumentNameForLiteralExpression
 
 [assembly: RegisterConfigurableSeverity(
-  id: ObjectAllocationHighlighting.SEVERITY_ID,
-  compoundItemName: null,
-  group: HeapViewHighlightingsGroupIds.ID,
-  title: "Object allocation",
-  description: "Highlights language construct or expression where object allocation happens",
-  defaultSeverity: Severity.HINT,
-  solutionAnalysisRequired: false)]
+  ObjectAllocationHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Object allocation",
+  "Highlights language construct or expression where object allocation happens",
+  Severity.HINT, false)]
 
 [assembly: RegisterConfigurableSeverity(
-  id: ObjectAllocationEvidentHighlighting.SEVERITY_ID,
-  compoundItemName: null,
-  group: HeapViewHighlightingsGroupIds.ID,
-  title: "Object allocation (evident)",
-  description: "Highlights object creation expressions where explicit allocation happens",
-  defaultSeverity: Severity.HINT,
-  solutionAnalysisRequired: false)]
+  ObjectAllocationEvidentHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Object allocation (evident)",
+  "Highlights object creation expressions where explicit allocation happens",
+  Severity.HINT, false)]
 
 [assembly: RegisterConfigurableSeverity(
-  id: ObjectAllocationPossibleHighlighting.SEVERITY_ID,
-  compoundItemName: null,
-  group: HeapViewHighlightingsGroupIds.ID,
-  title: "Object allocation (possible)",
-  description: "Highlights language construct where object allocation can possibly happens",
-  defaultSeverity: Severity.HINT,
-  solutionAnalysisRequired: false)]
+  ObjectAllocationPossibleHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Object allocation (possible)",
+  "Highlights language construct where object allocation can possibly happens",
+  Severity.HINT, false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(
-    configurableSeverityId: SEVERITY_ID,
-    languages: CSharpLanguage.Name,
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]
@@ -52,8 +40,7 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
   }
 
   [ConfigurableSeverityHighlighting(
-    configurableSeverityId: SEVERITY_ID,
-    languages: CSharpLanguage.Name,
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]
@@ -67,8 +54,7 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
   }
 
   [ConfigurableSeverityHighlighting(
-    configurableSeverityId: SEVERITY_ID,
-    languages: CSharpLanguage.Name,
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false,
     ToolTipFormatString = MESSAGE)]
