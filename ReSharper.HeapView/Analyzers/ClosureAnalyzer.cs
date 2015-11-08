@@ -96,7 +96,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         foreach (var capture in closure.Value)
         {
           ILocalScope scope = null;
-          if (capture is IFunction) scope = topScope; // 'this' capture
+
+          if (capture is IFunction)
+          {
+            scope = topScope; // 'this' capture
+          }
           else
           {
             var declarations = capture.GetDeclarations();
@@ -110,8 +114,15 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             {
               foreach (var declaration in declarations)
               {
-                if (declaration is IRegularParameterDeclaration) scope = topScope;
-                else scope = declaration.GetContainingNode<ILocalScope>();
+                if (declaration is IRegularParameterDeclaration)
+                {
+                  scope = topScope;
+                }
+                else
+                {
+                  scope = declaration.GetContainingNode<ILocalScope>();
+                }
+
                 break;
               }
             }
@@ -143,6 +154,23 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               var description = FormatClosureDescription(closure.Value);
               var highlighting = new DelegateAllocationHighlighting(closure.Key, "capture of " + description);
               consumer.AddHighlighting(highlighting, highlightingRange);
+
+              var closureExpression = closure.Key as ICSharpExpression;
+              if (closureExpression != null)
+              {
+                ITreeNode invocationNode;
+                var parameterInstance = ClosurelessOverloadSearcher.FindParameterOfInvocationToBeOverloaded(closureExpression, out invocationNode);
+                if (parameterInstance != null)
+                {
+                  var stateOverload = ClosurelessOverloadSearcher.FindOverloadsWithGenericStateParameter(parameterInstance);
+                  if (stateOverload != null)
+                  {
+                    consumer.AddHighlighting(
+                      new CanAvoidClosureHighlighting(closureExpression),
+                      invocationNode.GetDocumentRange());
+                  }
+                }
+              }
             }
           }
         }
