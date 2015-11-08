@@ -154,6 +154,7 @@
   <ItemGroup>
     <Compile Include="Analyzers\BoxingOccurrenceAnalyzer.cs" />
     <Compile Include="Analyzers\ClosureAnalyzer.cs" />
+    <Compile Include="Analyzers\ClosurelessOverloadSearcher.cs" />
     <Compile Include="Analyzers\HeapAllocationAnalyzer.cs" />
     <Compile Include="Analyzers\StructCopyAnalyzer.cs" />
     <Compile Include="Highlightings\ClassificationDefinitions.cs" />
