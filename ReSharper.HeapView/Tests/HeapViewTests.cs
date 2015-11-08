@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.HeapView
           || highlighting is ObjectAllocationEvidentHighlighting
           || highlighting is ObjectAllocationPossibleHighlighting
           || highlighting is ClosureAllocationHighlighting
-          || highlighting is CanAvoidClosureHighlighting
+          || highlighting is CanEliminateClosureCreationHighlighting
           || highlighting is DelegateAllocationHighlighting;
     }
 

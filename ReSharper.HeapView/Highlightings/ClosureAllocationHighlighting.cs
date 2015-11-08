@@ -12,16 +12,15 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   Severity.HINT, false)]
 
 [assembly: RegisterConfigurableSeverity(
-  CanAvoidClosureHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Can avoid closure creation",
+  CanEliminateClosureCreationHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Closure creation can be eliminated",
   "Highlights places where closure can be eliminated by using the overload(s) of containing method invocation, " +
   "allowing passing extra state parameter(s) to closure function",
   Severity.SUGGESTION, false)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
     ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
   public class ClosureAllocationHighlighting : PerformanceHighlightingBase
@@ -33,15 +32,14 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
-  [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
     ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
-  public class CanAvoidClosureHighlighting : PerformanceHighlightingBase
+  public class CanEliminateClosureCreationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.CanAvoidClosure";
-    public const string MESSAGE = "Closure allocation can be eliminated: {0}";
+    public const string MESSAGE = "Closure can be eliminated: {0}";
 
-    public CanAvoidClosureHighlighting([NotNull] ITreeNode element)
-      : base(element, MESSAGE, "this method has overload to avoid closure creation") { }
+    public CanEliminateClosureCreationHighlighting([NotNull] ITreeNode element)
+      : base(element, MESSAGE, "method has overload to avoid closure creation") { }
   }
 }

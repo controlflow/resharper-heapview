@@ -13,6 +13,7 @@ using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.Resolve;
 // ReSharper disable ConvertClosureToMethodGroup
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
@@ -155,22 +156,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               var highlighting = new DelegateAllocationHighlighting(closure.Key, "capture of " + description);
               consumer.AddHighlighting(highlighting, highlightingRange);
 
-              var closureExpression = closure.Key as ICSharpExpression;
-              if (closureExpression != null)
-              {
-                ITreeNode invocationNode;
-                var parameterInstance = ClosurelessOverloadSearcher.FindParameterOfInvocationToBeOverloaded(closureExpression, out invocationNode);
-                if (parameterInstance != null)
-                {
-                  var stateOverload = ClosurelessOverloadSearcher.FindOverloadsWithGenericStateParameter(parameterInstance);
-                  if (stateOverload != null)
-                  {
-                    consumer.AddHighlighting(
-                      new CanAvoidClosureHighlighting(closureExpression),
-                      invocationNode.GetDocumentRange());
-                  }
-                }
-              }
+              ReportClosurelessOverloads(consumer, closure.Key);
             }
           }
         }
@@ -228,6 +214,25 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             consumer.AddHighlighting(new ClosureAllocationHighlighting(anchor, scopeClosure), highlightingRange);
           }
         }
+      }
+    }
+
+    private static void ReportClosurelessOverloads([NotNull] IHighlightingConsumer consumer, [NotNull] ITreeNode closureNode)
+    {
+      var closureExpression = closureNode as ICSharpExpression;
+      if (closureExpression == null) return;
+
+      var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocation(closureExpression);
+      if (invocationReference == null) return;
+
+      var parameterInstance = ClosurelessOverloadSearcher.FindClosureParameter(closureExpression);
+      if (parameterInstance == null) return;
+
+      var overload = ClosurelessOverloadSearcher.FindOverloadByParameter(parameterInstance);
+      if (overload != null)
+      {
+        var highlighting = new CanEliminateClosureCreationHighlighting(closureExpression);
+        consumer.AddHighlighting(highlighting, invocationReference.GetDocumentRange());
       }
     }
 

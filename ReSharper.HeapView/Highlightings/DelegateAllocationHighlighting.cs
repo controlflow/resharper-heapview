@@ -13,11 +13,9 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false,
-    ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
   public class DelegateAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.DelegateAllocation";

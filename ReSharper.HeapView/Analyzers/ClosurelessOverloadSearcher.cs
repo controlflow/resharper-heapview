@@ -4,24 +4,17 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
-  // todo: 'support key is passed, but not used' scenario?
-
   public static class ClosurelessOverloadSearcher
   {
-    // todo: objectcreationexpression
-
     [CanBeNull]
-    public static DeclaredElementInstance<IParameter> FindParameterOfInvocationToBeOverloaded([NotNull] ICSharpExpression expression, out ITreeNode invocationNode)
+    public static IReference FindMethodInvocation([NotNull] ICSharpExpression expression)
     {
-      invocationNode = null;
-
-      var argument = CSharpArgumentNavigator.GetByValue(expression.GetContainingParenthesizedExpressionStrict());
-      if (argument == null || argument.Mode != null) return null;
+      var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
+      var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
 
       var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
       if (invocationExpression == null) return null;
@@ -29,11 +22,21 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var invokedReference = invocationExpression.InvokedExpression as IReferenceExpression;
       if (invokedReference == null) return null;
 
-      invocationNode = invokedReference.NameIdentifier;
+      var invocationReference = invocationExpression.InvocationExpressionReference;
 
-      var resolveResult = invocationExpression.InvocationExpressionReference.Resolve();
+      var resolveResult = invocationReference.Resolve();
       if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return null;
       if (!(resolveResult.DeclaredElement is IMethod)) return null;
+
+      return invocationReference;
+    }
+
+    [CanBeNull]
+    public static DeclaredElementInstance<IParameter> FindClosureParameter([NotNull] ICSharpExpression expression)
+    {
+      var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
+      var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
+      if (argument == null) return null;
 
 #if RESHARPER9
       var parameterInstance = argument.MatchingParameter as ArgumentsUtil.ParameterInstance;
@@ -53,10 +56,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       return parameterInstance;
     }
 
-    // look for _more_ state parameters?
-
     [CanBeNull]
-    public static IMethod FindOverloadsWithGenericStateParameter([NotNull] DeclaredElementInstance<IParameter> parameterInstance)
+    public static IMethod FindOverloadByParameter([NotNull] DeclaredElementInstance<IParameter> parameterInstance)
     {
       var closureParameter = parameterInstance.Element.NotNull("closureParameter != null");
 
@@ -121,8 +122,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               var candidateParameterType = candidateParameter.Type;
 
               var isClosureParameter = ReferenceEquals(currentParameter, closureParameter);
-              if (isClosureParameter ? CompareDelegateTypes(parameterType, candidateParameterType, stateTypeParameters, candidateSubstitution)
-                                     : candidateSubstitution.Apply(parameterType).Equals(candidateParameterType))
+              if (isClosureParameter
+                ? CompareDelegateTypes(parameterType, candidateParameterType, stateTypeParameters, candidateSubstitution)
+                : candidateSubstitution.Apply(parameterType).Equals(candidateParameterType))
               {
                 currentIndex++;
                 candidateIndex++;
