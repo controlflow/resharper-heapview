@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; ReSharper 10 RTM support
+&#8226; ReSharper 10 RTM support;
+&#8226; New inspection 'Closure can be eliminated' to detect overloads with additional state parameters helping avoid closure allocations.
     </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />
