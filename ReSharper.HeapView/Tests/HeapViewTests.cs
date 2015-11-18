@@ -36,6 +36,10 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestHeap02() { DoNamedTest2(); }
     [Test] public void TestHeap03() { DoNamedTest2(); }
 
+    [Test] public void TestClosureless01() { DoNamedTest2(); }
+    [Test] public void TestClosureless02() { DoNamedTest2(); }
+    [Test] public void TestClosureless03() { DoNamedTest2(); }
+
     protected override void DoTest(IProject project)
     {
       var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();

@@ -8,6 +8,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
+  // todo: support M(Key, Func<T>) + M(TKey, Func<TKey, T>) where TKey : Key;
+
   public static class ClosurelessOverloadSearcher
   {
     [CanBeNull]
@@ -28,7 +30,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return null;
       if (!(resolveResult.DeclaredElement is IMethod)) return null;
 
-      return invocationReference;
+      return invokedReference.Reference;
     }
 
     [CanBeNull]
@@ -113,22 +115,25 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
           int currentIndex = 0, candidateIndex = 0;
           while (candidateIndex < candidateParameters.Count)
           {
-            var currentParameter = parameters[currentIndex];
             var candidateParameter = candidateParameters[candidateIndex];
 
-            if (CompareParameterKinds(currentParameter, candidateParameter))
+            if (currentIndex < parameters.Count)
             {
-              var parameterType = currentParameter.Type;
-              var candidateParameterType = candidateParameter.Type;
-
-              var isClosureParameter = ReferenceEquals(currentParameter, closureParameter);
-              if (isClosureParameter
-                ? CompareDelegateTypes(parameterType, candidateParameterType, stateTypeParameters, candidateSubstitution)
-                : candidateSubstitution.Apply(parameterType).Equals(candidateParameterType))
+              var currentParameter = parameters[currentIndex];
+              if (CompareParameterKinds(currentParameter, candidateParameter))
               {
-                currentIndex++;
-                candidateIndex++;
-                continue;
+                var parameterType = currentParameter.Type;
+                var candidateParameterType = candidateParameter.Type;
+
+                var isClosureParameter = ReferenceEquals(currentParameter, closureParameter);
+                if (isClosureParameter
+                  ? CompareDelegateTypes(parameterType, candidateParameterType, stateTypeParameters, candidateSubstitution)
+                  : candidateSubstitution.Apply(parameterType).Equals(candidateParameterType))
+                {
+                  currentIndex++;
+                  candidateIndex++;
+                  continue;
+                }
               }
             }
 
@@ -144,7 +149,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               }
             }
 
-            return false;
+            stateParametersToVisit = null;
+            break;
           }
 
           if (stateParametersToVisit != null && stateParametersToVisit.Count == 0) return true;
@@ -175,7 +181,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var typeParameter = declaredType.GetTypeElement() as ITypeParameter;
       if (typeParameter != null
           && typeParameter.OwnerMethod != null
-          && typeParameter.TypeConstraints.Count == 0
           && !typeParameter.HasDefaultConstructor)
       {
         return typeParameter;
@@ -299,6 +304,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         yield return Pair.Of<IList<ITypeParameter>, ISubstitution>(
           stateTypeParameters, headSubstitution.Extend(tailTypeParameters, tailTypeArguments));
+
+        if (headIndex == typeParametersCount) yield break;
 
         headSubstitution = headSubstitution.Extend(typeParameters[headIndex], candidateTypes[headIndex]);
       }

@@ -156,7 +156,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
               var highlighting = new DelegateAllocationHighlighting(closure.Key, "capture of " + description);
               consumer.AddHighlighting(highlighting, highlightingRange);
 
-              ReportClosurelessOverloads(consumer, closure.Key);
+              ReportClosurelessOverloads(closure.Key, consumer);
             }
           }
         }
@@ -217,7 +217,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    private static void ReportClosurelessOverloads([NotNull] IHighlightingConsumer consumer, [NotNull] ITreeNode closureNode)
+    private static void ReportClosurelessOverloads([NotNull] ITreeNode closureNode, [NotNull] IHighlightingConsumer consumer)
     {
       var closureExpression = closureNode as ICSharpExpression;
       if (closureExpression == null) return;
@@ -427,21 +427,23 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var lambdaExpression = function as ILambdaExpression;
       if (lambdaExpression != null)
       {
-        var declaredType = lambdaExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (declaredType != null && !declaredType.IsUnknown)
-          return declaredType.IsLinqExpression();
+#if RESHARPER9
+        var targetType = lambdaExpression.GetImplicitlyConvertedTo();
+        return !targetType.IsUnknown && targetType.IsLinqExpression();
+#else
+        return lambdaExpression.IsLinqExpressionTreeLambda();
+#endif
       }
 
       var parameterPlatform = function as IQueryParameterPlatform;
       if (parameterPlatform != null)
       {
-        var matchingParameter = parameterPlatform.MatchingParameter;
-        if (matchingParameter != null)
-        {
-          var type = matchingParameter.Substitution[matchingParameter.Element.Type];
-          if (!type.IsUnknown)
-            return type.IsLinqExpression();
-        }
+#if RESHARPER9
+        var targetType = parameterPlatform.GetImplicitlyConvertedTo();
+        return !targetType.IsUnknown && targetType.IsLinqExpression();
+#else
+        return parameterPlatform.IsLinqExpressionTreeQuery();
+#endif
       }
 
       return false;
