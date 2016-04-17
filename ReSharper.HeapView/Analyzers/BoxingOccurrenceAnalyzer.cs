@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (qualifierExpression == null || qualifierExpression is IBaseExpression)
       {
         var declaration = invocationExpression.GetContainingTypeDeclaration();
-        isValueType = (declaration != null && declaration.DeclaredElement is IStruct);
+        isValueType = declaration?.DeclaredElement is IStruct;
       }
       else
       {
@@ -79,9 +79,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (targetType.IsDelegateType())
       {
         var referenceExpression = expression as IReferenceExpression;
-        if (referenceExpression == null) return;
 
-        var method = referenceExpression.Reference.Resolve().DeclaredElement as IMethod;
+        var method = referenceExpression?.Reference.Resolve().DeclaredElement as IMethod;
         if (method == null || method.IsStatic || method.IsExtensionMethod) return;
 
         ITypeElement valueType = null;
@@ -133,7 +132,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    [StringFormatMethod(formatParameterName: "format")]
+    [NotNull]
     private static string BakeDescription([NotNull] string format, [NotNull] params IType[] types)
     {
       var args = Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance));

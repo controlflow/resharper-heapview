@@ -19,9 +19,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
 
       var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
-      if (invocationExpression == null) return null;
 
-      var invokedReference = invocationExpression.InvokedExpression as IReferenceExpression;
+      var invokedReference = invocationExpression?.InvokedExpression as IReferenceExpression;
       if (invokedReference == null) return null;
 
       var invocationReference = invocationExpression.InvocationExpressionReference;
@@ -38,17 +37,12 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     {
       var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
       var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
-      if (argument == null) return null;
-
-      var parameterInstance = argument.MatchingParameter;
-      if (parameterInstance == null) return null;
-
-      if (parameterInstance.Expanded != ArgumentsUtil.ExpandedKind.None) return null;
+      var parameterInstance = argument?.MatchingParameter;
+      if (parameterInstance?.Expanded != ArgumentsUtil.ExpandedKind.None) return null;
 
       var parameterDeclaredType = parameterInstance.Type as IDeclaredType;
-      if (parameterDeclaredType == null) return null;
 
-      var delegateType = parameterDeclaredType.GetTypeElement() as IDelegate;
+      var delegateType = parameterDeclaredType?.GetTypeElement() as IDelegate;
       if (delegateType == null) return null;
 
       return parameterInstance;
@@ -60,9 +54,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var closureParameter = parameterInstance.Element.NotNull("closureParameter != null");
 
       var currentMethod = closureParameter.ContainingParametersOwner as IMethod;
-      if (currentMethod == null) return null;
 
-      var containingType = currentMethod.GetContainingType();
+      var containingType = currentMethod?.GetContainingType();
       if (containingType == null) return null;
 
       var shortName = currentMethod.ShortName;
@@ -172,9 +165,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (parameter.IsOptional) return null;
 
       var declaredType = substitution[parameter.Type] as IDeclaredType;
-      if (declaredType == null) return null;
 
-      var typeParameter = declaredType.GetTypeElement() as ITypeParameter;
+      var typeParameter = declaredType?.GetTypeElement() as ITypeParameter;
       if (typeParameter != null
           && typeParameter.OwnerMethod != null
           && !typeParameter.HasDefaultConstructor)
@@ -189,16 +181,14 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       [NotNull] IType closureParameterType, [NotNull] IType closureCandidateParameterType,
       [NotNull] IList<ITypeParameter> stateTypeParameters, [NotNull] ISubstitution typeParametersMapping)
     {
+      // Func<int, M1::T1, List<M1::T2>, string>
       var closureDeclaredType = closureParameterType as IDeclaredType;
-      if (closureDeclaredType == null) return false; // Func<int, M1::T1, List<M1::T2>, string>
-
-      var closureDelegateType = closureDeclaredType.GetTypeElement() as IDelegate;
+      var closureDelegateType = closureDeclaredType?.GetTypeElement() as IDelegate;
       if (closureDelegateType == null) return false;
 
+      // Func<int, M2::T1, List<M2::T2>, M2::TState, string>
       var candidateClosureDeclaredType = closureCandidateParameterType as IDeclaredType;
-      if (candidateClosureDeclaredType == null) return false; // Func<int, M2::T1, List<M2::T2>, M2::TState, string>
-
-      var candidateClosureDelegateType = candidateClosureDeclaredType.GetTypeElement() as IDelegate;
+      var candidateClosureDelegateType = candidateClosureDeclaredType?.GetTypeElement() as IDelegate;
       if (candidateClosureDelegateType == null) return false;
 
       // {T1 -> int, T2 -> M1::T1, T3 -> List<M1::T2>, TResult -> string}
@@ -225,7 +215,6 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       while (candidateIndex < candidateDelegateParameters.Count)
       {
-        
         var candidateDelegateParameter = candidateDelegateParameters[candidateIndex];
 
         if (currentIndex < delegateParameters.Count)

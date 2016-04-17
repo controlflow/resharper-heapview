@@ -202,7 +202,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (outerCaptures != null)
         {
           var description = FormatClosureDescription(outerCaptures);
-          scopeClosure += string.Format(" + (outer closure of {0})", description);
+          scopeClosure += $" + (outer closure of {description})";
         }
 
         if (firstCapture != null)
@@ -454,12 +454,12 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         ClosurelessLambdas = new List<ITreeNode>();
       }
 
-      [NotNull] public Dictionary<ITreeNode, JetHashSet<IDeclaredElement>> Closures { get; private set; }
-      [NotNull] public List<ITreeNode> ClosurelessLambdas { get; private set; }
-      [NotNull] public JetHashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; private set; }
+      [NotNull] public Dictionary<ITreeNode, JetHashSet<IDeclaredElement>> Closures { get; }
+      [NotNull] public List<ITreeNode> ClosurelessLambdas { get; }
+      [NotNull] public JetHashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
 
-      public bool InteriorShouldBeProcessed(ITreeNode element) { return true; }
-      public bool ProcessingIsFinished { get { return false; } }
+      public bool InteriorShouldBeProcessed(ITreeNode element) => true;
+      public bool ProcessingIsFinished => false;
 
       public void ProcessAfterInterior(ITreeNode element)
       {
@@ -540,7 +540,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         }
       }
 
-      private void ProcessReferenceExpression(IReferenceExpression reference)
+      private void ProcessReferenceExpression([NotNull] IReferenceExpression reference)
       {
         var declaredElement = reference.Reference.Resolve().DeclaredElement;
 

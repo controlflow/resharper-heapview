@@ -7,25 +7,20 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
 {
   public abstract class PerformanceHighlightingBase : IHighlighting
   {
-    [NotNull] private readonly string myDescription;
     [NotNull] private readonly ITreeNode myElement;
 
     protected PerformanceHighlightingBase([NotNull] ITreeNode element, [NotNull] string format, [NotNull] string description)
     {
       myElement = element;
-      myDescription = string.Format(format, description);
+      ToolTip = string.Format(format, description);
     }
 
     public bool IsValid() { return myElement.IsValid(); }
 
-    public DocumentRange CalculateRange()
-    {
-      return myElement.GetDocumentRange();
-    }
+    public DocumentRange CalculateRange() => myElement.GetDocumentRange();
 
-    public string ToolTip { get { return myDescription; } }
-    public string ErrorStripeToolTip { get { return ToolTip; } }
-
-    public int NavigationOffsetPatch { get { return 0; } }
+    [NotNull] public string ToolTip { get; }
+    [NotNull] public string ErrorStripeToolTip => ToolTip;
+    public int NavigationOffsetPatch => 0;
   }
 }

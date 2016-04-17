@@ -199,7 +199,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     {
       ITreeNode start = null, end = null;
       var variableDeclaration = LocalVariableDeclarationNavigator.GetByInitial(arrayInitializer);
-      if (variableDeclaration != null && variableDeclaration.EquivalenceSign != null)
+      if (variableDeclaration?.EquivalenceSign != null)
       {
         start = variableDeclaration.NameIdentifier;
         end = variableDeclaration.EquivalenceSign;
@@ -207,7 +207,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       else
       {
         var fieldDeclaration = FieldDeclarationNavigator.GetByInitial(arrayInitializer);
-        if (fieldDeclaration != null && fieldDeclaration.EquivalenceSign != null)
+        if (fieldDeclaration?.EquivalenceSign != null)
         {
           start = fieldDeclaration.NameIdentifier;
           end = fieldDeclaration.EquivalenceSign;
@@ -307,9 +307,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (IsCachedEmptyArrayAvailable(anchor)) return;
 
       var expression = anchor as ICSharpExpression;
-      var paramsRange = expression != null ? expression.GetExpressionRange() : anchor.GetDocumentRange();
+      var paramsRange = expression?.GetExpressionRange() ?? anchor.GetDocumentRange();
 
-      var description = string.Format("parameters array '{0}' creation", lastParameter.ShortName);
+      var description = $"parameters array '{lastParameter.ShortName}' creation";
       consumer.AddHighlighting(new ObjectAllocationHighlighting(anchor, description), paramsRange);
     }
 
@@ -318,20 +318,17 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
 
       var property = declaredElement as IProperty;
-      if (property != null)
+      var getter = property?.Getter;
+      if (getter != null && getter.IsIterator)
       {
-        var getter = property.Getter;
-        if (getter != null && getter.IsIterator)
-        {
-          var languageService = referenceExpression.Language.LanguageServiceNotNull();
+        var languageService = referenceExpression.Language.LanguageServiceNotNull();
 
-          var accessType = languageService.GetReferenceAccessType(referenceExpression.Reference);
-          if (accessType == ReferenceAccessType.READ)
-          {
-            consumer.AddHighlighting(
-              new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
-              referenceExpression.NameIdentifier.GetDocumentRange());
-          }
+        var accessType = languageService.GetReferenceAccessType(referenceExpression.Reference);
+        if (accessType == ReferenceAccessType.READ)
+        {
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
+            referenceExpression.NameIdentifier.GetDocumentRange());
         }
       }
 
@@ -340,7 +337,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         // todo: check inside delegate invocation
 
         var declaredType = referenceExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (declaredType != null && declaredType.GetTypeElement() is IDelegate)
+        if (declaredType?.GetTypeElement() is IDelegate)
         {
           consumer.AddHighlighting(
             new DelegateAllocationHighlighting(referenceExpression, "from method group"),
@@ -371,7 +368,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         var operandsCount = concatenations.Count + 1;
         var description = "string concatenation"
-          + (operandsCount <= 2 ? null : string.Format(" ({0} operands)", operandsCount))
+          + (operandsCount <= 2 ? null : $" ({operandsCount} operands)")
           + (operandsCount <= 4 ? null : " + params array allocation");
 
         consumer.AddHighlighting(
@@ -440,9 +437,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
     private static bool IsStringConcatOperatorReference([CanBeNull] IReference reference)
     {
-      if (reference == null) return false;
-
-      var @operator = reference.Resolve().DeclaredElement as IOperator;
+      var @operator = reference?.Resolve().DeclaredElement as IOperator;
       if (@operator == null || !@operator.IsPredefined) return false;
 
       var parameters = @operator.Parameters;
@@ -458,9 +453,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static void CheckForeachDeclaration([NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)
     {
       var collection = foreachStatement.Collection;
-      if (collection == null) return;
 
-      var collectionType = collection.Type() as IDeclaredType;
+      var collectionType = collection?.Type() as IDeclaredType;
       if (collectionType == null || collectionType.IsUnknown) return;
 
       // no allocations because of compiler support (just like arrays)
@@ -518,9 +512,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       foreach (var typeMember in classType.EnumerateMembers("Empty", caseSensitive: false))
       {
         var method = typeMember as IMethod;
-        if (method == null) continue;
-
-        if (method.Parameters.Count == 0
+        if (method?.Parameters.Count == 0
           && method.TypeParameters.Count == 1
           && method.GetAccessRights() == AccessRights.PUBLIC) return true;
       }
