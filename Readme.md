@@ -9,9 +9,9 @@ It can be used to reduce number of heap allocations in hot paths of your C# prog
 
 #### Download
 
-* Currently supported ReSharper versions are `9.1`, `9.2` and `10.0`;
+* Currently supported ReSharper versions are `10.0` and `2016.1`;
 * Use ReSharper extension manager to install it from [extensions gallery](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R100/);
-* ReSharper `8.x` and `9.0` are no longer supported, check extension manager for [latest](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView/) [versions](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R90/);
+* ReSharper `8.x` and `9.x` are no longer supported, check extension manager for [latest](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView/) [versions](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R90/);
 * Plugin's [changelog is here](Content/Changelog.md).
 
 #### Features
@@ -107,9 +107,3 @@ class Closures {
 * This plugin is designed to replace R# >8.1 internal feature, so you should turn off "Show allocations"
   option if you are running ReSharper in internal mode and using built-in allocations viewer;
 * Plugin's [changelog is here](Content/Changelog.md).
-
-#### Roadmap
-
-* Filtering of allocations in static context
-* External annotations for BCL APIs?
-* Class/struct layout calculation?

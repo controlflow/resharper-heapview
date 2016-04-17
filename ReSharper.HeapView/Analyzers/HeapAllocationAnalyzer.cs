@@ -247,8 +247,16 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
       else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
       {
+#if RESHARPER10
         var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
         if (annotationsCache.IsPure(method) && annotationsCache.GetLinqTunnel(method))
+#elif RESHARPER2016_1
+        var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
+        var linqTunnelAnnotationProvider = annotationsCache.GetProvider<LinqTunnelAnnotationProvider>();
+        var pureAnnotationProvider = annotationsCache.GetProvider<PureAnnotationProvider>();
+
+        if (pureAnnotationProvider.GetInfo(method) && linqTunnelAnnotationProvider.GetInfo(method))
+#endif
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(invocation, "LINQ method call"),

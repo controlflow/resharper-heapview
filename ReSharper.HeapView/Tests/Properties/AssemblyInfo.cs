@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NUnit.Framework;
 
 [assembly: AssemblyTitle("ReSharper.HeapView")]
 [assembly: AssemblyDescription("Heap Allocations Viewer plugin for ReSharper tests")]
@@ -11,3 +12,5 @@
 
 [assembly: AssemblyVersion("0.9.9")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: RequiresSTA]

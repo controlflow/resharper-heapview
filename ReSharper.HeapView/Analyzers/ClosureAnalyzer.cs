@@ -427,23 +427,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var lambdaExpression = function as ILambdaExpression;
       if (lambdaExpression != null)
       {
-#if RESHARPER9
-        var targetType = lambdaExpression.GetImplicitlyConvertedTo();
-        return !targetType.IsUnknown && targetType.IsLinqExpression();
-#else
         return lambdaExpression.IsLinqExpressionTreeLambda();
-#endif
       }
 
       var parameterPlatform = function as IQueryParameterPlatform;
       if (parameterPlatform != null)
       {
-#if RESHARPER9
-        var targetType = parameterPlatform.GetImplicitlyConvertedTo();
-        return !targetType.IsUnknown && targetType.IsLinqExpression();
-#else
         return parameterPlatform.IsLinqExpressionTreeQuery();
-#endif
       }
 
       return false;

@@ -5,6 +5,7 @@ using JetBrains.TextControl.DocumentMarkup;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 // ReSharper disable UnassignedField.Global
+#pragma warning disable 649
 
 [assembly: RegisterHighlighter(
   HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,

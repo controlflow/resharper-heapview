@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B1DB157D-4A9E-449C-98FD-3449DB17F12E}"
 EndProject
@@ -14,17 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BD
 		ReSharper.HeapView.nuspec = ReSharper.HeapView.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R91", "ReSharper.HeapView\ReSharper.HeapView.R91.csproj", "{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R91", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R91.csproj", "{03FAC09B-5DDE-4631-B165-82761D37A6FE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R92", "ReSharper.HeapView\ReSharper.HeapView.R92.csproj", "{79A15662-77DC-4C79-BD54-3646B6C5374B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R92", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R92.csproj", "{EC2877CE-5702-4712-A92F-4810B9A52BB1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R100", "ReSharper.HeapView\ReSharper.HeapView.R100.csproj", "{9B980366-B6DB-4052-92DC-E46ACF41F0B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R100", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R100.csproj", "{EC2877CE-5702-4712-A92F-4850B9A52BB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.R2016.1", "ReSharper.HeapView\ReSharper.HeapView.R2016.1.csproj", "{F738D9EC-0E59-4268-BB91-5039304B299D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.R2016.1", "ReSharper.HeapView\Tests\ReSharper.HeapView.Tests.R2016.1.csproj", "{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,22 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD72FAC8-B38B-44AB-9FF3-9909F5A6335E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03FAC09B-5DDE-4631-B165-82761D37A6FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79A15662-77DC-4C79-BD54-3646B6C5374B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC2877CE-5702-4712-A92F-4810B9A52BB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B980366-B6DB-4052-92DC-E46ACF41F0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9B980366-B6DB-4052-92DC-E46ACF41F0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B980366-B6DB-4052-92DC-E46ACF41F0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,13 +36,20 @@ Global
 		{EC2877CE-5702-4712-A92F-4850B9A52BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC2877CE-5702-4712-A92F-4850B9A52BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC2877CE-5702-4712-A92F-4850B9A52BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F738D9EC-0E59-4268-BB91-5039304B299D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F738D9EC-0E59-4268-BB91-5039304B299D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F738D9EC-0E59-4268-BB91-5039304B299D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F738D9EC-0E59-4268-BB91-5039304B299D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{03FAC09B-5DDE-4631-B165-82761D37A6FE} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
-		{EC2877CE-5702-4712-A92F-4810B9A52BB1} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{EC2877CE-5702-4712-A92F-4850B9A52BB1} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{8D81F25E-3720-42E9-9A33-9E00C0CD8FDF} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal

@@ -40,11 +40,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
       if (argument == null) return null;
 
-#if RESHARPER9
-      var parameterInstance = argument.MatchingParameter as ArgumentsUtil.ParameterInstance;
-#else
       var parameterInstance = argument.MatchingParameter;
-#endif
       if (parameterInstance == null) return null;
 
       if (parameterInstance.Expanded != ArgumentsUtil.ExpandedKind.None) return null;
