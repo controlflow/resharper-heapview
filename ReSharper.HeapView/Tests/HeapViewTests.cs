@@ -5,13 +5,15 @@ using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.HeapView
 {
-  public class HeapViewHighlightingTest : CSharpHighlightingTestNet4Base
+  [TestNetFramework45]
+  public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
-    protected override string RelativeTestDataPath { get { return "Daemon"; } }
+    protected override string RelativeTestDataPath => "Daemon";
 
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
     {
