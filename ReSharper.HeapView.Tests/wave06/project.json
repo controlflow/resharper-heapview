@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "JetBrains.ReSharper.SDK": "2016.2.20160818.171542",
+    "VSSDK.Text" : "10.0.4"
+  },
+  "frameworks": {
+    ".NETFramework,Version=v4.0": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
