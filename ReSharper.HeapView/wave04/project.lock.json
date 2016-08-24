@@ -1,0 +1,2600 @@
+{
+  "locked": false,
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.0": {
+      "Antlr2.Runtime/2.7.7.2": {
+        "type": "package",
+        "compile": {
+          "lib/antlr.runtime.dll": {}
+        },
+        "runtime": {
+          "lib/antlr.runtime.dll": {}
+        }
+      },
+      "Antlr2.Tools/2.7.6.4": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "DotNetZip.Reduced/1.9.1.8": {
+        "type": "package",
+        "compile": {
+          "lib/net20/Ionic.Zip.Reduced.dll": {}
+        },
+        "runtime": {
+          "lib/net20/Ionic.Zip.Reduced.dll": {}
+        }
+      },
+      "JetBrains.Annotations/10.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/JetBrains.Annotations.dll": {}
+        },
+        "runtime": {
+          "lib/net20/JetBrains.Annotations.dll": {}
+        }
+      },
+      "JetBrains.Build.Platform.Tasks.ThemedIconsPacker/2.0.20150812": {
+        "type": "package"
+      },
+      "JetBrains.ExternalAnnotations/10.0.15": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "JetBrains.Mono.Posix/0.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Mono.Posix.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Mono.Posix.dll": {}
+        }
+      },
+      "JetBrains.Platform.Core.Ide/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Core.Text": "[104.0.20151116.72020, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Sprache.JetBrains": "[2.0.0.44]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Core.Shell/104.0.20151116.71530": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Mono.Posix": "[0.1.0]",
+          "JetBrains.Platform.Lib.System.Windows.Interactivity": "[2.0.20140318]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "SharpZipLib.JetBrains.Stripped": "[0.86.20150204.1]",
+          "Sprache.JetBrains": "[2.0.0.44]",
+          "Vestris.ResourceLib.JetBrains": "[1.4.20150303]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]",
+          "xmlrpcnet": "[2.5.0]"
+        }
+      },
+      "JetBrains.Platform.Core.Text/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Installer/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller": "[2.0.20140821]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "WinDbg.SymStore": "[8.1.20130822.1833]"
+        }
+      },
+      "JetBrains.Platform.Interop.dotMemoryUnit.Interop/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Lib.DevExpress/2.0.20150224": {
+        "type": "package",
+        "compile": {
+          "lib/Net/DevExpress.Data.v7.1.dll": {},
+          "lib/Net/DevExpress.Utils.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraEditors.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraTreeList.v7.1.dll": {}
+        },
+        "runtime": {
+          "lib/Net/DevExpress.Data.v7.1.dll": {},
+          "lib/Net/DevExpress.Utils.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraEditors.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraTreeList.v7.1.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab/2.0.20140304": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.Deployment.Compression.Cab.dll": {},
+          "lib/Microsoft.Deployment.Compression.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.Deployment.Compression.Cab.dll": {},
+          "lib/Microsoft.Deployment.Compression.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller/2.0.20140821": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.Deployment.WindowsInstaller.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.Deployment.WindowsInstaller.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.System.Windows.Interactivity/2.0.20140318": {
+        "type": "package",
+        "compile": {
+          "lib/System.Windows.Interactivity.dll": {}
+        },
+        "runtime": {
+          "lib/System.Windows.Interactivity.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild/2.0.20140304": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.VisualStudio.Shell.Interop.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.VisualStudio.Shell.Interop.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.WpfContrib/2.0.20150225": {
+        "type": "package",
+        "compile": {
+          "lib/Net/WpfContrib.dll": {}
+        },
+        "runtime": {
+          "lib/Net/WpfContrib.dll": {}
+        }
+      },
+      "JetBrains.Platform.Symbols/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab": "[2.0.20140304]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Tests.Framework/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.VisualStudio/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Core.Text": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.Core/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.Cpp.src/104.0.20151116.74357": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Installer": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.SolutionBuilder": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.VisualStudio": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.VC100.CRT.JetBrains": "[10.0.40219.2]",
+          "Microsoft.VC120.CRT.JetBrains": "[12.0.21005.2]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.SolutionBuilder/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.VisualStudio": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.src/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.ExternalAnnotations": "[10.0.15]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Core": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.UnitTesting": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]"
+        }
+      },
+      "JetBrains.Psi.Features.Tasks/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "Antlr2.Runtime": "[2.7.7.2]",
+          "Antlr2.Tools": "[2.7.6.4]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NVelocity": "[1.0.3]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.test.Framework/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Tests.Framework": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.UnitTesting/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.ExternalAnnotations": "[10.0.15]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Core": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "NUnit.ReSharperRunner2": "[2.6.408]",
+          "NUnit.ReSharperRunner3": "[3.0.11]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.VisualStudio/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]"
+        }
+      },
+      "JetBrains.ReSharper.SDK/10.0.20151116.81636": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.ReSharper.SDK.Internal": "[104.0.20151116.81636, 104.1.0)"
+        },
+        "compile": {
+          "lib/Net/_._": {}
+        },
+        "runtime": {
+          "lib/Net/_._": {}
+        }
+      },
+      "JetBrains.ReSharper.SDK.Internal/104.0.20151116.81636": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Build.Platform.Tasks.ThemedIconsPacker": "[2.0.20150812]",
+          "JetBrains.Platform.Tests.Framework": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Cpp.src": "[104.0.20151116.74357, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.test.Framework": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "Microsoft.VC100.CRT.JetBrains/10.0.40219.2": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Microsoft.VC120.CRT.JetBrains/12.0.21005.2": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Microsoft.Web.Xdt/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Web.XmlTransform.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Web.XmlTransform.dll": {}
+        }
+      },
+      "Newtonsoft35.Json/7.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net35/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net35/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NuGet.Core/2.8.6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Web.Xdt": "2.1.0"
+        },
+        "compile": {
+          "lib/net40-Client/NuGet.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/NuGet.Core.dll": {}
+        }
+      },
+      "NUnit/2.6.4": {
+        "type": "package",
+        "compile": {
+          "lib/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/nunit.framework.dll": {}
+        }
+      },
+      "NUnit.ReSharperRunner2/2.6.408": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "NUnit.ReSharperRunner3/3.0.11": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "NVelocity/1.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/NVelocity.dll": {}
+        },
+        "runtime": {
+          "lib/NVelocity.dll": {}
+        }
+      },
+      "SharpZipLib.JetBrains.Stripped/0.86.20150204.1": {
+        "type": "package",
+        "compile": {
+          "lib/20/ICSharpCode.SharpZipLib.dll": {}
+        },
+        "runtime": {
+          "lib/20/ICSharpCode.SharpZipLib.dll": {}
+        }
+      },
+      "Sprache.JetBrains/2.0.0.44": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.dll": {}
+        }
+      },
+      "Vestris.ResourceLib.JetBrains/1.4.20150303": {
+        "type": "package",
+        "compile": {
+          "lib/Net/Vestris.ResourceLib.dll": {}
+        },
+        "runtime": {
+          "lib/Net/Vestris.ResourceLib.dll": {}
+        }
+      },
+      "VSSDK.CoreUtility/10.0.4": {
+        "type": "package",
+        "dependencies": {
+          "VSSDK.IDE.10": "[10.0.4, 11.0.0)"
+        },
+        "frameworkAssemblies": [
+          "System.ComponentModel.Composition"
+        ],
+        "compile": {
+          "lib/net40/Microsoft.VisualStudio.CoreUtility.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.VisualStudio.CoreUtility.dll": {}
+        }
+      },
+      "VSSDK.IDE.10/10.0.4": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System"
+        ]
+      },
+      "VSSDK.Text/10.0.4": {
+        "type": "package",
+        "dependencies": {
+          "VSSDK.CoreUtility": "10.0.4",
+          "VSSDK.IDE.10": "[10.0.4, 11.0.0)"
+        },
+        "frameworkAssemblies": [
+          "PresentationCore",
+          "PresentationFramework",
+          "System",
+          "WindowsBase"
+        ],
+        "compile": {
+          "lib/net40/Microsoft.VisualStudio.Text.Data.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.Logic.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.VisualStudio.Text.Data.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.Logic.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.dll": {}
+        }
+      },
+      "Wave/4.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/Net/_._": {}
+        },
+        "runtime": {
+          "lib/Net/_._": {}
+        }
+      },
+      "WinDbg.SymStore/8.1.20130822.1833": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Windows7APICodePack.JetBrains.Stripped/1.1.20150225": {
+        "type": "package",
+        "compile": {
+          "lib/Net/Microsoft.WindowsAPICodePack.Shell.dll": {},
+          "lib/Net/Microsoft.WindowsAPICodePack.dll": {}
+        },
+        "runtime": {
+          "lib/Net/Microsoft.WindowsAPICodePack.Shell.dll": {},
+          "lib/Net/Microsoft.WindowsAPICodePack.dll": {}
+        }
+      },
+      "xmlrpcnet/2.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/CookComputing.XmlRpcV2.dll": {}
+        },
+        "runtime": {
+          "lib/net20/CookComputing.XmlRpcV2.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.0/win": {
+      "Antlr2.Runtime/2.7.7.2": {
+        "type": "package",
+        "compile": {
+          "lib/antlr.runtime.dll": {}
+        },
+        "runtime": {
+          "lib/antlr.runtime.dll": {}
+        }
+      },
+      "Antlr2.Tools/2.7.6.4": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "DotNetZip.Reduced/1.9.1.8": {
+        "type": "package",
+        "compile": {
+          "lib/net20/Ionic.Zip.Reduced.dll": {}
+        },
+        "runtime": {
+          "lib/net20/Ionic.Zip.Reduced.dll": {}
+        }
+      },
+      "JetBrains.Annotations/10.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/JetBrains.Annotations.dll": {}
+        },
+        "runtime": {
+          "lib/net20/JetBrains.Annotations.dll": {}
+        }
+      },
+      "JetBrains.Build.Platform.Tasks.ThemedIconsPacker/2.0.20150812": {
+        "type": "package"
+      },
+      "JetBrains.ExternalAnnotations/10.0.15": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "JetBrains.Mono.Posix/0.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Mono.Posix.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Mono.Posix.dll": {}
+        }
+      },
+      "JetBrains.Platform.Core.Ide/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Core.Text": "[104.0.20151116.72020, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Sprache.JetBrains": "[2.0.0.44]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Core.Shell/104.0.20151116.71530": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Mono.Posix": "[0.1.0]",
+          "JetBrains.Platform.Lib.System.Windows.Interactivity": "[2.0.20140318]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "SharpZipLib.JetBrains.Stripped": "[0.86.20150204.1]",
+          "Sprache.JetBrains": "[2.0.0.44]",
+          "Vestris.ResourceLib.JetBrains": "[1.4.20150303]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]",
+          "xmlrpcnet": "[2.5.0]"
+        }
+      },
+      "JetBrains.Platform.Core.Text/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Installer/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller": "[2.0.20140821]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "WinDbg.SymStore": "[8.1.20130822.1833]"
+        }
+      },
+      "JetBrains.Platform.Interop.dotMemoryUnit.Interop/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Lib.DevExpress/2.0.20150224": {
+        "type": "package",
+        "compile": {
+          "lib/Net/DevExpress.Data.v7.1.dll": {},
+          "lib/Net/DevExpress.Utils.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraEditors.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraTreeList.v7.1.dll": {}
+        },
+        "runtime": {
+          "lib/Net/DevExpress.Data.v7.1.dll": {},
+          "lib/Net/DevExpress.Utils.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraEditors.v7.1.dll": {},
+          "lib/Net/DevExpress.XtraTreeList.v7.1.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab/2.0.20140304": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.Deployment.Compression.Cab.dll": {},
+          "lib/Microsoft.Deployment.Compression.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.Deployment.Compression.Cab.dll": {},
+          "lib/Microsoft.Deployment.Compression.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller/2.0.20140821": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.Deployment.WindowsInstaller.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.Deployment.WindowsInstaller.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.System.Windows.Interactivity/2.0.20140318": {
+        "type": "package",
+        "compile": {
+          "lib/System.Windows.Interactivity.dll": {}
+        },
+        "runtime": {
+          "lib/System.Windows.Interactivity.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild/2.0.20140304": {
+        "type": "package",
+        "compile": {
+          "lib/Microsoft.VisualStudio.Shell.Interop.dll": {}
+        },
+        "runtime": {
+          "lib/Microsoft.VisualStudio.Shell.Interop.dll": {}
+        }
+      },
+      "JetBrains.Platform.Lib.WpfContrib/2.0.20150225": {
+        "type": "package",
+        "compile": {
+          "lib/Net/WpfContrib.dll": {}
+        },
+        "runtime": {
+          "lib/Net/WpfContrib.dll": {}
+        }
+      },
+      "JetBrains.Platform.Symbols/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab": "[2.0.20140304]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.Tests.Framework/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Platform.VisualStudio/104.0.20151116.72020": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Core.Text": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.Core/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.Cpp.src/104.0.20151116.74357": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Installer": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.SolutionBuilder": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.VisualStudio": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.VC100.CRT.JetBrains": "[10.0.40219.2]",
+          "Microsoft.VC120.CRT.JetBrains": "[12.0.21005.2]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.SolutionBuilder/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.VisualStudio": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.src/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.ExternalAnnotations": "[10.0.15]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Core": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.UnitTesting": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]"
+        }
+      },
+      "JetBrains.Psi.Features.Tasks/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "Antlr2.Runtime": "[2.7.7.2]",
+          "Antlr2.Tools": "[2.7.6.4]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Shell": "[104.0.20151116.71530, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NVelocity": "[1.0.3]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.test.Framework/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Tests.Framework": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "NUnit": "[2.6.4]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.UnitTesting/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.ExternalAnnotations": "[10.0.15]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Interop.dotMemoryUnit.Interop": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Core": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.Tasks": "[104.0.20151116.72549, 104.1.0)",
+          "NUnit.ReSharperRunner2": "[2.6.408]",
+          "NUnit.ReSharperRunner3": "[3.0.11]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "JetBrains.Psi.Features.VisualStudio/104.0.20151116.72549": {
+        "type": "package",
+        "dependencies": {
+          "DotNetZip.Reduced": "[1.9.1.8]",
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Platform.Core.Ide": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.Lib.DevExpress": "[2.0.20150224]",
+          "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild": "[2.0.20140304]",
+          "JetBrains.Platform.Lib.WpfContrib": "[2.0.20150225]",
+          "JetBrains.Platform.Symbols": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Platform.VisualStudio": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]",
+          "Windows7APICodePack.JetBrains.Stripped": "[1.1.20150225]"
+        }
+      },
+      "JetBrains.ReSharper.SDK/10.0.20151116.81636": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.ReSharper.SDK.Internal": "[104.0.20151116.81636, 104.1.0)"
+        },
+        "compile": {
+          "lib/Net/_._": {}
+        },
+        "runtime": {
+          "lib/Net/_._": {}
+        }
+      },
+      "JetBrains.ReSharper.SDK.Internal/104.0.20151116.81636": {
+        "type": "package",
+        "dependencies": {
+          "JetBrains.Annotations": "[10.0.0]",
+          "JetBrains.Build.Platform.Tasks.ThemedIconsPacker": "[2.0.20150812]",
+          "JetBrains.Platform.Tests.Framework": "[104.0.20151116.72020, 104.1.0)",
+          "JetBrains.Psi.Features.Cpp.src": "[104.0.20151116.74357, 104.1.0)",
+          "JetBrains.Psi.Features.src": "[104.0.20151116.72549, 104.1.0)",
+          "JetBrains.Psi.Features.test.Framework": "[104.0.20151116.72549, 104.1.0)",
+          "Microsoft.Web.Xdt": "[2.1.1]",
+          "Newtonsoft35.Json": "[7.0.1]",
+          "NuGet.Core": "[2.8.6]",
+          "Wave": "[4.0.0]"
+        }
+      },
+      "Microsoft.VC100.CRT.JetBrains/10.0.40219.2": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Microsoft.VC120.CRT.JetBrains/12.0.21005.2": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Microsoft.Web.Xdt/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Web.XmlTransform.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Web.XmlTransform.dll": {}
+        }
+      },
+      "Newtonsoft35.Json/7.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net35/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net35/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NuGet.Core/2.8.6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Web.Xdt": "2.1.0"
+        },
+        "compile": {
+          "lib/net40-Client/NuGet.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/NuGet.Core.dll": {}
+        }
+      },
+      "NUnit/2.6.4": {
+        "type": "package",
+        "compile": {
+          "lib/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/nunit.framework.dll": {}
+        }
+      },
+      "NUnit.ReSharperRunner2/2.6.408": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "NUnit.ReSharperRunner3/3.0.11": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "NVelocity/1.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/NVelocity.dll": {}
+        },
+        "runtime": {
+          "lib/NVelocity.dll": {}
+        }
+      },
+      "SharpZipLib.JetBrains.Stripped/0.86.20150204.1": {
+        "type": "package",
+        "compile": {
+          "lib/20/ICSharpCode.SharpZipLib.dll": {}
+        },
+        "runtime": {
+          "lib/20/ICSharpCode.SharpZipLib.dll": {}
+        }
+      },
+      "Sprache.JetBrains/2.0.0.44": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.dll": {}
+        }
+      },
+      "Vestris.ResourceLib.JetBrains/1.4.20150303": {
+        "type": "package",
+        "compile": {
+          "lib/Net/Vestris.ResourceLib.dll": {}
+        },
+        "runtime": {
+          "lib/Net/Vestris.ResourceLib.dll": {}
+        }
+      },
+      "VSSDK.CoreUtility/10.0.4": {
+        "type": "package",
+        "dependencies": {
+          "VSSDK.IDE.10": "[10.0.4, 11.0.0)"
+        },
+        "frameworkAssemblies": [
+          "System.ComponentModel.Composition"
+        ],
+        "compile": {
+          "lib/net40/Microsoft.VisualStudio.CoreUtility.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.VisualStudio.CoreUtility.dll": {}
+        }
+      },
+      "VSSDK.IDE.10/10.0.4": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System"
+        ]
+      },
+      "VSSDK.Text/10.0.4": {
+        "type": "package",
+        "dependencies": {
+          "VSSDK.CoreUtility": "10.0.4",
+          "VSSDK.IDE.10": "[10.0.4, 11.0.0)"
+        },
+        "frameworkAssemblies": [
+          "PresentationCore",
+          "PresentationFramework",
+          "System",
+          "WindowsBase"
+        ],
+        "compile": {
+          "lib/net40/Microsoft.VisualStudio.Text.Data.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.Logic.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.VisualStudio.Text.Data.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.Logic.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.dll": {},
+          "lib/net40/Microsoft.VisualStudio.Text.UI.dll": {}
+        }
+      },
+      "Wave/4.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/Net/_._": {}
+        },
+        "runtime": {
+          "lib/Net/_._": {}
+        }
+      },
+      "WinDbg.SymStore/8.1.20130822.1833": {
+        "type": "package",
+        "compile": {
+          "lib/net/_._": {}
+        },
+        "runtime": {
+          "lib/net/_._": {}
+        }
+      },
+      "Windows7APICodePack.JetBrains.Stripped/1.1.20150225": {
+        "type": "package",
+        "compile": {
+          "lib/Net/Microsoft.WindowsAPICodePack.Shell.dll": {},
+          "lib/Net/Microsoft.WindowsAPICodePack.dll": {}
+        },
+        "runtime": {
+          "lib/Net/Microsoft.WindowsAPICodePack.Shell.dll": {},
+          "lib/Net/Microsoft.WindowsAPICodePack.dll": {}
+        }
+      },
+      "xmlrpcnet/2.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/CookComputing.XmlRpcV2.dll": {}
+        },
+        "runtime": {
+          "lib/net20/CookComputing.XmlRpcV2.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Antlr2.Runtime/2.7.7.2": {
+      "sha512": "TIpBH6OCUBievXmX4zH7NBoCpKE4a0XAnV/I29+cUzKThJlGixfa9X+IqmDWqp/+7W7rO8CTb/G1x0pCcv1BCw==",
+      "type": "package",
+      "files": [
+        "Antlr2.Runtime.2.7.7.2.nupkg.sha512",
+        "Antlr2.Runtime.nuspec",
+        "lib/antlr.runtime.dll"
+      ]
+    },
+    "Antlr2.Tools/2.7.6.4": {
+      "sha512": "ibkApYz/z1J2bsMRjzp6qgVRNWbLXVvLcJyuP5A/M6dXYoXKPL8vNEB+A8HbxwOtYcmwpql7xXYyOC6rxzGN4w==",
+      "type": "package",
+      "files": [
+        "Antlr2.Tools.2.7.6.4.nupkg.sha512",
+        "Antlr2.Tools.nuspec",
+        "build/Antlr2.Tools.targets",
+        "lib/net/_._",
+        "tools/IKVM.GNU.Classpath.dll",
+        "tools/IKVM.Runtime.dll",
+        "tools/LICENSE.txt",
+        "tools/antlr.net.exe",
+        "tools/antlr.net.exe.config"
+      ]
+    },
+    "DotNetZip.Reduced/1.9.1.8": {
+      "sha512": "7QuPI2xAhLc1fF+tr5rc4PzgnhsOC1tjt4NSqTjg4yt0EbLz+vRTCvFk01fgUO47fHvrAcsMmtZRxBFG2E+9Ew==",
+      "type": "package",
+      "files": [
+        "DotNetZip.Reduced.1.9.1.8.nupkg.sha512",
+        "DotNetZip.Reduced.nuspec",
+        "lib/net20/Ionic.Zip.Reduced.dll"
+      ]
+    },
+    "JetBrains.Annotations/10.0.0": {
+      "sha512": "vyadsDFnDDbR2NK3P++l9AA5ogM+cWlj8kQl8NV9m+LZyEYxjQndZZL/noqb5g8pYpCNellecxtVFdUZ979UWg==",
+      "type": "package",
+      "files": [
+        "JetBrains.Annotations.10.0.0.nupkg.sha512",
+        "JetBrains.Annotations.nuspec",
+        "lib/net20/JetBrains.Annotations.dll",
+        "lib/net20/JetBrains.Annotations.xml",
+        "lib/portable-net4+sl4+wp7+netcore45/JetBrains.Annotations.PCL1.dll",
+        "lib/portable-net4+sl4+wp7+netcore45/JetBrains.Annotations.PCL1.xml",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/JetBrains.Annotations.PCL328.dll",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/JetBrains.Annotations.PCL328.xml"
+      ]
+    },
+    "JetBrains.Build.Platform.Tasks.ThemedIconsPacker/2.0.20150812": {
+      "sha512": "nAyKsLMJvuNhvrBr+mdTEulzHllnp/K1vG+1Bw5KN+fo1V/C5cna+yLftgs+I8NjvVYlzuZZXBtfidEybjNrYw==",
+      "type": "package",
+      "files": [
+        "JetBrains.Build.Platform.Tasks.ThemedIconsPacker.2.0.20150812.nupkg.sha512",
+        "JetBrains.Build.Platform.Tasks.ThemedIconsPacker.nuspec",
+        "build/JetBrains.Build.Platform.Tasks.ThemedIconsPacker.Targets",
+        "build/JetBrains.Build.Platform.Tasks.ThemedIconsPacker.dll",
+        "build/JetBrains.Build.Platform.Tasks.ThemedIconsPacker.xml"
+      ]
+    },
+    "JetBrains.ExternalAnnotations/10.0.15": {
+      "sha512": "FdxvmVVsbpV4D1Joah3482D7J9gezPSuhYn2OkXFm+xrK+WvV+R9iRV6iFk+Uw3oaD3wDfCS5UYR/xYVUF4qgg==",
+      "type": "package",
+      "files": [
+        "DotFiles/ExternalAnnotations/.NETCore/System.Diagnostics.Debug/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.IO/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Linq.Queryable/LinqTunnel.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Linq.Queryable/Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Linq/LinqTunnel.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Linq/Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Runtime.Extensions/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Runtime.Extensions/Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Runtime/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Runtime/Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Runtime/Set.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Threading.Tasks/Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Xml.XDocument/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Xml.XDocument/4.0.0.0.Nullness.xml",
+        "DotFiles/ExternalAnnotations/.NETCore/System.Xml.XDocument/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/ADODB/7.0.3300.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Conversion.v4.0/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Engine/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Engine/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Framework/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Framework/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Tasks.v4.0/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Tasks/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Utilities.v4.0/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build.Utilities/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Build/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.CSharp/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.CSharp/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Data.Entity.Build.Tasks/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Data.Entity.Build.Tasks/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.JScript/10.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.JScript/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.ServiceModel.Channels.Mail.ExchangeWebService/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.ServiceModel.Channels.Mail/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Transactions.Bridge.Dtc/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Transactions.Bridge/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Transactions.Bridge/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Activities.Compiler/10.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility.Data/10.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility.Data/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/10.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/10.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/10.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/8.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Compatibility/8.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic.Vsa/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/10.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/10.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/10.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/8.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualBasic/8.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualC.STLCLR/1.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.VisualC.STLCLR/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Vsa.Vb.CodeDOMProcessor/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Vsa/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Web.WebPages.OAuth/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft.Workflow.Compiler/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/Microsoft_VsaVB/8.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationBuildTasks/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationCFFRasterizer/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationCore/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationCore/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationCore/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework.Aero/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework.Classic/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework.Luna/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework.Royale/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/3.0.0.0.Xaml.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/4.0.0.0.Xaml.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationFramework/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationUI/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/PresentationUI/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/ReachFramework/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/ReachFramework/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/SMDiagnostics/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/SMDiagnostics/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/StdFormat/7.0.3300.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Activities.Core.Presentation/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Activities.DurableInstancing/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Activities.Presentation/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Activities/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.AddIn.Contract/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.AddIn.Contract/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.AddIn/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.AddIn/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.Composition.Initialization/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.Composition/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.Composition/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.Composition/System.Component.Composition.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.DataAnnotations/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.DataAnnotations/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.DataAnnotations/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.DataAnnotations/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ComponentModel.DataAnnotations/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration.Install/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration.Install/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration.Install/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration.Install/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Configuration/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/3.5.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/3.5.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/LinqTunnel.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Core/Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.DataSetExtensions/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.DataSetExtensions/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.DataSetExtensions/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Entity.Design/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Entity.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Entity/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Entity/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Linq/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Linq/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Linq/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Linq/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.OracleClient/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.OracleClient/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services.Client/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services.Client/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services.Client/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services.Design/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.Services/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.SqlXml/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data.SqlXml/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Data/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Deployment/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Deployment/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Design/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Device/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices.AccountManagement/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices.AccountManagement/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices.Protocols/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices.Protocols/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.DirectoryServices/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing.Design/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Drawing/Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Dynamic/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.EnterpriseServices/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.EnterpriseServices/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IO.Compression/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IO.Log/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IO.Log/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IdentityModel.Selectors/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IdentityModel.Selectors/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IdentityModel/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.IdentityModel/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Json/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Management.Instrumentation/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Management.Instrumentation/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Management/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Management/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Messaging/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Messaging/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Net/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Net/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Net/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Numerics/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Numerics/2.0.5.0.Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Numerics/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Numerics/4.0.0.0.Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Printing/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Printing/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Caching/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.DurableInstancing/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Remoting/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Remoting/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization.Formatters.Soap/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization.Formatters.Soap/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization.Formatters.Soap/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization.Formatters.Soap/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization.Json/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Runtime.Serialization/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Security/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Activation/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Activities/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Channels/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Discovery/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Extensions/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Install/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.NetTcp/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.PollingDuplex/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Routing/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.ServiceMoniker40/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Syndication/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Web.Extensions/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Web/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Web/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel.Web/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceModel/Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceProcess/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.ServiceProcess/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Speech/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Speech/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Transactions/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Transactions/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Abstractions/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.ApplicationServices/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DataVisualization.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DataVisualization/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DynamicData.Design/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DynamicData.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DynamicData/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DynamicData/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.DynamicData/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Entity.Design/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Entity.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Entity/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Entity/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Extensions.Design/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Extensions.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Extensions/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Extensions/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Extensions/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Helpers/Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Http/Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Http/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mobile/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mobile/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/1.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/2.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/3.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/3.0.0.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/3.0.0.1.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/3.0.0.1.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/4.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/4.0.0.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/4.0.0.1.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/4.0.0.1.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.0.0.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.1.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.1.0.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.0.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.2.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.2.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.3.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/5.2.3.0.Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Mvc/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Routing/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Services/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Services/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.Services/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Administration/1.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Administration/2.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Deployment/1.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Deployment/2.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Deployment/3.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages.Razor/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages/1.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages/2.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages/3.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web.WebPages/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/4.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Web/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Browser/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Browser/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Controls.Data.Input/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Controls.Data/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Controls.Input/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Controls.Navigation/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Controls/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Data/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms.DataVisualization.Design/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms.DataVisualization/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Forms/Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Input.Manipulations/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Presentation/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows.Presentation/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Windows/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.Activities/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.Activities/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.ComponentModel/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.ComponentModel/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.Runtime/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Workflow.Runtime/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.WorkflowServices/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.WorkflowServices/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xaml.Hosting/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xaml/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/3.5.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/3.5.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/3.5.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Linq/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Serialization/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.Utils/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml.XPath/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System.Xml/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/System/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationClient/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationClientsideProviders/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationProvider/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationProvider/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationTypes/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/UIAutomationTypes/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WebMatrix.WebData/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsBase/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsBase/3.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsBase/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsBase/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsBase/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsFormsIntegration/3.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/WindowsFormsIntegration/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.0.0.Interfaces.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.5.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.5.0.Interfaces.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.5.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/2.0.5.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/4.0.0.0.Contracts.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/4.0.0.0.Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/4.0.0.0.Pure.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/Attributes.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/Collections.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/I18n.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/Pure.Manual.xml",
+        "DotFiles/ExternalAnnotations/.NETFramework/mscorlib/ValueFlow.xml",
+        "DotFiles/ExternalAnnotations/Catel/Catel.Core/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Catel/Catel.Silverlight/Catel.Core.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight.SL4/Attributes.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight.SL5/Attributes.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight.WP7/Attributes.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight.WP71/Attributes.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight.WPF4/Attributes.xml",
+        "DotFiles/ExternalAnnotations/GalaSoft/GalaSoft.MvvmLight/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Abstractions/6.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Core/6.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Core/Nullness.Manual.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Razor.Host/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Razor/6.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.Razor/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.ViewFeatures/6.0.0.0.Annotations.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.ViewFeatures/6.0.0.0.Annotations.xml.orig",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc.ViewFeatures/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.AspNet.Mvc/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.Practices.Prism/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Microsoft/Microsoft.Practices.Web.UI.WebControls/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/Caliburn.Micro/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/JulMar.Wpf.Helpers/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/NUnit.Framework/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/NUnit.Framework/FormatString.xml",
+        "DotFiles/ExternalAnnotations/Misc/NUnit.Framework/RegularExpression.xml",
+        "DotFiles/ExternalAnnotations/Misc/ReactiveUI/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/Spark.Web.Mvc/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/System.Threading/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/log4net/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Misc/log4net/I18n.xml",
+        "DotFiles/ExternalAnnotations/ReactiveExtensions/Microsoft.Reactive.Testing/Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/ReactiveExtensions/System.Reactive.Providers/Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/ReactiveExtensions/System.Reactive.Windows.Forms/Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/ReactiveExtensions/System.Reactive.Windows.Threading/Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/ReactiveExtensions/System.Reactive/Nullness.Gen.xml",
+        "DotFiles/ExternalAnnotations/Silverlight/System.Windows/2.0.5.0.System.Windows.xml",
+        "DotFiles/ExternalAnnotations/Silverlight/System.Windows/5.0.5.0.System.Windows.xml",
+        "DotFiles/ExternalAnnotations/SimpleMvvm/SimpleMvvmToolkit/Attributes.xml",
+        "DotFiles/ExternalAnnotations/SimpleMvvm/SimpleMvvmToolkit_WPF/SimpleMvvmToolkit.xml",
+        "DotFiles/ExternalAnnotations/Telerik/Telerik.Web.Mvc/Attributes.xml",
+        "DotFiles/ExternalAnnotations/Telerik/Telerik.Windows.Controls.GridView/Attributes.xml",
+        "DotFiles/ExternalAnnotations/VisualStudio/Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml",
+        "DotFiles/ExternalAnnotations/VisualStudio/Microsoft.VisualStudio.TestPlatform.UnitTestFramework.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows.Foundation.FoundationContract/Windows.Foundation.FoundationContract.Nullness.Generated.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows.Foundation.UniversalApiContract/Windows.Foundation.UniversalApiContract.Nullness.Generated.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows.Foundation.UniversalApiContract/Windows.Xaml.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows.Phone.PhoneContract/Windows.Phone.PhoneContract.Nullness.Generated.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows/I18n.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows/Windows.Nullness.Generated.xml",
+        "DotFiles/ExternalAnnotations/WinRT/Windows/Windows.Xaml.xml",
+        "JetBrains.ExternalAnnotations.10.0.15.nupkg.sha512",
+        "JetBrains.ExternalAnnotations.nuspec",
+        "lib/net/_._"
+      ]
+    },
+    "JetBrains.Mono.Posix/0.1.0": {
+      "sha512": "Ebb2+WUwU/+vB+LKXJF7do+z7S/5reqTGbLWkTAro636p5jG5tBqkC0fdxmoHA36DZawWlq2KhAfeVekGNHsbA==",
+      "type": "package",
+      "files": [
+        "JetBrains.Mono.Posix.0.1.0.nupkg.sha512",
+        "JetBrains.Mono.Posix.nuspec",
+        "lib/net40/Mono.Posix.dll"
+      ]
+    },
+    "JetBrains.Platform.Core.Ide/104.0.20151116.72020": {
+      "sha512": "gidZHxTNbjGr+QRqig6uJY3EKDtUJIZ4gIHPUSRmm6TmtEZxfNiEroVSBDFKZgq0WqB4P5826RrOVtXBblsrWQ==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Core.Ide.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.DocumentManager.dll",
+        "DotFiles/JetBrains.Platform.DocumentManager.xml",
+        "DotFiles/JetBrains.Platform.Ide.dll",
+        "DotFiles/JetBrains.Platform.Ide.xml",
+        "DotFiles/JetBrains.Platform.ProjectModel.MsBuild.dll",
+        "DotFiles/JetBrains.Platform.ProjectModel.MsBuild.xml",
+        "DotFiles/JetBrains.Platform.ProjectModel.dll",
+        "DotFiles/JetBrains.Platform.ProjectModel.xml",
+        "JetBrains.Platform.Core.Ide.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Core.Ide.nuspec",
+        "build/JetBrains.Platform.Core.Ide.Targets"
+      ]
+    },
+    "JetBrains.Platform.Core.Shell/104.0.20151116.71530": {
+      "sha512": "0PuOu7cgjwS1Lvqn7yqJnBQ5jMWAgETy5ipEFVzCfk2RxkkVc9vRM7vS+gii07HrOBL9++xYPMZ4F6I9eE+fCw==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.BuildEngine.dll",
+        "DotFiles/JetBrains.Platform.BuildEngine.xml",
+        "DotFiles/JetBrains.Platform.BuildInterfaces.dll",
+        "DotFiles/JetBrains.Platform.BuildInterfaces.xml",
+        "DotFiles/JetBrains.Platform.ComponentModel.dll",
+        "DotFiles/JetBrains.Platform.ComponentModel.xml",
+        "DotFiles/JetBrains.Platform.Core.Shell.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.Interop.WinApi.dll",
+        "DotFiles/JetBrains.Platform.Interop.WinApi.xml",
+        "DotFiles/JetBrains.Platform.Metadata.dll",
+        "DotFiles/JetBrains.Platform.Metadata.xml",
+        "DotFiles/JetBrains.Platform.Satellite.exe",
+        "DotFiles/JetBrains.Platform.Satellite.exe.config",
+        "DotFiles/JetBrains.Platform.Satellite.xml",
+        "DotFiles/JetBrains.Platform.Shell.SinceClr4.dll",
+        "DotFiles/JetBrains.Platform.Shell.SinceClr4.xml",
+        "DotFiles/JetBrains.Platform.Shell.dll",
+        "DotFiles/JetBrains.Platform.Shell.xml",
+        "DotFiles/JetBrains.Platform.UI.dll",
+        "DotFiles/JetBrains.Platform.UI.xml",
+        "DotFiles/JetBrains.Platform.Util.dll",
+        "DotFiles/JetBrains.Platform.Util.xml",
+        "DotFiles/JetBrains.UsageStatistics.dll",
+        "DotFiles/JetBrains.UsageStatistics.xml",
+        "DotFiles/JetLauncher32.exe",
+        "DotFiles/JetLauncher32c.exe",
+        "DotFiles/JetLauncher64.exe",
+        "DotFiles/JetLauncher64c.exe",
+        "DotFiles/linux-x64.dbg/libleveldb.so",
+        "DotFiles/linux-x64/libleveldb.so",
+        "DotFiles/macos-x64.dbg/libleveldb.dylib",
+        "DotFiles/macos-x64/libleveldb.dylib",
+        "DotFiles/x64.dbg/libleveldb.dll",
+        "DotFiles/x64/JetComponentManager.dll",
+        "DotFiles/x64/JetNativeHooks.dll",
+        "DotFiles/x64/libleveldb.dll",
+        "DotFiles/x86.dbg/libleveldb.dll",
+        "DotFiles/x86/JetComponentManager.dll",
+        "DotFiles/x86/JetNativeHooks.dll",
+        "DotFiles/x86/libleveldb.dll",
+        "JetBrains.Platform.Core.Shell.104.0.20151116.71530.nupkg.sha512",
+        "JetBrains.Platform.Core.Shell.nuspec",
+        "build/JetBrains.Platform.Core.Shell.Targets"
+      ]
+    },
+    "JetBrains.Platform.Core.Text/104.0.20151116.72020": {
+      "sha512": "00tBY80vDFkSEysGHkpGcKIpvJEfokES9oXGSu6vXu4LYVAguMROzTM0AuBZejKu2e32urH+mT+Lf4R0LVmxbw==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Core.Text.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.DocumentModel.dll",
+        "DotFiles/JetBrains.Platform.DocumentModel.xml",
+        "DotFiles/JetBrains.Platform.TextControl.dll",
+        "DotFiles/JetBrains.Platform.TextControl.xml",
+        "JetBrains.Platform.Core.Text.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Core.Text.nuspec",
+        "build/JetBrains.Platform.Core.Text.Targets"
+      ]
+    },
+    "JetBrains.Platform.Installer/104.0.20151116.72020": {
+      "sha512": "geKWNzFt/UQw7goRg4pHCydsappBk0bumOQH8GPmFECsPNDhtCiqqs4sW04wJYptZfP9E3VZBGloibOJ7gaEFw==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Installer.Bootstrap.exe",
+        "DotFiles/JetBrains.Platform.Installer.Bootstrap.xml",
+        "DotFiles/JetBrains.Platform.Installer.Cleanup.exe",
+        "DotFiles/JetBrains.Platform.Installer.Cleanup.xml",
+        "DotFiles/JetBrains.Platform.Installer.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.Installer.exe",
+        "DotFiles/JetBrains.Platform.Installer.xml",
+        "DotFiles/ReSharper9Plus.msi",
+        "JetBrains.Platform.Installer.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Installer.nuspec",
+        "build/JetBrains.Platform.Installer.Targets"
+      ]
+    },
+    "JetBrains.Platform.Interop.dotMemoryUnit.Interop/104.0.20151116.72020": {
+      "sha512": "H0Qkaxev9mNEMRcQl+RVPEsb9JKJzmKnIMrIHHrMQqN7Lxzvy1nscva71LPI/C8RSLlsEAXb7354qcBABWVXNg==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Interop.dll",
+        "DotFiles/JetBrains.Platform.Interop.dotMemoryUnit.Interop.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.Interop.xml",
+        "JetBrains.Platform.Interop.dotMemoryUnit.Interop.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Interop.dotMemoryUnit.Interop.nuspec",
+        "build/JetBrains.Platform.Interop.dotMemoryUnit.Interop.Targets"
+      ]
+    },
+    "JetBrains.Platform.Lib.DevExpress/2.0.20150224": {
+      "sha512": "y0EePB/cLJRj1kWyElHOmLCoMZyktKwGO82gDIUfOJan0SjBRblS6p3xmCaxL9D1Ev+GMMryAll33POWMlweUA==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.DevExpress.2.0.20150224.nupkg.sha512",
+        "JetBrains.Platform.Lib.DevExpress.nuspec",
+        "lib/Net/DevExpress.Data.v7.1.dll",
+        "lib/Net/DevExpress.Data.v7.1.xml",
+        "lib/Net/DevExpress.Utils.v7.1.dll",
+        "lib/Net/DevExpress.Utils.v7.1.xml",
+        "lib/Net/DevExpress.XtraEditors.v7.1.dll",
+        "lib/Net/DevExpress.XtraEditors.v7.1.xml",
+        "lib/Net/DevExpress.XtraTreeList.v7.1.dll",
+        "lib/Net/DevExpress.XtraTreeList.v7.1.xml"
+      ]
+    },
+    "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab/2.0.20140304": {
+      "sha512": "zWfTE3FRuBHJe8mN181WifCzxctqoOTWxC6+IX68F4uRCC1FaLv6hei5F8lZ/DV/y1bIphdRyFrKa17ZewhlCg==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab.2.0.20140304.nupkg.sha512",
+        "JetBrains.Platform.Lib.Microsoft.Deployment.Compression.Cab.nuspec",
+        "lib/Microsoft.Deployment.Compression.Cab.dll",
+        "lib/Microsoft.Deployment.Compression.dll"
+      ]
+    },
+    "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller/2.0.20140821": {
+      "sha512": "2bCM5J3kbBey5VHNlnY1Ah0QSqGDzEHqA2saTz1/n87evp80ndB6y2e7qgRDK8NJ9sgEiw+OY38kxuod5nM7Hw==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller.2.0.20140821.nupkg.sha512",
+        "JetBrains.Platform.Lib.Microsoft.Deployment.WindowsInstaller.nuspec",
+        "lib/Microsoft.Deployment.WindowsInstaller.dll"
+      ]
+    },
+    "JetBrains.Platform.Lib.System.Windows.Interactivity/2.0.20140318": {
+      "sha512": "yjfl0HQneHnphOJmEk/HnFKDTnvLCZHGSepSNd+sPBXBNXaHvjnoZ7xwinKNNV7q3QkQBJoJN63i+8w8WM6Fgw==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.System.Windows.Interactivity.2.0.20140318.nupkg.sha512",
+        "JetBrains.Platform.Lib.System.Windows.Interactivity.nuspec",
+        "lib/System.Windows.Interactivity.dll",
+        "lib/System.Windows.Interactivity.xml"
+      ]
+    },
+    "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild/2.0.20140304": {
+      "sha512": "p3H9sZcr8qr67BkHKLang+wwtTBt36WvwWaSuZK+z25MgXqsjUDGTRFzCIhpme9P5bDbbRreo44d4vj+zh/KaQ==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild.2.0.20140304.nupkg.sha512",
+        "JetBrains.Platform.Lib.VisualStudio.AnyVs.ShellInterop.PrivateBuild.nuspec",
+        "lib/Microsoft.VisualStudio.Shell.Interop.dll",
+        "lib/Microsoft.VisualStudio.Shell.Interop.xml",
+        "lib/ReadMe.txt"
+      ]
+    },
+    "JetBrains.Platform.Lib.WpfContrib/2.0.20150225": {
+      "sha512": "g8QFgLqhLoI6YAuOclnThSv8TsV3hWib3aWnRFp7Ynlzmx42UGMGWn9zUJFAcRTYhUcLioNxeby13Q9zRaoxrw==",
+      "type": "package",
+      "files": [
+        "JetBrains.Platform.Lib.WpfContrib.2.0.20150225.nupkg.sha512",
+        "JetBrains.Platform.Lib.WpfContrib.nuspec",
+        "lib/Net/WpfContrib.dll",
+        "lib/Net/WpfContrib.xml"
+      ]
+    },
+    "JetBrains.Platform.Symbols/104.0.20151116.72020": {
+      "sha512": "Ye7sDDVl9hmVgOLb/tNFW+wx+CRN0r5ibiDWjmnwUlIxzhCu8eg5aZSHogS4sSggx53lwtDhq9pOnTjoW8foUQ==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Symbols.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.Symbols.dll",
+        "DotFiles/JetBrains.Platform.Symbols.xml",
+        "JetBrains.Platform.Symbols.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Symbols.nuspec",
+        "build/JetBrains.Platform.Symbols.Targets"
+      ]
+    },
+    "JetBrains.Platform.Tests.Framework/104.0.20151116.72020": {
+      "sha512": "DSNRjMJACksl+G8D/nvMHNafDivuqSuKyWk2Q9w/3c81ziDD879+irJhl1P6tSgFfr5exFPSaANI8qY5lSCHtg==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Tests.Framework.Ide.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Ide.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.Tests.Framework.ProjectDocuments.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.ProjectDocuments.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Projects.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Projects.dll.config",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Projects.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Shell.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Shell.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Symbols.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.Symbols.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.TextControl.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.TextControl.xml",
+        "DotFiles/JetBrains.Platform.Tests.Framework.UI.dll",
+        "DotFiles/JetBrains.Platform.Tests.Framework.UI.xml",
+        "JetBrains.Platform.Tests.Framework.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.Tests.Framework.nuspec",
+        "build/JetBrains.Platform.Tests.Framework.Targets"
+      ]
+    },
+    "JetBrains.Platform.VisualStudio/104.0.20151116.72020": {
+      "sha512": "lBt0HMZwhxFP584xy9Lp0qHlIZsSOMtDr49dUXyesGgsGGG2/JH47bMKH6NemIJ0q70GviMV0BAWHpKvzXzYuQ==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.VisualStudio.Core.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.Core.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.JetMetadata.sstg",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs10.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs10.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs11.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs11.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs12.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs12.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs14.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.JustVs14.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs09.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs09.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs10.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs10.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs11.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs11.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs12.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs12.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs14.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.SinceVs14.xml",
+        "DotFiles/JetBrains.Platform.VisualStudio.VsctToCtoCompiler.dll",
+        "DotFiles/JetBrains.Platform.VisualStudio.VsctToCtoCompiler.xml",
+        "JetBrains.Platform.VisualStudio.104.0.20151116.72020.nupkg.sha512",
+        "JetBrains.Platform.VisualStudio.nuspec",
+        "build/JetBrains.Platform.VisualStudio.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.Core/104.0.20151116.72549": {
+      "sha512": "VbmxAe+r+vXKGTMP275r931YJK/m9+w5at4Zi6ef3tyXUdTE6Kqjgk7v4qv8qolf4eUD0HINsgdKwaLrZ/HcGA==",
+      "type": "package",
+      "files": [
+        "DotFiles/CssDefinitions/browsers.xml",
+        "DotFiles/CssDefinitions/css.xsd",
+        "DotFiles/CssDefinitions/css1.0.xml",
+        "DotFiles/CssDefinitions/css2.0.xml",
+        "DotFiles/CssDefinitions/css2.1.xml",
+        "DotFiles/CssDefinitions/css3.0.xml",
+        "DotFiles/CssDefinitions/fontface.xml",
+        "DotFiles/CssDefinitions/ie.xml",
+        "DotFiles/CssDefinitions/jquery.xml",
+        "DotFiles/CssDefinitions/mozilla.xml",
+        "DotFiles/CssDefinitions/mso.xml",
+        "DotFiles/CssDefinitions/opera.xml",
+        "DotFiles/CssDefinitions/rules.xml",
+        "DotFiles/CssDefinitions/svg.xml",
+        "DotFiles/CssDefinitions/viewport.xml",
+        "DotFiles/CssDefinitions/webkit.xml",
+        "DotFiles/Definitions/lib.d.ts",
+        "DotFiles/Definitions/lib.es6.d.ts",
+        "DotFiles/JetBrains.Decompiler.Core.dll",
+        "DotFiles/JetBrains.Decompiler.Core.xml",
+        "DotFiles/JetBrains.Psi.Features.Core.JetMetadata.sstg",
+        "DotFiles/JetBrains.Psi.Features.UI.dll",
+        "DotFiles/JetBrains.Psi.Features.UI.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.BuildScripts.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.BuildScripts.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.ExternalSources.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Protobuf.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Protobuf.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Resx.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Resx.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Web.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Web.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Xml.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Xml.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.VB.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.VB.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Asp.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.JavaScript.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.JavaScript.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.VB.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.VB.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.dll",
+        "DotFiles/JetBrains.ReSharper.I18n.Services.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.BuildScripts.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.BuildScripts.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.IL.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.IL.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Protobuf.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.Protobuf.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.RegExp.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.RegExp.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Resx.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.Resx.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.VB.ConstantCalculatorLib.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.VB.ConstantCalculatorLib.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Web.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.Web.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Xml.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.Xml.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.dll",
+        "DotFiles/JetBrains.ReSharper.Psi.xml",
+        "DotFiles/JetBrains.ReSharper.Resources.dll",
+        "DotFiles/JetBrains.ReSharper.Resources.xml",
+        "DotFiles/JetBrains.ReSharper.SolutionBuilder.dll",
+        "DotFiles/JetBrains.ReSharper.SolutionBuilder.xml",
+        "DotFiles/OperatorsResolveCacheGenerator.exe",
+        "DotFiles/OperatorsResolveCacheGenerator.xml",
+        "JetBrains.Psi.Features.Core.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.Core.nuspec",
+        "build/JetBrains.Psi.Features.Core.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.Cpp.src/104.0.20151116.74357": {
+      "sha512": "A4J/CiQC1b6h0kxGWBUO9seUAj2hxVvZTyToaVAY9npgMu2PpY+FRvX/ZGSd+Ckg30W16WtR/FpRuutK6koZjw==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Psi.Features.Cpp.src.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.CppProduct.dll",
+        "DotFiles/JetBrains.ReSharper.CppProduct.xml",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Cpp.dll",
+        "DotFiles/JetBrains.ReSharper.Feature.Services.Cpp.xml",
+        "DotFiles/JetBrains.ReSharper.Psi.Cpp.dll",
+        "JetBrains.Psi.Features.Cpp.src.104.0.20151116.74357.nupkg.sha512",
+        "JetBrains.Psi.Features.Cpp.src.nuspec",
+        "build/JetBrains.Psi.Features.Cpp.src.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.SolutionBuilder/104.0.20151116.72549": {
+      "sha512": "WemdywnE9r6nmVEl40L8mYE1HjYupiE4csvM8I0sfTTPiwcMcCOZqIzmbcXI2pUtbNemphK/U547kP2JHbvf/A==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Psi.Features.SolutionBuilder.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.Features.SolBuilderDuo.UI.dll",
+        "DotFiles/JetBrains.ReSharper.Features.SolBuilderDuo.UI.xml",
+        "DotFiles/JetBrains.ReSharper.Features.SolBuilderDuo.dll",
+        "DotFiles/JetBrains.ReSharper.Features.SolBuilderDuo.xml",
+        "DotFiles/JetBrains.SolutionBuilder.Product.dll",
+        "DotFiles/JetBrains.SolutionBuilder.Product.xml",
+        "DotFiles/MSBuildProfilingLogger.dll",
+        "DotFiles/MSBuildProfilingLogger.xml",
+        "DotFiles/SolBuilderDuoSatellite/MSBuild.Exe.Config",
+        "JetBrains.Psi.Features.SolutionBuilder.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.SolutionBuilder.nuspec",
+        "build/JetBrains.Psi.Features.SolutionBuilder.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.src/104.0.20151116.72549": {
+      "sha512": "NSVBfEoizEyMiOT7xsAi5OD7842KzyU266XmDdsDOo7u37t9oOZX6IWhpLuKpNwpfnPIQnNgh1gyBz4t/fcslg==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Platform.Diagramming.dll",
+        "DotFiles/JetBrains.Platform.Diagramming.xml",
+        "DotFiles/JetBrains.Psi.Features.src.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.Daemon.BuildScripts.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.BuildScripts.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Engine.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Engine.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Protobuf.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Protobuf.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Resx.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Resx.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Specific.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Specific.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Web.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Web.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.Xml.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.Xml.xml",
+        "DotFiles/JetBrains.ReSharper.Daemon.dll",
+        "DotFiles/JetBrains.ReSharper.Daemon.xml",
+        "DotFiles/JetBrains.ReSharper.ExternalSources.dll",
+        "DotFiles/JetBrains.ReSharper.ExternalSources.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Altering.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Altering.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Diagramming.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Diagramming.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Environment.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Environment.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Inspections.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Inspections.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Intellisense.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Intellisense.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Intellisense.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Intellisense.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Internal.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Internal.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Navigation.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Navigation.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Navigation.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Navigation.xml",
+        "DotFiles/JetBrains.ReSharper.Features.NuGet.dll",
+        "DotFiles/JetBrains.ReSharper.Features.NuGet.dll.config",
+        "DotFiles/JetBrains.ReSharper.Features.NuGet.xml",
+        "DotFiles/JetBrains.ReSharper.Features.RegExp.dll",
+        "DotFiles/JetBrains.ReSharper.Features.RegExp.xml",
+        "DotFiles/JetBrains.ReSharper.Features.StructuralSearch.dll",
+        "DotFiles/JetBrains.ReSharper.Features.StructuralSearch.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Web.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Web.xml",
+        "DotFiles/JetBrains.ReSharper.Features.Xml.dll",
+        "DotFiles/JetBrains.ReSharper.Features.Xml.xml",
+        "DotFiles/JetBrains.ReSharper.InplaceRefactorings.dll",
+        "DotFiles/JetBrains.ReSharper.InplaceRefactorings.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.BuildScripts.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.BuildScripts.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.Resx.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.Resx.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.Web.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.Web.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.Xml.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.Xml.xml",
+        "DotFiles/JetBrains.ReSharper.Intentions.dll",
+        "DotFiles/JetBrains.ReSharper.Intentions.xml",
+        "DotFiles/JetBrains.ReSharper.LiveTemplates.VB.dll",
+        "DotFiles/JetBrains.ReSharper.LiveTemplates.VB.xml",
+        "DotFiles/JetBrains.ReSharper.LiveTemplates.dll",
+        "DotFiles/JetBrains.ReSharper.LiveTemplates.xml",
+        "DotFiles/JetBrains.ReSharper.NewRefactorings.dll",
+        "DotFiles/JetBrains.ReSharper.NewRefactorings.xml",
+        "DotFiles/JetBrains.ReSharper.Refactorings.BuildScripts.dll",
+        "DotFiles/JetBrains.ReSharper.Refactorings.BuildScripts.xml",
+        "DotFiles/JetBrains.ReSharper.Refactorings.CSharp.dll",
+        "DotFiles/JetBrains.ReSharper.Refactorings.CSharp.xml",
+        "DotFiles/JetBrains.ReSharper.Refactorings.Html.dll",
+        "DotFiles/JetBrains.ReSharper.Refactorings.Html.xml",
+        "DotFiles/JetBrains.ReSharper.Refactorings.VB.dll",
+        "DotFiles/JetBrains.ReSharper.Refactorings.VB.xml",
+        "DotFiles/JetBrains.ReSharper.Refactorings.Xaml.dll",
+        "DotFiles/JetBrains.ReSharper.Refactorings.Xaml.xml",
+        "DotFiles/JetBrains.ReSharper.SolutionAnalysis.UI.dll",
+        "DotFiles/JetBrains.ReSharper.SolutionAnalysis.UI.xml",
+        "DotFiles/JetBrains.ReSharper.SolutionAnalysis.dll",
+        "DotFiles/JetBrains.ReSharper.SolutionAnalysis.xml",
+        "DotFiles/yWorks.yFilesWPF.Adapter.dll",
+        "DotFiles/yWorks.yFilesWPF.Algorithms.dll",
+        "DotFiles/yWorks.yFilesWPF.Viewer.dll",
+        "JetBrains.Psi.Features.src.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.src.nuspec",
+        "build/JetBrains.Psi.Features.src.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.Tasks/104.0.20151116.72549": {
+      "sha512": "1SciawnPY9Ou2Axw5rQKST2E14sa0McDzE1YkhRxns081Dv7TrOPr1YeQY3NNbnbIw0jyztbdv/37nKCFXU0BQ==",
+      "type": "package",
+      "files": [
+        "DotFiles/CsLex.exe",
+        "DotFiles/CsLex.xml",
+        "DotFiles/ErrorsGen.exe",
+        "DotFiles/ErrorsGen.xml",
+        "DotFiles/JetBrains.Psi.Features.Tasks.Build.dll",
+        "DotFiles/JetBrains.Psi.Features.Tasks.Build.xml",
+        "DotFiles/JetBrains.Psi.Features.Tasks.JetMetadata.sstg",
+        "DotFiles/JsLibGen.exe",
+        "DotFiles/JsLibGen.exe.config",
+        "DotFiles/JsLibGen.xml",
+        "DotFiles/LibGeneratorUtil.dll",
+        "DotFiles/LibGeneratorUtil.xml",
+        "DotFiles/PsiGen.Targets.dll",
+        "DotFiles/PsiGen.Targets.xml",
+        "DotFiles/PsiGen.exe",
+        "DotFiles/PsiGen.xml",
+        "DotFiles/PsiTasks/CsLex.Targets",
+        "DotFiles/PsiTasks/CsLex.Tasks",
+        "DotFiles/PsiTasks/CsLex.exe",
+        "DotFiles/PsiTasks/CsLex.xml",
+        "DotFiles/PsiTasks/ErrorDescription.xsd",
+        "DotFiles/PsiTasks/ErrorsGen.Targets",
+        "DotFiles/PsiTasks/ErrorsGen.Tasks",
+        "DotFiles/PsiTasks/ErrorsGen.exe",
+        "DotFiles/PsiTasks/ErrorsGen.xml",
+        "DotFiles/PsiTasks/JetBrains.Psi.Features.Tasks.Build.dll",
+        "DotFiles/PsiTasks/JetBrains.Psi.Features.Tasks.Build.xml",
+        "DotFiles/PsiTasks/JsLibGen.Targets",
+        "DotFiles/PsiTasks/JsLibGen.Tasks",
+        "DotFiles/PsiTasks/JsLibGen.exe",
+        "DotFiles/PsiTasks/JsLibGen.exe.config",
+        "DotFiles/PsiTasks/JsLibGen.xml",
+        "DotFiles/PsiTasks/LibGeneratorUtil.dll",
+        "DotFiles/PsiTasks/LibGeneratorUtil.xml",
+        "DotFiles/PsiTasks/NVelocity.dll",
+        "DotFiles/PsiTasks/NVelocity.xml",
+        "DotFiles/PsiTasks/PsiGen.Targets",
+        "DotFiles/PsiTasks/PsiGen.Targets.dll",
+        "DotFiles/PsiTasks/PsiGen.Targets.xml",
+        "DotFiles/PsiTasks/PsiGen.Tasks",
+        "DotFiles/PsiTasks/PsiGen.exe",
+        "DotFiles/PsiTasks/PsiGen.xml",
+        "DotFiles/PsiTasks/TokenGenerator.Targets",
+        "DotFiles/PsiTasks/TokenGenerator.Tasks",
+        "DotFiles/PsiTasks/TokenGenerator.exe",
+        "DotFiles/PsiTasks/TokenGenerator.xml",
+        "DotFiles/PsiTasks/TsLibGen.Targets",
+        "DotFiles/PsiTasks/TsLibGen.Tasks",
+        "DotFiles/PsiTasks/TsLibGen.exe",
+        "DotFiles/PsiTasks/TsLibGen.exe.config",
+        "DotFiles/PsiTasks/TsLibGen.xml",
+        "DotFiles/PsiTasks/Unicode.lex",
+        "DotFiles/PsiTasks/antlr.runtime.dll",
+        "DotFiles/PsiTasks/nunit.framework.dll",
+        "DotFiles/PsiTasks/nunit.framework.xml",
+        "DotFiles/TokenGenerator.exe",
+        "DotFiles/TokenGenerator.xml",
+        "DotFiles/TsLibGen.exe",
+        "DotFiles/TsLibGen.exe.config",
+        "DotFiles/TsLibGen.xml",
+        "JetBrains.Psi.Features.Tasks.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.Tasks.nuspec",
+        "build/JetBrains.Psi.Features.Tasks.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.test.Framework/104.0.20151116.72549": {
+      "sha512": "8JK7o1PjPkl2bsV8favUXrQOrbKXpqPa317d+DMmzGp1vVHmd5ZYMYDUObugjtQh5QxoAOblw66GRmFfsO5ilg==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Psi.Features.test.Framework.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.FeaturesTestFramework.dll",
+        "DotFiles/JetBrains.ReSharper.FeaturesTestFramework.dll.config",
+        "DotFiles/JetBrains.ReSharper.FeaturesTestFramework.xml",
+        "DotFiles/JetBrains.ReSharper.TestFramework.dll",
+        "DotFiles/JetBrains.ReSharper.TestFramework.dll.config",
+        "DotFiles/JetBrains.ReSharper.TestFramework.xml",
+        "JetBrains.Psi.Features.test.Framework.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.test.Framework.nuspec",
+        "build/JetBrains.Psi.Features.test.Framework.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.UnitTesting/104.0.20151116.72549": {
+      "sha512": "QIVjpXmtAdvbIz0QmBsqWpNNV00uDVOkfg1UWiOVn4SUJAUnP2UMUnepPL45D3wvX6n8cwLPRGN+EVSBwX3A9A==",
+      "type": "package",
+      "files": [
+        "DotFiles/Definitions/PhantomJSTestRunner.js",
+        "DotFiles/JetBrains.Psi.Features.UnitTesting.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.pdb",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.x64.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.x64.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.x64.pdb",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.x64.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR4.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.pdb",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.x64.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.x64.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.x64.pdb",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.x64.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.CLR45.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.pdb",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.x64.exe",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.x64.exe.config",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.x64.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunner.xml",
+        "DotFiles/JetBrains.ReSharper.TaskRunnerFramework.dll",
+        "DotFiles/JetBrains.ReSharper.TaskRunnerFramework.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestExplorer.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestExplorer.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestFramework.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestFramework.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.JavaScript.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.JavaScript.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest09.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest09.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.nUnit.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.nUnit.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.JavaScript.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.JavaScript.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest09.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest09.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.dotMemoryUnit.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.dotMemoryUnit.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit26.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit26.pdb",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit26.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit30.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit30.pdb",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.nUnit30.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTesting.Analysis.VB.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTesting.Analysis.VB.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTesting.Analysis.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTesting.Analysis.xml",
+        "JetBrains.Psi.Features.UnitTesting.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.UnitTesting.nuspec",
+        "build/JetBrains.Psi.Features.UnitTesting.Targets"
+      ]
+    },
+    "JetBrains.Psi.Features.VisualStudio/104.0.20151116.72549": {
+      "sha512": "n5bJcRVLll4+tE2U85B8VfoKUc6AOMPLZaF0tpCO8D0o3TQomm2ACQRHd8CJmwYKnpDILdf7/yDC/9UyUiMUjA==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.Psi.Features.VisualStudio.JetMetadata.sstg",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.Core.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.Core.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.JustVs12.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.JustVs12.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.JustVs14.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.JustVs14.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs10.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs10.dll.config",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs10.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs11.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs11.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs12.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs12.xml",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs14.dll",
+        "DotFiles/JetBrains.PsiFeatures.VisualStudio.SinceVs14.xml",
+        "DotFiles/JetBrains.ReSharper.DebuggerVisualizers.dll",
+        "DotFiles/JetBrains.ReSharper.DebuggerVisualizers.xml",
+        "DotFiles/JetBrains.ReSharper.ExternalSources.VS.dll",
+        "DotFiles/JetBrains.ReSharper.ExternalSources.VS.xml",
+        "DotFiles/JetBrains.ReSharper.Features.VisualStudio.Internal.dll",
+        "DotFiles/JetBrains.ReSharper.Features.VisualStudio.Internal.xml",
+        "DotFiles/JetBrains.ReSharper.SolutionBuilder.VS.dll",
+        "DotFiles/JetBrains.ReSharper.SolutionBuilder.VS.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest10.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest10.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest11.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest11.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest12.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest12.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest14.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestProvider.MSTest14.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest10.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest10.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest11.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest11.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest12.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest12.xml",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest14.dll",
+        "DotFiles/JetBrains.ReSharper.UnitTestRunner.MSTest14.xml",
+        "JetBrains.Psi.Features.VisualStudio.104.0.20151116.72549.nupkg.sha512",
+        "JetBrains.Psi.Features.VisualStudio.nuspec",
+        "build/JetBrains.Psi.Features.VisualStudio.Targets"
+      ]
+    },
+    "JetBrains.ReSharper.SDK/10.0.20151116.81636": {
+      "sha512": "aMY7GxCeD63OIV3g83IEALamurT02nCfpFbNt8xaHwnTlF/yK5Zih5RQ6T+2LRBpl8bX5KhGRjJ1+wp9VLHy9Q==",
+      "type": "package",
+      "files": [
+        "JetBrains.ReSharper.SDK.10.0.20151116.81636.nupkg.sha512",
+        "JetBrains.ReSharper.SDK.nuspec",
+        "lib/Net/_._"
+      ]
+    },
+    "JetBrains.ReSharper.SDK.Internal/104.0.20151116.81636": {
+      "sha512": "Ba3XP/vV16CrQwdKbK+QJDnH/ZOdz/pZcL+BUuIx+B6q55T1ytKHa/7tYzUnlRpg9F27t8/4E6VW8BysLH90+w==",
+      "type": "package",
+      "files": [
+        "DotFiles/JetBrains.CommonSdk.targets",
+        "DotFiles/JetBrains.ReSharper.SDK.Helper.dll",
+        "DotFiles/JetBrains.ReSharper.SDK.Helper.xml",
+        "DotFiles/JetBrains.ReSharper.SDK.Internal.JetMetadata.sstg",
+        "DotFiles/JetBrains.ReSharper.SDK.MsBuild.dll",
+        "DotFiles/JetBrains.ReSharper.SDK.MsBuild.xml",
+        "JetBrains.ReSharper.SDK.Internal.104.0.20151116.81636.nupkg.sha512",
+        "JetBrains.ReSharper.SDK.Internal.nuspec",
+        "build/JetBrains.ReSharper.SDK.Internal.Targets"
+      ]
+    },
+    "Microsoft.VC100.CRT.JetBrains/10.0.40219.2": {
+      "sha512": "t5zs6mguLSxTp3wvZ+pL58Bmg4Hc+Ocse3w0fJlfatnhh06WntzTD9TqROYfdtlKp3Dr3e/Ms7aiauX5G0sVpQ==",
+      "type": "package",
+      "files": [
+        "DotFiles/msvcp100.dll",
+        "DotFiles/msvcr100.dll",
+        "Microsoft.VC100.CRT.JetBrains.10.0.40219.2.nupkg.sha512",
+        "Microsoft.VC100.CRT.JetBrains.nuspec",
+        "lib/net/_._"
+      ]
+    },
+    "Microsoft.VC120.CRT.JetBrains/12.0.21005.2": {
+      "sha512": "f76MHC410c7gi4ek+MyxTXtA9XrlHIYl7FDH3s7RFexDo+FXgVJpzRLD/4SXBnekFlOaSK9wB/jC+kWE6ILr+A==",
+      "type": "package",
+      "files": [
+        "DotFiles/msvcp120.dll",
+        "DotFiles/msvcr120.dll",
+        "DotFiles/vccorlib120.dll",
+        "Microsoft.VC120.CRT.JetBrains.12.0.21005.2.nupkg.sha512",
+        "Microsoft.VC120.CRT.JetBrains.nuspec",
+        "lib/net/_._"
+      ]
+    },
+    "Microsoft.Web.Xdt/2.1.1": {
+      "sha512": "PHoqib4d+f2lmnluVwMFM8M4AF8Z7y2g18hUTi5UCKkjNQIzkNnB1uyqnS5od2sMsRcI/9mexQjDO6e5dL/MeA==",
+      "type": "package",
+      "files": [
+        "Microsoft.Web.Xdt.2.1.1.nupkg.sha512",
+        "Microsoft.Web.Xdt.nuspec",
+        "lib/net40/Microsoft.Web.XmlTransform.dll"
+      ]
+    },
+    "Newtonsoft35.Json/7.0.1": {
+      "sha512": "SGR5hmdoNttKdt9vllMklchHfOHPilkNXWDP71qBSHXlBL8SEsWTk8seLsQ89NmWBRcI/EOD83za5FBN8cYnKA==",
+      "type": "package",
+      "files": [
+        "Newtonsoft35.Json.7.0.1.nupkg.sha512",
+        "Newtonsoft35.Json.nuspec",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml"
+      ]
+    },
+    "NuGet.Core/2.8.6": {
+      "sha512": "d+0wfKce13nED4eyNoL8SSZO86kNY0Zjo8pgGRB1Xy3EbLf5BetnRkp1G3nywdWuK4ov8oLbT+4rHGnCnAABpA==",
+      "type": "package",
+      "files": [
+        "NuGet.Core.2.8.6.nupkg.sha512",
+        "NuGet.Core.nuspec",
+        "lib/net40-Client/NuGet.Core.dll"
+      ]
+    },
+    "NUnit/2.6.4": {
+      "sha512": "cmSPvaCMRSP0DI19FP1Liw9DyJY3E/vOY1OrVaeJBZpZFWHkmT3fB9ngGWnZX/ftvA7zJEbghEaw3Yd+u4YFAw==",
+      "type": "package",
+      "files": [
+        "NUnit.2.6.4.nupkg.sha512",
+        "NUnit.nuspec",
+        "lib/nunit.framework.dll",
+        "lib/nunit.framework.xml",
+        "license.txt"
+      ]
+    },
+    "NUnit.ReSharperRunner2/2.6.408": {
+      "sha512": "+s9NUK7OquKDjtCG23kKo/QhI9hhKveTDCztawN7xN/YD4YgHfeZTpBaSuGbCjds38D5Z9Zbag+wGgJmTcifyw==",
+      "type": "package",
+      "files": [
+        "DotFiles/NUnit2/nunit.core.dll",
+        "DotFiles/NUnit2/nunit.core.interfaces.dll",
+        "DotFiles/NUnit2/nunit.util.dll",
+        "NUnit.ReSharperRunner2.2.6.408.nupkg.sha512",
+        "NUnit.ReSharperRunner2.nuspec",
+        "lib/net/_._"
+      ]
+    },
+    "NUnit.ReSharperRunner3/3.0.11": {
+      "sha512": "+YWELXspRtXkv4tRFoH/S97LDN9qJuruxxsRQDPzAG+hllgMaM1Y5Rt9/jPMI4VCwvLCbt0X2LAzH5233utxoA==",
+      "type": "package",
+      "files": [
+        "DotFiles/nunit3/Mono.Cecil.dll",
+        "DotFiles/nunit3/addins/nunit.core.dll",
+        "DotFiles/nunit3/addins/nunit.core.interfaces.dll",
+        "DotFiles/nunit3/addins/nunit.engine.api.dll",
+        "DotFiles/nunit3/addins/nunit.v2.driver.dll",
+        "DotFiles/nunit3/nunit.engine.addins",
+        "DotFiles/nunit3/nunit.engine.api.dll",
+        "DotFiles/nunit3/nunit.engine.dll",
+        "NUnit.ReSharperRunner3.3.0.11.nupkg.sha512",
+        "NUnit.ReSharperRunner3.nuspec",
+        "lib/net/_._"
+      ]
+    },
+    "NVelocity/1.0.3": {
+      "sha512": "65kgJTM5mj2mk7Uct6r2kyd1KmWQRNRdKZXTVDDpIKt4qHrcOPLX0BhnQEPdFvIrVvK/OkIw/UmhWmwvBrYiPw==",
+      "type": "package",
+      "files": [
+        "NVelocity.1.0.3.nupkg.sha512",
+        "NVelocity.nuspec",
+        "lib/NVelocity.dll",
+        "lib/NVelocity.xml"
+      ]
+    },
+    "SharpZipLib.JetBrains.Stripped/0.86.20150204.1": {
+      "sha512": "I5WPlrSpwKIQ/H+EgoZ0bSnJ++3tJjr1JsqEQ3CA5KWqE7Hb1QUAl3fIM0jRJ4mZdGzvu6bbOwI/hGRaMJquZg==",
+      "type": "package",
+      "files": [
+        "SharpZipLib.JetBrains.Stripped.0.86.20150204.1.nupkg.sha512",
+        "SharpZipLib.JetBrains.Stripped.nuspec",
+        "lib/20/ICSharpCode.SharpZipLib.dll",
+        "lib/20/ICSharpCode.SharpZipLib.xml"
+      ]
+    },
+    "Sprache.JetBrains/2.0.0.44": {
+      "sha512": "FqEH1eZnOykJSLj+fEbrICOeA9MSSpO8gegtO9MhpMtBAJnD9Mslxdl87Jt0ILu5Be1auH3C6TqmvMI7+HDYfw==",
+      "type": "package",
+      "files": [
+        "Sprache.JetBrains.2.0.0.44.nupkg.sha512",
+        "Sprache.JetBrains.nuspec",
+        "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.XML",
+        "lib/portable-net4+netcore45+win8+wp8+sl5+MonoAndroid1+MonoTouch1/Sprache.dll"
+      ]
+    },
+    "Vestris.ResourceLib.JetBrains/1.4.20150303": {
+      "sha512": "REp8xYh/wyNYjVw3gyqrWbbVabEhDTfkr2FLhbOlIeuPYpSz/jmrBtcQMS49xgmcz5uUcj38yWMD6+ULe46tyQ==",
+      "type": "package",
+      "files": [
+        "Vestris.ResourceLib.JetBrains.1.4.20150303.nupkg.sha512",
+        "Vestris.ResourceLib.JetBrains.nuspec",
+        "lib/Net/Vestris.ResourceLib.XML",
+        "lib/Net/Vestris.ResourceLib.dll"
+      ]
+    },
+    "VSSDK.CoreUtility/10.0.4": {
+      "sha512": "xSIjjuDt57SfGpi/yukgswnb1FWPxWR92jbvpHS8Mi1n8NqlFRf8Lm+72Hd2iQrtBHJdPgctEazYMrSdD3J39g==",
+      "type": "package",
+      "files": [
+        "VSSDK.CoreUtility.10.0.4.nupkg.sha512",
+        "VSSDK.CoreUtility.nuspec",
+        "lib/net40/Microsoft.VisualStudio.CoreUtility.dll",
+        "lib/net40/Microsoft.VisualStudio.CoreUtility.xml",
+        "tools/install.ps1"
+      ]
+    },
+    "VSSDK.IDE.10/10.0.4": {
+      "sha512": "DT+JlSUaObx8bln4XcvnaouLU4xgwXTgRXXFjdvmMQ5r/8uxmaAjIxTHPGpVAtxm3JQICGsTuetCDPdI0r7Nbg==",
+      "type": "package",
+      "files": [
+        "VSSDK.IDE.10.10.0.4.nupkg.sha512",
+        "VSSDK.IDE.10.nuspec"
+      ]
+    },
+    "VSSDK.Text/10.0.4": {
+      "sha512": "bCqlWqC601m2j8V3CpPSzYMhIa+kbUFjBy0F7fFEKZUEytIiVr2HY/JYAcsJ4ZFmMkzicqipDtcpyPhnaX+28Q==",
+      "type": "package",
+      "files": [
+        "VSSDK.Text.10.0.4.nupkg.sha512",
+        "VSSDK.Text.nuspec",
+        "lib/net40/Microsoft.VisualStudio.Text.Data.dll",
+        "lib/net40/Microsoft.VisualStudio.Text.Data.xml",
+        "lib/net40/Microsoft.VisualStudio.Text.Logic.dll",
+        "lib/net40/Microsoft.VisualStudio.Text.Logic.xml",
+        "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.dll",
+        "lib/net40/Microsoft.VisualStudio.Text.UI.Wpf.xml",
+        "lib/net40/Microsoft.VisualStudio.Text.UI.dll",
+        "lib/net40/Microsoft.VisualStudio.Text.UI.xml",
+        "tools/install.ps1"
+      ]
+    },
+    "Wave/4.0.0": {
+      "sha512": "bY+bTLhdpVnfkX4RV1C9YxQHW82bry2csKVInGfd2S34/j/97fyMg4Ng1LtyIMw0EjDP+olJw3S18GeBYvWHag==",
+      "type": "package",
+      "files": [
+        "Wave.4.0.0.nupkg.sha512",
+        "Wave.nuspec",
+        "lib/Net/_._"
+      ]
+    },
+    "WinDbg.SymStore/8.1.20130822.1833": {
+      "sha512": "j3/LfKLXS2YOcqQy8NKxitT4Pw20MhnQFFcW/uTB9SdWoDOLiuwzlksx/MsDgbL8Vq7y0OgJzshTG7Z3T6kaEw==",
+      "type": "package",
+      "files": [
+        "WinDbg.SymStore.8.1.20130822.1833.nupkg.sha512",
+        "WinDbg.SymStore.nuspec",
+        "lib/net/_._",
+        "tools/x64/symsrv.dll",
+        "tools/x64/symsrv.yes",
+        "tools/x64/symstore.exe",
+        "tools/x86/symsrv.dll",
+        "tools/x86/symsrv.yes",
+        "tools/x86/symstore.exe"
+      ]
+    },
+    "Windows7APICodePack.JetBrains.Stripped/1.1.20150225": {
+      "sha512": "4jg9waOJJH9EHYNkmmlQAJAk98mGmlL/zH+r15ou4ck4bKUYAeW9Qc5U6qsNBRJYbjGVU48EFzAgkKRZY8COmw==",
+      "type": "package",
+      "files": [
+        "Windows7APICodePack.JetBrains.Stripped.1.1.20150225.nupkg.sha512",
+        "Windows7APICodePack.JetBrains.Stripped.nuspec",
+        "lib/Net/Microsoft.WindowsAPICodePack.Shell.dll",
+        "lib/Net/Microsoft.WindowsAPICodePack.dll"
+      ]
+    },
+    "xmlrpcnet/2.5.0": {
+      "sha512": "Fey1UJ3sJOgzwFUy+0io/OkrW0R0rrJKhg3/xX4lF5KSnA3/r0amBBNLoBjAMrzLyYPCFtQGjlW9sIdU+vQv2g==",
+      "type": "package",
+      "files": [
+        "README.txt",
+        "lib/net20/CookComputing.XmlRpcV2.dll",
+        "xmlrpcnet.2.5.0.nupkg.sha512",
+        "xmlrpcnet.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [
+      "JetBrains.ReSharper.SDK >= 10.0.20151116.81636",
+      "VSSDK.Text >= 10.0.4"
+    ],
+    ".NETFramework,Version=v4.0": []
+  }
+}
