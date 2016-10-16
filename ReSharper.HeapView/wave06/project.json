@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "JetBrains.ReSharper.SDK": "2016.2.20160818.171542",
+    "JetBrains.ReSharper.SDK": "2016.2.20160913.94928",
     "VSSDK.Text" : "10.0.4"
   },
   "frameworks": {

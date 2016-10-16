@@ -87,6 +87,10 @@ Backup*/
 UpgradeLog*.XML
 *.nupkg
 
+*.lock.json
+*.nuget.targets
+*.nuget.props
+
 ############
 ## Windows
 ############
