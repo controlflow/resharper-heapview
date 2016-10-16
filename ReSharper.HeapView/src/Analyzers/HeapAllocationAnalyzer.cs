@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
@@ -16,6 +15,9 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+#if RESHARPER10
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
+#endif
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
 namespace JetBrains.ReSharper.HeapView.Analyzers

@@ -23,13 +23,13 @@
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\R2016.3\Debug\</OutputPath>
-    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_3</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_1;RESHARPER2016_2;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\R2016.3\Release\</OutputPath>
-    <DefineConstants>TRACE;RESHARPER2016_3</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER2016_1;RESHARPER2016_2;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
