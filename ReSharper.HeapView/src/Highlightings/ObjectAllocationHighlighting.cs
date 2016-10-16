@@ -9,19 +9,31 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   ObjectAllocationHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Object allocation",
   "Highlights language construct or expression where object allocation happens",
-  Severity.HINT, false)]
+  Severity.HINT
+#if !RESHARPER2016_3
+  ,false
+#endif
+  )]
 
 [assembly: RegisterConfigurableSeverity(
   ObjectAllocationEvidentHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Object allocation (evident)",
   "Highlights object creation expressions where explicit allocation happens",
-  Severity.HINT, false)]
+  Severity.HINT
+#if !RESHARPER2016_3
+  ,false
+#endif
+  )]
 
 [assembly: RegisterConfigurableSeverity(
   ObjectAllocationPossibleHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Object allocation (possible)",
   "Highlights language construct where object allocation can possibly happens",
-  Severity.HINT, false)]
+  Severity.HINT
+#if !RESHARPER2016_3
+  ,false
+#endif
+  )]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

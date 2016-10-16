@@ -14,15 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BD
 		ReSharper.HeapView.nuspec = ReSharper.HeapView.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Default", "ReSharper.HeapView\default\ReSharper.HeapView.Default.csproj", "{F233E267-2D9B-4B82-A433-A6F09C8315D3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave04", "ReSharper.HeapView\wave04\ReSharper.HeapView.Wave04.csproj", "{9952D947-FFB0-4882-8C01-547EBD45CF0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave05", "ReSharper.HeapView\wave05\ReSharper.HeapView.Wave05.csproj", "{E551F2EF-E90D-49B6-ABA3-CE9BDA0BD8BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave06", "ReSharper.HeapView\wave06\ReSharper.HeapView.Wave06.csproj", "{CE73274A-5D59-4F12-9073-67368A3872B0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Default", "ReSharper.HeapView.Tests\default\ReSharper.HeapView.Tests.Default.csproj", "{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave04", "ReSharper.HeapView.Tests\wave04\ReSharper.HeapView.Tests.Wave04.csproj", "{30063AD3-EED6-4F22-ADBE-8F459A19F6A4}"
 EndProject
@@ -30,16 +26,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave06", "ReSharper.HeapView.Tests\wave06\ReSharper.HeapView.Tests.Wave06.csproj", "{71790F49-10AE-43E7-8E02-F73390D5D97D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave07", "ReSharper.HeapView\wave07\ReSharper.HeapView.Wave07.csproj", "{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave07", "ReSharper.HeapView.Tests\wave07\ReSharper.HeapView.Tests.Wave07.csproj", "{20240675-FBDB-497F-ADE9-70D9F377D209}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Default", "ReSharper.HeapView.Tests\default\ReSharper.HeapView.Tests.Default.csproj", "{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Default", "ReSharper.HeapView\default\ReSharper.HeapView.Default.csproj", "{F233E267-2D9B-4B82-A433-A6F09C8315D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9952D947-FFB0-4882-8C01-547EBD45CF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9952D947-FFB0-4882-8C01-547EBD45CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9952D947-FFB0-4882-8C01-547EBD45CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,10 +52,6 @@ Global
 		{CE73274A-5D59-4F12-9073-67368A3872B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE73274A-5D59-4F12-9073-67368A3872B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE73274A-5D59-4F12-9073-67368A3872B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30063AD3-EED6-4F22-ADBE-8F459A19F6A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30063AD3-EED6-4F22-ADBE-8F459A19F6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30063AD3-EED6-4F22-ADBE-8F459A19F6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,14 +64,31 @@ Global
 		{71790F49-10AE-43E7-8E02-F73390D5D97D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71790F49-10AE-43E7-8E02-F73390D5D97D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71790F49-10AE-43E7-8E02-F73390D5D97D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20240675-FBDB-497F-ADE9-70D9F377D209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20240675-FBDB-497F-ADE9-70D9F377D209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20240675-FBDB-497F-ADE9-70D9F377D209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20240675-FBDB-497F-ADE9-70D9F377D209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F233E267-2D9B-4B82-A433-A6F09C8315D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{30063AD3-EED6-4F22-ADBE-8F459A19F6A4} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{D4904D05-1CA2-4ABB-8BD8-C245ECCB1723} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{71790F49-10AE-43E7-8E02-F73390D5D97D} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{20240675-FBDB-497F-ADE9-70D9F377D209} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{96AE7D91-3B9A-4C79-BCD0-62ACA754C507} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal

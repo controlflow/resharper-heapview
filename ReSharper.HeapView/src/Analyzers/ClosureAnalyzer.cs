@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      IFunction function = null;
+      IParametersOwner function = null;
       ILocalScope topScope = null;
 
       var functionDeclaration = element as ICSharpFunctionDeclaration;
@@ -53,7 +53,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         var arrowExpression = expressionBodyOwner.ArrowExpression;
         if (arrowExpression != null)
         {
+#if RESHARPER2016_3
+          function = expressionBodyOwner.GetParametersOwner();
+#else
           function = expressionBodyOwner.GetFunction();
+#endif
           topScope = arrowExpression;
         }
         else
@@ -85,7 +89,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     private static void ReportClosureAllocations(
-      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement, [CanBeNull] ILocalScope topScope,
+      [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement, [CanBeNull] ILocalScope topScope,
       [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
@@ -291,7 +295,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
     [CanBeNull]
     private static ITreeNode GetCaptureHighlightingRange(
-      [NotNull] ITreeNode topDeclaration, [CanBeNull] IFunction thisElement, [NotNull] IDeclaredElement capture, out DocumentRange range)
+      [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement, [NotNull] IDeclaredElement capture, out DocumentRange range)
     {
       var declarations = capture.GetDeclarations();
       if (declarations.Count == 0) // accessors 'value' parameter
@@ -354,7 +358,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     }
 
     private static void ReportClosurelessAllocations(
-      [NotNull] ITreeNode element, [NotNull] IFunction function, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ITreeNode element, [NotNull] IParametersOwner function, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       var typeParametersOwner = function as ITypeParametersOwner;
       if (typeParametersOwner != null && typeParametersOwner.TypeParameters.Count != 0)
@@ -442,9 +446,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private sealed class ClosureInspector : IRecursiveElementProcessor
     {
       [NotNull] private readonly Stack<ITreeNode> myClosures;
-      [CanBeNull] private readonly IFunction myFunction;
+      [CanBeNull] private readonly IParametersOwner myFunction;
 
-      public ClosureInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IFunction thisElement)
+      public ClosureInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IParametersOwner thisElement)
       {
         myFunction = thisElement;
         myClosures = new Stack<ITreeNode>();

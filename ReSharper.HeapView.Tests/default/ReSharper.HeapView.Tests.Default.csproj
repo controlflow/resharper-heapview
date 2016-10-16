@@ -10,7 +10,7 @@
     <!--HostFullIdentifier>ReSharperPlatformVs12Plugin</HostFullIdentifier-->
     <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
     <AssemblyName>ReSharper.HeapView.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>..\obj\R2016.2\</BaseIntermediateOutputPath>
     <JetReferencesPrivate>True</JetReferencesPrivate>
     <WarningLevel>4</WarningLevel>
@@ -22,14 +22,14 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\R2016.2\Debug\</OutputPath>
-    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2</DefineConstants>
+    <OutputPath>..\bin\R2016.x\Debug\</OutputPath>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\R2016.2\Release\</OutputPath>
-    <DefineConstants>TRACE;RESHARPER2016_2</DefineConstants>
+    <OutputPath>..\bin\R2016.x\Release\</OutputPath>
+    <DefineConstants>TRACE;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />

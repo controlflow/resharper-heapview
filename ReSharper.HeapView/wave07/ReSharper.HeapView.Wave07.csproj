@@ -4,32 +4,31 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0</ProductVersion>
-    <ProjectGuid>{30063AD3-EED6-4F22-ADBE-8F459A19F6A4}</ProjectGuid>
+    <ProjectGuid>{CD6351CC-D8BA-4285-96F3-0A93E230DCCF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <!--HostFullIdentifier>ReSharperPlatformVs12Plugin</HostFullIdentifier-->
     <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
-    <AssemblyName>ReSharper.HeapView.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <BaseIntermediateOutputPath>..\obj\R100\</BaseIntermediateOutputPath>
+    <AssemblyName>ReSharper.HeapView</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <BaseIntermediateOutputPath>..\obj\R2016.3\</BaseIntermediateOutputPath>
     <JetReferencesPrivate>True</JetReferencesPrivate>
     <WarningLevel>4</WarningLevel>
     <ErrorReport>prompt</ErrorReport>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <JetTestProject>True</JetTestProject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\R100\Debug\</OutputPath>
-    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER10</DefineConstants>
+    <OutputPath>..\..\bin\R2016.3\Debug\</OutputPath>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\R100\Release\</OutputPath>
-    <DefineConstants>TRACE;RESHARPER10</DefineConstants>
+    <OutputPath>..\..\bin\R2016.3\Release\</OutputPath>
+    <DefineConstants>TRACE;RESHARPER2016_3</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -41,12 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../src/**/*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ReSharper.HeapView\wave04\ReSharper.HeapView.Wave04.csproj">
-      <Project>{9952D947-FFB0-4882-8C01-547EBD45CF0B}</Project>
-      <Name>ReSharper.HeapView.Wave04</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
