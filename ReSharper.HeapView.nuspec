@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>$PackageId$</id>
-    <version>1.2.1</version>
+    <version>1.2.1.1</version>
     <!-- update plugin ver in AssemblyInfo.cs plz -->
     <title>Heap Allocations Viewer</title>
     <authors>Alexander Shvedov</authors>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; ReSharper 2016.2 RTM and 2016.3 EAP support
+&#8226; ReSharper 2016.3 RC support
     </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />
