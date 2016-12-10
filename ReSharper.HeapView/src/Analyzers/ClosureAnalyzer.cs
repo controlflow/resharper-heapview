@@ -55,10 +55,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         {
 #if RESHARPER2016_3
           function = expressionBodyOwner.GetParametersOwner();
+          topScope = arrowExpression as ILocalScope;
 #else
           function = expressionBodyOwner.GetFunction();
-#endif
           topScope = arrowExpression;
+#endif
         }
         else
         {
