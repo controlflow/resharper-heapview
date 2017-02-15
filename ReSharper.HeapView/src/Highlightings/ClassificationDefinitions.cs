@@ -14,12 +14,12 @@ using Microsoft.VisualStudio.Utilities;
 
 [assembly: RegisterHighlighter(
   HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-  EffectColor = "Yellow", EffectType = EffectType.SOLID_UNDERLINE,
+  EffectColor = "Orange", EffectType = EffectType.SOLID_UNDERLINE,
   Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 [assembly: RegisterHighlighter(
   HeapViewAttributeIds.STRUCT_COPY_ID,
-  EffectColor = "Yellow", EffectType = EffectType.SOLID_UNDERLINE,
+  EffectColor = "SkyBlue", EffectType = EffectType.SOLID_UNDERLINE,
   Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 // todo: extract constants
