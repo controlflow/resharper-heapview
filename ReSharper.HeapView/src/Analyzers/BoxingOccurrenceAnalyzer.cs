@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
     }
 
-    [NotNull]
+    [NotNull, StringFormatMethod("format")]
     private static string BakeDescription([NotNull] string format, [NotNull] params IType[] types)
     {
       var args = Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance));

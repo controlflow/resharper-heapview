@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "JetBrains.ReSharper.SDK": "2016.3.20161013.83118-eap4",
-    "VSSDK.Text" : "10.0.4"
+    "JetBrains.ReSharper.SDK.Tests": "2017.1.20170216.122822-eap02",
+    "VSSDK.Text": "10.0.4"
   },
   "frameworks": {
     ".NETFramework,Version=v4.5": {}

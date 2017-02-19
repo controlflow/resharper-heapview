@@ -50,7 +50,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var expressionBodyOwner = element as IExpressionBodyOwnerDeclaration;
       if (expressionBodyOwner != null)
       {
+#if RESHARPER2017_1
+        var arrowExpression = expressionBodyOwner.ArrowClause;
+#else
         var arrowExpression = expressionBodyOwner.ArrowExpression;
+#endif
         if (arrowExpression != null)
         {
 #if RESHARPER2016_3
