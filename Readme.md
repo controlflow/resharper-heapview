@@ -93,7 +93,7 @@ class Closures {
   }
 }
 ```
-* It also detects cases of slow delegate creation caused by CLR x86 JIT (you can run [this test](ReSharper.HeapView/Tests/Data/Daemon/SlowDelegates01.cs) to see).
+* It also detects cases of slow delegate creation caused by CLR x86 JIT (you can run [this test](ReSharper.HeapView.Tests/data/Daemon/SlowDelegates01.cs) to see).
 
 #### Notes
 
