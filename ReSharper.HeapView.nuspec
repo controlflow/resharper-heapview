@@ -12,8 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
     <releaseNotes>
-&#8226; Upgrade to latest ReSharper 2016.3 SDK build
-&#8226; ReSharper 2017.1 EAP2 support
+&#8226; ReSharper 2017.1 EAP5 support
     </releaseNotes>
     <dependencies>
       <dependency id="$ReSharperDep$" version="$ReSharperVer$" />

@@ -1,0 +1,33 @@
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <ReSharperVersionIdentifier>20163</ReSharperVersionIdentifier>
+    <TargetFramework>net45</TargetFramework>
+    <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\wave07\Debug\</OutputPath>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2;RESHARPER2016_3</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\wave07\Release\</OutputPath>
+    <DefineConstants>TRACE;RESHARPER2016_2;RESHARPER2016_3</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2016.3.20170126.124206"/>
+    <PackageReference Include="VSSDK.Text" Version="10.0.4" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

@@ -6,7 +6,6 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -15,9 +14,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-#if RESHARPER10
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
-#endif
+using JetBrains.ReSharper.Psi.CodeAnnotations;
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
@@ -35,7 +32,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       typeof(IAssignmentExpression),
       typeof(IElementAccessExpression),
       typeof(IConstructorInitializer),
-      typeof(ICollectionElementInitializer),
+      typeof(ICollectionElementInitializer)
     },
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
@@ -161,9 +158,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
       var typeElement = typeReference.Resolve().DeclaredElement as ITypeElement;
-
       var typeParameter = typeElement as ITypeParameter;
-      if (typeElement is IClass || (typeParameter != null && typeParameter.IsClassType))
+
+      if (typeElement is IClass || typeParameter != null && typeParameter.IsClassType)
       {
         consumer.AddHighlighting(
           new ObjectAllocationEvidentHighlighting(newKeyword, "reference type creation"),
@@ -218,7 +215,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       if (start != null && end != null)
       {
+#if RESHARPER2016_3
+        var endOffset = end.GetDocumentEndOffset();
+#else
         var endOffset = end.GetDocumentRange().TextRange.EndOffset;
+#endif
         var highlighting = new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation");
         var documentRange = start.GetDocumentRange().SetEndTo(endOffset);
 
@@ -249,16 +250,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       }
       else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
       {
-#if RESHARPER10
-        var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
-        if (annotationsCache.IsPure(method) && annotationsCache.GetLinqTunnel(method))
-#elif RESHARPER2016_1
         var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
         var linqTunnelAnnotationProvider = annotationsCache.GetProvider<LinqTunnelAnnotationProvider>();
         var pureAnnotationProvider = annotationsCache.GetProvider<PureAnnotationProvider>();
 
         if (pureAnnotationProvider.GetInfo(method) && linqTunnelAnnotationProvider.GetInfo(method))
-#endif
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(invocation, "LINQ method call"),
@@ -362,7 +358,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var allConstants = true;
       var concatenations = new List<IAdditiveExpression>();
       if (CollectStringConcatenation(concatenation, concatenations, ref allConstants)
-          && !allConstants && concatenations.Count > 0)
+          && !allConstants
+          && concatenations.Count > 0)
       {
         var mostLeftConcatSign = concatenations
           .Select(x => x.OperatorSign.GetDocumentRange())

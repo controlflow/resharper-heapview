@@ -11,9 +11,11 @@ using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Resolve;
+#if RESHARPER2017_1
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+#endif
 // ReSharper disable ConvertClosureToMethodGroup
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
@@ -118,7 +120,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             {
               var accessor = thisElement as IAccessor;
               if (accessor != null && Equals(accessor.ValueVariable, capture))
+              {
                 scope = topScope;
+              }
             }
             else
             {
@@ -130,7 +134,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
                 }
                 else
                 {
+#if RESHARPER2017_1
+                  scope = declaration.GetContainingScope<ILocalScope>();
+#else
                   scope = declaration.GetContainingNode<ILocalScope>();
+#endif
                 }
 
                 break;
@@ -278,6 +286,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       if (hasThis)
       {
         if (parameters > 0 || vars > 0) buf.Append(" and ");
+
         buf.Append("'this' reference");
       }
 
@@ -319,7 +328,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       var declaration = declarations[0];
       range = declaration.GetNameDocumentRange();
-      var nameEndOffset = range.EndOffsetRange().TextRange.EndOffset;
+#if RESHARPER2016_3
+      var nameEndOffset = range.EndOffset;
+#else
+      var nameEndOffset = range.TextRange.EndOffset;
+#endif
 
       var variable = declaration as ILocalVariableDeclaration;
       if (variable != null)
@@ -451,11 +464,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private sealed class ClosureInspector : IRecursiveElementProcessor
     {
       [NotNull] private readonly Stack<ITreeNode> myClosures;
-      [CanBeNull] private readonly IParametersOwner myFunction;
+      [CanBeNull] private readonly IParametersOwner myParametersOwner;
 
       public ClosureInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IParametersOwner thisElement)
       {
-        myFunction = thisElement;
+        myParametersOwner = thisElement;
         myClosures = new Stack<ITreeNode>();
         myClosures.Push(topLevelNode);
         Closures = new Dictionary<ITreeNode, JetHashSet<IDeclaredElement>>();
@@ -500,11 +513,12 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       private void AddThisCapture()
       {
-        if (myFunction == null) return;
+        var parametersOwner = myParametersOwner;
+        if (parametersOwner == null) return;
 
         foreach (var closureKey in myClosures)
         {
-          AddCapture(closureKey, myFunction);
+          AddCapture(closureKey, parametersOwner);
         }
       }
 
@@ -604,7 +618,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
             if (myClosures.Count == 1)
             {
-              if (parametersOwner.Equals(myFunction)) return;
+              if (parametersOwner.Equals(myParametersOwner)) return;
 
               var accessor = myFunction as IAccessor;
               if (accessor != null && accessor.OwnerMember.Equals(parametersOwner)) return;
@@ -620,10 +634,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (variable.IsStatic) return;
         if (variable.IsConstant) return;
 
-        var declarations = variable.GetDeclarations();
-        if (declarations.Count == 1)
+        var declaration = variable.GetSingleDeclaration<IDeclaration>();
+        if (declaration != null)
         {
-          var declaration = declarations[0];
           foreach (var closure in myClosures)
           {
             if (closure.Contains(declaration) && !(closure is IQueryParameterPlatform)) continue;

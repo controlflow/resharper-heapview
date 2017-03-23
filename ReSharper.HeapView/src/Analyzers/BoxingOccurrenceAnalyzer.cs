@@ -1,6 +1,5 @@
 ﻿using System;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
