@@ -92,8 +92,10 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         }
         else
         {
-          var type = qualifierExpression.Type() as IDeclaredType;
-          if (type != null) valueType = type.GetTypeElement();
+          if (qualifierExpression.Type() is IDeclaredType declaredType)
+          {
+            valueType = declaredType.GetTypeElement();
+          }
         }
 
         if (valueType != null)

@@ -42,15 +42,13 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       IParametersOwner function = null;
       ILocalScope topScope = null;
 
-      var functionDeclaration = element as ICSharpFunctionDeclaration;
-      if (functionDeclaration != null)
+      if (element is ICSharpFunctionDeclaration functionDeclaration)
       {
         function = functionDeclaration.DeclaredElement;
         topScope = functionDeclaration.Body as ILocalScope;
       }
 
-      var expressionBodyOwner = element as IExpressionBodyOwnerDeclaration;
-      if (expressionBodyOwner != null)
+      if (element is IExpressionBodyOwnerDeclaration expressionBodyOwner)
       {
 #if RESHARPER2017_1
         var arrowExpression = expressionBodyOwner.ArrowClause;
@@ -118,8 +116,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             var declarations = capture.GetDeclarations();
             if (declarations.Count == 0) // accessors 'value' parameter
             {
-              var accessor = thisElement as IAccessor;
-              if (accessor != null && Equals(accessor.ValueVariable, capture))
+              if (thisElement is IAccessor accessor && Equals(accessor.ValueVariable, capture))
               {
                 scope = topScope;
               }
@@ -148,8 +145,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           if (scope == null) continue;
 
-          JetHashSet<IDeclaredElement> captures;
-          if (!captureScopes.TryGetValue(scope, out captures))
+          if (!captureScopes.TryGetValue(scope, out var captures))
           {
             captureScopes[scope] = captures = new JetHashSet<IDeclaredElement>();
           }
@@ -207,8 +203,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           foreach (var capture in closureToCaptures.Value)
           {
-            ILocalScope scope;
-            if (!scopesMap.TryGetValue(capture, out scope)) continue;
+            if (!scopesMap.TryGetValue(capture, out var scope)) continue;
             if (scopeToCaptures.Key.Contains(scope)) continue;
 
             outerCaptures = outerCaptures ?? new JetHashSet<IDeclaredElement>();
@@ -224,8 +219,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         if (firstCapture != null)
         {
-          DocumentRange highlightingRange;
-          var anchor = GetCaptureHighlightingRange(topDeclaration, thisElement, firstCapture, out highlightingRange);
+          var anchor = GetCaptureHighlightingRange(topDeclaration, thisElement, firstCapture, out var highlightingRange);
           if (anchor != null && highlightingRange.IsValid())
           {
             consumer.AddHighlighting(new ClosureAllocationHighlighting(anchor, scopeClosure), highlightingRange);
@@ -314,8 +308,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var declarations = capture.GetDeclarations();
       if (declarations.Count == 0) // accessors 'value' parameter
       {
-        var accessor = thisElement as IAccessor;
-        if (accessor != null && Equals(accessor.ValueVariable, capture))
+        if (thisElement is IAccessor accessor && Equals(accessor.ValueVariable, capture))
         {
           var identifier = ((IAccessorDeclaration)topDeclaration).NameIdentifier;
           range = identifier.GetDocumentRange();
@@ -334,31 +327,28 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
       var nameEndOffset = range.TextRange.EndOffset;
 #endif
 
-      var variable = declaration as ILocalVariableDeclaration;
-      if (variable != null)
+      if (declaration is ILocalVariableDeclaration variableDeclaration)
       {
-        var multiple = MultipleLocalVariableDeclarationNavigator.GetByDeclarator(variable);
-        if (multiple != null && multiple.Declarators[0] == variable)
+        var multiple = MultipleLocalVariableDeclarationNavigator.GetByDeclarator(variableDeclaration);
+        if (multiple != null && multiple.Declarators[0] == variableDeclaration)
         {
           var documentRange = multiple.GetTypeRange();
           range = documentRange.SetEndTo(nameEndOffset);
-          return variable;
+          return variableDeclaration;
         }
 
         return null;
       }
 
-      var parameter = declaration as IRegularParameterDeclaration;
-      if (parameter != null)
+      if (declaration is IRegularParameterDeclaration parameterDeclaration)
       {
         if (range.TextRange.Length < 3)
-          range = parameter.TypeUsage.GetDocumentRange().SetEndTo(nameEndOffset);
+          range = parameterDeclaration.TypeUsage.GetDocumentRange().SetEndTo(nameEndOffset);
 
-        return parameter;
+        return parameterDeclaration;
       }
 
-      var anonymousParameter = declaration as IAnonymousMethodParameterDeclaration;
-      if (anonymousParameter != null)
+      if (declaration is IAnonymousMethodParameterDeclaration anonymousParameter)
       {
         range = anonymousParameter.TypeUsage.GetDocumentRange().SetEndTo(nameEndOffset);
         return anonymousParameter;
@@ -378,8 +368,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
     private static void ReportClosurelessAllocations(
       [NotNull] ITreeNode element, [NotNull] IParametersOwner function, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
-      var typeParametersOwner = function as ITypeParametersOwner;
-      if (typeParametersOwner != null && typeParametersOwner.TypeParameters.Count != 0)
+      if (function is ITypeParametersOwner typeParametersOwner && typeParametersOwner.TypeParameters.Count > 0)
       {
         foreach (var lambda in inspector.ClosurelessLambdas)
         {
@@ -412,27 +401,30 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
     private static DocumentRange GetClosureRange([CanBeNull] ITreeNode function)
     {
-      var lambda = function as ILambdaExpression;
-      if (lambda != null)
-        return lambda.LambdaArrow.GetDocumentRange();
-
-      var anonymousMethod = function as IAnonymousMethodExpression;
-      if (anonymousMethod != null)
-        return anonymousMethod.DelegateKeyword.GetDocumentRange();
-
-      var platform = function as IQueryParameterPlatform;
-      if (platform != null)
+      switch (function)
       {
-        var token = platform.GetPreviousMeaningfulToken();
-        if (token != null && token.GetTokenType().IsKeyword)
-          return token.GetDocumentRange();
+        case ILambdaExpression lambda:
+          return lambda.LambdaArrow.GetDocumentRange();
 
-        var clause = platform.GetContainingNode<IQueryClause>();
-        if (clause != null)
-          return clause.FirstKeyword.GetDocumentRange();
+        case IAnonymousMethodExpression anonymousMethod:
+          return anonymousMethod.DelegateKeyword.GetDocumentRange();
+
+        case IQueryParameterPlatform platform:
+        {
+          var token = platform.GetPreviousMeaningfulToken();
+          if (token != null && token.GetTokenType().IsKeyword)
+            return token.GetDocumentRange();
+
+          var clause = platform.GetContainingNode<IQueryClause>();
+          if (clause != null)
+            return clause.FirstKeyword.GetDocumentRange();
+
+          goto default;
+        }
+
+        default:
+          return DocumentRange.InvalidRange;
       }
-
-      return DocumentRange.InvalidRange;
     }
 
     private static void ReportAnonymousTypes([NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
@@ -446,19 +438,15 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
     private static bool IsExpressionLambda([NotNull] ITreeNode function)
     {
-      var lambdaExpression = function as ILambdaExpression;
-      if (lambdaExpression != null)
+      switch (function)
       {
-        return lambdaExpression.IsLinqExpressionTreeLambda();
+        case ILambdaExpression lambdaExpression:
+          return lambdaExpression.IsLinqExpressionTreeLambda();
+        case IQueryParameterPlatform parameterPlatform:
+          return parameterPlatform.IsLinqExpressionTreeQuery();
+        default:
+          return false;
       }
-
-      var parameterPlatform = function as IQueryParameterPlatform;
-      if (parameterPlatform != null)
-      {
-        return parameterPlatform.IsLinqExpressionTreeQuery();
-      }
-
-      return false;
     }
 
     private sealed class ClosureInspector : IRecursiveElementProcessor
@@ -497,17 +485,15 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       public void ProcessBeforeInterior(ITreeNode element)
       {
-        var expression = element as ICSharpExpression;
-        if (expression != null)
+        switch (element)
         {
-          ProcessExpression(expression);
-          return;
-        }
+          case ICSharpExpression expression:
+            ProcessExpression(expression);
+            return;
 
-        var platform = element as IQueryParameterPlatform;
-        if (platform != null)
-        {
-          myClosures.Push(platform);
+          case IQueryParameterPlatform platform:
+            myClosures.Push(platform);
+            return;
         }
       }
 
@@ -524,8 +510,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       private void AddCapture([NotNull] ITreeNode closure, [NotNull] IDeclaredElement element)
       {
-        JetHashSet<IDeclaredElement> captures;
-        if (!Closures.TryGetValue(closure, out captures))
+        if (!Closures.TryGetValue(closure, out var captures))
         {
           Closures.Add(closure, captures = new JetHashSet<IDeclaredElement>());
         }
@@ -535,63 +520,44 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       private void ProcessExpression([NotNull] ICSharpExpression element)
       {
-        var thisExpression = element as IThisExpression;
-        if (thisExpression != null)
+        switch (element)
         {
-          AddThisCapture();
-          return;
-        }
+          case IThisExpression _:
+          case IBaseExpression _:
+            AddThisCapture();
+            break;
 
-        var baseExpression = element as IBaseExpression;
-        if (baseExpression != null)
-        {
-          AddThisCapture();
-          return;
-        }
+          case IReferenceExpression referenceExpression when referenceExpression.QualifierExpression is null:
+            ProcessReferenceExpression(referenceExpression);
+            break;
 
-        var reference = element as IReferenceExpression;
-        if (reference != null && reference.QualifierExpression == null)
-        {
-          ProcessReferenceExpression(reference);
-          return;
-        }
-
-        var anonymousFunction = element as IAnonymousFunctionExpression;
-        if (anonymousFunction != null)
-        {
-          myClosures.Push(anonymousFunction);
+          case IAnonymousFunctionExpression anonymousFunction:
+            myClosures.Push(anonymousFunction);
+            break;
         }
       }
 
       private void ProcessReferenceExpression([NotNull] IReferenceExpression reference)
       {
-        var declaredElement = reference.Reference.Resolve().DeclaredElement;
+        var resolveResult = reference.Reference.Resolve();
 
-        var parameter = declaredElement as IParameter;
-        if (parameter != null)
+        switch (resolveResult.DeclaredElement)
         {
-          ProcessParameter(parameter);
-          return;
-        }
+          case IParameter parameter:
+            ProcessParameter(parameter);
+            return;
 
-        var variable = declaredElement as ILocalVariable;
-        if (variable != null)
-        {
-          ProcessLocalVariable(variable);
-          return;
-        }
+          case ILocalVariable localVariable:
+            ProcessLocalVariable(localVariable);
+            return;
 
-        var typeMember = declaredElement as ITypeMember;
-        if (typeMember != null) // .this closure
-        {
-          ProcessTypeMember(typeMember);
-          return;
-        }
+          case ITypeMember typeMember: // .this closure
+            ProcessTypeMember(typeMember);
+            return;
 
-        var anonymousProperty = declaredElement as IQueryAnonymousTypeProperty;
-        if (anonymousProperty != null)
-        {
-          ProcessAnonymousProperty(anonymousProperty);
+          case IQueryAnonymousTypeProperty anonymousTypeProperty:
+            ProcessAnonymousProperty(anonymousTypeProperty);
+            return;
         }
       }
 
@@ -602,11 +568,9 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
         foreach (var closure in myClosures)
         {
-          var queryPlatform = closure as IQueryParameterPlatform;
-          if (queryPlatform != null)
+          if (closure is IQueryParameterPlatform queryPlatform)
           {
-            var platform = parametersOwner as IQueryParameterPlatform;
-            if (platform != null && queryPlatform == platform) return;
+            if (parametersOwner is IQueryParameterPlatform platform && queryPlatform == platform) return;
 
             // outer query parameter
             AddCapture(closure, parameter);
@@ -620,8 +584,8 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
             {
               if (parametersOwner.Equals(myParametersOwner)) return;
 
-              var accessor = myFunction as IAccessor;
-              if (accessor != null && accessor.OwnerMember.Equals(parametersOwner)) return;
+              if (myParametersOwner is IAccessor accessor &&
+                  accessor.OwnerMember.Equals(parametersOwner)) return;
             }
 
             AddCapture(closure, parameter);
@@ -651,8 +615,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
         if (typeMember is ITypeElement) return;
         if (typeMember.IsStatic) return;
 
-        var field = typeMember as IField;
-        if (field != null && field.IsConstant) return;
+        if (typeMember is IField field && field.IsConstant) return;
 
         AddThisCapture();
       }

@@ -62,8 +62,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       foreach (var typeMember in containingType.GetMembers())
       {
-        var closurelessCandidate = typeMember as IMethod;
-        if (closurelessCandidate != null
+        if (typeMember is IMethod closurelessCandidate
           && !ReferenceEquals(closurelessCandidate, currentMethod)
           && closurelessCandidate.ShortName == shortName
           && closurelessCandidate.IsStatic == currentMethod.IsStatic
@@ -166,8 +165,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       var declaredType = substitution[parameter.Type] as IDeclaredType;
 
-      var typeParameter = declaredType?.GetTypeElement() as ITypeParameter;
-      if (typeParameter != null
+      if (declaredType?.GetTypeElement() is ITypeParameter typeParameter
           && typeParameter.OwnerMethod != null
           && !typeParameter.HasDefaultConstructor)
       {

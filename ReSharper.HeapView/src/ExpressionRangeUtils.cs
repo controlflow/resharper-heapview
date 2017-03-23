@@ -12,19 +12,17 @@ namespace JetBrains.ReSharper.HeapView
   {
     public static DocumentRange GetExpressionRange([NotNull] this ICSharpExpression expression)
     {
-      var reference = expression as IReferenceExpression;
-      if (reference != null)
+      switch (expression)
       {
-        return reference.NameIdentifier.GetDocumentRange();
-      }
+        case IReferenceExpression referenceExpression:
+          return referenceExpression.NameIdentifier.GetDocumentRange();
 
-      var parenthesized = expression as IParenthesizedExpression;
-      if (parenthesized != null)
-      {
-        return parenthesized.Expression.GetExpressionRange();
-      }
+        case IParenthesizedExpression parenthesizedExpression:
+          return parenthesizedExpression.Expression.GetExpressionRange();
 
-      return expression.GetDocumentRange();
+        default:
+          return expression.GetDocumentRange();
+      }
     }
   }
 
@@ -49,8 +47,7 @@ namespace JetBrains.ReSharper.HeapView
       {
         foreach (var severity in Severities)
         {
-          ICollection<string> collection;
-          if (!severityIds.TryGetValue(severity, out collection)) continue;
+          if (!severityIds.TryGetValue(severity, out var collection)) continue;
 
           foreach (var highlightingId in HighlightingIds)
           {

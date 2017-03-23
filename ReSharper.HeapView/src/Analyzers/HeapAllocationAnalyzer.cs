@@ -44,107 +44,74 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      // var t = new object();
-      var objectCreation = element as IObjectCreationExpression;
-      if (objectCreation != null)
+      switch (element)
       {
-        CheckObjectCreation(objectCreation, consumer);
-        CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
-        return;
-      }
+        // var t = new object();
+        case IObjectCreationExpression objectCreation:
+          CheckObjectCreation(objectCreation, consumer);
+          CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
+          return;
 
-      // var t = new { Foo = 123 };
-      var anonymousObjectCreation = element as IAnonymousObjectCreationExpression;
-      if (anonymousObjectCreation != null)
-      {
-        CheckAnonymousObjectCreation(anonymousObjectCreation, consumer);
-        return;
-      }
+        // var t = new { Foo = 123 };
+        case IAnonymousObjectCreationExpression anonymousObjectCreation:
+          CheckAnonymousObjectCreation(anonymousObjectCreation, consumer);
+          return;
 
-      // var xs = new[] {1, 2, 3};
-      var arrayCreation = element as IArrayCreationExpression;
-      if (arrayCreation != null)
-      {
-        CheckArrayCreation(arrayCreation, consumer);
-        return;
-      }
+        // var xs = new[] {1, 2, 3};
+        case IArrayCreationExpression arrayCreation:
+          CheckArrayCreation(arrayCreation, consumer);
+          return;
 
-      // int[] xs = {1, 2, 3};
-      var arrayInitializer = element as IArrayInitializer;
-      if (arrayInitializer != null)
-      {
-        CheckArrayInitializer(arrayInitializer, consumer);
-        return;
-      }
+        // int[] xs = {1, 2, 3};
+        case IArrayInitializer arrayInitializer:
+          CheckArrayInitializer(arrayInitializer, consumer);
+          return;
 
-      // F(); when F(params T[] xs);
-      // F(); when F is iterator
-      var invocationExpression = element as IInvocationExpression;
-      if (invocationExpression != null)
-      {
-        CheckInvocationExpression(invocationExpression, consumer);
-        return;
-      }
+        // F(); when F(params T[] xs);
+        // F(); when F is iterator
+        case IInvocationExpression invocationExpression:
+          CheckInvocationExpression(invocationExpression, consumer);
+          return;
 
-      // Action f = F;
-      // var xs = Iterator;
-      var referenceExpression = element as IReferenceExpression;
-      if (referenceExpression != null)
-      {
-        CheckReferenceExpression(referenceExpression, consumer);
-        return;
-      }
+        // Action f = F;
+        // var xs = Iterator;
+        case IReferenceExpression referenceExpression:
+          CheckReferenceExpression(referenceExpression, consumer);
+          return;
 
-      // string s = "abc" + x + "def";
-      var additiveExpression = element as IAdditiveExpression;
-      if (additiveExpression != null)
-      {
-        CheckStringConcatenation(additiveExpression, consumer);
-        return;
-      }
+        // string s = "abc" + x + "def";
+        case IAdditiveExpression additiveExpression:
+          CheckStringConcatenation(additiveExpression, consumer);
+          return;
 
-      // str += "abc";
-      var assignmentExpression = element as IAssignmentExpression;
-      if (assignmentExpression != null
-          && assignmentExpression.IsCompoundAssignment
-          && IsStringConcatenation(assignmentExpression))
-      {
-        consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
-          assignmentExpression.OperatorSign.GetDocumentRange());
-      }
+        // str += "abc";
+        case IAssignmentExpression assignmentExpression when assignmentExpression.IsCompoundAssignment
+                                                             && IsStringConcatenation(assignmentExpression):
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
+            assignmentExpression.OperatorSign.GetDocumentRange());
+          break;
 
-      // foreach (var x in xs); when xs.GetEnumerator() is ref-type
-      // note: produces false-positive for LocalList<T>-produced IList<T>
-      var foreachStatement = element as IForeachStatement;
-      if (foreachStatement != null)
-      {
-        CheckForeachDeclaration(foreachStatement, consumer);
-        return;
-      }
+        // foreach (var x in xs); when xs.GetEnumerator() is ref-type
+        // note: produces false-positive for LocalList<T>-produced IList<T>
+        case IForeachStatement foreachStatement:
+          CheckForeachDeclaration(foreachStatement, consumer);
+          return;
 
-      // ["params", "arg"]
-      var elementAccessExpression = element as IElementAccessExpression;
-      if (elementAccessExpression != null)
-      {
-        CheckInvocationInfo(elementAccessExpression, null, consumer);
-        return;
-      }
+        // ["params", "arg"]
+        case IElementAccessExpression elementAccessExpression:
+          CheckInvocationInfo(elementAccessExpression, null, consumer);
+          return;
 
-      // : base("params", "arg")
-      var constructorInitializer = element as IConstructorInitializer;
-      if (constructorInitializer != null)
-      {
-        CheckInvocationInfo(constructorInitializer, constructorInitializer.Instance, consumer);
-        return;
-      }
+        // : base("params", "arg")
+        case IConstructorInitializer constructorInitializer:
+          CheckInvocationInfo(constructorInitializer, constructorInitializer.Instance, consumer);
+          return;
 
-      // new C { {"params", "arg"} }
-      var collectionElementInitializer = element as ICollectionElementInitializer;
-      if (collectionElementInitializer != null)
-      {
-        CheckInvocationInfo(collectionElementInitializer, null, consumer);
-        return;
+        // new C { {"params", "arg"} }
+        case ICollectionElementInitializer collectionElementInitializer:
+          CheckInvocationInfo(collectionElementInitializer, null, consumer);
+          return;
       }
     }
 
