@@ -22,6 +22,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.HeapView.Wave06",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.HeapView.Wave07", "ReSharper.HeapView\ReSharper.HeapView.Wave07.csproj", "{CE59DC9F-6557-4D95-BBE4-5E61686D20C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.HeapView.Tests.Wave07", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave07.csproj", "{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.HeapView.Tests.Wave06", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave06.csproj", "{C9F0EA19-D976-4E75-85E7-7D18E0968EE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,11 +48,21 @@ Global
 		{CE59DC9F-6557-4D95-BBE4-5E61686D20C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE59DC9F-6557-4D95-BBE4-5E61686D20C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE59DC9F-6557-4D95-BBE4-5E61686D20C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9F0EA19-D976-4E75-85E7-7D18E0968EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9F0EA19-D976-4E75-85E7-7D18E0968EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9F0EA19-D976-4E75-85E7-7D18E0968EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9F0EA19-D976-4E75-85E7-7D18E0968EE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{813479C0-9CB9-4A3D-9DFA-F6DFA7027AD4} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{0C15B4B0-FC3A-413A-BFFF-9446B4A5C6B6} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{C9F0EA19-D976-4E75-85E7-7D18E0968EE3} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal
