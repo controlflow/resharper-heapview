@@ -99,7 +99,7 @@ class Closures {
 * Please, avoid premature optimizations. Use this tool with care, only when it matters to reduce allocations count;
 * You can change default colors of highlightings in Visual Studio settings: go *Tools* - *Settings* - *Fonts and colors*
   and check colors for items *"ReSharper HeapView Boxing"* and *"ReSharper HeapView Allocation"*
-  (or *"ReSharper Boxing Occurance"* and *"ReSharper Heap Allocation"* for ReSharper 8.x version);
+  (or *"ReSharper Boxing Occurrence"* and *"ReSharper Heap Allocation"* for ReSharper 8.x version);
 * You can change highlighting severity or search for all issues in project/solution as usual - via Alt+Enter menu over highlighting;
 * This plugin highly relies on Microsoft's implementation of C# compiler shipping with VS2013,
   it may produce false positives for other C# implementations like Mono C# compiler;
