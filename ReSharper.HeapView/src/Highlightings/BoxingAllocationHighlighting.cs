@@ -15,17 +15,43 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 #endif
   )]
 
+[assembly: RegisterConfigurableSeverity(
+  BoxingAllocationPossibleHighlighting.SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Boxing allocation (possible)",
+  "Highlights language construct or expression where boxing possibly happens",
+  Severity.HINT
+#if !RESHARPER2016_3
+  , false
+#endif
+)]
+
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class BoxingAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.BoxingAllocation";
     public const string MESSAGE = "Boxing allocation: {0}";
 
     public BoxingAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+      : base(element, MESSAGE, description) { }
+  }
+
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
+    AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
+  public class BoxingAllocationPossibleHighlighting : PerformanceHighlightingBase
+  {
+    public const string SEVERITY_ID = "HeapView.BoxingAllocation.Possible";
+    public const string MESSAGE = "Possible boxing allocation: {0}";
+
+    public BoxingAllocationPossibleHighlighting([NotNull] ITreeNode element, [NotNull] string description)
       : base(element, MESSAGE, description) { }
   }
 }

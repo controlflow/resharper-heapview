@@ -16,104 +16,140 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
   // note: boxing in foreach (object x in new[] { 1, 2, 3 }) { } is not detected,
   // because of another C# highlighting (iteration var can be made of more specific type)
 
+  // todo: possible boxing allocation
+
   [ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes = new[] { typeof(BoxingAllocationHighlighting) })]
   public sealed class BoxingOccurrenceAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
     protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      var invocationExpression = expression as IInvocationExpression;
-      if (invocationExpression != null)
+      switch (expression)
       {
-        CheckInvocation(invocationExpression, consumer);
+        case IInvocationExpression invocationExpression:
+          CheckInvocationExpression(invocationExpression, consumer);
+          break;
+
+        case IReferenceExpression referenceExpression:
+          CheckReferenceExpression(referenceExpression, consumer);
+          break;
       }
 
       CheckExpression(expression, consumer);
     }
 
-    private static void CheckInvocation([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
+    // todo: ?. invocations?
+    private static void CheckInvocationExpression([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
-      var expressionReference = invocationExpression.InvocationExpressionReference;
+      var invokedReference = invocationExpression.InvokedExpression as IReferenceExpression;
+      if (invokedReference == null) return;
 
-      var method = expressionReference.Resolve().DeclaredElement as IMethod;
-      if (method == null || method.IsExtensionMethod) return;
+      var resolveResult = invocationExpression.InvocationExpressionReference.Resolve();
+      if (!resolveResult.ResolveErrorType.IsAcceptable) return;
 
-      var referenceExpression = invocationExpression.InvokedExpression as IReferenceExpression;
-      if (referenceExpression == null) return;
+      var method = resolveResult.DeclaredElement as IMethod;
+      if (method == null || method.IsStatic) return;
 
-      bool isValueType, typeParameterType = false;
-      var qualifierExpression = referenceExpression.QualifierExpression;
-      if (qualifierExpression == null || qualifierExpression is IBaseExpression)
+      var classType = method.GetContainingType() as IClass;
+      if (classType == null) return;
+
+      var qualifierType = GetQualifierExpressionType(invokedReference.QualifierExpression, invokedReference);
+
+      const string description = "inherited 'System.Object' virtual method call on value type instance";
+
+      if (qualifierType.IsValueType())
       {
-        var declaration = invocationExpression.GetContainingTypeDeclaration();
-        isValueType = declaration?.DeclaredElement is IStruct;
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(invocationExpression, description),
+          invokedReference.NameIdentifier.GetDocumentRange());
+      }
+      else if (qualifierType.IsUnconstrainedGenericType())
+      {
+        consumer.AddHighlighting(
+          new BoxingAllocationPossibleHighlighting(invocationExpression, description),
+          invokedReference.NameIdentifier.GetDocumentRange());
+      }
+    }
+
+    private static void CheckReferenceExpression([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
+    {
+      var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
+      if (invocationExpression != null) return;
+
+      var resolveResult = referenceExpression.Reference.Resolve();
+      if (!resolveResult.ResolveErrorType.IsAcceptable) return;
+
+      var method = resolveResult.DeclaredElement as IMethod;
+      if (method == null || method.IsStatic || method.IsExtensionMethod) return;
+
+      var qualifierType = GetQualifierExpressionType(referenceExpression.QualifierExpression, referenceExpression);
+      if (qualifierType == null) return;
+
+      var isValueType = qualifierType.IsValueType();
+      if (!isValueType && !qualifierType.IsUnconstrainedGenericType()) return;
+
+      var targetType = referenceExpression.GetImplicitlyConvertedTo(); // delayed
+      if (!targetType.IsDelegateType()) return;
+
+      var description = BakeDescriptionWithTypes(
+        "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, targetType);
+
+      var nameIdentifier = referenceExpression.NameIdentifier;
+
+      if (isValueType)
+      {
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
       }
       else
       {
-        var type = qualifierExpression.Type();
-        typeParameterType = type.IsTypeParameterType();
-        isValueType = type.IsValueType();
+        consumer.AddHighlighting(
+          new BoxingAllocationPossibleHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
+      }
+    }
+
+    [CanBeNull, Pure]
+    private static IType GetQualifierExpressionType([CanBeNull] ICSharpExpression qualifierExpression, [NotNull] ICSharpTreeNode context)
+    {
+      if (qualifierExpression.IsThisOrBaseOrNull())
+      {
+        var structDeclaration = context.GetContainingTypeDeclaration() as IStructDeclaration;
+
+        var structTypeElement = structDeclaration?.DeclaredElement;
+        if (structTypeElement == null) return null;
+
+        return TypeFactory.CreateType(structTypeElement);
       }
 
-      if (isValueType && method.GetContainingType() is IClass && !method.IsStatic)
-      {
-        // do not produce possible false positive when type is type parameter type
-        if (!typeParameterType || string.Equals(method.ShortName, "GetType", StringComparison.Ordinal))
-        {
-          consumer.AddHighlighting(
-            new BoxingAllocationHighlighting(
-              invocationExpression, "inherited System.Object virtual method call on value type instance"),
-            referenceExpression.NameIdentifier.GetDocumentRange());
-        }
-      }
+      var expressionType = qualifierExpression.GetExpressionType();
+      return expressionType.ToIType();
     }
 
     private static void CheckExpression([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
     {
-      var targetType = expression.GetImplicitlyConvertedTo();
-      if (!targetType.IsReferenceType()) return;
-
-      var expressionType = expression.Type();
+      var expressionType = expression.GetExpressionType();
       if (expressionType.IsUnknown) return;
 
-      if (targetType.IsDelegateType())
+      var sourceType = expressionType.ToIType();
+      if (sourceType != null)
       {
-        var referenceExpression = expression as IReferenceExpression;
-
-        var method = referenceExpression?.Reference.Resolve().DeclaredElement as IMethod;
-        if (method == null || method.IsStatic || method.IsExtensionMethod) return;
-
-        ITypeElement valueType = null;
-        var qualifierExpression = referenceExpression.QualifierExpression;
-        if (qualifierExpression == null || qualifierExpression is IBaseExpression)
-        {
-          var declaration = expression.GetContainingTypeDeclaration();
-          if (declaration != null)
-            valueType = declaration.DeclaredElement as IStruct;
-        }
-        else
-        {
-          if (qualifierExpression.Type() is IDeclaredType declaredType)
-          {
-            valueType = declaredType.GetTypeElement();
-          }
-        }
-
-        if (valueType != null)
-        {
-          var sourceType = TypeFactory.CreateType(valueType);
-          if (sourceType.IsValueType())
-          {
-            var description = BakeDescription(
-              "conversion of value type '{0}' instance method to '{1}' delegate type", sourceType, targetType);
-
-            consumer.AddHighlighting(
-              new BoxingAllocationHighlighting(expression, description),
-              referenceExpression.NameIdentifier.GetDocumentRange());
-          }
-        }
+        if (!sourceType.IsValueType() &&
+            !sourceType.IsUnconstrainedGenericType()) return;
       }
-      else
-      {
+
+      var targetType = expression.GetImplicitlyConvertedTo();
+      if (targetType.IsUnknown) return;
+
+
+
+      if (!targetType.IsReferenceType()) // todo: not only?
+        return;
+
+
+
+      
+      //if (expressionType.IsUnknown) return;
+
+      /*{
         if (targetType.IsUnknown || targetType.Equals(expressionType)) return;
 
         var conversionRule = expression.GetTypeConversionRule();
@@ -125,18 +161,18 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
           if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
 
-          var description = BakeDescription("conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
+          var description = BakeDescriptionWithTypes("conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
 
           consumer.AddHighlighting(
             new BoxingAllocationHighlighting(expression, description), expression.GetExpressionRange());
         }
-      }
+      }*/
     }
 
     [NotNull, StringFormatMethod("format")]
-    private static string BakeDescription([NotNull] string format, [NotNull] params IType[] types)
+    private static string BakeDescriptionWithTypes([NotNull] string format, [NotNull] params IType[] types)
     {
-      var args = Array.ConvertAll(types, t => (object) t.GetPresentableName(CSharpLanguage.Instance));
+      var args = Array.ConvertAll(types, type => (object) type.GetPresentableName(CSharpLanguage.Instance));
       return string.Format(format, args);
     }
   }

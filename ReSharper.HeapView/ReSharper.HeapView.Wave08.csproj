@@ -26,7 +26,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170316.165446-eap05"/>
+    <PackageReference Include="JetBrains.ReSharper.SDK" Version="2017.1.20170407.131329" />
     <PackageReference Include="VSSDK.Text" Version="10.0.4" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

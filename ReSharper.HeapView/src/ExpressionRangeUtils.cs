@@ -24,6 +24,8 @@ namespace JetBrains.ReSharper.HeapView
           return expression.GetDocumentRange();
       }
     }
+
+    // todo: IsUnconstrainedGenericType
   }
 
   [ShellComponent]

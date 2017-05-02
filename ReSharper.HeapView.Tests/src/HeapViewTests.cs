@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.HeapView
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
     {
       return highlighting is BoxingAllocationHighlighting
+          || highlighting is BoxingAllocationPossibleHighlighting
           || highlighting is ObjectAllocationHighlighting
           || highlighting is ObjectAllocationEvidentHighlighting
           || highlighting is ObjectAllocationPossibleHighlighting
@@ -30,6 +31,7 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestBoxing02() { DoNamedTest2(); }
     [Test] public void TestBoxing03() { DoNamedTest2(); }
     [Test] public void TestBoxing04() { DoNamedTest2(); }
+    [Test] public void TestBoxing05() { DoNamedTest2(); }
 
     [Test] public void TestClosure01() { DoNamedTest2(); }
     [Test] public void TestClosure02() { DoNamedTest2(); }
