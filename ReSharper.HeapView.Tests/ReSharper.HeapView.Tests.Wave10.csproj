@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ReSharperVersionIdentifier>Rider20172</ReSharperVersionIdentifier>
+    <TargetFramework>net451</TargetFramework>
+    <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RIDER;RIDER2017_2;</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RIDER;RIDER2017_2</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="2017.2.20171011.224552" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReSharper.HeapView\ReSharper.HeapView.Wave10.csproj" />
+  </ItemGroup>
+</Project>

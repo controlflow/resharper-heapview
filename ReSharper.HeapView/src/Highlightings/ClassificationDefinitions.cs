@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Composition;
+﻿#if !RIDER
+
+using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
@@ -80,3 +82,5 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
     internal ClassificationTypeDefinition ClassificationTypeDefinition;
   }
 }
+
+#endif
