@@ -2,27 +2,11 @@
 
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using JetBrains.ReSharper.HeapView.Highlightings;
-using JetBrains.TextControl.DocumentMarkup;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+
 // ReSharper disable UnassignedField.Global
 #pragma warning disable 649
-
-[assembly: RegisterHighlighter(
-  HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
-  EffectColor = "Red", EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
-
-[assembly: RegisterHighlighter(
-  HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-  EffectColor = "Orange", EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
-
-[assembly: RegisterHighlighter(
-  HeapViewAttributeIds.STRUCT_COPY_ID,
-  EffectColor = "SkyBlue", EffectType = EffectType.SOLID_UNDERLINE,
-  Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
 
 // todo: extract constants
 
