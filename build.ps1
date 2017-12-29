@@ -22,12 +22,19 @@ function ZipFiles( $zipfilename, $sourcedir )
 ./tools/nuget pack $nuspec_file -Properties "Wave=Wave09;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[9.0,10.0);PackageId=$package_id.R2017.2"
 
 # Rider 2017.2
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave10;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[9.0];PackageId=$package_id.Wave10"
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave10;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[10.0];PackageId=$package_id.Wave10"
 
+# 2017.3
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave11;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[11.0,12.0);PackageId=$package_id.R2017.3"
+
+# Rider 2017.3
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave11;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[11.0];PackageId=$package_id.Wave11"
+
+# Note that we only support one version of Rider
 if (Test-Path ".\\rider-heapview.zip") { Remove-Item ".\\rider-heapview.zip" }
 Get-ChildItem . -Include rider-heapview.zip | Remove-Item
 Get-ChildItem .\Rider -Include *.nupkg -Recurse | Remove-Item
-Copy-Item "$package_id.Wave10.*.nupkg" "Rider"
+Copy-Item "$package_id.Wave11.*.nupkg" "Rider"
 
 # TODO: Can't use Compress-Archive or ZipFiles, as it creates a zip file that Rider doesn't like
 # Something to do with the way directories are created. If we open the file in 7-zip, the

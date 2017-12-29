@@ -2,6 +2,7 @@
 
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using JetBrains.ReSharper.HeapView.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -10,7 +11,7 @@ using Microsoft.VisualStudio.Utilities;
 
 // todo: extract constants
 
-namespace JetBrains.ReSharper.HeapView.Highlightings
+namespace JetBrains.ReSharper.HeapView.VisualStudio
 {
   [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
   [Order(After = "Formal Language Priority", Before = "Natural Language Priority")]
