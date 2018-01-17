@@ -1,4 +1,4 @@
-﻿ReSharper Heap Allocations Viewer plugin
+﻿Heap Allocations Viewer plugin for ReSharper and Rider
 ----------------------------------------
 
 This plugins statically analyzes C# code to find all local object allocations happening.
@@ -9,9 +9,9 @@ It can be used to reduce number of heap allocations in hot paths of your C# prog
 
 #### Download
 
-* Currently supported ReSharper versions are `2016.2`, `2016.3` and `2017.1`;
-* Use ReSharper extension manager to install it from [extensions gallery](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R2017.1/);
+* Currently supported versions are `2016.2` —`2017.3` for ReSharper, and `2017.1` — `2017.3` for Rider;
 * ReSharper `8.x`, `9.x`, `10.0` and `2016.1` are no longer supported, check extension manager for [latest](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView/) [versions](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R90/);
+* Use ReSharper extension manager to install it from [extensions gallery](http://resharper-plugins.jetbrains.com/packages/Resharper.HeapView.R2017.1/) or from *File* | *Settings* | *Plugins* page for Rider
 * Plugin's [changelog is here](Content/Changelog.md).
 
 #### Features
@@ -97,7 +97,11 @@ class Closures {
 #### Notes
 
 * Please, avoid premature optimizations. Use this tool with care, only when it matters to reduce allocations count;
-* You can change default colors of highlightings in Visual Studio settings: go *Tools* - *Settings* - *Fonts and colors*
+* You can change default colors of highlightings 
+
+  in Rider go: *File* | *Settings* | *Editor* | *Color Scheme* | *Heap Allocation Viewer*;
+
+  in Visual Studio: go *Tools* | *Options* | *Fonts and Colors*
   and check colors for items *"ReSharper HeapView Boxing"* and *"ReSharper HeapView Allocation"*
   (or *"ReSharper Boxing Occurrence"* and *"ReSharper Heap Allocation"* for ReSharper 8.x version);
 * You can change highlighting severity or search for all issues in project/solution as usual - via Alt+Enter menu over highlighting;
