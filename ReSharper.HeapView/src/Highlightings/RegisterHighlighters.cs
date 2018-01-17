@@ -32,7 +32,7 @@ using JetBrains.TextControl.DocumentMarkup;
         HeapViewAttributeIds.GROUP_ID, "Heap Allocation Viewer", HighlighterGroupPriority.COMMON_SETTINGS,
         RiderNamesProviderType = typeof(HeapViewSettingsNamesProvider),
         DemoText =
-@"<CSHARP_KEYWORD>struct</CSHARP_KEYWORD> <STRUCT_IDENTIFIER>Boxing</STRUCT_IDENTIFIER><DEFAULT_FOLDING>
+@"<CSHARP_KEYWORD>struct</CSHARP_KEYWORD> <STRUCT_IDENTIFIER>Boxing</STRUCT_IDENTIFIER>
 {
     <CSHARP_KEYWORD>void</CSHARP_KEYWORD> <METHOD_IDENTIFIER>M</METHOD_IDENTIFIER>(<CSHARP_KEYWORD>string</CSHARP_KEYWORD> <PARAMETER_IDENTIFIER>a</PARAMETER_IDENTIFIER>)
     {
