@@ -35,6 +35,9 @@
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 #packages/
 
+#Idea files
+/.idea/
+
 # Visual C++ cache files
 ipch/
 *.aps
