@@ -30,7 +30,9 @@ using JetBrains.TextControl.DocumentMarkup;
 [assembly:
     RegisterHighlighterGroup(
         HeapViewAttributeIds.GROUP_ID, "Heap Allocation Viewer", HighlighterGroupPriority.COMMON_SETTINGS,
-        RiderNamesProviderType = typeof(HeapViewSettingsNamesProvider),
+        RiderNamesProviderType = typeof(HeapViewSettingsNamesProvider)
+#if !(RESHARPER2016_2 || RESHARPER2016_3 || RESHARPER2017_1 || RESHARPER2017_2 || RESHARPER2017_3)
+        ,
         DemoText =
 @"<CSHARP_KEYWORD>struct</CSHARP_KEYWORD> <STRUCT_IDENTIFIER>Boxing</STRUCT_IDENTIFIER>
 {
@@ -40,7 +42,9 @@ using JetBrains.TextControl.DocumentMarkup;
         <CSHARP_KEYWORD>string</CSHARP_KEYWORD> <LOCAL_VARIABLE_IDENTIFIER>path</LOCAL_VARIABLE_IDENTIFIER> = <PARAMETER_IDENTIFIER>a</PARAMETER_IDENTIFIER> <HEAP_VIEW_ALLOCATION>+</HEAP_VIEW_ALLOCATION> <HEAP_VIEW_BOXING>'/'</HEAP_VIEW_BOXING> + <LOCAL_VARIABLE_IDENTIFIER>obj</LOCAL_VARIABLE_IDENTIFIER>; <CSHARP_LINE_COMMENT>// implicit conversion Char ~> Object</CSHARP_LINE_COMMENT>
         <CSHARP_KEYWORD>int</CSHARP_KEYWORD> <LOCAL_VARIABLE_IDENTIFIER>code</LOCAL_VARIABLE_IDENTIFIER> = <CSHARP_KEYWORD>this</CSHARP_KEYWORD>.<METHOD_IDENTIFIER><HEAP_VIEW_BOXING>GetHashCode</HEAP_VIEW_BOXING></METHOD_IDENTIFIER>(); <CSHARP_LINE_COMMENT>// non-overriden virtual method call on struct</CSHARP_LINE_COMMENT>
     }
-}")]
+}"
+#endif
+        )]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

@@ -38,9 +38,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave11",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave11", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave11.csproj", "{85034E06-B6E8-4239-88BF-FA9811FDCF4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave11.Rider", "ReSharper.HeapView\ReSharper.HeapView.Wave11.Rider.csproj", "{ED560226-D069-4379-9A33-580D98BD927A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave12.Rider", "ReSharper.HeapView\ReSharper.HeapView.Wave12.Rider.csproj", "{ED560226-D069-4379-9A33-580D98BD927A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave11.Rider", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave11.Rider.csproj", "{A98D4020-4723-403D-A690-5A9A51D11AFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave12.Rider", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave12.Rider.csproj", "{A98D4020-4723-403D-A690-5A9A51D11AFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave12", "ReSharper.HeapView\ReSharper.HeapView.Wave12.csproj", "{40F27D9E-4DAF-4E5D-8A93-E506877710EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave12", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave12.csproj", "{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +108,14 @@ Global
 		{A98D4020-4723-403D-A690-5A9A51D11AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A98D4020-4723-403D-A690-5A9A51D11AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A98D4020-4723-403D-A690-5A9A51D11AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40F27D9E-4DAF-4E5D-8A93-E506877710EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40F27D9E-4DAF-4E5D-8A93-E506877710EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40F27D9E-4DAF-4E5D-8A93-E506877710EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40F27D9E-4DAF-4E5D-8A93-E506877710EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,5 +128,6 @@ Global
 		{5B61ECAE-5F8F-4724-BF9C-7743B5D66F9E} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{85034E06-B6E8-4239-88BF-FA9811FDCF4E} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{A98D4020-4723-403D-A690-5A9A51D11AFA} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal
