@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ReSharperVersionIdentifier>20162</ReSharperVersionIdentifier>
-    <TargetFramework>net45</TargetFramework>
+    <ReSharperVersionIdentifier>20182</ReSharperVersionIdentifier>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultItems>false</EnableDefaultItems>
@@ -12,21 +12,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;JET_MODE_ASSERT;NOLANGLEVELATTR;RESHARPER2016_2</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;NOLANGLEVELATTR;RESHARPER2016_2</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2016.2.20160913.94928" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2018.2.0-*" />
     <PackageReference Include="VSSDK.Text" Version="10.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReSharper.HeapView\ReSharper.HeapView.Wave06.csproj" />
+    <ProjectReference Include="..\ReSharper.HeapView\ReSharper.HeapView.Wave182.csproj" />
   </ItemGroup>
 </Project>

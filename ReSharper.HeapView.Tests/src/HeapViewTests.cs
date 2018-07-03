@@ -4,13 +4,18 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.FeaturesTestFramework.Generate;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.HeapView
 {
   [TestNetFramework45]
+#if !NOLANGLEVELATTR
+  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp50)]
+#endif
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
     protected override string RelativeTestDataPath => "Daemon";
@@ -42,6 +47,7 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestClosureless02() { DoNamedTest2(); }
     [Test] public void TestClosureless03() { DoNamedTest2(); }
 
+#if NOLANGLEVELATTR
     protected override void DoTest(IProject project)
     {
       var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
@@ -50,5 +56,6 @@ namespace JetBrains.ReSharper.HeapView
         base.DoTest(project);
       });
     }
+#endif
   }
 }
