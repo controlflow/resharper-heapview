@@ -36,11 +36,17 @@ function ZipFiles( $zipfilename, $sourcedir )
 # Rider 2018.1
 ./tools/nuget pack $nuspec_file -Properties "Wave=Wave12;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[12.0];PackageId=$package_id.Wave12"
 
+# 2018.2
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave182;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[182.0];PackageId=$package_id.R2018.2"
+
+# Rider 2018.2
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave182;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[182.0];PackageId=$package_id.Wave182"
+
 # Note that we only support one version of Rider
 if (Test-Path ".\\rider-heapview.zip") { Remove-Item ".\\rider-heapview.zip" }
 Get-ChildItem . -Include rider-heapview.zip | Remove-Item
 Get-ChildItem .\Rider -Include *.nupkg -Recurse | Remove-Item
-Copy-Item "$package_id.Wave12.*.nupkg" "Rider"
+Copy-Item "$package_id.Wave182.*.nupkg" "Rider"
 
 # TODO: Can't use Compress-Archive or ZipFiles, as it creates a zip file that Rider doesn't like
 # Something to do with the way directories are created. If we open the file in 7-zip, the
