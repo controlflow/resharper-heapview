@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Application.Settings;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -20,7 +21,12 @@ namespace JetBrains.ReSharper.HeapView
   {
     protected override string RelativeTestDataPath => "Daemon";
 
+#if RESHARPER2018_2
+    protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
+      IContextBoundSettingsStore settingsStore)
+#else
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
+#endif
     {
       return highlighting is BoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
