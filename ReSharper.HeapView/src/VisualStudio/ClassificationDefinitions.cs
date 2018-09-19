@@ -2,6 +2,7 @@
 
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using JetBrains.ReSharper.HeapView.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -13,12 +14,10 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace JetBrains.ReSharper.HeapView.VisualStudio
 {
-  [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
-  [Order(After = "Formal Language Priority", Before = "Natural Language Priority")]
-  [Export(typeof(EditorFormatDefinition))]
-  [Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
-  [DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
-  [UserVisible(true)]
+  [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
+   Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),
+   Export(typeof(EditorFormatDefinition)), Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
+   DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), UserVisible(true)]
   internal class ReSharperBoxingOccurrenceClassificationDefinition : ClassificationFormatDefinition
   {
     public ReSharperBoxingOccurrenceClassificationDefinition()
@@ -32,7 +31,7 @@ namespace JetBrains.ReSharper.HeapView.VisualStudio
   }
 
   [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
-  [Order(After = "Formal Language Priority", Before = "Natural Language Priority")]
+  [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
   [Export(typeof(EditorFormatDefinition))]
   [Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
   [DisplayName(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
@@ -50,7 +49,7 @@ namespace JetBrains.ReSharper.HeapView.VisualStudio
   }
 
   [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.STRUCT_COPY_ID)]
-  [Order(After = "Formal Language Priority", Before = "Natural Language Priority")]
+  [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
   [Export(typeof(EditorFormatDefinition))]
   [Name(HeapViewAttributeIds.STRUCT_COPY_ID)]
   [DisplayName(HeapViewAttributeIds.STRUCT_COPY_ID)]
@@ -65,6 +64,21 @@ namespace JetBrains.ReSharper.HeapView.VisualStudio
 
     [Export, Name(HeapViewAttributeIds.STRUCT_COPY_ID), BaseDefinition("formal language")]
     internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  }
+
+  [Export(typeof(EditorFormatDefinition))]
+  [ClassificationType(ClassificationTypeNames = "HackOrderReSharperAndVisualStudioClassificationDefinition")]
+  [Order(After = "class name", Before = "ReSharper Class Identifier")]
+  [Order(After = "class name", Before = "ReSharper Static Class Identifier")]
+  [Order(After = "struct name", Before = "ReSharper Struct Identifier")]
+  [Order(After = "enum name", Before = "ReSharper Enum Identifier")]
+  [Order(After = "interface name", Before = "ReSharper Interface Identifier")]
+  [Order(After = "delegate name", Before = "ReSharper Delegate Identifier")]
+  [Order(After = "type parameter name", Before = "ReSharper Type Parameter Identifier")]
+  [Name("HackOrderReSharperAndVisualStudioClassificationDefinition")]
+  [UserVisible(false)]
+  internal class HackOrderReSharperAndVisualStudioClassificationDefinition : ClassificationFormatDefinition
+  {
   }
 }
 
