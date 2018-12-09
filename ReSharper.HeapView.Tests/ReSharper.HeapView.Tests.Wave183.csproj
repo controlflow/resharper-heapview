@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ReSharperVersionIdentifier>Rider20182</ReSharperVersionIdentifier>
+    <ReSharperVersionIdentifier>20183</ReSharperVersionIdentifier>
     <TargetFramework>net461</TargetFramework>
     <RootNamespace>JetBrains.ReSharper.HeapView</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -12,20 +12,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2;RIDER;RIDER2017_2;RIDER2017_3;RIDER2018_1;RIDER2018_2</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2;RESHARPER2018_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2;RIDER;RIDER2017_2;RIDER2017_3;RIDER2018_1;RIDER2018_2</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER2016_2;RESHARPER2016_3;RESHARPER2017_1;RESHARPER2017_2;RESHARPER2017_3;RESHARPER2018_1;RESHARPER2018_2;RESHARPER2018_3</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="2018.2.0-*" />
+    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="2018.3.0-*" />
+    <PackageReference Include="VSSDK.Text" Version="10.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReSharper.HeapView\ReSharper.HeapView.Wave182.Rider.csproj" />
+    <ProjectReference Include="..\ReSharper.HeapView\ReSharper.HeapView.Wave183.csproj" />
   </ItemGroup>
 </Project>

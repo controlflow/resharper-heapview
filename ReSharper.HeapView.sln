@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{A6BD
 		Content\Example.png = Content\Example.png
 		Readme.md = Readme.md
 		ReSharper.HeapView.nuspec = ReSharper.HeapView.nuspec
+		Rider\META-INF\plugin.xml = Rider\META-INF\plugin.xml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharper.HeapView.Wave08", "ReSharper.HeapView\ReSharper.HeapView.Wave08.csproj", "{5E73C117-1DC4-4F69-8931-5D500194D982}"
@@ -44,11 +45,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave182", "ReSharper.HeapView\ReSharper.HeapView.Wave182.csproj", "{EC0DD40E-977F-4130-8459-E04D83F1B8CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave182.Rider", "ReSharper.HeapView\ReSharper.HeapView.Wave182.Rider.csproj", "{C1A5AB83-9BD0-4A4A-9DC1-4AED0FA1C325}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave183.Rider", "ReSharper.HeapView\ReSharper.HeapView.Wave183.Rider.csproj", "{C1A5AB83-9BD0-4A4A-9DC1-4AED0FA1C325}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave182", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave182.csproj", "{23F5976F-47E0-45F7-9FBA-C08D6B125889}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave182.Rider", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave182.Rider.csproj", "{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave183.Rider", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave183.Rider.csproj", "{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Tests.Wave183", "ReSharper.HeapView.Tests\ReSharper.HeapView.Tests.Wave183.csproj", "{68B1AFAD-5866-423E-AA12-400C5B4BCD95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharper.HeapView.Wave183", "ReSharper.HeapView\ReSharper.HeapView.Wave183.csproj", "{8B7B5324-649A-4B0E-92C3-A6B5F4066780}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +133,14 @@ Global
 		{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68B1AFAD-5866-423E-AA12-400C5B4BCD95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68B1AFAD-5866-423E-AA12-400C5B4BCD95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68B1AFAD-5866-423E-AA12-400C5B4BCD95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68B1AFAD-5866-423E-AA12-400C5B4BCD95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B7B5324-649A-4B0E-92C3-A6B5F4066780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B7B5324-649A-4B0E-92C3-A6B5F4066780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B7B5324-649A-4B0E-92C3-A6B5F4066780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B7B5324-649A-4B0E-92C3-A6B5F4066780}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +155,6 @@ Global
 		{DAFBD118-C41A-4DBB-84C2-00FF054CFEBC} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{23F5976F-47E0-45F7-9FBA-C08D6B125889} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 		{AFD6A0D9-D42D-4458-A738-450CDB9CFEF7} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
+		{68B1AFAD-5866-423E-AA12-400C5B4BCD95} = {B1DB157D-4A9E-449C-98FD-3449DB17F12E}
 	EndGlobalSection
 EndGlobal

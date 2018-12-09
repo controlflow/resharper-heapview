@@ -2,9 +2,9 @@
   <id>com.intellij.resharper.HeapAllocationsViewer</id>
   <name>Heap Allocations Viewer</name>
   <description>Highlights local object allocations, boxing, delegates and closure creations points.</description>
-  <version>1.2.9.0</version>
+  <version>1.2.10.0</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
-  <idea-version since-build="182.3944" until-build="182.*"/>
+  <idea-version since-build="183.4886" until-build="183.*"/>
   <extensions defaultExtensionNs="com.intellij" />
   <depends>com.intellij.modules.rider</depends>
 </idea-plugin>

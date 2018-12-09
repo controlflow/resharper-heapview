@@ -10,19 +10,19 @@ function ZipFiles( $zipfilename, $sourcedir )
 }
 
 # 2016.2
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave06;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[6.0,7.0);PackageId=$package_id.R2016.2"
+#./tools/nuget pack $nuspec_file -Properties "Wave=Wave06;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[6.0,7.0);PackageId=$package_id.R2016.2"
 
 # 2016.3
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave07;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[7.0,8.0);PackageId=$package_id.R2016.3"
+#./tools/nuget pack $nuspec_file -Properties "Wave=Wave07;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[7.0,8.0);PackageId=$package_id.R2016.3"
 
 # 2017.1
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave08;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[8.0,9.0);PackageId=$package_id.R2017.1"
+#./tools/nuget pack $nuspec_file -Properties "Wave=Wave08;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[8.0,9.0);PackageId=$package_id.R2017.1"
 
 # 2017.2
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave09;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[9.0,10.0);PackageId=$package_id.R2017.2"
+#./tools/nuget pack $nuspec_file -Properties "Wave=Wave09;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[9.0,10.0);PackageId=$package_id.R2017.2"
 
 # Rider 2017.2
-./tools/nuget pack $nuspec_file -Properties "Wave=Wave10;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[10.0];PackageId=$package_id.Wave10"
+#./tools/nuget pack $nuspec_file -Properties "Wave=Wave10;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[10.0];PackageId=$package_id.Wave10"
 
 # 2017.3
 ./tools/nuget pack $nuspec_file -Properties "Wave=Wave11;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[11.0,12.0);PackageId=$package_id.R2017.3"
@@ -41,6 +41,12 @@ function ZipFiles( $zipfilename, $sourcedir )
 
 # Rider 2018.2
 ./tools/nuget pack $nuspec_file -Properties "Wave=Wave182;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[182.0];PackageId=$package_id.Wave182"
+
+# 2018.3
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave183;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[183.0];PackageId=$package_id.R2018.3"
+
+# Rider 2018.3
+./tools/nuget pack $nuspec_file -Properties "Wave=Wave183;Configuration=$config;ReSharperDep=Wave;ReSharperVer=[183.0];PackageId=$package_id.Wave183"
 
 # Note that we only support one version of Rider
 if (Test-Path ".\\rider-heapview.zip") { Remove-Item ".\\rider-heapview.zip" }
