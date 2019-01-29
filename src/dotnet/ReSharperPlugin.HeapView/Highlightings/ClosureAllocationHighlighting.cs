@@ -9,22 +9,14 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   ClosureAllocationHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Closure allocation",
   "Highlights places where closure class creation happens",
-  Severity.HINT
-#if !RESHARPER2016_3
-  ,false
-#endif
-  )]
+  Severity.HINT)]
 
 [assembly: RegisterConfigurableSeverity(
   CanEliminateClosureCreationHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Closure creation can be eliminated",
   "Highlights places where closure can be eliminated by using the overload(s) of containing method invocation, " +
   "allowing passing extra state parameter(s) to closure function",
-  Severity.SUGGESTION
-#if !RESHARPER2016_3
-  ,false
-#endif
-  )]
+  Severity.SUGGESTION)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

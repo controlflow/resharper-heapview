@@ -14,19 +14,13 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.HeapView
 {
   [TestNetFramework45]
-#if !NOLANGLEVELATTR
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp50)]
-#endif
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
     protected override string RelativeTestDataPath => "Daemon";
 
-#if RESHARPER2018_2
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
       IContextBoundSettingsStore settingsStore)
-#else
-    protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile)
-#endif
     {
       return highlighting is BoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
@@ -52,16 +46,5 @@ namespace JetBrains.ReSharper.HeapView
     [Test] public void TestClosureless01() { DoNamedTest2(); }
     [Test] public void TestClosureless02() { DoNamedTest2(); }
     [Test] public void TestClosureless03() { DoNamedTest2(); }
-
-#if NOLANGLEVELATTR
-    protected override void DoTest(IProject project)
-    {
-      var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
-      languageLevelProjectProperty.ExecuteWithLanguageLevel(project, CSharpLanguageLevel.CSharp50, () =>
-      {
-        base.DoTest(project);
-      });
-    }
-#endif
   }
 }

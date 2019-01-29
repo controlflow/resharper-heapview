@@ -9,11 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   BoxingAllocationHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Boxing allocation",
   "Highlights language construct or expression where boxing happens",
-  Severity.HINT
-#if !RESHARPER2016_3
-  , false
-#endif
-  )]
+  Severity.HINT)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

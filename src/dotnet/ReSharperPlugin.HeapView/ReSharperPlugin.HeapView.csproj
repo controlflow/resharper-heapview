@@ -19,6 +19,7 @@
     </PackageReference>
     <!-- TODO: https://github.com/NuGet/Home/issues/7154 -->
     <PackageReference Include="Wave" Version="$(WaveVersion)" />
+    <PackageReference Include="VSSDK.Text" Version="10.0.4" />
   </ItemGroup>
   
   <ItemGroup>

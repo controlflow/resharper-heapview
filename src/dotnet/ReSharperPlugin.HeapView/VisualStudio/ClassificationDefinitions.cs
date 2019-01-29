@@ -1,6 +1,4 @@
-﻿#if !RIDER
-
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using JetBrains.ReSharper.HeapView.Highlightings;
@@ -81,5 +79,3 @@ namespace JetBrains.ReSharper.HeapView.VisualStudio
   {
   }
 }
-
-#endif

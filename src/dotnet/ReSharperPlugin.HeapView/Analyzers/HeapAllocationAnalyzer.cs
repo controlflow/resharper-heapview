@@ -182,11 +182,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       if (start != null && end != null)
       {
-#if RESHARPER2016_3
         var endOffset = end.GetDocumentEndOffset();
-#else
-        var endOffset = end.GetDocumentRange().TextRange.EndOffset;
-#endif
         var highlighting = new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation");
         var documentRange = start.GetDocumentRange().SetEndTo(endOffset);
 

@@ -13,9 +13,7 @@ using JetBrains.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Resolve;
-#if RESHARPER2017_1
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-#endif
 // ReSharper disable ConvertClosureToMethodGroup
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
@@ -50,20 +48,11 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       if (element is IExpressionBodyOwnerDeclaration expressionBodyOwner)
       {
-#if RESHARPER2017_1
         var arrowExpression = expressionBodyOwner.ArrowClause;
-#else
-        var arrowExpression = expressionBodyOwner.ArrowExpression;
-#endif
         if (arrowExpression != null)
         {
-#if RESHARPER2016_3
           function = expressionBodyOwner.GetParametersOwner();
           topScope = arrowExpression as ILocalScope;
-#else
-          function = expressionBodyOwner.GetFunction();
-          topScope = arrowExpression;
-#endif
         }
         else
         {
@@ -131,11 +120,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
                 }
                 else
                 {
-#if RESHARPER2017_1
                   scope = declaration.GetContainingScope<ILocalScope>();
-#else
-                  scope = declaration.GetContainingNode<ILocalScope>();
-#endif
                 }
 
                 break;
@@ -321,11 +306,7 @@ namespace JetBrains.ReSharper.HeapView.Analyzers
 
       var declaration = declarations[0];
       range = declaration.GetNameDocumentRange();
-#if RESHARPER2016_3
       var nameEndOffset = range.EndOffset;
-#else
-      var nameEndOffset = range.TextRange.EndOffset;
-#endif
 
       if (declaration is ILocalVariableDeclaration variableDeclaration)
       {

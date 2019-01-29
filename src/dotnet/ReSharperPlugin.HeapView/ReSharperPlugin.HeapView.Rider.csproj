@@ -17,6 +17,10 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK" Version="$(SdkVersion)" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="VisualStudio/*" />
+  </ItemGroup>
 
   <!-- TODO: uncomment for xaml icons -->
   <!--<ItemGroup>-->

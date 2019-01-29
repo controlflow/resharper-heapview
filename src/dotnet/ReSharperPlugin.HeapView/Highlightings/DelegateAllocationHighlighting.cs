@@ -9,11 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   DelegateAllocationHighlighting.SEVERITY_ID, null,
   HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
   "Highlights places where delegate instance creation happens",
-  Severity.HINT
-#if !RESHARPER2016_3
-  ,false
-#endif
-  )]
+  Severity.HINT)]
 
 namespace JetBrains.ReSharper.HeapView.Highlightings
 {

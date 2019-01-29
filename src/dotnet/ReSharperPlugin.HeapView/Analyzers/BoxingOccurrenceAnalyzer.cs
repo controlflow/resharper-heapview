@@ -11,9 +11,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 
-#if RESHARPER2017_2
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
-#endif
 
 namespace JetBrains.ReSharper.HeapView.Analyzers
 {
