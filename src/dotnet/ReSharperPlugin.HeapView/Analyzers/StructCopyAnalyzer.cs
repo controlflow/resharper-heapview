@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.HeapView.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;

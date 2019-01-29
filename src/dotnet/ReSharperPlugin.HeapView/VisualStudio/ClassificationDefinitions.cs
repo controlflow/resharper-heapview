@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
-using JetBrains.ReSharper.HeapView.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable UnassignedField.Global
 #pragma warning disable 649
 
 // todo: extract constants
 
-namespace JetBrains.ReSharper.HeapView.VisualStudio
+namespace ReSharperPlugin.HeapView.VisualStudio
 {
   [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
    Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),

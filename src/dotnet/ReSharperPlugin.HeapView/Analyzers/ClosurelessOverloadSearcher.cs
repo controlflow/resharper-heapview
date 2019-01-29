@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.HeapView.Analyzers
+namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: support M(Key, Func<T>) + M(TKey, Func<TKey, T>) where TKey : Key;
 

@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.HeapView.Highlightings
+﻿namespace ReSharperPlugin.HeapView.Highlightings
 {
   public static class HeapViewAttributeIds
   {

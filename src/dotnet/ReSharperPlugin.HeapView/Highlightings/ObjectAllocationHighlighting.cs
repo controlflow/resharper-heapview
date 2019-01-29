@@ -1,8 +1,9 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.HeapView.Highlightings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using ReSharperPlugin.HeapView.Highlightings;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: RegisterConfigurableSeverity(
@@ -23,7 +24,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
   "Highlights language construct where object allocation can possibly happens",
   Severity.HINT)]
 
-namespace JetBrains.ReSharper.HeapView.Highlightings
+namespace ReSharperPlugin.HeapView.Highlightings
 {
   [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,

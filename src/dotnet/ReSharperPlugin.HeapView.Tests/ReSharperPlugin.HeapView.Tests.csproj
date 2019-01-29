@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="data/**/*" />
+    <Compile Remove="test/data/**/*" />
   </ItemGroup>
 
 </Project>

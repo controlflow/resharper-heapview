@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.HeapView.Highlightings
+namespace ReSharperPlugin.HeapView.Highlightings
 {
   public abstract class PerformanceHighlightingBase : IHighlighting
   {

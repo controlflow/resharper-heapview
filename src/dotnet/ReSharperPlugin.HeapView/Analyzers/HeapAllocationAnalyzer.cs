@@ -1,23 +1,23 @@
-using JetBrains.ReSharper.Psi.Util;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.HeapView.Highlightings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Psi.CodeAnnotations;
+using ReSharperPlugin.HeapView.Highlightings;
+
 // ReSharper disable RedundantExplicitParamsArrayCreation
 
-namespace JetBrains.ReSharper.HeapView.Analyzers
+namespace ReSharperPlugin.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
     new[] {

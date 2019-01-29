@@ -1,19 +1,16 @@
 ﻿using System;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.HeapView.Highlightings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.Impl;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using ReSharperPlugin.HeapView.Highlightings;
 
-using JetBrains.ReSharper.Psi.CSharp.Conversions;
-
-namespace JetBrains.ReSharper.HeapView.Analyzers
+namespace ReSharperPlugin.HeapView.Analyzers
 {
   // note: boxing in foreach (object x in new[] { 1, 2, 3 }) { } is not detected,
   // because of another C# highlighting (iteration var can be made of more specific type)

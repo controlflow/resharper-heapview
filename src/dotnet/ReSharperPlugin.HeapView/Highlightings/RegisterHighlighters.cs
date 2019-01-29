@@ -1,5 +1,5 @@
-﻿using JetBrains.ReSharper.HeapView.Highlightings;
-using JetBrains.TextControl.DocumentMarkup;
+﻿using JetBrains.TextControl.DocumentMarkup;
+using ReSharperPlugin.HeapView.Highlightings;
 
 [assembly: RegisterHighlighter(
     HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
@@ -24,7 +24,7 @@ using JetBrains.TextControl.DocumentMarkup;
         HeapViewAttributeIds.GROUP_ID, "Heap Allocation Viewer", HighlighterGroupPriority.COMMON_SETTINGS,
         RiderNamesProviderType = typeof(HeapViewSettingsNamesProvider))]
 
-namespace JetBrains.ReSharper.HeapView.Highlightings
+namespace ReSharperPlugin.HeapView.Highlightings
 {
     public class HeapViewSettingsNamesProvider : PrefixBasedSettingsNamesProvider
     {
@@ -33,4 +33,3 @@ namespace JetBrains.ReSharper.HeapView.Highlightings
         }
     }
 }
-#endif

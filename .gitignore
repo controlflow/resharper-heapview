@@ -3,6 +3,7 @@
 [Oo]bj/
 build
 output
+packages
 .gradle
 .tmp
 

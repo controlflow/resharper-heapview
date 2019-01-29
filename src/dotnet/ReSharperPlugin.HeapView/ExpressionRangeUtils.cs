@@ -1,12 +1,12 @@
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.HeapView.Highlightings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using ReSharperPlugin.HeapView.Highlightings;
 
-namespace JetBrains.ReSharper.HeapView
+namespace ReSharperPlugin.HeapView
 {
   public static class ExpressionRangeUtils
   {

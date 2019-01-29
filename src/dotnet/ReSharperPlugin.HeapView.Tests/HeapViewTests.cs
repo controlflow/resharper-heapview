@@ -1,17 +1,13 @@
 ﻿using JetBrains.Application.Settings;
-using JetBrains.ProjectModel;
-using JetBrains.ReSharper.HeapView.Highlightings;
-using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Generate;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Impl;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
+using ReSharperPlugin.HeapView.Highlightings;
 
-namespace JetBrains.ReSharper.HeapView
+namespace ReSharperPlugin.HeapView.Tests
 {
   [TestNetFramework45]
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp50)]

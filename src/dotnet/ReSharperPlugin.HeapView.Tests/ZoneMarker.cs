@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 [assembly: RequiresSTA]
 
-namespace JetBrains.ReSharper.HeapView
+namespace ReSharperPlugin.HeapView.Tests
 {
   [ZoneDefinition]
   public class HeapViewTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone> { }
