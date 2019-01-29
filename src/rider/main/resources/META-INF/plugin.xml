@@ -1,0 +1,14 @@
+<idea-plugin>
+  <id>heapview-rider</id>
+  <name>HeapView</name>
+  <version>_PLACEHOLDER_</version>
+  <vendor url="https://project-url">Author</vendor>
+  <idea-version since-build="_PLACEHOLDER_" until-build="_PLACEHOLDER_" />
+  <depends>com.intellij.modules.rider</depends>
+
+  <description>
+<![CDATA[
+<p>Sample description</p>
+]]>
+  </description>
+</idea-plugin>
