@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReSharperPlugin.HeapView.Rider", "src\dotnet\ReSharperPlugin.HeapView\ReSharperPlugin.HeapView.Rider.csproj", "{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.271
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharperPlugin.HeapView.Rider", "src\dotnet\ReSharperPlugin.HeapView\ReSharperPlugin.HeapView.Rider.csproj", "{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{4A9ABB95-3762-448B-B5BF-099E46DB22DE}"
-ProjectSection(SolutionItems) = preProject
-	src\rider\main\resources\META-INF\plugin.xml = src\rider\main\resources\META-INF\plugin.xml
-	src\dotnet\Plugin.props = src\dotnet\Plugin.props
-	README.md = README.md
-	CHANGELOG.md = CHANGELOG.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
+		src\dotnet\Plugin.props = src\dotnet\Plugin.props
+		src\rider\main\resources\META-INF\plugin.xml = src\rider\main\resources\META-INF\plugin.xml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharperPlugin.HeapView", "src\dotnet\ReSharperPlugin.HeapView\ReSharperPlugin.HeapView.csproj", "{7A04A875-D384-4E65-83F9-340A7E6EC2C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,17 +21,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{05608FE6-4FD1-4E9D-9BE2-B13A0E370BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05608FE6-4FD1-4E9D-9BE2-B13A0E370BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05608FE6-4FD1-4E9D-9BE2-B13A0E370BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05608FE6-4FD1-4E9D-9BE2-B13A0E370BA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01C3DEF5-50B2-47CB-9467-19BC6DDF9D3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01C3DEF5-50B2-47CB-9467-19BC6DDF9D3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01C3DEF5-50B2-47CB-9467-19BC6DDF9D3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01C3DEF5-50B2-47CB-9467-19BC6DDF9D3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A04A875-D384-4E65-83F9-340A7E6EC2C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A04A875-D384-4E65-83F9-340A7E6EC2C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A04A875-D384-4E65-83F9-340A7E6EC2C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A04A875-D384-4E65-83F9-340A7E6EC2C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {503DDCC0-B2A1-4E41-88FB-BB589A4DCFF4}
 	EndGlobalSection
 EndGlobal

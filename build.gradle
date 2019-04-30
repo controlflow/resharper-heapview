@@ -18,7 +18,7 @@ plugins {
 ext {
     repoRoot = new File(".").canonicalFile
     isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-    sdkVersion = "2019.1-EAP2"
+    sdkVersion = "2019.1"
     rdLibDirectory = new File(repoRoot, "build/riderRD-$sdkVersion-SNAPSHOT/lib/rd")
     dotNetDir = new File(repoRoot, "src/dotnet")
     dotNetPluginId = "ReSharperPlugin.HeapView"
@@ -124,7 +124,7 @@ buildPlugin {
 
 intellij {
     type = 'RD'
-    version = "$sdkVersion-SNAPSHOT"
+    version = "$sdkVersion"
     downloadSources = false
 }
 

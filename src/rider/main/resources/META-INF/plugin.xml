@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>heapview-rider</id>
+  <id>com.intellij.resharper.HeapAllocationsViewer</id>
   <name>Heap Allocations Viewer</name>
   <version>_PLACEHOLDER_</version>
   <vendor url="https://project-url">Alexander Shvedov</vendor>
