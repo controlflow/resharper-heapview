@@ -10,7 +10,7 @@
     <PackageTags>heap allocations performance boxing closure lambda</PackageTags>
   
     <PackageProjectUrl>https://github.com/controlflow/resharper-heapview</PackageProjectUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/controlflow/resharper-heapview/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/controlflow/resharper-heapview/master/Content/icon.png</PackageIconUrl>
   </PropertyGroup>
 </Project>
