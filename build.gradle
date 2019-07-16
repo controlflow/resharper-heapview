@@ -18,8 +18,8 @@ plugins {
 ext {
     repoRoot = new File(".").canonicalFile
     isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-    sdkVersion = "2019.1"
-    rdLibDirectory = new File(repoRoot, "build/riderRD-$sdkVersion-SNAPSHOT/lib/rd")
+    sdkVersion = "2019.2-SNAPSHOT"
+    rdLibDirectory = new File(repoRoot, "build/riderRD-$sdkVersion/lib/rd")
     dotNetDir = new File(repoRoot, "src/dotnet")
     dotNetPluginId = "ReSharperPlugin.HeapView"
     dotnetSolution = new File(repoRoot, "HeapView.sln")
