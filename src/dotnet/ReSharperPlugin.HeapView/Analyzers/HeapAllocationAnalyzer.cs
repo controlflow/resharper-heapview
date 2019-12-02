@@ -128,7 +128,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var typeElement = typeReference.Resolve().DeclaredElement as ITypeElement;
       var typeParameter = typeElement as ITypeParameter;
 
-      if (typeElement is IClass || typeParameter != null && typeParameter.IsClassType)
+      if (typeElement is IClass || typeParameter != null && typeParameter.IsReferenceType)
       {
         consumer.AddHighlighting(
           new ObjectAllocationEvidentHighlighting(newKeyword, "reference type creation"),
