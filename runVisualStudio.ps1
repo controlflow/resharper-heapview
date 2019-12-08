@@ -1,5 +1,5 @@
 Param(
-    $RootSuffix = "HeapView",
+    $RootSuffix = "HeapAllocationViewer",
     $Version = "1.0.0"
 )
 
@@ -11,26 +11,39 @@ $ErrorActionPreference = "Stop"
 $UserProjectXmlFile = "$SourceBasePath\$PluginId\$PluginId.csproj.user"
 
 if (!(Test-Path "$UserProjectXmlFile")) {
+    # Get versions from Plugin.props file
+    $PluginPropsFile = "$SourceBasePath\Plugin.props"
+    $PluginPropsXml = [xml] (Get-Content "$PluginPropsFile")
+    $SdkVersionNode = $PluginPropsXml.SelectSingleNode(".//SdkVersion")
+    $VersionSplit = $SdkVersionNode.InnerText.Split(".")
+    $MajorVersion = "$($VersionSplit[0]).$($VersionSplit[1])"
+    $MajorVersionShort = "$($MajorVersion[2])$($MajorVersion[3])$($MajorVersion[5])"
+        
     # Determine download link
-    $ReleaseUrl = "https://data.services.jetbrains.com/products/releases?code=RSU&type=eap&type=release"
-    $DownloadLink = [uri] $(Invoke-WebRequest -UseBasicParsing $ReleaseUrl | ConvertFrom-Json).RSU[0].downloads.windows.link
-
+    $ReleaseUrl = "https://data.services.jetbrains.com/products/releases?code=RSU&type=eap&type=release&majorVersion=$MajorVersion"
+    $VersionEntry = $(Invoke-WebRequest -UseBasicParsing $ReleaseUrl | ConvertFrom-Json).RSU[0]
+    ## TODO: check versions
+    $DownloadLink = [uri] $VersionEntry.downloads.windows.link
+    
     # Download installer
     $InstallerFile = "$PSScriptRoot\build\installer\$($DownloadLink.Segments[-1])"
     if (!(Test-Path $InstallerFile)) {
         mkdir -Force $(Split-Path $InstallerFile -Parent) > $null
-        Write-Output "Downloading from $DownloadLink"
+        Write-Output "Downloading $($DownloadLink.Segments[-2].TrimEnd("/")) installer"
         (New-Object System.Net.WebClient).DownloadFile($DownloadLink, $InstallerFile)
     } else {
-        Write-Output "Using $($DownloadLink.segments[-1]) from cache"
+        Write-Output "Using cached installer from $InstallerFile"
     }
 
     # Execute installer
     Write-Output "Installing experimental hive"
-    Invoke-Exe $InstallerFile "/VsVersion=15.0" "/SpecificProductNames=ReSharper" "/Hive=$RootSuffix" "/Silent=True"
+    Invoke-Exe $InstallerFile "/VsVersion=$VisualStudioMajorVersion.0" "/SpecificProductNames=ReSharper" "/Hive=$RootSuffix" "/Silent=True"
 
     $PluginRepository = "$env:LOCALAPPDATA\JetBrains\plugins"
-    $InstallationDirectory = $(Get-ChildItem "$env:APPDATA\JetBrains\ReSharperPlatformVs*\v*_*$RootSuffix\NuGet.Config").Directory
+    $Installations = @(Get-ChildItem "$env:APPDATA\JetBrains\ReSharperPlatformVs$VisualStudioMajorVersion\v$($MajorVersionShort)_$VisualStudioInstanceId$RootSuffix\NuGet.Config")
+    if ($Installations.Count -ne 1) { Write-Error "Found no or multiple installation directories: $Installations" }
+    $InstallationDirectory = $Installations.Directory
+    Write-Host "Found installation directory at $InstallationDirectory"
 
     # Adapt packages.config
     if (Test-Path "$InstallationDirectory\packages.config") {
@@ -55,7 +68,7 @@ if (!(Test-Path "$UserProjectXmlFile")) {
     Invoke-Exe $NuGetPath install $PluginId -OutputDirectory "$PluginRepository" -Source "$OutputDirectory" -DependencyVersion Ignore
 
     Write-Output "Re-installing experimental hive"
-    Invoke-Exe "$InstallerFile" "/VsVersion=15.0" "/SpecificProductNames=ReSharper" "/Hive=$RootSuffix" "/Silent=True"
+    Invoke-Exe "$InstallerFile" "/VsVersion=$VisualStudioMajorVersion.0" "/SpecificProductNames=ReSharper" "/Hive=$RootSuffix" "/Silent=True"
 
     # Adapt user project file
     $HostIdentifier = "$($InstallationDirectory.Parent.Name)_$($InstallationDirectory.Name.Split('_')[-1])"
@@ -66,24 +79,9 @@ if (!(Test-Path "$UserProjectXmlFile")) {
     $HostIdentifierNode = $ProjectXml.SelectSingleNode(".//HostFullIdentifier")
     $HostIdentifierNode.InnerText = $HostIdentifier
     $ProjectXml.Save("$UserProjectXmlFile")
-
-    # Update Plugin.props
-    $VersionSplit = $DownloadLink.Segments[-1].Split(".")
-    $PluginPropsFile = "$SourceBasePath\Plugin.props"
-    $PluginPropsXml = [xml] (Get-Content "$PluginPropsFile")
-    $SdkVersionNode = $PluginPropsXml.SelectSingleNode(".//SdkVersion")
-    if ($VersionSplit.Count -eq 5){
-        $SdkVersion = "$($VersionSplit[2]).$($VersionSplit[3]).0"
-    } elseif ($VersionSplit[4].StartsWith("EAP")) {
-        $SdkVersion = "$($VersionSplit[2]).$($VersionSplit[3]).0-*"
-    } else {
-        $SdkVersion = "$($VersionSplit[2]).$($VersionSplit[3]).$($VersionSplit[4])"
-    }
-    $SdkVersionNode.InnerText = $SdkVersion
-    $PluginPropsXml.Save("$PluginPropsFile")
 } else {
     Write-Warning "Plugin is already installed. To trigger reinstall, delete $UserProjectXmlFile."
 }
 
 Invoke-Exe $MSBuildPath "/t:Restore;Rebuild" "$SolutionPath" "/v:minimal"
-Invoke-Exe $DevEnvPath "/rootSuffix $RootSuffix" "/ReSharper.Internal"
+Invoke-Exe $DevEnvPath "/rootSuffix $RootSuffix" "/ReSharper.Internal" "/ReSharper.LogFile ReSharper.log" "/ReSharper.LogLevel Trace"

@@ -11,4 +11,5 @@
 <p>Highlights local object allocations, boxing, delegates and closure creations points.</p>
 ]]>
   </description>
+
 </idea-plugin>

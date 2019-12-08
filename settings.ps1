@@ -3,7 +3,15 @@ $PluginId = "ReSharperPlugin.HeapView"
 $SolutionPath = "$PSScriptRoot\HeapView.sln"
 $SourceBasePath = "$PSScriptRoot\src\dotnet"
 
-$VisualStudioBaseDirectory = & "$PSScriptRoot\tools\vswhere.exe" "-latest" "-property" "installationPath"
+$VsWhereOutput = [xml] (& "$PSScriptRoot\tools\vswhere.exe" -format xml)
+$VisualStudio = $VsWhereOutput.instances.instance |
+    Where-Object { $_.channelId -match "Release" } |
+    Sort-Object -Property installationVersion |
+    Select-Object -Last 1
+
+$VisualStudioBaseDirectory = $VisualStudio.installationPath
+$VisualStudioMajorVersion = ($VisualStudio.installationVersion -split '\.')[0]
+$VisualStudioInstanceId = $VisualStudio.instanceId
 $DevEnvPath = Get-ChildItem "$VisualStudioBaseDirectory\Common7\IDE\devenv.exe"
 $MSBuildPath = Get-ChildItem "$VisualStudioBaseDirectory\MSBuild\*\Bin\MSBuild.exe"
 
