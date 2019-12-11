@@ -1,7 +1,7 @@
 ﻿ReSharper Heap Allocations Viewer plugin
 ----------------------------------------
 
-This plugins statically analyzes C# code to find all local object allocations happening.
+This plugin statically analyzes C# code to find all local object allocations happening.
 
 It can be used to reduce number of heap allocations in hot paths of your C# program.
 
