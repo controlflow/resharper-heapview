@@ -19,7 +19,7 @@ namespace ReSharperPlugin.HeapView.Tests
       IContextBoundSettingsStore settingsStore)
     {
       return highlighting is BoxingAllocationHighlighting
-          || highlighting is BoxingAllocationPossibleHighlighting
+          //|| highlighting is BoxingAllocationPossibleHighlighting
           || highlighting is ObjectAllocationHighlighting
           || highlighting is ObjectAllocationEvidentHighlighting
           || highlighting is ObjectAllocationPossibleHighlighting

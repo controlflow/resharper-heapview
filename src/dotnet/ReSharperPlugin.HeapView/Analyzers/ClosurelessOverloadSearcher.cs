@@ -167,7 +167,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var declaredType = substitution[parameter.Type] as IDeclaredType;
 
       if (declaredType?.GetTypeElement() is ITypeParameter typeParameter
-          && typeParameter.OwnerMethod != null
+          && typeParameter.OwnerFunction != null
           && !typeParameter.HasDefaultConstructor)
       {
         return typeParameter;

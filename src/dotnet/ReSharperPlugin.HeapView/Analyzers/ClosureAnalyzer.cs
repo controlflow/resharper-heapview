@@ -461,7 +461,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
           Assertion.Assert(lambda == element, "lambda == element");
 
           if (!Closures.ContainsKey(lambda))
+          {
             ClosurelessLambdas.Add(lambda);
+          }
         }
       }
 
@@ -566,8 +568,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
             {
               if (parametersOwner.Equals(myParametersOwner)) return;
 
-              if (myParametersOwner is IAccessor accessor &&
-                  accessor.OwnerMember.Equals(parametersOwner)) return;
+              if (myParametersOwner is IAccessor accessor && accessor.OwnerMember.Equals(parametersOwner)) return;
             }
 
             AddCapture(closure, parameter);
@@ -609,8 +610,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
           var property = (IQueryAnonymousTypeProperty) anonymousTypeProperty;
           var declaration = property.Declaration;
 
-          if (QueryFirstFromNavigator.GetByDeclaration(declaration) == null &&
-              QueryContinuationNavigator.GetByDeclaration(declaration) == null)
+          if (QueryFirstFromNavigator.GetByDeclaration(declaration) == null
+              && QueryContinuationNavigator.GetByDeclaration(declaration) == null)
           {
             AnonymousTypes.Add(declaration);
           }

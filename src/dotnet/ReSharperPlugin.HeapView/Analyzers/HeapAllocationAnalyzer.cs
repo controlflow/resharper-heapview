@@ -200,10 +200,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var invocationReference = invocation.InvocationExpressionReference.NotNull("reference != null");
 
-      var resolveResult = invocationReference.Resolve();
-      if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return;
+      var (declaredElement, _, resolveErrorType) = invocationReference.Resolve();
+      if (resolveErrorType != ResolveErrorType.OK) return;
 
-      var method = resolveResult.DeclaredElement as IMethod;
+      var method = declaredElement as IMethod;
       if (method == null) return;
 
       if (method.IsIterator)
@@ -233,12 +233,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var invocationReference = invocationInfo.Reference;
       if (invocationReference == null) return;
 
-      var resolveResult = invocationReference.Resolve();
+      var (declaredElement, _, resolveErrorType) = invocationReference.Resolve();
 
-      var parametersOwner = resolveResult.DeclaredElement as IParametersOwner;
+      var parametersOwner = declaredElement as IParametersOwner;
       if (parametersOwner == null) return;
 
-      if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return;
+      if (resolveErrorType != ResolveErrorType.OK) return;
 
       var parameters = parametersOwner.Parameters;
       if (parameters.Count == 0) return;
@@ -257,8 +257,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
         // found explicit array pass
         if (parameter.Expanded == ArgumentsUtil.ExpandedKind.None) return;
 
-        var argument = argumentInfo as ICSharpArgument;
-        if (argument != null) paramsArgument = argument.Value;
+        if (argumentInfo is ICSharpArgument argument)
+        {
+          paramsArgument = argument.Value;
+        }
 
         break;
       }
@@ -314,9 +316,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       // do not inspect inner concatenations
       var parent = concatenation.GetContainingParenthesizedExpression();
-      var parentConcatention = AdditiveExpressionNavigator.GetByLeftOperand(parent)
+      var parentConcatenation = AdditiveExpressionNavigator.GetByLeftOperand(parent)
                             ?? AdditiveExpressionNavigator.GetByRightOperand(parent);
-      if (parentConcatention != null && IsStringConcatenation(parentConcatention)) return;
+      if (parentConcatenation != null && IsStringConcatenation(parentConcatenation)) return;
 
       // collect all operands
       var allConstants = true;
@@ -353,8 +355,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         allConstants = false;
 
-        var left = lhsOperand.GetOperandThroughParenthesis() as IAdditiveExpression;
-        if (left != null && IsStringConcatenation(concatenation))
+        if (lhsOperand.GetOperandThroughParenthesis() is IAdditiveExpression left && IsStringConcatenation(concatenation))
         {
           if (!CollectStringConcatenation(left, parts, ref allConstants)) return false;
         }
@@ -365,8 +366,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         allConstants = false;
 
-        var right = rhsOperand.GetOperandThroughParenthesis() as IAdditiveExpression;
-        if (right != null && IsStringConcatenation(concatenation))
+        if (rhsOperand.GetOperandThroughParenthesis() is IAdditiveExpression right && IsStringConcatenation(concatenation))
         {
           if (!CollectStringConcatenation(right, parts, ref allConstants)) return false;
         }

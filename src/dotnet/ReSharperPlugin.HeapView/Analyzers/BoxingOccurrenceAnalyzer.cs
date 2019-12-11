@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
@@ -63,9 +62,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
       else if (qualifierType.IsUnconstrainedGenericType())
       {
-        consumer.AddHighlighting(
-          new BoxingAllocationPossibleHighlighting(invocationExpression, description),
-          invokedReference.NameIdentifier.GetDocumentRange());
+        //consumer.AddHighlighting(
+        //  new BoxingAllocationPossibleHighlighting(invocationExpression, description),
+        //  invokedReference.NameIdentifier.GetDocumentRange());
       }
     }
 
@@ -74,10 +73,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
       if (invocationExpression != null) return;
 
-      var resolveResult = referenceExpression.Reference.Resolve();
-      if (!resolveResult.ResolveErrorType.IsAcceptable) return;
+      var (declaredElement, _, resolveErrorType) = referenceExpression.Reference.Resolve();
+      if (!resolveErrorType.IsAcceptable) return;
 
-      var method = resolveResult.DeclaredElement as IMethod;
+      var method = declaredElement as IMethod;
       if (method == null || method.IsStatic || method.IsExtensionMethod) return;
 
       var qualifierType = GetQualifierExpressionType(referenceExpression.QualifierExpression, referenceExpression);
@@ -101,8 +100,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
       else
       {
-        consumer.AddHighlighting(
-          new BoxingAllocationPossibleHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
+        //consumer.AddHighlighting(
+        //  new BoxingAllocationPossibleHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
       }
     }
 
