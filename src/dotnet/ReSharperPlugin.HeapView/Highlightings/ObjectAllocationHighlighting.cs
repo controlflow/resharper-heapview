@@ -26,9 +26,11 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class ObjectAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ObjectAllocation";
@@ -38,9 +40,11 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ObjectAllocation.Evident";
@@ -50,9 +54,11 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class ObjectAllocationPossibleHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ObjectAllocation.Possible";

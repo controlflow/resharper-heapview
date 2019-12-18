@@ -21,9 +21,11 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Highlightings
 {
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class ClosureAllocationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.ClosureAllocation";
@@ -33,8 +35,10 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
-  [ConfigurableSeverityHighlighting(SEVERITY_ID, CSharpLanguage.Name,
-    ShowToolTipInStatusBar = false, ToolTipFormatString = MESSAGE)]
+  [ConfigurableSeverityHighlighting(
+    SEVERITY_ID, CSharpLanguage.Name,
+    ShowToolTipInStatusBar = false,
+    ToolTipFormatString = MESSAGE)]
   public class CanEliminateClosureCreationHighlighting : PerformanceHighlightingBase
   {
     public const string SEVERITY_ID = "HeapView.CanAvoidClosure";

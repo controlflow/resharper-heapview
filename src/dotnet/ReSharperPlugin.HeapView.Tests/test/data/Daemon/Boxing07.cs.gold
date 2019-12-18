@@ -1,0 +1,34 @@
+﻿using System;
+
+public struct S : IDisposable {
+  public void Dispose() { }
+    
+  public void M() {
+    using var s1 = new S(); // constrained. callvirt
+    using S s2 = new S();
+    using IDisposable s3 = |new S()|(0); // boxing
+      
+    using (var s4 = new S()) { }
+    using (IDisposable s5 = |new S()|(1)) { } // boxing
+    using (new S()) { }
+  }
+}
+
+public struct U : IDisposable {
+  void IDisposable.Dispose() { }
+    
+  public void M() {
+    using var u1 = new U(); // constrained. callvirt
+    using U u2 = new U();
+    using IDisposable u3 = |new U()|(2); // boxing
+      
+    using (var u4 = new U()) { }
+    using (IDisposable u5 = |new U()|(3)) { } // boxing
+    using (new U()) { }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S' to reference type 'IDisposable'
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S' to reference type 'IDisposable'
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'U' to reference type 'IDisposable'
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'U' to reference type 'IDisposable'

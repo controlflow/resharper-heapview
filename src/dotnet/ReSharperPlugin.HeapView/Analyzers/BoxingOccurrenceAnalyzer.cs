@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -28,47 +33,84 @@ namespace ReSharperPlugin.HeapView.Analyzers
           break;
 
         case IReferenceExpression referenceExpression:
-          CheckReferenceExpression(referenceExpression, consumer);
+          CheckStructMethodGroupConversion(referenceExpression, consumer);
           break;
+        
+        case IParenthesizedExpression _:
+        case ICheckedExpression _:
+        case IUncheckedExpression _:
+        case ISuppressNullableWarningExpression _:
+          return; // do not analyze
       }
 
-      CheckExpression(expression, consumer);
+      CheckExpressionImplicitConversion(expression, consumer);
     }
 
     // todo: ?. invocations?
     private static void CheckInvocationExpression([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
-      var invokedReference = invocationExpression.InvokedExpression as IReferenceExpression;
-      if (invokedReference == null) return;
+      var invokedReferenceExpression = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
+      if (invokedReferenceExpression == null) return;
 
       var resolveResult = invocationExpression.InvocationExpressionReference.Resolve();
       if (!resolveResult.ResolveErrorType.IsAcceptable) return;
 
       var method = resolveResult.DeclaredElement as IMethod;
-      if (method == null || method.IsStatic) return;
+      if (method == null) return; // we are not interested in local functions or anything else
 
-      var classType = method.GetContainingType() as IClass;
-      if (classType == null) return;
-
-      var qualifierType = GetQualifierExpressionType(invokedReference.QualifierExpression, invokedReference);
-
-      const string description = "inherited 'System.Object' virtual method call on value type instance";
-
-      if (qualifierType.IsValueType())
+      if (resolveResult.Result.IsExtensionMethodInvocation())
       {
-        consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(invocationExpression, description),
-          invokedReference.NameIdentifier.GetDocumentRange());
+        CheckExtensionMethodThisArgumentConversion(invokedReferenceExpression, resolveResult.Result, consumer);
       }
-      else if (qualifierType.IsUnconstrainedGenericType())
+
+
+      if (!method.IsStatic)
       {
-        //consumer.AddHighlighting(
-        //  new BoxingAllocationPossibleHighlighting(invocationExpression, description),
-        //  invokedReference.NameIdentifier.GetDocumentRange());
+        var methodClassType = method.GetContainingType() as IClass;
+        if (methodClassType == null) return;
+
+        var qualifierType =
+          GetQualifierExpressionType(invokedReferenceExpression.QualifierExpression, invokedReferenceExpression);
+
+        const string description = "inherited 'System.Object' virtual method call on value type instance";
+
+        if (qualifierType.IsValueType())
+        {
+          consumer.AddHighlighting(
+            new BoxingAllocationHighlighting(invocationExpression, description),
+            invokedReferenceExpression.NameIdentifier.GetDocumentRange());
+        }
+        else if (qualifierType.IsUnconstrainedGenericType())
+        {
+          consumer.AddHighlighting(
+            new PossibleBoxingAllocationHighlighting(invocationExpression, description),
+            invokedReferenceExpression.NameIdentifier.GetDocumentRange());
+        }
       }
     }
 
-    private static void CheckReferenceExpression([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckExtensionMethodThisArgumentConversion(
+      [NotNull] IReferenceExpression invokedReferenceExpression, [NotNull] IResolveResult resolveResult, [NotNull] IHighlightingConsumer consumer)
+    {
+      var qualifierExpression = invokedReferenceExpression.QualifierExpression;
+      if (qualifierExpression == null) return; // ill-formed extensions invocation
+
+      var conversionRule = qualifierExpression.GetTypeConversionRule();
+
+      if (resolveResult.DeclaredElement is IMethod extensionMethod
+          && extensionMethod.IsExtensionMethod
+          && extensionMethod.Parameters.FirstOrDefault() is { Type: var thisParameterType } )
+      {
+        var qualifierExpressionType = qualifierExpression.GetExpressionType();
+        var thisReceiverType = resolveResult.Substitution[thisParameterType];
+
+        var conversion = conversionRule.ClassifyImplicitExtensionMethodThisArgumentConversion(qualifierExpressionType, thisReceiverType);
+        AnalyzeConversion(conversion, qualifierExpressionType, thisReceiverType, qualifierExpression, consumer);
+      }
+    }
+
+    // todo: check nameof(str.Method)
+    private static void CheckStructMethodGroupConversion([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
       if (invocationExpression != null) return;
@@ -100,8 +142,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
       else
       {
-        //consumer.AddHighlighting(
-        //  new BoxingAllocationPossibleHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(nameIdentifier, description), nameIdentifier.GetDocumentRange());
       }
     }
 
@@ -122,55 +164,72 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return expressionType.ToIType();
     }
 
-    private static void CheckExpression([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckExpressionImplicitConversion([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
     {
+      var referenceExpression = ReferenceExpressionNavigator.GetByQualifierExpression(expression);
+      if (InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression) != null)
+      {
+        GC.KeepAlive(expression);
+      }
+      
       var expressionType = expression.GetExpressionType();
       if (expressionType.IsUnknown) return;
-
-      var sourceType = expressionType.ToIType();
-      if (sourceType != null)
-      {
-        if (!sourceType.IsValueType() &&
-            !sourceType.IsUnconstrainedGenericType()) return;
-      }
 
       var targetType = expression.GetImplicitlyConvertedTo();
       if (targetType.IsUnknown) return;
 
-
-
-      if (!targetType.IsReferenceType()) // todo: not only?
-        return;
-
-
-
+      var conversionRule = expression.GetTypeConversionRule();
+      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(expressionType, targetType);
       
-      //if (expressionType.IsUnknown) return;
+      
 
-      /*{
-        if (targetType.IsUnknown || targetType.Equals(expressionType)) return;
+      AnalyzeConversion(conversion, expressionType, targetType, expression, consumer);
+    }
 
-        var conversionRule = expression.GetTypeConversionRule();
-        if (conversionRule.IsBoxingConversion(expressionType, targetType))
+    private static void AnalyzeConversion(
+      Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType, 
+      [NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
+    {
+      // todo: that's a bit too much, some boxings are "possible"
+      if (conversion.Kind == ConversionKind.Boxing)
+      {
+        if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
+
+
+        var description = BakeDescriptionWithTypes(
+          "conversion from value type '{0}' to reference type '{1}'", sourceType, targetType);
+
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(expression, description), expression.GetExpressionRange());
+      }
+
+      if (conversion.Kind == ConversionKind.ImplicitTuple || conversion.Kind == ConversionKind.ImplicitTupleLiteral)
+      {
+        foreach (var typeConversionInfo in conversion.GetNestedConversionsWithTypeInfo())
         {
-          // there is no boxing conversion here: using (new DisposableStruct()) { }
-          var usingStatement = UsingStatementNavigator.GetByExpression(expression.GetContainingParenthesizedExpression());
-          if (usingStatement != null) return;
-
-          if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
-
-          var description = BakeDescriptionWithTypes("conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
-
-          consumer.AddHighlighting(
-            new BoxingAllocationHighlighting(expression, description), expression.GetExpressionRange());
         }
-      }*/
+      }
+
+      if (conversion.Kind == ConversionKind.ImplicitUserDefined)
+      {
+        var analysis = conversion.UserDefinedConversionAnalysis;
+        if (analysis != null)
+        {
+        }
+      }
     }
 
     [NotNull, StringFormatMethod("format")]
-    private static string BakeDescriptionWithTypes([NotNull] string format, [NotNull] params IType[] types)
+    private static string BakeDescriptionWithTypes([NotNull] string format, [NotNull] params IExpressionType[] types)
     {
-      var args = Array.ConvertAll(types, type => (object) type.GetPresentableName(CSharpLanguage.Instance));
+      var args = Array.ConvertAll(types, expressionType =>
+      {
+        if (expressionType is IType type)
+          return (object) type.GetPresentableName(CSharpLanguage.Instance.NotNull());
+
+        return expressionType.GetLongPresentableName(CSharpLanguage.Instance.NotNull());
+      });
+      
       return string.Format(format, args);
     }
   }

@@ -15,12 +15,11 @@ namespace ReSharperPlugin.HeapView.Highlightings
       ToolTip = string.Format(format, description);
     }
 
-    public bool IsValid() { return myElement.IsValid(); }
+    public bool IsValid() => myElement.IsValid();
 
     public DocumentRange CalculateRange() => myElement.GetDocumentRange();
 
     [NotNull] public string ToolTip { get; }
     [NotNull] public string ErrorStripeToolTip => ToolTip;
-    public int NavigationOffsetPatch => 0;
   }
 }

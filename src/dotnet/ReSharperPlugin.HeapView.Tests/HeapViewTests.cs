@@ -9,8 +9,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Tests
 {
-  [TestNetFramework45]
-  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp50)]
+  [TestNetFramework46, TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
+  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
     protected override string RelativeTestDataPath => "Daemon";
@@ -19,7 +19,7 @@ namespace ReSharperPlugin.HeapView.Tests
       IContextBoundSettingsStore settingsStore)
     {
       return highlighting is BoxingAllocationHighlighting
-          //|| highlighting is BoxingAllocationPossibleHighlighting
+          || highlighting is PossibleBoxingAllocationHighlighting
           || highlighting is ObjectAllocationHighlighting
           || highlighting is ObjectAllocationEvidentHighlighting
           || highlighting is ObjectAllocationPossibleHighlighting
@@ -33,6 +33,8 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestBoxing03() { DoNamedTest2(); }
     [Test] public void TestBoxing04() { DoNamedTest2(); }
     [Test] public void TestBoxing05() { DoNamedTest2(); }
+    [Test] public void TestBoxing06() { DoNamedTest2(); }
+    [Test] public void TestBoxing07() { DoNamedTest2(); }
 
     [Test] public void TestClosure01() { DoNamedTest2(); }
     [Test] public void TestClosure02() { DoNamedTest2(); }
