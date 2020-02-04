@@ -9,23 +9,18 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Tests
 {
-  [TestNetFramework46, TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
+  [TestNetFramework46]
+  [TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
+  [TestReferences("System", "System.Core", "Microsoft.CSharp")]
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
     protected override string RelativeTestDataPath => "Daemon";
 
-    protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
-      IContextBoundSettingsStore settingsStore)
+    protected override bool HighlightingPredicate(
+      IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
     {
-      return highlighting is BoxingAllocationHighlighting
-          || highlighting is PossibleBoxingAllocationHighlighting
-          || highlighting is ObjectAllocationHighlighting
-          || highlighting is ObjectAllocationEvidentHighlighting
-          || highlighting is ObjectAllocationPossibleHighlighting
-          || highlighting is ClosureAllocationHighlighting
-          || highlighting is CanEliminateClosureCreationHighlighting
-          || highlighting is DelegateAllocationHighlighting;
+      return highlighting is PerformanceHighlightingBase;
     }
 
     [Test] public void TestBoxing01() { DoNamedTest2(); }
