@@ -21,11 +21,15 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    new[] {
-      typeof(ICSharpFunctionDeclaration), // constructors, methods, operators, accessors
-      typeof(IFieldDeclaration), typeof(IEventDeclaration), // field/event initializers
-      typeof(IExpressionBodyOwnerDeclaration), // C# 6.0 expression-bodied members
-      typeof(IPropertyDeclaration), // C# 6.0 property initializers
+    ElementTypes: new[] {
+      // constructors, methods, operators, accessors
+      typeof(ICSharpFunctionDeclaration),
+      // expression-bodied properties/indexers
+      typeof(IExpressionBodyOwnerDeclaration),
+      // field/event/auto-property initializers
+      typeof(IFieldDeclaration),
+      typeof(IEventDeclaration),
+      typeof(IPropertyDeclaration),
     },
     HighlightingTypes = new[] {
       typeof(ObjectAllocationHighlighting),
@@ -38,30 +42,31 @@ namespace ReSharperPlugin.HeapView.Analyzers
   {
     protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      IParametersOwner function = null;
-      ILocalScope topScope = null;
-
+      IParametersOwner function;
+      ILocalScope topScope;
+      
       if (element is ICSharpFunctionDeclaration functionDeclaration)
       {
         function = functionDeclaration.DeclaredElement;
-        topScope = functionDeclaration.Body as ILocalScope;
+        topScope = functionDeclaration.Body as ILocalScope
+                   ?? functionDeclaration.ArrowClause as ILocalScope;
       }
-
-      if (element is IExpressionBodyOwnerDeclaration expressionBodyOwner)
+      else if (element is IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwner)
       {
-        var arrowExpression = expressionBodyOwner.ArrowClause;
-        if (arrowExpression != null)
-        {
-          function = expressionBodyOwner.GetParametersOwner();
-          topScope = arrowExpression as ILocalScope;
-        }
-        else
-        {
-          if (element is IAccessorOwnerDeclaration) return;
-        }
+        function = expressionBodyOwner.GetParametersOwner();
+        topScope = arrowClause as ILocalScope;
+      }
+      else if (element is IInitializerOwnerDeclaration { Initializer: { } })
+      {
+        function = null;
+        topScope = null;
+      }
+      else
+      {
+        return;
       }
 
-      var inspector = new ClosureInspector(element, function);
+      var inspector = new ClosuresInspector(element, function);
       element.ProcessDescendants(inspector);
 
       // report closures allocations
@@ -83,9 +88,14 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+    private (int, int) GetFoo()
+    {
+      return (1, 1);
+    }
+    
     private static void ReportClosureAllocations(
       [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement, [CanBeNull] ILocalScope topScope,
-      [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
       var captureScopes = new Dictionary<ILocalScope, JetHashSet<IDeclaredElement>>();
@@ -348,7 +358,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     private static void ReportClosurelessAllocations(
-      [NotNull] ITreeNode element, [NotNull] IParametersOwner function, [NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ITreeNode element, [NotNull] IParametersOwner function, [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       if (function is ITypeParametersOwner typeParametersOwner && typeParametersOwner.TypeParameters.Count > 0)
       {
@@ -409,7 +419,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private static void ReportAnonymousTypes([NotNull] ClosureInspector inspector, [NotNull] IHighlightingConsumer consumer)
+    private static void ReportAnonymousTypes([NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       foreach (var queryClause in inspector.AnonymousTypes)
       {
@@ -431,12 +441,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private sealed class ClosureInspector : IRecursiveElementProcessor
+    private sealed class ClosuresInspector : IRecursiveElementProcessor
     {
       [NotNull] private readonly Stack<ITreeNode> myClosures;
       [CanBeNull] private readonly IParametersOwner myParametersOwner;
 
-      public ClosureInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IParametersOwner thisElement)
+      public ClosuresInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IParametersOwner thisElement)
       {
         myParametersOwner = thisElement;
         myClosures = new Stack<ITreeNode>();
