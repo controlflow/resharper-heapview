@@ -23,7 +23,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
-  // todo: test with CS7 expr-bodied members
+  // todo: test with C#7 expr-bodied members
   // todo: generics can be introduces by local functions - not a problem in Roslyn
   // todo: report delegate allocations from method group
 
@@ -102,12 +102,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
       // report allocations of delegate instances and expression trees
       foreach (var (closure, captures) in inspector.Captures)
       {
+        // local function is the only closure construct that do not allocates itself, it's usages do
         if (closure is ILocalFunctionDeclaration) continue;
 
         var highlightingRange = GetClosureRange(closure);
         if (!highlightingRange.IsValid()) continue;
 
-        if (IsExpressionTreeLambda(closure))
+        if (IsExpressionTreeClosure(closure))
         {
           var highlighting = new ObjectAllocationHighlighting(closure, "expression tree construction");
           consumer.AddHighlighting(highlighting, highlightingRange);
@@ -130,6 +131,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
       // highlight first captured entity per every scope
       foreach (var (localScope, caps) in inspector.CapturesOfScope)
       {
+        if (inspector.IsDisplayClassForScopeCanBeLoweredToStruct(localScope))
+        {
+          continue; // do not report
+        }
+
         var firstOffset = TreeOffset.MaxValue;
         IDeclaredElement firstCapture = null;
 
@@ -326,7 +332,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         foreach (var closure in inspector.CapturelessClosures)
         {
-          if (IsExpressionTreeLambda(closure)) continue;
+          if (IsExpressionTreeClosure(closure)) continue;
 
           var closureRange = GetClosureRange(closure);
           if (!closureRange.IsValid()) continue;
@@ -340,15 +346,15 @@ namespace ReSharperPlugin.HeapView.Analyzers
         }
       }
 
-      foreach (var lambda in inspector.CapturelessClosures)
+      foreach (var closure in inspector.CapturelessClosures)
       {
-        if (!IsExpressionTreeLambda(lambda)) continue;
+        if (!IsExpressionTreeClosure(closure)) continue;
 
-        var closureRange = GetClosureRange(lambda);
+        var closureRange = GetClosureRange(closure);
         if (closureRange.IsValid())
         {
           consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(lambda, "expression tree construction"), closureRange);
+            new ObjectAllocationHighlighting(closure, "expression tree construction"), closureRange);
         }
       }
     }
@@ -395,7 +401,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [Pure]
-    private static bool IsExpressionTreeLambda([NotNull] ICSharpClosure closure)
+    private static bool IsExpressionTreeClosure([NotNull] ICSharpClosure closure)
     {
       switch (closure)
       {
@@ -422,17 +428,25 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
         Captures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
         CapturesOfScope = new OneToSetMap<ILocalScope, IDeclaredElement>();
+        ClosuresOfScope = new OneToSetMap<ILocalScope, ICSharpClosure>();
         AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
         CapturelessClosures = new List<ICSharpClosure>();
-        DelayedUseLocalFunctions = new HashSet<ILocalFunction>();
+        DelayedUseLocalFunctions = new OneToListMap<ILocalFunction, IReferenceExpression>();
       }
 
       [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
       [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
+      [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; }
 
       [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
       [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
-      [NotNull] public HashSet<ILocalFunction> DelayedUseLocalFunctions { get; }
+      [NotNull] public OneToListMap<ILocalFunction, IReferenceExpression> DelayedUseLocalFunctions { get; }
+
+      public sealed class DisplayClassInfo
+      {
+        public 
+        public HashSet<IDeclaredElement> Captures { get; }
+      }
 
       public bool ProcessingIsFinished => false;
       public bool InteriorShouldBeProcessed(ITreeNode element) => true;
@@ -509,7 +523,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       private void ProcessNonQualifiedReferenceExpression([NotNull] IReferenceExpression referenceExpression)
       {
-        if (!referenceExpression.IsNameofOperatorArgumentPart()) return;
+        if (referenceExpression.IsNameofOperatorArgumentPart()) return;
 
         var (declaredElement, _) = referenceExpression.Reference.Resolve();
 
@@ -566,6 +580,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
             if (parameterScope != null)
             {
               CapturesOfScope.Add(parameterScope, parameter);
+              ClosuresOfScope.Add(parameterScope, closure); // todo: only this one? NO
             }
 
             return;
@@ -588,18 +603,18 @@ namespace ReSharperPlugin.HeapView.Analyzers
         var variableDeclaration = localVariable.GetSingleDeclaration<IDeclaration>();
         if (variableDeclaration == null) return;
 
-        // todo: test with out vars/pattern variables in weird scopes
         var variableScope = variableDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
-        if (variableScope != null)
-        {
-          CapturesOfScope.Add(variableScope, localVariable);
-        }
+        Assertion.AssertNotNull(variableScope, "Local scope expected");
+
+        // todo: test with out vars/pattern variables in weird scopes
+        CapturesOfScope.Add(variableScope, localVariable);
 
         foreach (var closure in myCurrentClosures)
         {
           if (closure.Contains(variableDeclaration) && !(closure is IQueryParameterPlatform)) break;
 
           Captures.Add(closure, localVariable);
+          ClosuresOfScope.Add(variableScope, closure);
         }
       }
 
@@ -609,16 +624,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
         if (localFunctionDeclaration == null) return;
 
         var functionScope = localFunctionDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
-        if (functionScope != null)
-        {
-          CapturesOfScope.Add(functionScope, localFunction);
-        }
+        Assertion.AssertNotNull(functionScope, "Local scope expected");
+
+        CapturesOfScope.Add(functionScope, localFunction);
 
         foreach (var closure in myCurrentClosures)
         {
           if (closure.Contains(localFunctionDeclaration)) break;
 
           Captures.Add(closure, localFunction);
+          ClosuresOfScope.Add(functionScope, closure);
         }
       }
 
@@ -643,7 +658,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
         {
           // note: nameof(LocalFunc) already filtered here
 
-          DelayedUseLocalFunctions.Add(localFunction);
+          DelayedUseLocalFunctions.Add(localFunction, referenceExpression);
         }
       }
 
@@ -661,6 +676,26 @@ namespace ReSharperPlugin.HeapView.Analyzers
             AnonymousTypes.Add(declaration);
           }
         }
+      }
+
+      public bool IsDisplayClassForScopeCanBeLoweredToStruct([NotNull] ILocalScope scope)
+      {
+        foreach (var closure in ClosuresOfScope[scope])
+        {
+          if (closure is ILocalFunctionDeclaration localFunctionDeclaration)
+          {
+            if (DelayedUseLocalFunctions.ContainsKey(localFunctionDeclaration.DeclaredElement))
+            {
+              return false;
+            }
+          }
+          else // lambdas, query - all delayed
+          {
+            return false;
+          }
+        }
+
+        return true;
       }
     }
   }
