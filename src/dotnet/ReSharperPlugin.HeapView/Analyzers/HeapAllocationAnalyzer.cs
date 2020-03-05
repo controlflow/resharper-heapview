@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -249,7 +250,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       ICSharpExpression paramsArgument = null;
       foreach (var argumentInfo in invocationInfo.Arguments)
       {
-        var parameter = ArgumentsUtil.GetParameter(argumentInfo);
+        var parameter = argumentInfo.MatchingParameter;
         if (parameter == null) continue;
 
         if (!Equals(parameter.Element, lastParameter)) continue;
@@ -279,33 +280,39 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private static void CheckReferenceExpression([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
     {
-      var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
+      var (declaredElement, _) = referenceExpression.Reference.Resolve();
 
-      var property = declaredElement as IProperty;
-      var getter = property?.Getter;
-      if (getter != null && getter.IsIterator)
+      switch (declaredElement)
       {
-        var languageService = referenceExpression.Language.LanguageServiceNotNull();
-
-        var accessType = languageService.GetReferenceAccessType(referenceExpression.Reference);
-        if (accessType == ReferenceAccessType.READ)
+        case IProperty { Getter: IAccessor getter }:
         {
-          consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
-            referenceExpression.NameIdentifier.GetDocumentRange());
+          var languageService = referenceExpression.Language.LanguageServiceNotNull();
+
+          var accessType = languageService.GetReferenceAccessType(referenceExpression.Reference);
+          if (accessType == ReferenceAccessType.READ && getter.IsIterator)
+          {
+            consumer.AddHighlighting(
+              new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
+              referenceExpression.NameIdentifier.GetDocumentRange());
+          }
+
+          break;
         }
-      }
 
-      if (declaredElement is IMethod)
-      {
-        // todo: check inside delegate invocation
-
-        var declaredType = referenceExpression.GetImplicitlyConvertedTo() as IDeclaredType;
-        if (declaredType?.GetTypeElement() is IDelegate)
+        case IMethod _:
+        case ILocalFunction _:
         {
-          consumer.AddHighlighting(
-            new DelegateAllocationHighlighting(referenceExpression, "from method group"),
-            referenceExpression.NameIdentifier.GetDocumentRange());
+          // todo: check inside delegate invocation
+
+          var convertedTo = referenceExpression.GetImplicitlyConvertedTo();
+          if (convertedTo is IDeclaredType (IDelegate _, _))
+          {
+            consumer.AddHighlighting(
+              new DelegateAllocationHighlighting(referenceExpression, "from method group"),
+              referenceExpression.NameIdentifier.GetDocumentRange());
+          }
+
+          break;
         }
       }
     }

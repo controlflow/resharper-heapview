@@ -14,21 +14,21 @@ namespace ReSharperPlugin.HeapView.Analyzers
   public static class ClosurelessOverloadSearcher
   {
     [CanBeNull]
-    public static IReference FindMethodInvocation([NotNull] ICSharpExpression expression)
+    public static IReference FindMethodInvocationByArgument([NotNull] ICSharpExpression expression)
     {
       var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
       var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
 
       var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
 
-      var invokedReference = invocationExpression?.InvokedExpression as IReferenceExpression;
+      var invokedReference = invocationExpression?.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
       if (invokedReference == null) return null;
 
       var invocationReference = invocationExpression.InvocationExpressionReference;
 
-      var resolveResult = invocationReference.Resolve();
-      if (resolveResult.ResolveErrorType != ResolveErrorType.OK) return null;
-      if (!(resolveResult.DeclaredElement is IMethod)) return null;
+      var (declaredElement, _, resolveErrorType) = invocationReference.Resolve();
+      if (resolveErrorType != ResolveErrorType.OK) return null;
+      if (!(declaredElement is IMethod)) return null;
 
       return invokedReference.Reference;
     }
@@ -38,7 +38,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
       var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
+
       var parameterInstance = argument?.MatchingParameter;
+      if (parameterInstance == null) return null;
+
       if (parameterInstance?.Expanded != ArgumentsUtil.ExpandedKind.None) return null;
 
       var parameterDeclaredType = parameterInstance.Type as IDeclaredType;
@@ -129,7 +132,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
             var stateTypeParameter = TryFindStateTypeParameter(candidateParameter, candidateParameter.IdSubstitution);
             if (stateTypeParameter != null)
             {
-              stateParametersToVisit = stateParametersToVisit ?? new HashSet<ITypeParameter>(stateTypeParameters);
+              stateParametersToVisit ??= new HashSet<ITypeParameter>(stateTypeParameters);
 
               if (stateParametersToVisit.Remove(stateTypeParameter))
               {
@@ -160,17 +163,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
     [CanBeNull]
     private static ITypeParameter TryFindStateTypeParameter([NotNull] IParameter parameter, [NotNull] ISubstitution substitution)
     {
-      if (parameter.Kind != ParameterKind.VALUE) return null;
-      if (parameter.IsParameterArray) return null;
-      if (parameter.IsOptional) return null;
-
-      var declaredType = substitution[parameter.Type] as IDeclaredType;
-
-      if (declaredType?.GetTypeElement() is ITypeParameter typeParameter
-          && typeParameter.OwnerFunction != null
-          && !typeParameter.HasDefaultConstructor)
+      if (parameter is { Kind: ParameterKind.VALUE, IsOptional: false, IsParameterArray: false })
       {
-        return typeParameter;
+        var parameterType = substitution[parameter.Type];
+        if (parameterType is IDeclaredType (ITypeParameter { OwnerFunction: { }, HasDefaultConstructor: false } typeParameter, _))
+        {
+          return typeParameter;
+        }
       }
 
       return null;
@@ -237,7 +236,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
         var stateTypeParameter = TryFindStateTypeParameter(candidateDelegateParameter, candidateClosureSubstitution);
         if (stateTypeParameter != null)
         {
-          stateParametersToVisit = stateParametersToVisit ?? new HashSet<ITypeParameter>(stateTypeParameters);
+          stateParametersToVisit ??= new HashSet<ITypeParameter>(stateTypeParameters);
 
           if (stateParametersToVisit.Remove(stateTypeParameter))
           {

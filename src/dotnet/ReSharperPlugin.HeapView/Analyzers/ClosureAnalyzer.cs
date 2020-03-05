@@ -2,13 +2,16 @@
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
@@ -20,6 +23,10 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
+  // todo: test with CS7 expr-bodied members
+  // todo: generics can be introduces by local functions - not a problem in Roslyn
+  // todo: report delegate allocations from method group
+
   [ElementProblemAnalyzer(
     ElementTypes: new[] {
       // constructors, methods, operators, accessors
@@ -38,47 +45,31 @@ namespace ReSharperPlugin.HeapView.Analyzers
       typeof(ClosureAllocationHighlighting),
       typeof(DelegateAllocationHighlighting)
     })]
-  public class ClosureAnalyzer : ElementProblemAnalyzer<ITreeNode>
+  public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
   {
-    protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    protected override void Run(ICSharpDeclaration declaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-      IParametersOwner function;
-      ILocalScope topScope;
-      
-      if (element is ICSharpFunctionDeclaration functionDeclaration)
-      {
-        function = functionDeclaration.DeclaredElement;
-        topScope = functionDeclaration.Body as ILocalScope
-                   ?? functionDeclaration.ArrowClause as ILocalScope;
-      }
-      else if (element is IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwner)
-      {
-        function = expressionBodyOwner.GetParametersOwner();
-        topScope = arrowClause as ILocalScope;
-      }
-      else if (element is IInitializerOwnerDeclaration { Initializer: { } })
-      {
-        function = null;
-        topScope = null;
-      }
-      else
-      {
-        return;
-      }
+      var bodyToAnalyze = TryGetCodeBodyToAnalyze(declaration);
+      if (bodyToAnalyze == null) return;
 
-      var inspector = new ClosuresInspector(element, function);
-      element.ProcessDescendants(inspector);
+      var function = declaration.DeclaredElement as IParametersOwner;
+      var topScope = bodyToAnalyze as ILocalScope;
+
+      // collect closures and their captures first
+      var inspector = new ClosuresInspector(function, topScope);
+      bodyToAnalyze.ProcessDescendants(inspector);
 
       // report closures allocations
-      if (inspector.Closures.Count > 0)
+      if (inspector.Captures.Count > 0)
       {
-        ReportClosureAllocations(element, function, topScope, inspector, consumer);
+        ReportClosureAllocations(declaration, function, inspector, consumer);
       }
 
+      // todo: not the case in CS 6+?
       // report non-cached generic lambda expressions
-      if (function != null && inspector.ClosurelessLambdas.Count > 0)
+      if (function != null && inspector.CapturelessClosures.Count > 0)
       {
-        ReportClosurelessAllocations(element, function, inspector, consumer);
+        ReportClosurelessAllocations(declaration, function, inspector, consumer);
       }
 
       // report anonymous types in query expressions
@@ -88,97 +79,63 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private (int, int) GetFoo()
+    [CanBeNull, Pure]
+    private static ITreeNode TryGetCodeBodyToAnalyze(ITreeNode declaration)
     {
-      return (1, 1);
+      switch (declaration)
+      {
+        case ICSharpFunctionDeclaration { Body: { } bodyBlock }:
+          return bodyBlock;
+        case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+          return arrowClause;
+        case IInitializerOwnerDeclaration { Initializer: { } initializer }:
+          return initializer;
+        default:
+          return null;
+      }
     }
-    
+
     private static void ReportClosureAllocations(
-      [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement, [CanBeNull] ILocalScope topScope,
+      [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement,
       [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
-      var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
-      var captureScopes = new Dictionary<ILocalScope, JetHashSet<IDeclaredElement>>();
-
-      // group captures by their scope, report non-cached delegates
-      foreach (var closure in inspector.Closures)
+      // report allocations of delegate instances and expression trees
+      foreach (var (closure, captures) in inspector.Captures)
       {
-        foreach (var capture in closure.Value)
+        if (closure is ILocalFunctionDeclaration) continue;
+
+        var highlightingRange = GetClosureRange(closure);
+        if (!highlightingRange.IsValid()) continue;
+
+        if (IsExpressionTreeLambda(closure))
         {
-          ILocalScope scope = null;
-
-          if (capture is IFunction)
-          {
-            scope = topScope; // 'this' capture
-          }
-          else
-          {
-            var declarations = capture.GetDeclarations();
-            if (declarations.Count == 0) // accessors 'value' parameter
-            {
-              if (thisElement is IAccessor accessor && Equals(accessor.ValueVariable, capture))
-              {
-                scope = topScope;
-              }
-            }
-            else
-            {
-              foreach (var declaration in declarations)
-              {
-                if (declaration is IRegularParameterDeclaration)
-                {
-                  scope = topScope;
-                }
-                else
-                {
-                  scope = declaration.GetContainingScope<ILocalScope>();
-                }
-
-                break;
-              }
-            }
-          }
-
-          if (scope == null) continue;
-
-          if (!captureScopes.TryGetValue(scope, out var captures))
-          {
-            captureScopes[scope] = captures = new JetHashSet<IDeclaredElement>();
-          }
-
-          captures.Add(capture);
-          scopesMap[capture] = scope;
+          var highlighting = new ObjectAllocationHighlighting(closure, "expression tree construction");
+          consumer.AddHighlighting(highlighting, highlightingRange);
         }
-
+        else
         {
-          var highlightingRange = GetClosureRange(closure.Key);
-          if (highlightingRange.IsValid())
-          {
-            if (IsExpressionLambda(closure.Key))
-            {
-              var highlighting = new ObjectAllocationHighlighting(closure.Key, "expression tree construction");
-              consumer.AddHighlighting(highlighting, highlightingRange);
-            }
-            else
-            {
-              var description = FormatClosureDescription(closure.Value);
-              var highlighting = new DelegateAllocationHighlighting(closure.Key, "capture of " + description);
-              consumer.AddHighlighting(highlighting, highlightingRange);
+          var description = FormatClosureDescription(captures);
+          var highlighting = new DelegateAllocationHighlighting(closure, "capture of " + description);
+          consumer.AddHighlighting(highlighting, highlightingRange);
 
-              ReportClosurelessOverloads(closure.Key, consumer);
-            }
-          }
+          TryReportClosurelessOverloads(closure, consumer);
         }
       }
 
+      // todo: document how this-only captures do not allocate display class
+
+      var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
+
+
       // highlight first captured entity per every scope
-      foreach (var scopeToCaptures in captureScopes)
+      foreach (var (localScope, caps) in inspector.CapturesOfScope)
       {
         var firstOffset = TreeOffset.MaxValue;
         IDeclaredElement firstCapture = null;
 
-        foreach (var capture in scopeToCaptures.Value)
+        foreach (var capture in caps)
         {
+          // todo: where this-only closure is created?
           if (capture is IFunction) continue;
 
           var offset = GetCaptureStartOffset(capture);
@@ -189,20 +146,20 @@ namespace ReSharperPlugin.HeapView.Analyzers
           }
         }
 
-        var scopeClosure = FormatClosureDescription(scopeToCaptures.Value);
+        var scopeClosure = FormatClosureDescription(caps);
 
         // collect outer captures
         JetHashSet<IDeclaredElement> outerCaptures = null;
-        foreach (var closureToCaptures in inspector.Closures)
+        foreach (var (closure, captures) in inspector.Captures)
         {
-          if (!scopeToCaptures.Key.Contains(closureToCaptures.Key)) continue;
+          if (!localScope.Contains(closure)) continue;
 
-          foreach (var capture in closureToCaptures.Value)
+          foreach (var capture in captures)
           {
             if (!scopesMap.TryGetValue(capture, out var scope)) continue;
-            if (scopeToCaptures.Key.Contains(scope)) continue;
+            if (localScope.Contains(scope)) continue;
 
-            outerCaptures = outerCaptures ?? new JetHashSet<IDeclaredElement>();
+            outerCaptures ??= new JetHashSet<IDeclaredElement>();
             outerCaptures.Add(capture);
           }
         }
@@ -224,19 +181,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private static void ReportClosurelessOverloads([NotNull] ITreeNode closureNode, [NotNull] IHighlightingConsumer consumer)
+    private static void TryReportClosurelessOverloads([NotNull] ICSharpClosure closure, [NotNull] IHighlightingConsumer consumer)
     {
-      var closureExpression = closureNode as ICSharpExpression;
+      var closureExpression = closure as ICSharpExpression;
       if (closureExpression == null) return;
 
-      var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocation(closureExpression);
+      var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocationByArgument(closureExpression);
       if (invocationReference == null) return;
 
       var parameterInstance = ClosurelessOverloadSearcher.FindClosureParameter(closureExpression);
       if (parameterInstance == null) return;
 
-      var overload = ClosurelessOverloadSearcher.FindOverloadByParameter(parameterInstance);
-      if (overload != null)
+      var overloadWithStateParameter = ClosurelessOverloadSearcher.FindOverloadByParameter(parameterInstance);
+      if (overloadWithStateParameter != null)
       {
         var highlighting = new CanEliminateClosureCreationHighlighting(closureExpression);
         consumer.AddHighlighting(highlighting, invocationReference.GetDocumentRange());
@@ -244,7 +201,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [NotNull]
-    private static string FormatClosureDescription([NotNull] JetHashSet<IDeclaredElement> declaredElements)
+    private static string FormatClosureDescription([NotNull] ISet<IDeclaredElement> declaredElements)
     {
       int parameters = 0, vars = 0;
       var hasThis = false;
@@ -253,40 +210,45 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         if (IsParameter(element)) parameters++;
         else if (element is ILocalVariable) vars++;
-        else if (element is IFunction) hasThis = true;
+        else if (element is IParametersOwner) hasThis = true;
+
+        // todo: local functions
       }
 
-      var buf = new StringBuilder();
+      var builder = new StringBuilder();
+
       if (parameters > 0)
       {
         var parameterElements = declaredElements.Where(element => IsParameter(element));
-        buf.Append(FormatOrderedByStartOffset(parameterElements)).Append(' ')
-           .Append(NounUtil.ToPluralOrSingular("parameter", parameters));
+        builder
+          .Append(FormatOrderedByStartOffset(parameterElements)).Append(' ')
+          .Append(NounUtil.ToPluralOrSingular("parameter", parameters));
       }
 
       if (vars > 0)
       {
-        if (parameters > 0) buf.Append(hasThis ? ", " : " and ");
+        if (parameters > 0) builder.Append(hasThis ? ", " : " and ");
 
         var localElements = declaredElements.Where(element => element is ILocalVariable);
-        buf.Append(FormatOrderedByStartOffset(localElements)).Append(' ')
-           .Append(NounUtil.ToPluralOrSingular("variable", vars));
+        builder
+          .Append(FormatOrderedByStartOffset(localElements)).Append(' ')
+          .Append(NounUtil.ToPluralOrSingular("variable", vars));
       }
 
       if (hasThis)
       {
-        if (parameters > 0 || vars > 0) buf.Append(" and ");
+        if (parameters > 0 || vars > 0) builder.Append(" and ");
 
-        buf.Append("'this' reference");
+        builder.Append("'this' reference");
       }
 
-      return buf.ToString();
-    }
+      return builder.ToString();
 
-    private static bool IsParameter([NotNull] IDeclaredElement declaredElement)
-    {
-      return declaredElement is IParameter
-          || declaredElement is IQueryAnonymousTypeProperty;
+      static bool IsParameter(IDeclaredElement declaredElement)
+      {
+        return declaredElement is IParameter
+               || declaredElement is IQueryAnonymousTypeProperty;
+      }
     }
 
     [NotNull]
@@ -362,25 +324,25 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (function is ITypeParametersOwner typeParametersOwner && typeParametersOwner.TypeParameters.Count > 0)
       {
-        foreach (var lambda in inspector.ClosurelessLambdas)
+        foreach (var closure in inspector.CapturelessClosures)
         {
-          if (IsExpressionLambda(lambda)) continue;
+          if (IsExpressionTreeLambda(closure)) continue;
 
-          var closureRange = GetClosureRange(lambda);
+          var closureRange = GetClosureRange(closure);
           if (!closureRange.IsValid()) continue;
 
           // note: Roslyn compiler implements caching of such closures
           if (!element.IsCSharp6Supported())
           {
             consumer.AddHighlighting(
-              new DelegateAllocationHighlighting(lambda, "from generic anonymous function (always non cached)"), closureRange);
+              new DelegateAllocationHighlighting(closure, "from generic anonymous function (always non cached)"), closureRange);
           }
         }
       }
 
-      foreach (var lambda in inspector.ClosurelessLambdas)
+      foreach (var lambda in inspector.CapturelessClosures)
       {
-        if (!IsExpressionLambda(lambda)) continue;
+        if (!IsExpressionTreeLambda(lambda)) continue;
 
         var closureRange = GetClosureRange(lambda);
         if (closureRange.IsValid())
@@ -391,25 +353,29 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private static DocumentRange GetClosureRange([CanBeNull] ITreeNode function)
+    [Pure]
+    private static DocumentRange GetClosureRange([CanBeNull] ICSharpClosure closure)
     {
-      switch (function)
+      switch (closure)
       {
-        case ILambdaExpression lambda:
-          return lambda.LambdaArrow.GetDocumentRange();
+        case ILambdaExpression lambdaExpression:
+          return lambdaExpression.LambdaArrow.GetDocumentRange();
 
-        case IAnonymousMethodExpression anonymousMethod:
-          return anonymousMethod.DelegateKeyword.GetDocumentRange();
+        case IAnonymousMethodExpression anonymousMethodExpression:
+          return anonymousMethodExpression.DelegateKeyword.GetDocumentRange();
 
-        case IQueryParameterPlatform platform:
+        case ILocalFunctionDeclaration localFunctionDeclaration:
+          return localFunctionDeclaration.GetNameDocumentRange();
+
+        case IQueryParameterPlatform queryParameterPlatform:
         {
-          var token = platform.GetPreviousMeaningfulToken();
-          if (token != null && token.GetTokenType().IsKeyword)
-            return token.GetDocumentRange();
+          var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
+          if (previousToken != null && previousToken.GetTokenType().IsKeyword)
+            return previousToken.GetDocumentRange();
 
-          var clause = platform.GetContainingNode<IQueryClause>();
-          if (clause != null)
-            return clause.FirstKeyword.GetDocumentRange();
+          var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
+          if (queryClause != null)
+            return queryClause.FirstKeyword.GetDocumentRange();
 
           goto default;
         }
@@ -428,9 +394,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    private static bool IsExpressionLambda([NotNull] ITreeNode function)
+    [Pure]
+    private static bool IsExpressionTreeLambda([NotNull] ICSharpClosure closure)
     {
-      switch (function)
+      switch (closure)
       {
         case ILambdaExpression lambdaExpression:
           return lambdaExpression.IsLinqExpressionTreeLambda();
@@ -443,176 +410,244 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private sealed class ClosuresInspector : IRecursiveElementProcessor
     {
-      [NotNull] private readonly Stack<ITreeNode> myClosures;
-      [CanBeNull] private readonly IParametersOwner myParametersOwner;
+      [CanBeNull] private readonly IParametersOwner myTopLevelParametersOwner;
+      [CanBeNull] private readonly ILocalScope myTopScope;
+      [NotNull] private readonly Stack<ICSharpClosure> myCurrentClosures;
 
-      public ClosuresInspector([NotNull] ITreeNode topLevelNode, [CanBeNull] IParametersOwner thisElement)
+      public ClosuresInspector([CanBeNull] IParametersOwner topLevelParameterOwner, [CanBeNull] ILocalScope topScope)
       {
-        myParametersOwner = thisElement;
-        myClosures = new Stack<ITreeNode>();
-        myClosures.Push(topLevelNode);
-        Closures = new Dictionary<ITreeNode, JetHashSet<IDeclaredElement>>();
-        AnonymousTypes = new JetHashSet<IQueryRangeVariableDeclaration>();
-        ClosurelessLambdas = new List<ITreeNode>();
+        myTopLevelParametersOwner = topLevelParameterOwner;
+        myTopScope = topScope;
+        myCurrentClosures = new Stack<ICSharpClosure>();
+
+        Captures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
+        CapturesOfScope = new OneToSetMap<ILocalScope, IDeclaredElement>();
+        AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
+        CapturelessClosures = new List<ICSharpClosure>();
+        DelayedUseLocalFunctions = new HashSet<ILocalFunction>();
       }
 
-      [NotNull] public Dictionary<ITreeNode, JetHashSet<IDeclaredElement>> Closures { get; }
-      [NotNull] public List<ITreeNode> ClosurelessLambdas { get; }
-      [NotNull] public JetHashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
+      [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
+      [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
 
-      public bool InteriorShouldBeProcessed(ITreeNode element) => true;
+      [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
+      [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
+      [NotNull] public HashSet<ILocalFunction> DelayedUseLocalFunctions { get; }
+
       public bool ProcessingIsFinished => false;
-
-      public void ProcessAfterInterior(ITreeNode element)
-      {
-        if (element is IAnonymousFunctionExpression || element is IQueryParameterPlatform)
-        {
-          var lambda = myClosures.Pop();
-          Assertion.Assert(lambda == element, "lambda == element");
-
-          if (!Closures.ContainsKey(lambda))
-          {
-            ClosurelessLambdas.Add(lambda);
-          }
-        }
-      }
+      public bool InteriorShouldBeProcessed(ITreeNode element) => true;
 
       public void ProcessBeforeInterior(ITreeNode element)
       {
-        switch (element)
+        if (element is ICSharpClosure closure)
         {
-          case ICSharpExpression expression:
-            ProcessExpression(expression);
-            return;
+          myCurrentClosures.Push(closure);
+        }
 
-          case IQueryParameterPlatform platform:
-            myClosures.Push(platform);
-            return;
+        if (element is ICSharpExpression expression)
+        {
+          ProcessExpression(expression);
+        }
+      }
+
+      public void ProcessAfterInterior(ITreeNode element)
+      {
+        if (element is ICSharpClosure closure)
+        {
+          ProcessClosureAfterInterior(closure);
+        }
+      }
+
+      private void ProcessClosureAfterInterior([NotNull] ICSharpClosure closure)
+      {
+        var lastClosure = myCurrentClosures.Pop();
+        Assertion.Assert(lastClosure == closure, "lastClosure == closure");
+
+        if (!Captures.ContainsKey(closure))
+        {
+          CapturelessClosures.Add(closure);
+        }
+      }
+
+      private void ProcessExpression(ICSharpExpression expression)
+      {
+        switch (expression)
+        {
+          case IThisExpression _:
+          case IBaseExpression _:
+            if (myCurrentClosures.Count > 0) AddThisCapture();
+            break;
+
+          case IReferenceExpression { QualifierExpression: null } referenceExpression:
+            ProcessNonQualifiedReferenceExpression(referenceExpression);
+            break;
         }
       }
 
       private void AddThisCapture()
       {
-        var parametersOwner = myParametersOwner;
-        if (parametersOwner == null) return;
+        var topLevelParametersOwner = myTopLevelParametersOwner;
+        if (topLevelParametersOwner == null) return;
 
-        foreach (var closureKey in myClosures)
+        NoteCaptureInTopLevelScope(topLevelParametersOwner);
+
+        foreach (var closure in myCurrentClosures)
         {
-          AddCapture(closureKey, parametersOwner);
+          Captures.Add(closure, topLevelParametersOwner);
         }
       }
 
-      private void AddCapture([NotNull] ITreeNode closure, [NotNull] IDeclaredElement element)
+      private void NoteCaptureInTopLevelScope([NotNull] IDeclaredElement capturedElement)
       {
-        if (!Closures.TryGetValue(closure, out var captures))
+        Assertion.Assert(myCurrentClosures.Count > 0, "myCurrentClosures.Count > 0");
+
+        if (myTopScope != null)
         {
-          Closures.Add(closure, captures = new JetHashSet<IDeclaredElement>());
-        }
-
-        captures.Add(element);
-      }
-
-      private void ProcessExpression([NotNull] ICSharpExpression element)
-      {
-        switch (element)
-        {
-          case IThisExpression _:
-          case IBaseExpression _:
-            AddThisCapture();
-            break;
-
-          case IReferenceExpression referenceExpression when referenceExpression.QualifierExpression is null:
-            ProcessReferenceExpression(referenceExpression);
-            break;
-
-          case IAnonymousFunctionExpression anonymousFunction:
-            myClosures.Push(anonymousFunction);
-            break;
+          CapturesOfScope.Add(myTopScope, capturedElement);
         }
       }
 
-      private void ProcessReferenceExpression([NotNull] IReferenceExpression reference)
+      private void ProcessNonQualifiedReferenceExpression([NotNull] IReferenceExpression referenceExpression)
       {
-        var resolveResult = reference.Reference.Resolve();
+        if (!referenceExpression.IsNameofOperatorArgumentPart()) return;
 
-        switch (resolveResult.DeclaredElement)
+        var (declaredElement, _) = referenceExpression.Reference.Resolve();
+
+        if (declaredElement is ILocalFunction function)
+        {
+          ProcessLocalFunctionUsage(function, referenceExpression);
+        }
+
+        if (myCurrentClosures.Count > 0 && declaredElement != null)
+        {
+          ProcessElementUsedByNonQualifiedReferenceExpressionInClosure(declaredElement);
+        }
+      }
+
+      private void ProcessElementUsedByNonQualifiedReferenceExpressionInClosure([NotNull] IDeclaredElement declaredElement)
+      {
+        switch (declaredElement)
         {
           case IParameter parameter:
-            ProcessParameter(parameter);
+            AddParameterCapture(parameter);
             return;
 
           case ILocalVariable localVariable:
-            ProcessLocalVariable(localVariable);
-            return;
+            AddLocalVariableCapture(localVariable);
+            break;
 
-          case ITypeMember typeMember: // .this closure
-            ProcessTypeMember(typeMember);
-            return;
+          case ILocalFunction localFunction:
+            AddLocalFunctionCapture(localFunction);
+            break;
+
+          case ITypeMember typeMember:
+            AddThisCaptureViaMemberUsage(typeMember);
+            break;
 
           case IQueryAnonymousTypeProperty anonymousTypeProperty:
             ProcessAnonymousProperty(anonymousTypeProperty);
-            return;
+            break;
+
+          // note: ITypeParameter capture do not introduces allocations in Roslyn-generated code
         }
       }
 
-      private void ProcessParameter([NotNull] IParameter parameter)
+      private void AddParameterCapture([NotNull] IParameter parameter)
       {
         var parametersOwner = parameter.ContainingParametersOwner;
-        if (parametersOwner == null) return;
+        if (parametersOwner == null) return; // should not happen anyway
 
-        foreach (var closure in myClosures)
+        foreach (var closure in myCurrentClosures)
         {
-          if (closure is IQueryParameterPlatform queryPlatform)
+          if (ReferenceEquals(parametersOwner, closure))
           {
-            if (parametersOwner is IQueryParameterPlatform platform && queryPlatform == platform) return;
-
-            // outer query parameter
-            AddCapture(closure, parameter);
-          }
-          else
-          {
-            // anonymous parameter access
-            if (ReferenceEquals(parametersOwner, closure)) return;
-
-            if (myClosures.Count == 1)
+            // todo: test with query parameter platforms
+            var parameterScope = closure.GetContainingScope<ILocalScope>(returnThis: true);
+            if (parameterScope != null)
             {
-              if (parametersOwner.Equals(myParametersOwner)) return;
-
-              if (myParametersOwner is IAccessor accessor && accessor.OwnerMember.Equals(parametersOwner)) return;
+              CapturesOfScope.Add(parameterScope, parameter);
             }
 
-            AddCapture(closure, parameter);
+            return;
           }
+
+          Captures.Add(closure, parameter);
         }
-      }
 
-      private void ProcessLocalVariable([NotNull] ILocalVariable variable)
-      {
-        if (variable.IsStatic) return;
-        if (variable.IsConstant) return;
-
-        var declaration = variable.GetSingleDeclaration<IDeclaration>();
-        if (declaration != null)
+        // todo: test with indexer parameters/value parameter
+        if (parametersOwner.Equals(myTopLevelParametersOwner))
         {
-          foreach (var closure in myClosures)
-          {
-            if (closure.Contains(declaration) && !(closure is IQueryParameterPlatform)) continue;
-
-            AddCapture(closure, variable);
-          }
+          NoteCaptureInTopLevelScope(parameter);
         }
       }
 
-      private void ProcessTypeMember([NotNull] ITypeMember typeMember)
+      private void AddLocalVariableCapture([NotNull] ILocalVariable localVariable)
+      {
+        if (localVariable.IsConstant) return;
+
+        var variableDeclaration = localVariable.GetSingleDeclaration<IDeclaration>();
+        if (variableDeclaration == null) return;
+
+        // todo: test with out vars/pattern variables in weird scopes
+        var variableScope = variableDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
+        if (variableScope != null)
+        {
+          CapturesOfScope.Add(variableScope, localVariable);
+        }
+
+        foreach (var closure in myCurrentClosures)
+        {
+          if (closure.Contains(variableDeclaration) && !(closure is IQueryParameterPlatform)) break;
+
+          Captures.Add(closure, localVariable);
+        }
+      }
+
+      private void AddLocalFunctionCapture([NotNull] ILocalFunction localFunction)
+      {
+        var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
+        if (localFunctionDeclaration == null) return;
+
+        var functionScope = localFunctionDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
+        if (functionScope != null)
+        {
+          CapturesOfScope.Add(functionScope, localFunction);
+        }
+
+        foreach (var closure in myCurrentClosures)
+        {
+          if (closure.Contains(localFunctionDeclaration)) break;
+
+          Captures.Add(closure, localFunction);
+        }
+      }
+
+      private void AddThisCaptureViaMemberUsage([NotNull] ITypeMember typeMember)
       {
         if (typeMember is ITypeElement) return;
         if (typeMember.IsStatic) return;
 
-        if (typeMember is IField field && field.IsConstant) return;
+        if (typeMember is IField { IsField: false }) return;
+
+        // todo: test with indexer's parameters (on expr-bodied indexers + accessors)
+        // todo: test on setter's value parameter
 
         AddThisCapture();
       }
 
+      private void ProcessLocalFunctionUsage([NotNull] ILocalFunction localFunction, [NotNull] IReferenceExpression referenceExpression)
+      {
+        var containingExpression = referenceExpression.GetContainingParenthesizedExpression();
+        var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(containingExpression);
+        if (invocationExpression == null)
+        {
+          // note: nameof(LocalFunc) already filtered here
+
+          DelayedUseLocalFunctions.Add(localFunction);
+        }
+      }
+
+      // note: invoked only inside closures
       private void ProcessAnonymousProperty([NotNull] IQueryAnonymousTypeProperty anonymousProperty)
       {
         foreach (var anonymousTypeProperty in anonymousProperty.ContainingType.Properties)
