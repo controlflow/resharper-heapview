@@ -59,7 +59,7 @@ public class ExpressionBodies {
 
   public void Method(int x) => F(() => x);
 
-  public int Property => F(x => () => x);
+  public Func<int, Func<int>> Property => x => () => x;
   public int this[int x] => F(() => x);
 
   public int GetSetProperty {

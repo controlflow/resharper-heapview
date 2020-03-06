@@ -23,7 +23,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
-  // todo: test with C#7 expr-bodied members
   // todo: generics can be introduces by local functions - not a problem in Roslyn
   // todo: report delegate allocations from method group
 

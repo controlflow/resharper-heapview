@@ -59,7 +59,7 @@ public class ExpressionBodies {
 
   public void Method(int x) => F(() |=>|(20) x);
 
-  public int Property => F(|x|(21) => () |=>|(22) x);
+  public Func<int, Func<int>> Property => |x|(21) => () |=>|(22) x;
   public int this[int x] => F(() |=>|(23) x);
 
   public int GetSetProperty {
