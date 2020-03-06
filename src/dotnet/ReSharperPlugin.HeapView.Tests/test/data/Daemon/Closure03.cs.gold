@@ -1,0 +1,113 @@
+﻿using System;
+// ReSharper disable ConvertClosureToMethodGroup
+
+public class Initializers {
+  public Func<int, Func<int>> Field = |x|(0) => () |=>|(1) x;
+  public static event Func<int, Func<int>> Event = |x|(2) => () |=>|(3) x;
+  public Func<int, Func<int>> AutoProperty { get; } = |x|(4) => () |=>|(5) x;
+}
+
+public class BlockBodies {
+  static BlockBodies() {
+    |var x|(6) = 0;
+    F(() |=>|(7) x);
+  }
+
+  public BlockBodies(int x) {
+    F(() |=>|(8) x);
+  }
+
+  public void Method(int x) {
+    F(() |=>|(9) x);
+  }
+
+  public Func<int> Property {
+    get {
+      |var x|(10) = 0;
+      return () |=>|(11) x;
+    }
+    set {
+      F(() |=>|(12) value());
+    }
+  }
+
+  public int this[int x] {
+    get {
+      F(() |=>|(13) x);
+      return x;
+    }
+    set {
+      F(() |=>|(14) value);
+    }
+  }
+
+  public static implicit operator BlockBodies(int x) {
+    F(() |=>|(15) x);
+    return null;
+  }
+
+  public static Func<int> operator+(BlockBodies _, int x) {
+    return () |=>|(16) x;
+  }
+
+  private static extern void F(Func<int> f);
+}
+
+public class ExpressionBodies {
+  static ExpressionBodies() => F(|x|(17) => () |=>|(18) x);
+  public ExpressionBodies(int x) => F(() |=>|(19) x);
+
+  public void Method(int x) => F(() |=>|(20) x);
+
+  public int Property => F(|x|(21) => () |=>|(22) x);
+  public int this[int x] => F(() |=>|(23) x);
+
+  public int GetSetProperty {
+    get => F(|x|(24) => () |=>|(25) x);
+    set => F(() |=>|(26) value);
+  }
+
+  public int this[int x, int y] {
+    get => F(() |=>|(27) x);
+    set => F(() |=>|(28) value + y);
+  }
+
+  public static implicit operator int(ExpressionBodies _) => F(|x|(29) => () |=>|(30) x);
+  public static int operator +(ExpressionBodies _, int x) => F(() |=>|(31) x);
+
+  private static extern int F(Func<int> f);
+  private static extern int F(Func<int, Func<int>> f);
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(2): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(3): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(4): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(5): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(6): ReSharper HeapView Allocation: Closure allocation: 'x' variable
+(7): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' variable
+(8): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(9): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(10): ReSharper HeapView Allocation: Closure allocation: 'x' variable
+(11): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' variable
+(12): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
+(13): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(14): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
+(15): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(16): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(17): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(18): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(19): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(20): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(21): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(22): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(23): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(24): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(25): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(26): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
+(27): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(28): ReSharper HeapView Allocation: Delegate allocation: capture of 'value', 'y' parameters
+(29): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
+(30): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(31): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter

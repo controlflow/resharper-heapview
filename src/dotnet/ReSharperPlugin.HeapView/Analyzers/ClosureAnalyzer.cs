@@ -102,6 +102,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       // report allocations of delegate instances and expression trees
       foreach (var (closure, captures) in inspector.Captures)
       {
+        
+
         // local function is the only closure construct that do not allocates itself, it's usages do
         if (closure is ILocalFunctionDeclaration) continue;
 
@@ -127,6 +129,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
 
+      foreach (var (scope, captures) in inspector.CapturesOfScope)
+      foreach (var capture in captures)
+      {
+        scopesMap[capture] = scope;
+      }
 
       // highlight first captured entity per every scope
       foreach (var (localScope, caps) in inspector.CapturesOfScope)
@@ -136,6 +143,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
           continue; // do not report
         }
 
+        // compute display class creation point
         var firstOffset = TreeOffset.MaxValue;
         IDeclaredElement firstCapture = null;
 
@@ -160,9 +168,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
         {
           if (!localScope.Contains(closure)) continue;
 
+          // for every closure that is located inside current local scope
+
+
           foreach (var capture in captures)
           {
             if (!scopesMap.TryGetValue(capture, out var scope)) continue;
+
             if (localScope.Contains(scope)) continue;
 
             outerCaptures ??= new JetHashSet<IDeclaredElement>();
@@ -444,7 +456,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       public sealed class DisplayClassInfo
       {
-        public 
         public HashSet<IDeclaredElement> Captures { get; }
       }
 
