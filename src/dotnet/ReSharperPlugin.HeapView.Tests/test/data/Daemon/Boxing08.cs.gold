@@ -2,7 +2,8 @@
 
 public struct S {
   void M() {
-    Action a = this.||M|(0)|(1), a2 = ||M|(2)|(3);
+    Action a = this.||M|(0)|(1), // alloc
+           a2 = ||M|(2)|(3); // alloc
     string s = nameof(this.M);
     Action b = this.|E|(4); // error
   }
@@ -15,7 +16,10 @@ public struct S {
 
   void Generic2<T>(T t) where T : class, I {
     Action a = t.|M|(8);
-    Action b = t.|E2|(9);
+  }
+
+  void Generic3<T>(T t) where T : struct, I {
+    Action a = t.||M|(9)|(10); // alloc
   }
 }
 
@@ -37,4 +41,5 @@ public interface I {
 (6): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
 (7): ReSharper HeapView Allocation: Delegate allocation: from method group
 (8): ReSharper HeapView Allocation: Delegate allocation: from method group
-(9): ReSharper HeapView Allocation: Delegate allocation: from method group
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
+(10): ReSharper HeapView Allocation: Delegate allocation: from method group

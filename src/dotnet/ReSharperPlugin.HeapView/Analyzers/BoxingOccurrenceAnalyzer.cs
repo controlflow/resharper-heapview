@@ -15,8 +15,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
   // note: boxing in foreach (object x in new[] { 1, 2, 3 }) { } is not detected,
   // because of another C# highlighting (iteration var can be made of more specific type)
 
-  // todo: possible boxing allocation
-
   [ElementProblemAnalyzer(
     ElementTypes: typeof(ICSharpExpression),
     HighlightingTypes = new[] {
@@ -58,7 +56,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var method = declaredElement as IMethod;
       if (method == null) return; // we are not interested in local functions or anything else
-
       if (method.IsStatic) return;
 
       var methodClassType = method.GetContainingType() as IClass;
@@ -71,18 +68,18 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var notNullableType = qualifierType.Unlift(); // Nullable<T> overrides everything, but invokes the same methods on T
 
-      var qualifierTypeKind = ClassifyQualifierType(notNullableType);
+      var qualifierTypeKind = ClassifyQualifierType(notNullableType, includeStructTypeParameters: false);
       if (qualifierTypeKind == TypeKind.NotValueType) return;
 
-      if (qualifierTypeKind == TypeKind.CanBeValueType)
+      if (qualifierTypeKind == TypeKind.DefinitelyValueType)
       {
         consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+          new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
       }
       else
       {
         consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
       }
     }
 
@@ -104,21 +101,21 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var targetType = referenceExpression.GetImplicitlyConvertedTo();
       if (!targetType.IsDelegateType()) return;
 
-      var qualifierTypeKind = ClassifyQualifierType(qualifierType, includeStructTypeParameters: false);
+      var qualifierTypeKind = ClassifyQualifierType(qualifierType, includeStructTypeParameters: true);
       if (qualifierTypeKind == TypeKind.NotValueType) return;
 
       var description = BakeDescriptionWithTypes(
         "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, targetType);
 
-      if (qualifierTypeKind == TypeKind.CanBeValueType)
+      if (qualifierTypeKind == TypeKind.DefinitelyValueType)
       {
         consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+          new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
       }
       else
       {
         consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+          new PossibleBoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
       }
     }
 
@@ -144,8 +141,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     private enum TypeKind { DefinitelyValueType, CanBeValueType, NotValueType }
 
     [Pure]
-    private static TypeKind ClassifyQualifierType(
-      [NotNull] IType type, bool includeStructTypeParameters = true)
+    private static TypeKind ClassifyQualifierType([NotNull] IType type, bool includeStructTypeParameters)
     {
       if (type.IsTypeParameterType())
       {
@@ -153,7 +149,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
         {
           TypeClassification.REFERENCE_TYPE => TypeKind.NotValueType,
           TypeClassification.VALUE_TYPE when includeStructTypeParameters => TypeKind.DefinitelyValueType,
-          TypeClassification.VALUE_TYPE => TypeKind.CanBeValueType,
           _ => TypeKind.CanBeValueType
         };
       }

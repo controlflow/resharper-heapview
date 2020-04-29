@@ -14,10 +14,17 @@
     t.|Equals|(4)(null);
   }
 
+  public void M3<T>(T t) where T : I {
+    t.InstanceMethod();
+    t.|GetType|(5)();
+    t.|GetHashCode|(6)();
+    t.|Equals|(7)(null);
+  }
+
   public struct S : I {
     public void InstanceMethod() { }
     public override bool Equals(object obj) {
-      return base.|Equals|(5)(null);
+      return base.|Equals|(8)(null);
     }
   }
 
@@ -31,4 +38,7 @@
 (2): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(5): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(6): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(7): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(8): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
