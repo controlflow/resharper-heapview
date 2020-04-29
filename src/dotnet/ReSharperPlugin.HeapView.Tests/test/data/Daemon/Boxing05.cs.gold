@@ -1,0 +1,34 @@
+﻿public class C {
+  public void M1() {
+    var s = new S();
+    s.InstanceMethod();
+    s.|GetType|(0)();
+    s.|GetHashCode|(1)();
+    s.Equals(null);
+  }
+
+  public void M2<T>(T t) where T : struct, I {
+    t.InstanceMethod();
+    t.|GetType|(2)();
+    t.|GetHashCode|(3)();
+    t.|Equals|(4)(null);
+  }
+
+  public struct S : I {
+    public void InstanceMethod() { }
+    public override bool Equals(object obj) {
+      return base.|Equals|(5)(null);
+    }
+  }
+
+  public interface I {
+    void InstanceMethod();
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(2): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance

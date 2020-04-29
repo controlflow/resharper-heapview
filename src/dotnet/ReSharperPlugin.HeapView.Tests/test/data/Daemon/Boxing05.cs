@@ -14,6 +14,13 @@ public class C {
     t.Equals(null);
   }
 
+  public void M3<T>(T t) where T : I {
+    t.InstanceMethod();
+    t.GetType();
+    t.GetHashCode();
+    t.Equals(null);
+  }
+
   public struct S : I {
     public void InstanceMethod() { }
     public override bool Equals(object obj) {

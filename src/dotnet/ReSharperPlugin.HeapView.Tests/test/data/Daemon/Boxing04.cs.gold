@@ -14,6 +14,6 @@ struct S {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: inherited System.Object virtual method call on value type instance
-(1): ReSharper HeapView Boxing: Boxing allocation: inherited System.Object virtual method call on value type instance
-(2): ReSharper HeapView Boxing: Boxing allocation: inherited System.Object virtual method call on value type instance
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -8,9 +7,6 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -34,11 +30,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
       switch (expression)
       {
         case IInvocationExpression invocationExpression:
-          CheckInvocationExpression(invocationExpression, consumer);
+          CheckInheritedVirtualMethodInvocationOverValueType(invocationExpression, consumer);
           break;
 
         case IReferenceExpression referenceExpression:
-          CheckStructMethodGroupConversion(referenceExpression, consumer);
+          CheckStructMethodConversionToDelegateInstance(referenceExpression, consumer);
           break;
 
         case IParenthesizedExpression _:
@@ -51,11 +47,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
       CheckExpressionImplicitConversion(expression, consumer);
     }
 
-    private static void CheckInvocationExpression(
+    private static void CheckInheritedVirtualMethodInvocationOverValueType(
       [NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
     {
-      var invokedReference = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
-      if (invokedReference == null) return;
+      var invokedReferenceExpression = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
+      if (invokedReferenceExpression == null) return;
 
       var (declaredElement, _, resolveErrorType) = invocationExpression.InvocationExpressionReference.Resolve();
       if (!resolveErrorType.IsAcceptable) return;
@@ -65,99 +61,109 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       if (method.IsStatic) return;
 
-      var containingType = method.GetContainingType();
-      if (containingType == null) return;
-
-
-      var methodClassType = containingType as IClass;
+      var methodClassType = method.GetContainingType() as IClass;
       if (methodClassType == null) return;
 
-      var qualifierType = GetQualifierExpressionType(invokedReference.QualifierExpression, invokedReference);
+      var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression);
       if (qualifierType == null) return;
 
       const string description = "inherited 'System.Object' virtual method call on value type instance";
 
       var notNullableType = qualifierType.Unlift(); // Nullable<T> overrides everything, but invokes the same methods on T
 
-      var boxingHighlighting = TryReportBoxingForUnknownType(notNullableType, invokedReference.NameIdentifier, description);
-      if (boxingHighlighting != null)
+      var qualifierTypeKind = ClassifyQualifierType(notNullableType);
+      if (qualifierTypeKind == TypeKind.NotValueType) return;
+
+      if (qualifierTypeKind == TypeKind.CanBeValueType)
       {
-        consumer.AddHighlighting(boxingHighlighting);
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+      }
+      else
+      {
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
       }
     }
 
-    [CanBeNull, Pure]
-    private static IHighlighting TryReportBoxingForUnknownType(
-      [NotNull] IType type, [NotNull] ITreeNode element, [NotNull] string description)
-    {
-      var typeClassification = type.Classify;
-
-      if (type.IsTypeParameterType())
-      {
-        if (typeClassification == TypeClassification.REFERENCE_TYPE) return null;
-
-        return new PossibleBoxingAllocationHighlighting(element, description);
-      }
-
-      if (typeClassification == TypeClassification.VALUE_TYPE)
-      {
-        return new BoxingAllocationHighlighting(element, description);
-      }
-
-      return null;
-    }
-
-    // todo: check nameof(str.Method)
-    private static void CheckStructMethodGroupConversion([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckStructMethodConversionToDelegateInstance(
+      [NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
     {
       var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
-      if (invocationExpression != null) return;
+      if (invocationExpression != null) return; // also filters out 'nameof(o.M)'
 
       var (declaredElement, _, resolveErrorType) = referenceExpression.Reference.Resolve();
       if (!resolveErrorType.IsAcceptable) return;
 
       var method = declaredElement as IMethod;
-      if (method == null || method.IsStatic || method.IsExtensionMethod) return;
+      if (method == null || method.IsStatic) return;
 
-      var qualifierType = GetQualifierExpressionType(referenceExpression.QualifierExpression, referenceExpression);
+      var qualifierType = TryGetQualifierExpressionType(referenceExpression);
       if (qualifierType == null) return;
 
-      var isValueType = qualifierType.IsValueType();
-      if (!isValueType && !qualifierType.IsUnconstrainedGenericType()) return;
-
-      var targetType = referenceExpression.GetImplicitlyConvertedTo(); // delayed
+      var targetType = referenceExpression.GetImplicitlyConvertedTo();
       if (!targetType.IsDelegateType()) return;
+
+      var qualifierTypeKind = ClassifyQualifierType(qualifierType, includeStructTypeParameters: false);
+      if (qualifierTypeKind == TypeKind.NotValueType) return;
 
       var description = BakeDescriptionWithTypes(
         "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, targetType);
 
-      if (isValueType)
-      {
-        consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
-      }
-      else
+      if (qualifierTypeKind == TypeKind.CanBeValueType)
       {
         consumer.AddHighlighting(
           new PossibleBoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
       }
+      else
+      {
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+      }
     }
 
     [CanBeNull, Pure]
-    private static IType GetQualifierExpressionType([CanBeNull] ICSharpExpression qualifierExpression, [NotNull] ICSharpTreeNode context)
+    private static IType TryGetQualifierExpressionType([NotNull] IReferenceExpression referenceExpression)
     {
+      var qualifierExpression = referenceExpression.QualifierExpression;
       if (qualifierExpression.IsThisOrBaseOrNull())
       {
-        var structDeclaration = context.GetContainingTypeDeclaration() as IStructDeclaration;
+        if (referenceExpression.GetContainingTypeDeclaration()
+              is IStructDeclaration { DeclaredElement: { } structTypeElement })
+        {
+          return TypeFactory.CreateType(structTypeElement);
+        }
 
-        var structTypeElement = structDeclaration?.DeclaredElement;
-        if (structTypeElement == null) return null;
-
-        return TypeFactory.CreateType(structTypeElement);
+        return null;
       }
 
       var expressionType = qualifierExpression.GetExpressionType();
       return expressionType.ToIType();
+    }
+
+    private enum TypeKind { DefinitelyValueType, CanBeValueType, NotValueType }
+
+    [Pure]
+    private static TypeKind ClassifyQualifierType(
+      [NotNull] IType type, bool includeStructTypeParameters = true)
+    {
+      if (type.IsTypeParameterType())
+      {
+        return type.Classify switch
+        {
+          TypeClassification.REFERENCE_TYPE => TypeKind.NotValueType,
+          TypeClassification.VALUE_TYPE when includeStructTypeParameters => TypeKind.DefinitelyValueType,
+          TypeClassification.VALUE_TYPE => TypeKind.CanBeValueType,
+          _ => TypeKind.CanBeValueType
+        };
+      }
+
+      if (type.IsValueType())
+      {
+        return TypeKind.DefinitelyValueType;
+      }
+
+      return TypeKind.NotValueType;
     }
 
     private static void CheckExpressionImplicitConversion([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
