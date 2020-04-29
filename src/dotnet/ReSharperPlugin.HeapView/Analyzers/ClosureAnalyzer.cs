@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -25,6 +26,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: generics can be introduces by local functions - not a problem in Roslyn
   // todo: report delegate allocations from method group
+  // todo: implement "Implicitly captured closure"
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] {
@@ -101,8 +103,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
       // report allocations of delegate instances and expression trees
       foreach (var (closure, captures) in inspector.Captures)
       {
-        
-
         // local function is the only closure construct that do not allocates itself, it's usages do
         if (closure is ILocalFunctionDeclaration) continue;
 
@@ -126,6 +126,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       // todo: document how this-only captures do not allocate display class
 
+      // compute the backwards map, IDeclaredElement -> it's display class scope
       var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
 
       foreach (var (scope, captures) in inspector.CapturesOfScope)
@@ -440,14 +441,18 @@ namespace ReSharperPlugin.HeapView.Analyzers
         Captures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
         CapturesOfScope = new OneToSetMap<ILocalScope, IDeclaredElement>();
         ClosuresOfScope = new OneToSetMap<ILocalScope, ICSharpClosure>();
+        DisplayClasses = new Dictionary<ILocalScope, DisplayClassInfo>();
+
         AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
         CapturelessClosures = new List<ICSharpClosure>();
         DelayedUseLocalFunctions = new OneToListMap<ILocalFunction, IReferenceExpression>();
       }
 
       [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
-      [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
-      [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; }
+      [Obsolete] [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
+      [Obsolete] [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; }
+
+      public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; }
 
       [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
       [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
@@ -455,7 +460,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       public sealed class DisplayClassInfo
       {
-        public HashSet<IDeclaredElement> Captures { get; }
+        public HashSet<IDeclaredElement> Captures { get; } = new HashSet<IDeclaredElement>();
+        public HashSet<ICSharpClosure> Closures { get; } = new HashSet<ICSharpClosure>();
+        public DisplayClassInfo ParentDisplayClass { get; private set; }
+
+        public TreeTextRange FirstCapturedVariableLocation { get; private set; }
+
+
+
+
+
       }
 
       public bool ProcessingIsFinished => false;
@@ -512,6 +526,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         var topLevelParametersOwner = myTopLevelParametersOwner;
         if (topLevelParametersOwner == null) return;
+
+
 
         NoteCaptureInTopLevelScope(topLevelParametersOwner);
 
