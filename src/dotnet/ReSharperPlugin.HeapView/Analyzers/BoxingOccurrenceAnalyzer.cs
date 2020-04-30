@@ -23,7 +23,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
     })]
   public sealed class BoxingOccurrenceAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
   {
-    protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    protected override void Run(
+      ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
       switch (expression)
       {
@@ -68,10 +69,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var notNullableType = qualifierType.Unlift(); // Nullable<T> overrides everything, but invokes the same methods on T
 
-      var qualifierTypeKind = ClassifyQualifierType(notNullableType, includeStructTypeParameters: false);
-      if (qualifierTypeKind == TypeKind.NotValueType) return;
+      var qualifierTypeKind = IsQualifierOfValueType(notNullableType, includeStructTypeParameters: false);
+      if (qualifierTypeKind == Classification.Not) return;
 
-      if (qualifierTypeKind == TypeKind.DefinitelyValueType)
+      if (qualifierTypeKind == Classification.Definitely)
       {
         consumer.AddHighlighting(
           new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
@@ -101,13 +102,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var targetType = referenceExpression.GetImplicitlyConvertedTo();
       if (!targetType.IsDelegateType()) return;
 
-      var qualifierTypeKind = ClassifyQualifierType(qualifierType, includeStructTypeParameters: true);
-      if (qualifierTypeKind == TypeKind.NotValueType) return;
+      var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: true);
+      if (qualifierTypeKind == Classification.Not) return;
 
       var description = BakeDescriptionWithTypes(
         "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, targetType);
 
-      if (qualifierTypeKind == TypeKind.DefinitelyValueType)
+      if (qualifierTypeKind == Classification.Definitely)
       {
         consumer.AddHighlighting(
           new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
@@ -138,37 +139,31 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return expressionType.ToIType();
     }
 
-    private enum TypeKind { DefinitelyValueType, CanBeValueType, NotValueType }
+    private enum Classification { Definitely, Possibly, Not }
 
     [Pure]
-    private static TypeKind ClassifyQualifierType([NotNull] IType type, bool includeStructTypeParameters)
+    private static Classification IsQualifierOfValueType([NotNull] IType type, bool includeStructTypeParameters)
     {
       if (type.IsTypeParameterType())
       {
         return type.Classify switch
         {
-          TypeClassification.REFERENCE_TYPE => TypeKind.NotValueType,
-          TypeClassification.VALUE_TYPE when includeStructTypeParameters => TypeKind.DefinitelyValueType,
-          _ => TypeKind.CanBeValueType
+          JetBrains.ReSharper.Psi.TypeClassification.REFERENCE_TYPE => Classification.Not,
+          JetBrains.ReSharper.Psi.TypeClassification.VALUE_TYPE when includeStructTypeParameters => Classification.Definitely,
+          _ => Classification.Possibly
         };
       }
 
       if (type.IsValueType())
       {
-        return TypeKind.DefinitelyValueType;
+        return Classification.Definitely;
       }
 
-      return TypeKind.NotValueType;
+      return Classification.Not;
     }
 
     private static void CheckExpressionImplicitConversion([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
     {
-      // var referenceExpression = ReferenceExpressionNavigator.GetByQualifierExpression(expression);
-      // if (InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression) != null)
-      // {
-      //   GC.KeepAlive(expression);
-      // }
-
       var expressionType = expression.GetExpressionType();
       if (expressionType.IsUnknown) return;
 
@@ -176,35 +171,52 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (targetType.IsUnknown) return;
 
       var conversionRule = expression.GetTypeConversionRule();
+
       var conversion = conversionRule.ClassifyImplicitConversionFromExpression(expressionType, targetType);
 
 
+      var classification = AnalyzeConversion2(conversion, expressionType, targetType);
+      if (classification == Classification.Not) return;
 
-      AnalyzeConversion(conversion, expressionType, targetType, expression, consumer);
-    }
+      if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
 
-    private static void AnalyzeConversion(
-      Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType,
-      [NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
-    {
-      // todo: that's a bit too much, some boxings are "possible"
-      if (conversion.Kind == ConversionKind.Boxing)
+      if (classification == Classification.Definitely)
       {
-        if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
-
-
         var description = BakeDescriptionWithTypes(
-          "conversion from value type '{0}' to reference type '{1}'", sourceType, targetType);
+          "conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
 
         consumer.AddHighlighting(
           new BoxingAllocationHighlighting(expression, description), expression.GetExpressionRange());
       }
+    }
 
-      if (conversion.Kind == ConversionKind.ImplicitTuple || conversion.Kind == ConversionKind.ImplicitTupleLiteral)
+    [Pure]
+    private static Classification AnalyzeConversion2(
+      Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType)
+    {
+      if (conversion.Kind == ConversionKind.Boxing)
       {
-        foreach (var typeConversionInfo in conversion.GetNestedConversionsWithTypeInfo())
+        return Classification.Definitely;
+      }
+
+      var current = Classification.Not;
+
+      void Merge(Classification newValue)
+      {
+        switch (newValue)
         {
+          case Classification.Definitely:
+          case Classification.Possibly when current == Classification.Not:
+          {
+            current = newValue;
+            break;
+          }
         }
+      }
+
+      foreach (var nestedInfo in conversion.GetNestedConversionsWithTypeInfo())
+      {
+        Merge(AnalyzeConversion2(nestedInfo.Conversion, nestedInfo.SourceType, nestedInfo.TargetType));
       }
 
       if (conversion.Kind == ConversionKind.ImplicitUserDefined)
@@ -212,8 +224,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
         var analysis = conversion.UserDefinedConversionAnalysis;
         if (analysis != null)
         {
+          Merge(AnalyzeConversion2(analysis.SourceConversion, analysis.FromType, analysis.EffectiveOperatorSourceType));
+          Merge(AnalyzeConversion2(analysis.TargetConversion, analysis.EffectiveOperatorTargetType, analysis.ToType));
         }
       }
+
+      return current;
     }
 
     [NotNull, StringFormatMethod("format")]

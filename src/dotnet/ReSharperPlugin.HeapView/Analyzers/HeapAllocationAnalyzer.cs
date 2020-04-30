@@ -463,8 +463,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+    [Pure]
     public static bool IsIgnoredContext([NotNull] ITreeNode context)
     {
+      // todo: static context?
+
       var attribute = context.GetContainingNode<IAttribute>();
       if (attribute != null) return true;
 
