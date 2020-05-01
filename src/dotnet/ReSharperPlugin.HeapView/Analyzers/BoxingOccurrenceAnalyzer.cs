@@ -1,12 +1,14 @@
 ﻿using System;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -36,6 +38,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
           CheckStructMethodConversionToDelegateInstance(referenceExpression, consumer);
           break;
 
+        case ICastExpression castExpression:
+          CheckExpressionExplicitConversion(castExpression, data.GetTypeConversionRule(), consumer);
+          break;
+
         case IParenthesizedExpression _:
         case ICheckedExpression _:
         case IUncheckedExpression _:
@@ -43,7 +49,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
           return; // do not analyze
       }
 
-      CheckExpressionImplicitConversion(expression, consumer);
+      CheckExpressionImplicitConversion(expression, expression.GetTypeConversionRule(), consumer);
     }
 
     private static void CheckInheritedVirtualMethodInvocationOverValueType(
@@ -126,8 +132,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var qualifierExpression = referenceExpression.QualifierExpression;
       if (qualifierExpression.IsThisOrBaseOrNull())
       {
-        if (referenceExpression.GetContainingTypeDeclaration()
-              is IStructDeclaration { DeclaredElement: { } structTypeElement })
+        var typeDeclaration = referenceExpression.GetContainingTypeDeclaration();
+        if (typeDeclaration is IStructDeclaration { DeclaredElement: { } structTypeElement })
         {
           return TypeFactory.CreateType(structTypeElement);
         }
@@ -148,8 +154,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         return type.Classify switch
         {
-          JetBrains.ReSharper.Psi.TypeClassification.REFERENCE_TYPE => Classification.Not,
-          JetBrains.ReSharper.Psi.TypeClassification.VALUE_TYPE when includeStructTypeParameters => Classification.Definitely,
+          TypeClassification.REFERENCE_TYPE => Classification.Not,
+          TypeClassification.VALUE_TYPE when includeStructTypeParameters => Classification.Definitely,
           _ => Classification.Possibly
         };
       }
@@ -162,20 +168,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return Classification.Not;
     }
 
-    private static void CheckExpressionImplicitConversion([NotNull] ICSharpExpression expression, [NotNull] IHighlightingConsumer consumer)
+    private static void CheckExpressionImplicitConversion(
+      [NotNull] ICSharpExpression expression, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
     {
-      var expressionType = expression.GetExpressionType();
-      if (expressionType.IsUnknown) return;
+      var sourceExpressionType = expression.GetExpressionType();
+      if (sourceExpressionType.IsUnknown) return;
 
       var targetType = expression.GetImplicitlyConvertedTo();
       if (targetType.IsUnknown) return;
 
-      var conversionRule = expression.GetTypeConversionRule();
+      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
 
-      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(expressionType, targetType);
-
-
-      var classification = AnalyzeConversion2(conversion, expressionType, targetType);
+      var classification = CheckConversionInvolvesBoxing(conversion, sourceExpressionType, targetType);
       if (classification == Classification.Not) return;
 
       if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
@@ -183,53 +188,107 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (classification == Classification.Definitely)
       {
         var description = BakeDescriptionWithTypes(
-          "conversion from value type '{0}' to reference type '{1}'", expressionType, targetType);
+          "conversion from '{0}' to '{1}' involves boxing of value type", sourceExpressionType, targetType);
 
         consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(expression, description), expression.GetExpressionRange());
+          new BoxingAllocationHighlighting(expression, description),
+          expression.GetExpressionRange());
+      }
+      else
+      {
+        var description = BakeDescriptionWithTypes(
+          "conversion from '{0}' to '{1}' possibly involves boxing of value type", sourceExpressionType, targetType);
+
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(expression, description),
+          expression.GetExpressionRange());
+      }
+    }
+
+    private static void CheckExpressionExplicitConversion(
+      [NotNull] ICastExpression castExpression, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
+    {
+      var castOperand = castExpression.Op;
+
+      var sourceExpressionType = castOperand?.GetExpressionType();
+      if (sourceExpressionType == null) return;
+
+      var targetType = castExpression.GetExpressionType().ToIType();
+      if (targetType == null) return;
+
+      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
+
+      var classification = CheckConversionInvolvesBoxing(conversion, sourceExpressionType, targetType);
+      if (classification == Classification.Not) return;
+
+      if (HeapAllocationAnalyzer.IsIgnoredContext(castExpression)) return;
+
+      if (classification == Classification.Definitely)
+      {
+        var description = BakeDescriptionWithTypes(
+          "conversion from '{0}' to '{1}' involves boxing of value type", sourceExpressionType, targetType);
+
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(castExpression, description),
+          castExpression.TargetType.GetDocumentRange());
+      }
+      else
+      {
+        var description = BakeDescriptionWithTypes(
+          "conversion from '{0}' to '{1}' possibly involves boxing of value type", sourceExpressionType, targetType);
+
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(castExpression, description),
+          castExpression.TargetType.GetDocumentRange());
       }
     }
 
     [Pure]
-    private static Classification AnalyzeConversion2(
+    private static Classification CheckConversionInvolvesBoxing(
       Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType)
     {
       if (conversion.Kind == ConversionKind.Boxing)
       {
-        return Classification.Definitely;
+        return IsDefinitelyBoxing(sourceType, targetType) ? Classification.Definitely : Classification.Possibly;
       }
 
       var current = Classification.Not;
 
-      void Merge(Classification newValue)
+      foreach (var nestedInfo in conversion.GetNestedConversionsWithTypeInfo())
       {
+        var newValue = CheckConversionInvolvesBoxing(
+          nestedInfo.Conversion, nestedInfo.SourceType, nestedInfo.TargetType);
+
         switch (newValue)
         {
           case Classification.Definitely:
           case Classification.Possibly when current == Classification.Not:
-          {
             current = newValue;
             break;
-          }
-        }
-      }
-
-      foreach (var nestedInfo in conversion.GetNestedConversionsWithTypeInfo())
-      {
-        Merge(AnalyzeConversion2(nestedInfo.Conversion, nestedInfo.SourceType, nestedInfo.TargetType));
-      }
-
-      if (conversion.Kind == ConversionKind.ImplicitUserDefined)
-      {
-        var analysis = conversion.UserDefinedConversionAnalysis;
-        if (analysis != null)
-        {
-          Merge(AnalyzeConversion2(analysis.SourceConversion, analysis.FromType, analysis.EffectiveOperatorSourceType));
-          Merge(AnalyzeConversion2(analysis.TargetConversion, analysis.EffectiveOperatorTargetType, analysis.ToType));
         }
       }
 
       return current;
+    }
+
+    [Pure]
+    private static bool IsDefinitelyBoxing([NotNull] IExpressionType sourceType, [NotNull] IType targetType)
+    {
+      var type = sourceType.ToIType();
+      if (type is IDeclaredType (ITypeParameter _, _) from)
+      {
+        Assertion.Assert(!from.IsReferenceType(), "!from.IsReferenceType()");
+
+        if (!from.IsValueType())
+        {
+          return false;
+        }
+        
+        
+      }
+
+      return true;
     }
 
     [NotNull, StringFormatMethod("format")]

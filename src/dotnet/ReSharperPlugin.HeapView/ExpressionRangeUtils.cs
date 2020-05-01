@@ -10,6 +10,7 @@ namespace ReSharperPlugin.HeapView
 {
   public static class ExpressionRangeUtils
   {
+    [Pure]
     public static DocumentRange GetExpressionRange([NotNull] this ICSharpExpression expression)
     {
       switch (expression)
