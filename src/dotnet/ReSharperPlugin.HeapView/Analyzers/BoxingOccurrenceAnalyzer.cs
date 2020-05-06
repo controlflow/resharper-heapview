@@ -8,14 +8,16 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
-  // note: boxing in foreach (object x in new[] { 1, 2, 3 }) { } is not detected,
-  // because of another C# highlighting (iteration var can be made of more specific type)
+  // todo: (object o, int x) = (1, 2); -- done
+
+  // todo: 42 is object o
 
   [ElementProblemAnalyzer(
     ElementTypes: typeof(ICSharpExpression),
@@ -42,11 +44,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
           CheckExpressionExplicitConversion(castExpression, data.GetTypeConversionRule(), consumer);
           break;
 
+        case IDeclarationExpression declarationExpression:
+          CheckDeclarationExpressionConversion(declarationExpression, data.GetTypeConversionRule(), consumer);
+          break;
+
+        case IAssignmentExpression assignmentExpression:
+          CheckDeconstructingAssignmentConversions(assignmentExpression, data.GetTypeConversionRule(), consumer);
+          break;
+
         case IParenthesizedExpression _:
         case ICheckedExpression _:
         case IUncheckedExpression _:
         case ISuppressNullableWarningExpression _:
-          return; // do not analyze
+          return; // do not analyze implicit conversion
       }
 
       CheckExpressionImplicitConversion(expression, expression.GetTypeConversionRule(), consumer);
@@ -172,36 +182,37 @@ namespace ReSharperPlugin.HeapView.Analyzers
       [NotNull] ICSharpExpression expression, [NotNull] ICSharpTypeConversionRule conversionRule,
       [NotNull] IHighlightingConsumer consumer)
     {
+      if (!IsImplicitConversionActuallyHappening(expression))
+        return;
+
       var sourceExpressionType = expression.GetExpressionType();
       if (sourceExpressionType.IsUnknown) return;
 
       var targetType = expression.GetImplicitlyConvertedTo();
       if (targetType.IsUnknown) return;
 
-      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, expression, conversionRule, consumer);
 
-      var classification = CheckConversionInvolvesBoxing(conversion, sourceExpressionType, targetType);
-      if (classification == Classification.Not) return;
-
-      if (HeapAllocationAnalyzer.IsIgnoredContext(expression)) return;
-
-      if (classification == Classification.Definitely)
+      static bool IsImplicitConversionActuallyHappening(ICSharpExpression expression)
       {
-        var description = BakeDescriptionWithTypes(
-          "conversion from '{0}' to '{1}' involves boxing of value type", sourceExpressionType, targetType);
+        var containingParenthesized = expression.GetContainingParenthesizedExpression();
 
-        consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(expression, description),
-          expression.GetExpressionRange());
-      }
-      else
-      {
-        var description = BakeDescriptionWithTypes(
-          "conversion from '{0}' to '{1}' possibly involves boxing of value type", sourceExpressionType, targetType);
+        var castExpression = CastExpressionNavigator.GetByOp(containingParenthesized);
+        if (castExpression != null) return false; // filter out explicit casts
 
-        consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(expression, description),
-          expression.GetExpressionRange());
+        var tupleComponent = TupleComponentNavigator.GetByValue(containingParenthesized);
+        if (tupleComponent != null) return false; // report whole tuple instead
+
+        var assignmentExpression = AssignmentExpressionNavigator.GetBySource(containingParenthesized);
+        if (assignmentExpression != null)
+        {
+          var assignmentKind = assignmentExpression.GetAssignmentKind();
+          if (assignmentKind != AssignmentKind.OrdinaryAssignment)
+            return false; // deconstructions are analyzed not as tuple conversion
+        }
+
+        return true;
       }
     }
 
@@ -217,35 +228,88 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var targetType = castExpression.GetExpressionType().ToIType();
       if (targetType == null) return;
 
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, castExpression.TargetType, conversionRule, consumer);
+    }
+
+    private static void CheckDeclarationExpressionConversion(
+      [NotNull] IDeclarationExpression declarationExpression, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
+    {
+      var declarationTypeUsage = declarationExpression.TypeUsage;
+      if (declarationTypeUsage == null) return;
+
+      // note: compiler do not emits boxing when component is discarded: (object _, var y) = t;
+      if (!(declarationExpression.Designation is ISingleVariableDesignation)) return;
+
+      var sourceExpressionType = TryGetInferredSourceExpressionType(declarationExpression);
+      if (sourceExpressionType == null) return;
+
+      var targetType = CSharpTypeFactory.CreateType(declarationTypeUsage);
+
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, declarationTypeUsage, conversionRule, consumer);
+    }
+
+    private static void CheckDeconstructingAssignmentConversions(
+      [NotNull] IAssignmentExpression assignmentExpression, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
+    {
+      var assignmentKind = assignmentExpression.GetAssignmentKind();
+      if (assignmentKind != AssignmentKind.DeconstructingAssignment) return;
+
+      var tupleExpression = assignmentExpression.Dest as ITupleExpression;
+      if (tupleExpression == null) return;
+
+      UniversalContext resolveContext = null;
+
+      foreach (var tupleComponent in tupleExpression.ComponentsEnumerable)
+      {
+        var targetType = tupleComponent.Value?.GetExpressionType().ToIType();
+        if (targetType == null) continue;
+
+        resolveContext ??= new UniversalContext(tupleExpression);
+        var sourceExpressionType = tupleExpression.GetComponentSourceExpressionType(tupleComponent, resolveContext);
+
+        CheckConversionRequiresBoxing(
+          sourceExpressionType, targetType, tupleComponent, conversionRule, consumer);
+      }
+    }
+
+    private static void CheckConversionRequiresBoxing(
+      [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType,
+      [NotNull] ITreeNode nodeToHighlight, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
+    {
       var conversion = conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
 
-      var classification = CheckConversionInvolvesBoxing(conversion, sourceExpressionType, targetType);
+      var classification = CheckConversionRequiresBoxing(conversion, sourceExpressionType, targetType);
       if (classification == Classification.Not) return;
 
-      if (HeapAllocationAnalyzer.IsIgnoredContext(castExpression)) return;
+      if (HeapAllocationAnalyzer.IsIgnoredContext(nodeToHighlight)) return;
+
+      var range = nodeToHighlight is ICSharpExpression expression
+        ? expression.GetExpressionRange()
+        : nodeToHighlight.GetDocumentRange();
 
       if (classification == Classification.Definitely)
       {
         var description = BakeDescriptionWithTypes(
-          "conversion from '{0}' to '{1}' involves boxing of value type", sourceExpressionType, targetType);
+          "conversion from '{0}' to '{1}' requires boxing of value type", sourceExpressionType, targetType);
 
-        consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(castExpression, description),
-          castExpression.TargetType.GetDocumentRange());
+        consumer.AddHighlighting(new BoxingAllocationHighlighting(nodeToHighlight, description), range);
       }
       else
       {
         var description = BakeDescriptionWithTypes(
-          "conversion from '{0}' to '{1}' possibly involves boxing of value type", sourceExpressionType, targetType);
+          "conversion from '{0}' to '{1}' possibly requires boxing of value type", sourceExpressionType, targetType);
 
-        consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(castExpression, description),
-          castExpression.TargetType.GetDocumentRange());
+        consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(nodeToHighlight, description), range);
       }
     }
 
     [Pure]
-    private static Classification CheckConversionInvolvesBoxing(
+    private static Classification CheckConversionRequiresBoxing(
       Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType)
     {
       if (conversion.Kind == ConversionKind.Boxing)
@@ -257,7 +321,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       foreach (var nestedInfo in conversion.GetNestedConversionsWithTypeInfo())
       {
-        var newValue = CheckConversionInvolvesBoxing(
+        var newValue = CheckConversionRequiresBoxing(
           nestedInfo.Conversion, nestedInfo.SourceType, nestedInfo.TargetType);
 
         switch (newValue)
@@ -284,8 +348,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
         {
           return false;
         }
-        
-        
+
+
       }
 
       return true;
@@ -303,6 +367,35 @@ namespace ReSharperPlugin.HeapView.Analyzers
       });
 
       return string.Format(format, args);
+    }
+
+    [CanBeNull]
+    private static IExpressionType TryGetInferredSourceExpressionType([NotNull] IDeclarationExpression declarationExpression)
+    {
+      // (var a, _) = e; - 'var a' is typed by asking tuple's component source type
+      var tupleComponent = TupleComponentNavigator.GetByValue(declarationExpression);
+      if (tupleComponent != null)
+      {
+        var tupleExpression = TupleExpressionNavigator.GetByComponent(tupleComponent);
+        Assertion.AssertNotNull(tupleExpression, "tupleExpression != null");
+
+        return tupleExpression.GetComponentSourceExpressionType(tupleComponent, new UniversalContext(tupleComponent));
+      }
+
+      // foreach (var a in xs) - 'var a' is typed by 'xs' collection element type
+      var foreachHeader = ForeachHeaderNavigator.GetByDeclarationExpression(declarationExpression);
+      var foreachStatement = ForeachStatementNavigator.GetByForeachHeader(foreachHeader);
+      var collection = foreachStatement?.Collection;
+      if (collection != null)
+      {
+        var collectionType = collection.Type();
+
+        var elementType = CollectionTypeUtil.ElementTypeByCollectionType(
+          collectionType, foreachStatement, foreachStatement.IsAwait);
+        if (elementType != null) return elementType;
+      }
+
+      return null;
     }
   }
 }

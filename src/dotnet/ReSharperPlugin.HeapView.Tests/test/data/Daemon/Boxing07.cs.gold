@@ -28,7 +28,7 @@ public struct U : IDisposable {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S' to reference type 'IDisposable'
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S' to reference type 'IDisposable'
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'U' to reference type 'IDisposable'
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'U' to reference type 'IDisposable'
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'IDisposable' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'IDisposable' requires boxing of value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'U' to 'IDisposable' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'U' to 'IDisposable' requires boxing of value type

@@ -1,0 +1,23 @@
+﻿struct Enumerable : System.IDisposable {
+  public Enumerable GetEnumerator() => this;
+  public bool MoveNext() => true;
+  public (int, (byte, int)) Current => (1, (2, 3));
+  public void Dispose() { }
+  
+  public void M() {
+    foreach (|object|(0) o in this) { } // boxing
+    foreach (var t in this) { }
+    foreach ((var a, var b) in this) { }
+    foreach ((|object|(1) a, |object|(2) b) in this) { } // boxing x2
+    foreach (var (a, b) in this) { }
+    foreach ((var a, (|object|(3) b, var c)) in this) { } // boxing
+    foreach (|object|(4) o in |new|(5)[] { 1, 2, 3 }) { } // boxing
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from '(int, (byte, int))' to 'object' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from '(byte, int)' to 'object' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'byte' to 'object' requires boxing of value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(5): ReSharper HeapView Allocation: Object allocation: array creation

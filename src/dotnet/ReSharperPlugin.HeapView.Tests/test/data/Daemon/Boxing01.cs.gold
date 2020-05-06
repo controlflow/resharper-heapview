@@ -99,20 +99,20 @@ namespace ConsoleApplication2
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: reference type instantiation
 (1): ReSharper HeapView Allocation: Object allocation: reference type instantiation
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
 (6): ReSharper HeapView Allocation: Object allocation: reference type creation
 (7): ReSharper HeapView Allocation: Object allocation: reference type creation
 (8): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
 (9): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(10): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable<int>'
+(10): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of value type
 (11): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(12): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'S1' to reference type 'IEnumerable<int>'
+(12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of value type
 (13): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (14): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (15): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (16): ReSharper HeapView Allocation: Object allocation: array creation
-(17): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(18): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(18): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
