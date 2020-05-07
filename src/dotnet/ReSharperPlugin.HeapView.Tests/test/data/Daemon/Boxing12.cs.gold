@@ -1,0 +1,59 @@
+﻿public interface I { }
+public interface I<out T> { }
+
+public class B : I { }
+public class C : B, I<string> {
+  public object M1<T>(T t) => |t|(0); // possible boxing
+  public object M2<T>(T t) where T : struct => |t|(1); // boxing
+  public object M3<T>(T? t) where T : struct => |t|(2); // boxing
+  public object M4<T>(T t) where T : class => t;
+  public object M5<T>(T t) where T : notnull => |t|(3); // possible
+
+  // no boxing, all reference types
+  public B B1<T>(T t) where T : C => t;
+  public C B2<T>(T t) where T : C => t;
+  public I B3<T>(T t) where T : C => t;
+  public I<object> B4<T>(T t) where T : C => t;    
+
+  // possible
+  public I I1<T>(T t) where T : I, I<string> => |t|(4);
+  public I<object> I2<T>(T t) where T : I, I<string> => |t|(5);
+
+  public U G1<T, U>(T t) where T : U => t; // very unlikely
+  public U G2<T, U>(T t) where T : struct, U => |t|(6); // possibly
+
+  public dynamic D1<T>(T t) where T : struct => |t|(7); // boxing
+  public dynamic D2<T>(T t) where T : class => t;
+  public dynamic D3<T>(T t) => |t|(8); // possible
+}
+
+class B<T1, T2, T3> {
+  // possible, but very unlikely
+  public virtual T1 M1<T>(T t) where T : T1 => t;
+  public virtual T2 M2<T>(T t) where T : T2 => t;
+  public virtual T3 M3<T>(T t) where T : T3 => t;
+  public virtual T2 M4<T>(T t) where T : struct, T2 => |t|(9);
+}
+
+class CC : B<object, System.ValueType, System.Enum> {
+  // possible, more likely
+  public override object M1<T>(T t) => |t|(10);
+  public override System.ValueType M2<T>(T t) => |t|(11);
+  public override System.Enum M3<T>(T t) => |t|(12);
+  public override System.ValueType M4<T>(T t) => |t|(13); // boxing
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of value type
+(3): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I<object>' possibly requires boxing of value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'U' possibly requires boxing of value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'dynamic' requires boxing of value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'dynamic' possibly requires boxing of value type
+(9): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'T2' possibly requires boxing of value type
+(10): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of value type
+(11): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'ValueType' possibly requires boxing of value type
+(12): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'Enum' possibly requires boxing of value type
+(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'ValueType' requires boxing of value type

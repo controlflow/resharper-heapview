@@ -8,13 +8,15 @@ public struct S {
     ValueType v = |x|(1);
     Enum e = |y|(2);
     object n = |z|(3);
+    dynamic d = |z|(4);
   }
     
   public void Explicit(S x, E y, E? z) {
-    var o = (|object|(4)) x;
-    var v = (|ValueType|(5)) x;
-    var e = (|Enum|(6)) y;
-    var n = (|object|(7)) z;
+    var o = (|object|(5)) x;
+    var v = (|ValueType|(6)) x;
+    var e = (|Enum|(7)) y;
+    var n = (|object|(8)) z;
+    var d = (|dynamic|(9)) z;
   }
 }
 ---------------------------------------------------------
@@ -22,7 +24,9 @@ public struct S {
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of value type
-(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
-(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
-(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of value type

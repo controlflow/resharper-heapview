@@ -16,6 +16,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: 42 is object o
+  // todo: ((I)s).Access do not boxes in .NET Core runtime
+  // todo: '(T)(object)s' and '(S)(object)t' do not boxes in .NET Core runtime
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] { typeof(ICSharpExpression) },
@@ -333,7 +335,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (conversion.Kind == ConversionKind.Boxing)
       {
-        return IsDefinitelyBoxing(sourceType, targetType) ? Classification.Definitely : Classification.Possibly;
+        return RefineConversionResults(sourceType, targetType);
       }
 
       var current = Classification.Not;
@@ -356,22 +358,29 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [Pure]
-    private static bool IsDefinitelyBoxing([NotNull] IExpressionType sourceType, [NotNull] IType targetType)
+    private static Classification RefineConversionResults([NotNull] IExpressionType sourceType, [NotNull] IType targetType)
     {
       var type = sourceType.ToIType();
-      if (type is IDeclaredType (ITypeParameter _, _) from)
+      if (type is IDeclaredType (ITypeParameter _, _) fromTypeParameterType)
       {
-        Assertion.Assert(!from.IsReferenceType(), "!from.IsReferenceType()");
+        Assertion.Assert(!fromTypeParameterType.IsReferenceType(), "!fromTypeParameterType.IsReferenceType()");
 
-        if (!from.IsValueType())
+        if (targetType.IsTypeParameterType())
         {
-          return false;
+          return fromTypeParameterType.IsValueType()
+            ? Classification.Possibly
+            : Classification.Not; // very unlikely
         }
 
+        if (fromTypeParameterType.IsValueType())
+        {
+          return Classification.Definitely;
+        }
 
+        return Classification.Possibly;
       }
 
-      return true;
+      return Classification.Definitely;
     }
 
     [NotNull, StringFormatMethod("format")]

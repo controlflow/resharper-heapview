@@ -8,6 +8,7 @@ public struct S {
     ValueType v = x;
     Enum e = y;
     object n = z;
+    dynamic d = z;
   }
     
   public void Explicit(S x, E y, E? z) {
@@ -15,5 +16,6 @@ public struct S {
     var v = (ValueType) x;
     var e = (Enum) y;
     var n = (object) z;
+    var d = (dynamic) z;
   }
 }
