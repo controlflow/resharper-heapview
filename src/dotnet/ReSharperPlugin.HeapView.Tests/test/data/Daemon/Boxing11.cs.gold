@@ -1,0 +1,46 @@
+﻿using System;
+
+interface I { int P { get; } }
+
+struct S : I {
+  public int P => 42;
+
+  public void M(S s) {
+    if (s is object) { }
+    if (s is ValueType _) { }
+    if (s is I { }) { }
+
+    // boxing
+    if (s is |object|(0) o) { }
+    if (s is |ValueType|(1) v) { }
+    if (s is |I|(2) i) { }
+    if (s is |I|(3) { P: 42 }) { }
+    if ((s, s) is (I _, |I|(4) { } u)) { }
+  }
+    
+  public void G<T>(T t) {
+    if (t is object) { }
+    if (t is ValueType _) { }
+    if (t is I { }) { }
+
+    // possible boxing
+    if (t is |object|(5) o) { }
+    if (t is |ValueType|(6) v) { }
+    if (t is |Enum|(7) e) { }
+    if (t is |I|(8) i) { }
+    if (t is |I|(9) { P: 42 }) { }
+    if ((t, t) is (I _, |I|(10) { } u)) { }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'ValueType' possibly requires boxing of value type
+(7): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'Enum' possibly requires boxing of value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
+(9): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
+(10): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type

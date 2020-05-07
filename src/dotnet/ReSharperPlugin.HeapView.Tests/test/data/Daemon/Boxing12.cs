@@ -3,17 +3,21 @@ public interface I<out T> { }
 
 public class B : I { }
 public class C : B, I<string> {
-  public object M1<T>(T t) => t; // possible boxing
+  public object M1<T>(T t) => t; // possible
   public object M2<T>(T t) where T : struct => t; // boxing
   public object M3<T>(T? t) where T : struct => t; // boxing
   public object M4<T>(T t) where T : class => t;
   public object M5<T>(T t) where T : notnull => t; // possible
+  public System.ValueType M6<T>(T t) => (System.ValueType) t; // error
+  public System.ValueType M7<T>(T t) => (System.ValueType) (object) t; // possible
+  public System.Enum M8<T>(T t) => (System.Enum) t; // error
+  public System.Enum M9<T>(T t) => (System.Enum) (object) t; // possible
 
   // no boxing, all reference types
   public B B1<T>(T t) where T : C => t;
   public C B2<T>(T t) where T : C => t;
   public I B3<T>(T t) where T : C => t;
-  public I<object> B4<T>(T t) where T : C => t;    
+  public I<object> B4<T>(T t) where T : C => t;
 
   // possible
   public I I1<T>(T t) where T : I, I<string> => t;
