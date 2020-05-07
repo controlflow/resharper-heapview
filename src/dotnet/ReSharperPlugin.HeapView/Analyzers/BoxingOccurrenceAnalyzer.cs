@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -15,9 +16,13 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
+  // todo: compiler optimizations
+  // todo: s is I boxes in .NET Framework
+  // todo: t != null / t == null / t is null do not boxes in 
   // todo: ((I)s).Access do not boxes in .NET Core runtime
   // todo: '(T)(object)s' and '(S)(object)t' do not boxes in .NET Core runtime
   // todo: constant contexts?
+  // todo: check explicit conversion operators
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] { typeof(ICSharpExpression), typeof(ITypeCheckPattern) },
@@ -188,8 +193,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       [NotNull] ICSharpExpression expression, [NotNull] ElementProblemAnalyzerData data,
       [NotNull] IHighlightingConsumer consumer)
     {
-      if (!IsImplicitConversionActuallyHappening(expression))
-        return;
+      if (!IsImplicitConversionActuallyHappens(expression)) return;
 
       var sourceExpressionType = expression.GetExpressionType();
       if (sourceExpressionType.IsUnknown) return;
@@ -197,28 +201,31 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var targetType = expression.GetImplicitlyConvertedTo();
       if (targetType.IsUnknown) return;
 
+      if (IsBoxingEliminatedAtRuntime(expression, data)) return;
+
       CheckConversionRequiresBoxing(sourceExpressionType, targetType, expression, data, consumer);
+    }
 
-      static bool IsImplicitConversionActuallyHappening(ICSharpExpression expression)
+    [Pure]
+    private static bool IsImplicitConversionActuallyHappens([NotNull] ICSharpExpression expression)
+    {
+      var containingParenthesized = expression.GetContainingParenthesizedExpression();
+
+      var castExpression = CastExpressionNavigator.GetByOp(containingParenthesized);
+      if (castExpression != null) return false; // filter out explicit casts
+
+      var tupleComponent = TupleComponentNavigator.GetByValue(containingParenthesized);
+      if (tupleComponent != null) return false; // report whole tuple instead
+
+      var assignmentExpression = AssignmentExpressionNavigator.GetBySource(containingParenthesized);
+      if (assignmentExpression != null)
       {
-        var containingParenthesized = expression.GetContainingParenthesizedExpression();
-
-        var castExpression = CastExpressionNavigator.GetByOp(containingParenthesized);
-        if (castExpression != null) return false; // filter out explicit casts
-
-        var tupleComponent = TupleComponentNavigator.GetByValue(containingParenthesized);
-        if (tupleComponent != null) return false; // report whole tuple instead
-
-        var assignmentExpression = AssignmentExpressionNavigator.GetBySource(containingParenthesized);
-        if (assignmentExpression != null)
-        {
-          var assignmentKind = assignmentExpression.GetAssignmentKind();
-          if (assignmentKind != AssignmentKind.OrdinaryAssignment)
-            return false; // deconstructions are analyzed not as tuple conversion
-        }
-
-        return true;
+        var assignmentKind = assignmentExpression.GetAssignmentKind();
+        if (assignmentKind != AssignmentKind.OrdinaryAssignment)
+          return false; // deconstructions are analyzed not as tuple conversion
       }
+
+      return true;
     }
 
     private static void CheckExpressionExplicitConversion(
@@ -232,6 +239,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var targetType = castExpression.GetExpressionType().ToIType();
       if (targetType == null) return;
+
+      if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
 
       CheckConversionRequiresBoxing(sourceExpressionType, targetType, castExpression.TargetType, data, consumer);
     }
@@ -463,6 +472,28 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
 
       return null;
+    }
+
+    [Pure]
+    private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression, [NotNull] ElementProblemAnalyzerData data)
+    {
+      var containingParenthesized = expression.GetContainingParenthesizedExpression();
+
+      // t != null, ReferenceEquals(t, null)
+      var nullCheckData = NullCheckUtil.GetNullCheckByCheckedExpression(
+        containingParenthesized, out _, allowUserDefinedAndUnresolvedChecks: false);
+      if (nullCheckData != null)
+      {
+        switch (nullCheckData.Kind)
+        {
+          case NullCheckKind.EqualityExpression:
+          case NullCheckKind.StaticReferenceEqualsNull:
+          case NullCheckKind.NullPattern:
+            return true; // optimized in all modern runtimes
+        }
+      }
+
+      return false;
     }
   }
 }

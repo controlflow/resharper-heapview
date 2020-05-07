@@ -35,6 +35,7 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestBoxing10() { DoNamedTest2(); }
     [Test] public void TestBoxing11() { DoNamedTest2(); }
     [Test] public void TestBoxing12() { DoNamedTest2(); }
+    [Test] public void TestBoxing13() { DoNamedTest2(); }
 
     [Test] public void TestClosure01() { DoNamedTest2(); }
     [Test] public void TestClosure02() { DoNamedTest2(); }
@@ -47,5 +48,23 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestClosureless01() { DoNamedTest2(); }
     [Test] public void TestClosureless02() { DoNamedTest2(); }
     [Test] public void TestClosureless03() { DoNamedTest2(); }
+  }
+
+  [TestNetCore30]
+  [TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
+  [TestReferences("System", "System.Core", "Microsoft.CSharp")]
+  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
+  [TestAdditionalGoldSuffix(".netcore")]
+  public class HeapViewNetCoreHighlightingTest : CSharpHighlightingTestBase
+  {
+    protected override string RelativeTestDataPath => "Daemon";
+
+    protected override bool HighlightingPredicate(
+      IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
+    {
+      return highlighting is PerformanceHighlightingBase;
+    }
+
+    [Test] public void TestBoxing13() { DoNamedTest2(); }
   }
 }
