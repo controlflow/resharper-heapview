@@ -15,12 +15,10 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
-  // todo: (object o, int x) = (1, 2); -- done
-
   // todo: 42 is object o
 
   [ElementProblemAnalyzer(
-    ElementTypes: typeof(ICSharpExpression),
+    ElementTypes: new[] { typeof(ICSharpExpression) },
     HighlightingTypes = new[] {
       typeof(BoxingAllocationHighlighting),
       typeof(PossibleBoxingAllocationHighlighting)
@@ -50,6 +48,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
         case IAssignmentExpression assignmentExpression:
           CheckDeconstructingAssignmentConversions(assignmentExpression, data.GetTypeConversionRule(), consumer);
+          break;
+
+        case ITypeCheckPattern typeCheckPattern:
+          CheckPatternMatchingConversion(typeCheckPattern, data.GetTypeConversionRule(), consumer);
           break;
 
         case IParenthesizedExpression _:
@@ -274,6 +276,23 @@ namespace ReSharperPlugin.HeapView.Analyzers
         CheckConversionRequiresBoxing(
           sourceExpressionType, targetType, tupleComponent, conversionRule, consumer);
       }
+    }
+
+    private static void CheckPatternMatchingConversion(
+      [NotNull] ITypeCheckPattern typeCheckPattern, [NotNull] ICSharpTypeConversionRule conversionRule,
+      [NotNull] IHighlightingConsumer consumer)
+    {
+      var typeCheckTypeUsage = typeCheckPattern.TypeUsage;
+      if (typeCheckTypeUsage == null) return;
+
+      if (!(typeCheckPattern.Designation is ISingleVariableDesignation)
+          && !(typeCheckPattern is IRecursivePattern)) return;
+
+      var dispatchExpressionType = typeCheckPattern.GetDispatchExpressionType(new UniversalContext(typeCheckPattern));
+      var targetType = CSharpTypeFactory.CreateType(typeCheckTypeUsage);
+
+      CheckConversionRequiresBoxing(
+        dispatchExpressionType, targetType, typeCheckTypeUsage, conversionRule, consumer);
     }
 
     private static void CheckConversionRequiresBoxing(
