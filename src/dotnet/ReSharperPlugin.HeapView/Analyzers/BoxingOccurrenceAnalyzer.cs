@@ -19,7 +19,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
   // todo: compiler optimizations
   // todo: 's is I' boxes in .NET Framework
   // todo: '((I)s).Access' do not boxes in .NET Core
-  // todo: '(T)(object)s' and '(S)(object)t' do not boxes in all runtimes
   // todo: constant contexts? throw contexts?
 
   [ElementProblemAnalyzer(
@@ -201,7 +200,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       if (IsBoxingEliminatedAtRuntime(expression, data)) return;
 
-      CheckConversionRequiresBoxing(sourceExpressionType, targetType, expression, data, consumer);
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, expression, isExplicitCast: false, data, consumer);
     }
 
     [Pure]
@@ -239,6 +239,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (targetType == null) return;
 
       if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
+      if (IsBoxingEliminatedAtRuntime(castExpression, targetType)) return;
 
       CheckConversionRequiresBoxing(
         sourceExpressionType, targetType, castExpression.TargetType, isExplicitCast: true, data, consumer);
@@ -494,6 +495,30 @@ namespace ReSharperPlugin.HeapView.Analyzers
           case NullCheckKind.StaticReferenceEqualsNull:
           case NullCheckKind.NullPattern:
             return true; // optimized in all modern runtimes
+        }
+      }
+
+      return false;
+    }
+
+    [Pure]
+    private static bool IsBoxingEliminatedAtRuntime([NotNull] ICastExpression castExpression, [NotNull] IType targetType)
+    {
+      var containingParenthesized = castExpression.GetContainingParenthesizedExpression();
+
+      // if (typeof(T) == typeof(int) { var i = (int) (object) t; }
+      var containingCastExpression = CastExpressionNavigator.GetByOp(containingParenthesized);
+      if (containingCastExpression != null)
+      {
+        if (targetType.IsObject())
+        {
+          var unBoxingType = containingCastExpression.Type();
+          switch (unBoxingType.Classify)
+          {
+            case TypeClassification.UNKNOWN:
+            case TypeClassification.VALUE_TYPE:
+              return true; // optimized in all modern runtimes
+          }
         }
       }
 

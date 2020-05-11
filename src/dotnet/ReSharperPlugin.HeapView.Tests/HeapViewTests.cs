@@ -36,6 +36,7 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestBoxing11() { DoNamedTest2(); }
     [Test] public void TestBoxing12() { DoNamedTest2(); }
     [Test] public void TestBoxing13() { DoNamedTest2(); }
+    [Test] public void TestBoxing14() { DoNamedTest2(); }
 
     [Test] public void TestClosure01() { DoNamedTest2(); }
     [Test] public void TestClosure02() { DoNamedTest2(); }
@@ -66,5 +67,6 @@ namespace ReSharperPlugin.HeapView.Tests
     }
 
     [Test] public void TestBoxing13() { DoNamedTest2(); }
+    [Test] public void TestBoxing14() { DoNamedTest2(); }
   }
 }
