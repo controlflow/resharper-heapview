@@ -31,6 +31,14 @@
     var tt2 = (|ox|(13), _) = it;
   }
 }
+
+struct S {
+  public static explicit operator S((object, int) t) => default;
+
+  public void M((short, byte) t) {
+    var s = (|S|(14)) t;
+  }
+}
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion from '(int, int)' to 'C' requires boxing of value type
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion from '(int, int)' to 'C' requires boxing of value type
@@ -46,3 +54,4 @@
 (11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
 (12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of value type
 (13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(14): ReSharper HeapView Boxing: Boxing allocation: conversion from '(short, byte)' to 'S' requires boxing of value type

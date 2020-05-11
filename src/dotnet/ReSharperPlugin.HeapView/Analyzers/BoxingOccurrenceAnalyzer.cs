@@ -17,12 +17,10 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: compiler optimizations
-  // todo: s is I boxes in .NET Framework
-  // todo: t != null / t == null / t is null do not boxes in 
-  // todo: ((I)s).Access do not boxes in .NET Core runtime
-  // todo: '(T)(object)s' and '(S)(object)t' do not boxes in .NET Core runtime
-  // todo: constant contexts?
-  // todo: check explicit conversion operators
+  // todo: 's is I' boxes in .NET Framework
+  // todo: '((I)s).Access' do not boxes in .NET Core
+  // todo: '(T)(object)s' and '(S)(object)t' do not boxes in all runtimes
+  // todo: constant contexts? throw contexts?
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] { typeof(ICSharpExpression), typeof(ITypeCheckPattern) },
@@ -242,7 +240,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
 
-      CheckConversionRequiresBoxing(sourceExpressionType, targetType, castExpression.TargetType, data, consumer);
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, castExpression.TargetType, isExplicitCast: true, data, consumer);
     }
 
     private static void CheckDeclarationExpressionConversion(
@@ -260,7 +259,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var targetType = CSharpTypeFactory.CreateType(declarationTypeUsage);
 
-      CheckConversionRequiresBoxing(sourceExpressionType, targetType, declarationTypeUsage, data, consumer);
+      CheckConversionRequiresBoxing(
+        sourceExpressionType, targetType, declarationTypeUsage, isExplicitCast: false, data, consumer);
     }
 
     private static void CheckDeconstructingAssignmentConversions(
@@ -283,7 +283,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
         resolveContext ??= new UniversalContext(tupleExpression);
         var sourceExpressionType = tupleExpression.GetComponentSourceExpressionType(tupleComponent, resolveContext);
 
-        CheckConversionRequiresBoxing(sourceExpressionType, targetType, tupleComponent, data, consumer);
+        CheckConversionRequiresBoxing(
+          sourceExpressionType, targetType, tupleComponent, isExplicitCast: false, data, consumer);
       }
     }
 
@@ -335,13 +336,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     private static void CheckConversionRequiresBoxing(
-      [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType, [NotNull] ITreeNode nodeToHighlight,
+      [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType,
+      [NotNull] ITreeNode nodeToHighlight, bool isExplicitCast,
       [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
     {
       // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
 
       var conversionRule = data.GetTypeConversionRule();
-      var conversion = conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
+      var conversion = isExplicitCast
+        ? conversionRule.ClassifyConversionFromExpression(sourceExpressionType, targetType)
+        : conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
 
       var classification = CheckConversionRequiresBoxing(conversion, sourceExpressionType, targetType);
       if (classification == BoxingClassification.Not) return;

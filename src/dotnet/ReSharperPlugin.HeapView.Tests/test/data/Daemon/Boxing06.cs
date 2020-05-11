@@ -31,3 +31,11 @@ public class C {
     var tt2 = (ox, _) = it;
   }
 }
+
+struct S {
+  public static explicit operator S((object, int) t) => default;
+
+  public void M((short, byte) t) {
+    var s = (S) t;
+  }
+}
