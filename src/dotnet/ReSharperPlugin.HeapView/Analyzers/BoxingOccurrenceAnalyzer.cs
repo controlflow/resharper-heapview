@@ -16,9 +16,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers
 {
-  // todo: compiler optimizations
-  // todo: constant contexts? throw contexts?
-
   [ElementProblemAnalyzer(
     ElementTypes: new[] { typeof(ICSharpExpression), typeof(ITypeCheckPattern) },
     HighlightingTypes = new[] {
@@ -422,7 +419,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (boxingClassification == BoxingClassification.Not) return;
 
-      if (HeapAllocationAnalyzer.IsIgnoredContext(nodeToHighlight)) return;
+      if (nodeToHighlight.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var range = nodeToHighlight is ICSharpExpression expression
         ? expression.GetExpressionRange()

@@ -122,7 +122,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var typeReference = objectCreation.TypeReference;
       if (typeReference == null) return;
 
-      if (IsIgnoredContext(objectCreation)) return;
+      if (objectCreation.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var newKeyword = objectCreation.NewKeyword.NotNull();
 
@@ -154,7 +154,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private static void CheckArrayCreation([NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)
     {
-      if (IsIgnoredContext(arrayCreation)) return;
+      if (arrayCreation.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var newKeyword = arrayCreation.NewKeyword.NotNull();
 
@@ -447,17 +447,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
         break;
       }
-    }
-
-    [Pure]
-    public static bool IsIgnoredContext([NotNull] ITreeNode context)
-    {
-      // todo: static context?
-
-      var attribute = context.GetContainingNode<IAttribute>();
-      if (attribute != null) return true;
-
-      return false;
     }
 
     // todo: cache in problem analyzer data
