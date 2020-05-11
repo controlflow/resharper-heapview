@@ -269,7 +269,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var anchor = invocationAnchor ?? paramsArgument ?? invocationInfo as ICSharpExpression;
       if (anchor == null) return;
 
-      if (IsCachedEmptyArrayAvailable(anchor)) return;
+      // todo: wrong! only when no
+      if (paramsArgument == null && IsCachedEmptyArrayAvailable(anchor)) return;
 
       var expression = anchor as ICSharpExpression;
       var paramsRange = expression?.GetExpressionRange() ?? anchor.GetDocumentRange();
@@ -391,7 +392,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var rightOperand = concatenation.RightOperand;
       if (rightOperand == null) return false;
 
-      return IsStringConcatOperatorReference(concatenation.OperatorReference);
+      return concatenation.OperatorReference.IsStringConcatOperatorReference();
     }
 
     private static bool IsStringConcatenation([NotNull] IAssignmentExpression concatenation)
@@ -402,22 +403,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var destinationOperand = concatenation.Dest;
       if (destinationOperand == null) return false;
 
-      return IsStringConcatOperatorReference(concatenation.OperatorReference);
-    }
-
-    private static bool IsStringConcatOperatorReference([CanBeNull] IReference reference)
-    {
-      var @operator = reference?.Resolve().DeclaredElement as IOperator;
-      if (@operator == null || !@operator.IsPredefined) return false;
-
-      var parameters = @operator.Parameters;
-      if (parameters.Count != 2) return false;
-
-      IType lhsType = parameters[0].Type, rhsType = parameters[1].Type;
-      if (lhsType.IsString()) return rhsType.IsString() || rhsType.IsObject();
-      if (rhsType.IsString()) return lhsType.IsString() || lhsType.IsObject();
-
-      return false;
+      return concatenation.OperatorReference.IsStringConcatOperatorReference();
     }
 
     private static void CheckForeachDeclaration([NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)
@@ -474,6 +460,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return false;
     }
 
+    // todo: cache in problem analyzer data
     private static bool IsCachedEmptyArrayAvailable([NotNull] ITreeNode context)
     {
       if (!context.IsCSharp6Supported()) return false;

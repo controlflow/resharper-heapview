@@ -38,25 +38,25 @@ public static class Extensions {
 
 public static class A {
   private static void ConcreteTypesWithoutOverrides(S s, E e, S? n) {
-    var str = "aa" |+|(11) |s|(12) + |'a'|(13);
-    object o1 = |s|(14), o2 = |n|(15);
-    ValueType v1 = |s|(16), v2 = |n|(17);
-    Enum y1 = |e|(18), y2 = |(E?) e|(19);
-    I i1 = |s|(20), i2 = |(S?) s|(21);
+    var str = "aa" |+|(11) s + 'a';
+    object o1 = |s|(12), o2 = |n|(13);
+    ValueType v1 = |s|(14), v2 = |n|(15);
+    Enum y1 = |e|(16), y2 = |(E?) e|(17);
+    I i1 = |s|(18), i2 = |(S?) s|(19);
 
-    Action f = s.||InstanceMethod|(22)|(23);
-    Func<int> g = e.||GetHashCode|(24)|(25);
+    Action f = s.||InstanceMethod|(20)|(21);
+    Func<int> g = e.||GetHashCode|(22)|(23);
 
-    |s|(26).ExtensionMethod();
-    |n|(27).ExtensionMethod();
-    s.|Equals|(28)(null);
+    |s|(24).ExtensionMethod();
+    |n|(25).ExtensionMethod();
+    s.|Equals|(26)(null);
     n.Equals(null);
-    s.|GetType|(29)();
+    s.|GetType|(27)();
     n.GetValueOrDefault();
 
-    e.|ToString|(30)();
-    e.|GetHashCode|(31)(); // fixed in CoreCLR
-    e.|Equals|(32)(|e|(33));
+    e.|ToString|(28)();
+    e.|GetHashCode|(29)(); // fixed in CoreCLR
+    e.|Equals|(30)(|e|(31));
 
     // no boxing
     s.InstanceMethod();
@@ -65,52 +65,52 @@ public static class A {
   }
 
   private static void Struct<TStruct>(TStruct s) where TStruct : struct, I {
-    object o1 = |s|(34), o2 = |(TStruct?) s|(35);
-    ValueType v1 = |s|(36), v2 = |(TStruct?) s|(37);
-    I i1 = |s|(38), i2 = |(TStruct?) s|(39);
+    object o1 = |s|(32), o2 = |(TStruct?) s|(33);
+    ValueType v1 = |s|(34), v2 = |(TStruct?) s|(35);
+    I i1 = |s|(36), i2 = |(TStruct?) s|(37);
 
     // always
-    Action f = s.||InstanceMethod|(40)|(41);
-    |s|(42).ExtensionMethod();
-    s.|GetType|(43)();
+    Action f = s.||InstanceMethod|(38)|(39);
+    |s|(40).ExtensionMethod();
+    s.|GetType|(41)();
 
     // possible
-    s.|GetHashCode|(44)();
-    s.|ToString|(45)();
-    s.|Equals|(46)(null);
+    s.|GetHashCode|(42)();
+    s.|ToString|(43)();
+    s.|Equals|(44)(null);
 
     // no boxing
     s.InstanceMethod();
   }
 
   private static void Unmanaged<TUnmanaged>(TUnmanaged u) where TUnmanaged : unmanaged, I {
-    object o1 = |u|(47), o2 = |(TUnmanaged?) u|(48);
-    ValueType v1 = |u|(49), v2 = |(TUnmanaged?) u|(50);
-    I i1 = |u|(51), i2 = |(TUnmanaged?) u|(52);
+    object o1 = |u|(45), o2 = |(TUnmanaged?) u|(46);
+    ValueType v1 = |u|(47), v2 = |(TUnmanaged?) u|(48);
+    I i1 = |u|(49), i2 = |(TUnmanaged?) u|(50);
 
     // always
-    Action f = u.||InstanceMethod|(53)|(54);
-    |u|(55).ExtensionMethod();
-    u.|GetType|(56)();
+    Action f = u.||InstanceMethod|(51)|(52);
+    |u|(53).ExtensionMethod();
+    u.|GetType|(54)();
 
     // possible
-    u.|GetHashCode|(57)();
-    u.|ToString|(58)();
-    u.|Equals|(59)(null);
+    u.|GetHashCode|(55)();
+    u.|ToString|(56)();
+    u.|Equals|(57)(null);
 
     // no boxing
     u.InstanceMethod();
   }
 
   private static void Nullable<TNullable>(TNullable? n) where TNullable : struct, I {
-    object o1 = |n|(60);
-    ValueType v1 = |n|(61);
-    I i1 = |n|(62);
+    object o1 = |n|(58);
+    ValueType v1 = |n|(59);
+    I i1 = |n|(60);
 
     // always
-    Func<int> f = n.||GetHashCode|(63)|(64);
-    |n|(65).ExtensionMethod(); // boxing!
-    n.|GetType|(66)();
+    Func<int> f = n.||GetHashCode|(61)|(62);
+    |n|(63).ExtensionMethod(); // boxing!
+    n.|GetType|(64)();
 
     // possible boxing INSIDE Nullable<T>
     n.GetHashCode();
@@ -125,7 +125,7 @@ public static class A {
     object o1 = r;
     I i1 = r;
 
-    Action f = r.|InstanceMethod|(67);
+    Action f = r.|InstanceMethod|(65);
     r.ExtensionMethod();
     r.GetType();
 
@@ -139,17 +139,17 @@ public static class A {
   }
 
   private static void Unconstrained<TUnconstrained>(TUnconstrained u) where TUnconstrained : I, new() {
-    object o1 = |u|(68);
-    I i1 = |u|(69);
+    object o1 = |u|(66);
+    I i1 = |u|(67);
 
-    Action f = u.||InstanceMethod|(70)|(71);
-    |u|(72).ExtensionMethod();
-    u.|GetType|(73)();
+    Action f = u.||InstanceMethod|(68)|(69);
+    |u|(70).ExtensionMethod();
+    u.|GetType|(71)();
 
     // possible
-    u.|GetHashCode|(74)();
-    u.|ToString|(75)();
-    u.|Equals|(76)(null);
+    u.|GetHashCode|(72)();
+    u.|ToString|(73)();
+    u.|Equals|(74)(null);
 
     // no boxing
     u.InstanceMethod();
@@ -169,67 +169,65 @@ public static class A {
 (10): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (11): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
 (12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of value type
-(14): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'object' requires boxing of value type
-(16): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
-(17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'ValueType' requires boxing of value type
-(18): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
-(19): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'Enum' requires boxing of value type
-(20): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(21): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of value type
-(22): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
+(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'object' requires boxing of value type
+(14): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
+(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'ValueType' requires boxing of value type
+(16): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
+(17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'Enum' requires boxing of value type
+(18): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(19): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of value type
+(20): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
+(21): ReSharper HeapView Allocation: Delegate allocation: from method group
+(22): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'E' instance method to 'Func<int>' delegate type
 (23): ReSharper HeapView Allocation: Delegate allocation: from method group
-(24): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'E' instance method to 'Func<int>' delegate type
-(25): ReSharper HeapView Allocation: Delegate allocation: from method group
-(26): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(27): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of value type
+(24): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(25): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of value type
+(26): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(27): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (28): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (29): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (30): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(31): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(32): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(33): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'object' requires boxing of value type
-(34): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'object' requires boxing of value type
-(35): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'object' requires boxing of value type
-(36): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'ValueType' requires boxing of value type
-(37): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'ValueType' requires boxing of value type
-(38): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of value type
-(39): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'I' requires boxing of value type
-(40): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TStruct' instance method to 'Action' delegate type
-(41): ReSharper HeapView Allocation: Delegate allocation: from method group
-(42): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of value type
+(31): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'object' requires boxing of value type
+(32): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'object' requires boxing of value type
+(33): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'object' requires boxing of value type
+(34): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'ValueType' requires boxing of value type
+(35): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'ValueType' requires boxing of value type
+(36): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of value type
+(37): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'I' requires boxing of value type
+(38): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TStruct' instance method to 'Action' delegate type
+(39): ReSharper HeapView Allocation: Delegate allocation: from method group
+(40): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of value type
+(41): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(42): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (43): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (44): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(45): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(46): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(47): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'object' requires boxing of value type
-(48): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'object' requires boxing of value type
-(49): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'ValueType' requires boxing of value type
-(50): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'ValueType' requires boxing of value type
-(51): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of value type
-(52): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'I' requires boxing of value type
-(53): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TUnmanaged' instance method to 'Action' delegate type
-(54): ReSharper HeapView Allocation: Delegate allocation: from method group
-(55): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of value type
+(45): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'object' requires boxing of value type
+(46): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'object' requires boxing of value type
+(47): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'ValueType' requires boxing of value type
+(48): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'ValueType' requires boxing of value type
+(49): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of value type
+(50): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'I' requires boxing of value type
+(51): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TUnmanaged' instance method to 'Action' delegate type
+(52): ReSharper HeapView Allocation: Delegate allocation: from method group
+(53): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of value type
+(54): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(55): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (56): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (57): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(58): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(59): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(60): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'object' requires boxing of value type
-(61): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'ValueType' requires boxing of value type
-(62): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of value type
-(63): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TNullable?' instance method to 'Func<int>' delegate type
-(64): ReSharper HeapView Allocation: Delegate allocation: from method group
-(65): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of value type
-(66): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(67): ReSharper HeapView Allocation: Delegate allocation: from method group
-(68): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of value type
-(69): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of value type
-(70): ReSharper HeapView Allocation: Delegate allocation: from method group
-(71): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type
-(72): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of value type
+(58): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'object' requires boxing of value type
+(59): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'ValueType' requires boxing of value type
+(60): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of value type
+(61): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TNullable?' instance method to 'Func<int>' delegate type
+(62): ReSharper HeapView Allocation: Delegate allocation: from method group
+(63): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of value type
+(64): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(65): ReSharper HeapView Allocation: Delegate allocation: from method group
+(66): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of value type
+(67): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of value type
+(68): ReSharper HeapView Allocation: Delegate allocation: from method group
+(69): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type
+(70): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of value type
+(71): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(72): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (73): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
 (74): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(75): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(76): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance

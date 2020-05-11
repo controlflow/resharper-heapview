@@ -498,6 +498,24 @@ namespace ReSharperPlugin.HeapView.Analyzers
         }
       }
 
+      // C# 8.0 eliminates boxing in string concatenation
+      var additiveExpression = AdditiveExpressionNavigator.GetByLeftOperand(containingParenthesized)
+                               ?? AdditiveExpressionNavigator.GetByRightOperand(containingParenthesized);
+      if (additiveExpression != null
+          && data.IsCSharp8Supported()
+          && additiveExpression.OperatorReference.IsStringConcatOperatorReference())
+      {
+        return true;
+      }
+
+      var assignmentExpression = AssignmentExpressionNavigator.GetBySource(containingParenthesized);
+      if (assignmentExpression is { AssignmentType: AssignmentType.PLUSEQ }
+          && data.IsCSharp8Supported()
+          && assignmentExpression.OperatorReference.IsStringConcatOperatorReference())
+      {
+        return true;
+      }
+
       return false;
     }
 

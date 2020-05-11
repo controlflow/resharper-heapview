@@ -1,0 +1,46 @@
+﻿// all optimized in C# 8.0 compiler
+class StringConcat {
+  string Char(string s) => s |+|(0) 'a'; // + "a"
+  string Char(string s, char c) => s |+|(1)  c; // char.ToString()
+  
+  string Int32(string s) => s |+|(2) 1; // int.ToString()
+  string Int32(string s, int i) => s |+|(3) (object) i; // int.ToString()
+
+  string Boolean(string s, bool b) => s |+|(4) b; // bool.ToString()
+    
+  string NoOverride(string s, NoToString n) => s |+|(5) n; // constrained. callvirt
+  string HasOverride(string s, HasToString h) => s |+|(6) h; // constrained. callvirt
+    
+  string Generic<T>(string s, T t) where T : struct => s |+|(7) t; // constrained. callvirt
+  string Nullable<T>(string s, T? t) where T : struct => s |+|(8) t; // constrained. callvirt
+
+  string Compound<T>(string s, char c, int i, bool b, T? n, T t) where T : struct {
+    s |+=|(9) 'a';
+    s |+=|(10) c;
+    s |+=|(11) i;
+    s |+=|(12) b;
+    s |+=|(13) n;
+    s |+=|(14) t;
+    return $"id: {|i|(15)} {s}"; // box
+  }
+}
+
+struct NoToString { }
+struct HasToString { public override string ToString() => ""; }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation
+(2): ReSharper HeapView Allocation: Object allocation: string concatenation
+(3): ReSharper HeapView Allocation: Object allocation: string concatenation
+(4): ReSharper HeapView Allocation: Object allocation: string concatenation
+(5): ReSharper HeapView Allocation: Object allocation: string concatenation
+(6): ReSharper HeapView Allocation: Object allocation: string concatenation
+(7): ReSharper HeapView Allocation: Object allocation: string concatenation
+(8): ReSharper HeapView Allocation: Object allocation: string concatenation
+(9): ReSharper HeapView Allocation: Object allocation: string concatenation
+(10): ReSharper HeapView Allocation: Object allocation: string concatenation
+(11): ReSharper HeapView Allocation: Object allocation: string concatenation
+(12): ReSharper HeapView Allocation: Object allocation: string concatenation
+(13): ReSharper HeapView Allocation: Object allocation: string concatenation
+(14): ReSharper HeapView Allocation: Object allocation: string concatenation
+(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
