@@ -445,14 +445,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
     private static BoxingClassification CheckConversionRequiresBoxing(
       Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType)
     {
-      if (conversion.Kind == ConversionKind.Boxing)
+      switch (conversion.Kind)
       {
-        return RefineResult(sourceType, targetType);
-      }
-
-      if (conversion.Kind == ConversionKind.Unboxing)
-      {
-        return RefineUnboxingResult(sourceType.ToIType(), targetType);
+        case ConversionKind.Boxing:
+          return RefineResult(sourceType, targetType);
+        case ConversionKind.Unboxing:
+          return RefineUnboxingResult(sourceType.ToIType(), targetType);
       }
 
       var current = BoxingClassification.Not;
@@ -541,15 +539,18 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       // foreach (var a in xs) - 'var a' is typed by 'xs' collection element type
       var foreachHeader = ForeachHeaderNavigator.GetByDeclarationExpression(declarationExpression);
-      var foreachStatement = ForeachStatementNavigator.GetByForeachHeader(foreachHeader);
-      var collection = foreachStatement?.Collection;
-      if (collection != null)
+      if (foreachHeader != null)
       {
-        var collectionType = collection.Type();
+        var foreachStatement = ForeachStatementNavigator.GetByForeachHeader(foreachHeader);
+        var collection = foreachStatement?.Collection;
+        if (collection != null)
+        {
+          var collectionType = collection.Type();
 
-        var elementType = CollectionTypeUtil.ElementTypeByCollectionType(
-          collectionType, foreachStatement, foreachStatement.IsAwait);
-        if (elementType != null) return elementType;
+          var elementType = CollectionTypeUtil.ElementTypeByCollectionType(
+            collectionType, foreachStatement, foreachStatement.IsAwait);
+          if (elementType != null) return elementType;
+        }
       }
 
       return null;
