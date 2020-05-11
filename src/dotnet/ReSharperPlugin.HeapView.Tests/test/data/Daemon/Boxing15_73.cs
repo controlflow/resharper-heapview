@@ -6,7 +6,7 @@ class StringConcat {
   string Int32(string s) => s + 1; // int.ToString()
   string Int32(string s, int i) => s + (object) i; // int.ToString()
 
-  string Boolean(string s, bool b) => s + b; // bool.ToString()
+  string Boolean(string s, bool b) => b + s; // bool.ToString()
     
   string NoOverride(string s, NoToString n) => s + n; // constrained. callvirt
   string HasOverride(string s, HasToString h) => s + h; // constrained. callvirt

@@ -18,7 +18,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: compiler optimizations
   // todo: 's is I' boxes in .NET Framework
-  // todo: '((I)s).Access' do not boxes in .NET Core
   // todo: constant contexts? throw contexts?
 
   [ElementProblemAnalyzer(
@@ -239,7 +238,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (targetType == null) return;
 
       if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
-      if (IsBoxingEliminatedAtRuntime(castExpression, targetType)) return;
+      if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
 
       CheckConversionRequiresBoxing(
         sourceExpressionType, targetType, castExpression.TargetType, isExplicitCast: true, data, consumer);
@@ -520,7 +519,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [Pure]
-    private static bool IsBoxingEliminatedAtRuntime([NotNull] ICastExpression castExpression, [NotNull] IType targetType)
+    private static bool IsBoxingEliminatedAtRuntimeForCast(
+      [NotNull] ICastExpression castExpression, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)
     {
       var containingParenthesized = castExpression.GetContainingParenthesizedExpression();
 
@@ -538,6 +538,14 @@ namespace ReSharperPlugin.HeapView.Analyzers
               return true; // optimized in all modern runtimes
           }
         }
+      }
+
+      // ((I) s).P, ((I) s).M();
+      var conditionalAccessExpression = ConditionalAccessExpressionNavigator.GetByQualifier(containingParenthesized);
+      if (conditionalAccessExpression != null && targetType.IsInterfaceType())
+      {
+        var targetRuntime = data.GetTargetRuntime();
+        if (targetRuntime == TargetRuntime.NetCore) return true;
       }
 
       return false;

@@ -6,7 +6,7 @@ class StringConcat {
   string Int32(string s) => s |+|(4) |1|(5); // int.ToString()
   string Int32(string s, int i) => s |+|(6) (|object|(7)) i; // int.ToString()
 
-  string Boolean(string s, bool b) => s |+|(8) |b|(9); // bool.ToString()
+  string Boolean(string s, bool b) => |b|(8) |+|(9) s; // bool.ToString()
     
   string NoOverride(string s, NoToString n) => s |+|(10) |n|(11); // constrained. callvirt
   string HasOverride(string s, HasToString h) => s |+|(12) |h|(13); // constrained. callvirt
@@ -36,8 +36,8 @@ struct HasToString { public override string ToString() => ""; }
 (5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
 (6): ReSharper HeapView Allocation: Object allocation: string concatenation
 (7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
-(8): ReSharper HeapView Allocation: Object allocation: string concatenation
-(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of value type
+(9): ReSharper HeapView Allocation: Object allocation: string concatenation
 (10): ReSharper HeapView Allocation: Object allocation: string concatenation
 (11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NoToString' to 'object' requires boxing of value type
 (12): ReSharper HeapView Allocation: Object allocation: string concatenation
