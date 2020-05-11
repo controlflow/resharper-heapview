@@ -11,22 +11,28 @@ struct S : I {
     
   public void M<T, U>(S s, T t, U u) where T : struct {
     ((|I|(0)) s).Prop += 42;
-    ((I) t).Prop = 424;
-    _ = ((I) u).Prop;
+    ((|I|(1)) t).Prop = 424;
+    _ = ((|I|(2)) u).Prop;
 
-    ((|I|(1)) s).Method();
-    ((I) t).Method();
-    ((I) u).Method();
+    ((|I|(3)) s).Method();
+    ((|I|(4)) t).Method();
+    ((|I|(5)) u).Method();
 
-    ((|I|(2)) s)[42] += 123;
-    ((I) t)[42] += 123;
-    ((I) u)[42] += 123;
+    ((|I|(6)) s)[42] += 123;
+    ((|I|(7)) t)[42] += 123;
+    ((|I|(8)) u)[42] += 123;
 
-    System.GC.KeepAlive((|I|(3)) s); // box
+    System.GC.KeepAlive((|I|(9)) s); // box
   }
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type

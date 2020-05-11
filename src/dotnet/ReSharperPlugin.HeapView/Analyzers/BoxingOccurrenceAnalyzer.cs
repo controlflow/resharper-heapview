@@ -315,7 +315,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [Pure]
-    private static BoxingClassification ClassifyBoxingInTypeCheckPattern(IType dispatchType, IType targetType)
+    private static BoxingClassification ClassifyBoxingInTypeCheckPattern([NotNull] IType dispatchType, [NotNull] IType targetType)
     {
       var sourceClassification = dispatchType.Classify;
       if (sourceClassification == TypeClassification.REFERENCE_TYPE) return BoxingClassification.Not;
@@ -391,6 +391,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
         return RefineResult(sourceType, targetType);
       }
 
+      if (conversion.Kind == ConversionKind.Unboxing)
+      {
+        return RefineUnboxingResult(sourceType.ToIType(), targetType);
+      }
+
       var current = BoxingClassification.Not;
 
       foreach (var nestedInfo in conversion.GetNestedConversionsWithTypeInfo())
@@ -432,6 +437,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
         }
 
         return BoxingClassification.Definitely;
+      }
+
+      static BoxingClassification RefineUnboxingResult(IType sourceType, IType targetType)
+      {
+        // yep, some "unboxing" conversions do actually cause boxing at runtime
+        if (targetType.Classify == TypeClassification.REFERENCE_TYPE && sourceType != null)
+        {
+          return (sourceType.Classify == TypeClassification.VALUE_TYPE)
+            ? BoxingClassification.Definitely
+            : BoxingClassification.Possibly;
+        }
+
+        return BoxingClassification.Not;
       }
     }
 
