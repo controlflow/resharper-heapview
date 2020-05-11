@@ -1,14 +1,20 @@
 ﻿using System;
 
 interface I { int P { get; } }
+interface I2 { }
 
 struct S : I {
   public int P => 42;
 
   public void M(S s) {
+    // all statically known, no boxing
     if (s is object) { }
+    if (s is ValueType) { }
     if (s is ValueType _) { }
     if (s is I { }) { }
+    if (s is I) { }
+    if (s is I2) { }
+    if (s is int) { }
 
     // boxing
     if (s is |object|(0) o) { }
@@ -17,30 +23,80 @@ struct S : I {
     if (s is |I|(3) { P: 42 }) { }
     if ((s, s) is (I _, |I|(4) { } u)) { }
   }
-    
+
   public void G<T>(T t) {
     if (t is object) { }
-    if (t is ValueType _) { }
-    if (t is I { }) { }
+    // possible boxing in .net fw
+    if (t is |ValueType|(5) _) { }
+    if (t is |ValueType|(6)) { }
+    if (t is |I|(7) { }) { }
+    if (t is |I|(8)) { }
+    if (t is |I2|(9)) { }
+    if (t is |int|(10)) { }
 
     // possible boxing
-    if (t is |object|(5) o) { }
-    if (t is |ValueType|(6) v) { }
-    if (t is |Enum|(7) e) { }
-    if (t is |I|(8) i) { }
-    if (t is |I|(9) { P: 42 }) { }
-    if ((t, t) is (I _, |I|(10) { } u)) { }
+    if (t is |object|(11) o) { }
+    if (t is |ValueType|(12) v) { }
+    if (t is |Enum|(13) e) { }
+    if (t is |I|(14) i) { }
+    if (t is |I|(15) { P: 42 }) { }
+    if ((t, t) is (|I|(16) _, |I|(17) { } u)) { }
+    if (t is |int|(18) x) { }
+  }
+
+  public void V<T>(T t) where T : struct {
+    if (t is object) { }
+    if (t is ValueType) { }
+    if (t is ValueType _) { }
+    // possible boxing in .net fw
+    if (t is |I|(19)) { }
+    if (t is |I|(20) { } _) { }
+    if (t is |I2|(21) { }) { }
+    if (t is |int|(22)) { }
+
+    var ss = t switch { |I|(23) _ => 1, |I2|(24) _ => 2, _ => -1 };
+
+    // possible boxing
+    if (t is |object|(25) o) { }
+    if (t is |ValueType|(26) v) { }
+    if (t is |Enum|(27) e) { }
+    if (t is |I|(28) i) { }
+    if (t is |I|(29) { P: 42 }) { }
+    if ((t, t) is (|I|(30) _, |I|(31) { } u)) { }
+    if (t is |int|(32) x) { }
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of value type
-(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'ValueType' possibly requires boxing of value type
-(7): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'Enum' possibly requires boxing of value type
-(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
-(9): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
-(10): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
+(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'object' type requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'ValueType' type requires boxing of value type
+(2): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type requires boxing of value type
+(4): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type requires boxing of value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type possibly requires boxing of value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type possibly requires boxing of value type
+(7): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(9): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I2' type possibly requires boxing of value type
+(10): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type possibly requires boxing of value type
+(11): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type possibly requires boxing of value type
+(12): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type possibly requires boxing of value type
+(13): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'Enum' type possibly requires boxing of value type
+(14): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(15): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(16): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(17): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
+(18): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type possibly requires boxing of value type
+(19): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(20): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(21): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type requires boxing of value type
+(22): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type requires boxing of value type
+(23): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(24): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type requires boxing of value type
+(25): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'object' type requires boxing of value type
+(26): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type requires boxing of value type
+(27): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'Enum' type requires boxing of value type
+(28): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(29): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(30): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(31): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(32): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type requires boxing of value type

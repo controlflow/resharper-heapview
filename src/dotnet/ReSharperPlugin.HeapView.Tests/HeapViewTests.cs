@@ -71,6 +71,7 @@ namespace ReSharperPlugin.HeapView.Tests
       return highlighting is PerformanceHighlightingBase;
     }
 
+    [Test] public void TestBoxing11() { DoNamedTest2(); }
     [Test] public void TestBoxing13() { DoNamedTest2(); }
     [Test] public void TestBoxing14() { DoNamedTest2(); }
     [Test] public void TestBoxing16() { DoNamedTest2(); }
