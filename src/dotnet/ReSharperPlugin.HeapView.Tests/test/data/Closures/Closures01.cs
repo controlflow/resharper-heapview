@@ -4,7 +4,7 @@ using System;
 
 class SomeClass {
   public SomeClass() { F(() => "ctor"); }
-  public SomeClass(string s) => F(() => "ctor" + s);
+  public SomeClass(string s) => F(() => "ctor");
 
   public void ExpressionBodyMethod() => F(() => "expr method");
 

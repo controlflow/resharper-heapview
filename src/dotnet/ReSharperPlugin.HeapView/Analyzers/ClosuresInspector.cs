@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
@@ -77,6 +78,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; }
 
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
+
     [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
     [NotNull] public OneToListMap<ILocalFunction, IReferenceExpression> DelayedUseLocalFunctions { get; }
 
@@ -135,39 +137,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         case IThisExpression _:
         case IBaseExpression _:
-          if (myCurrentClosures.Count > 0) AddThisCapture();
+          AddThisCapture();
           break;
 
         case IReferenceExpression { QualifierExpression: null } referenceExpression:
-          ProcessNonQualifiedReferenceExpression(referenceExpression);
+          ProcessNotQualifiedReferenceExpression(referenceExpression);
           break;
       }
     }
 
-    private void AddThisCapture()
-    {
-      var topLevelParametersOwner = myTopLevelParametersOwner;
-      if (topLevelParametersOwner == null) return;
-
-      NoteCaptureInTopLevelScope(topLevelParametersOwner);
-
-      foreach (var closure in myCurrentClosures)
-      {
-        Captures.Add(closure, topLevelParametersOwner);
-      }
-    }
-
-    private void NoteCaptureInTopLevelScope([NotNull] IDeclaredElement capturedElement)
-    {
-      Assertion.Assert(myCurrentClosures.Count > 0, "myCurrentClosures.Count > 0");
-
-      if (myTopScope != null)
-      {
-        CapturesOfScope.Add(myTopScope, capturedElement);
-      }
-    }
-
-    private void ProcessNonQualifiedReferenceExpression([NotNull] IReferenceExpression referenceExpression)
+    private void ProcessNotQualifiedReferenceExpression([NotNull] IReferenceExpression referenceExpression)
     {
       if (referenceExpression.IsNameofOperatorArgumentPart()) return;
 
@@ -181,6 +160,33 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (myCurrentClosures.Count > 0 && declaredElement != null)
       {
         ProcessElementUsedByNonQualifiedReferenceExpressionInClosure(declaredElement);
+      }
+    }
+
+    private void AddThisCapture()
+    {
+      if (myCurrentClosures.Count == 0) return;
+
+      var parametersOwner = myTopLevelParametersOwner;
+      if (parametersOwner == null) return;
+
+      // todo: member is static?
+
+      NoteCaptureInTopLevelScope(parametersOwner);
+
+      foreach (var closure in myCurrentClosures)
+      {
+        Captures.Add(closure, parametersOwner);
+      }
+    }
+
+    private void NoteCaptureInTopLevelScope([NotNull] IDeclaredElement capturedElement)
+    {
+      Assertion.Assert(myCurrentClosures.Count > 0, "myCurrentClosures.Count > 0");
+
+      if (myTopScope != null)
+      {
+        CapturesOfScope.Add(myTopScope, capturedElement);
       }
     }
 

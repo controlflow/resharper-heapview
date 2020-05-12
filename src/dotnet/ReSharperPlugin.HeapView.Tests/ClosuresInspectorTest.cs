@@ -1,4 +1,5 @@
-﻿using JetBrains.Diagnostics;
+﻿using System;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -6,6 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.Util;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Analyzers;
 
@@ -18,6 +20,8 @@ namespace ReSharperPlugin.HeapView.Tests
   public class ClosuresInspectorTest : BaseTestWithTextControl
   {
     protected override string RelativeTestDataPath => "Closures";
+
+    [Test] public void TestClosures01() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
@@ -39,10 +43,33 @@ namespace ReSharperPlugin.HeapView.Tests
               declaration.DeclaredElement.NotNull()));
 
             inspector.Run();
+
+            
+
+            writer.WriteLine($" captureless: {inspector.CapturelessClosures.Count}");
+            foreach (var closure in inspector.CapturelessClosures)
+              writer.WriteLine($"  {PresentClosure(closure)}");
           }
         });
-    }
 
-    [Test] public void TestClosures01() { DoNamedTest2(); }
+      static string PresentClosure(ICSharpClosure closure)
+      {
+        var code = closure.GetText().TrimToSingleLineWithMaxLength(maxLength: 40);
+
+        switch (closure)
+        {
+          case IAnonymousMethodExpression _:
+            return $"anon method  '{code}'";
+          case ILambdaExpression _:
+            return $"lambda expr  '{code}'";
+          case ILocalFunctionDeclaration _:
+            return $"local func   '{code}'";
+          case IQueryParameterPlatform _:
+            return $"query clause '{code}'";
+          default:
+            throw new ArgumentOutOfRangeException(nameof(closure));
+        }
+      }
+    }
   }
 }

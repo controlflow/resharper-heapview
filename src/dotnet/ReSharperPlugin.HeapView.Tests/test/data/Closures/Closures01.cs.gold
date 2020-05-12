@@ -1,15 +1,48 @@
 ﻿constructor SomeClass.SomeClass
+ captureless: 1
+  lambda expr  '() => "ctor"'
 constructor SomeClass.SomeClass
+ captureless: 1
+  lambda expr  '() => "ctor"'
 method SomeClass.ExpressionBodyMethod
+ captureless: 1
+  lambda expr  '() => "expr method"'
 method SomeClass.BlockBodyMethod
+ captureless: 5
+  lambda expr  '() => "block method"'
+  lambda expr  '() => "block local function"'
+  local func   'void BlockLocalFunction() { F(() => "...'
+  lambda expr  '() => "expr local function"'
+  local func   'void ExpressionLocalFunction() => F((...'
 operator SomeClass.implicit string
+ captureless: 1
+  lambda expr  '() => "conv operator"'
 operator SomeClass.-
+ captureless: 1
+  lambda expr  '() => "sign operator"'
 destructor SomeClass.~SomeClass
+ captureless: 1
+  lambda expr  '() => "destructor"'
 accessor SomeClass.get_PropertyWithAccessors
+ captureless: 1
+  lambda expr  '() => "block getter"'
 accessor SomeClass.set_PropertyWithAccessors
+ captureless: 1
+  lambda expr  '() => "expr setter"'
 property SomeClass.ExpressionProperty
+ captureless: 1
+  lambda expr  '() => "expr property"'
 accessor SomeClass.get_Item
+ captureless: 1
+  lambda expr  '() => "expr indexer getter"'
 indexer SomeClass.this
+ captureless: 1
+  lambda expr  '() => "expr indexer"'
 accessor SomeClass.add_CustomEvent
+ captureless: 1
+  lambda expr  '() => "block adder"'
 accessor SomeClass.remove_CustomEvent
+ captureless: 1
+  lambda expr  '() => "expr remover"'
 method SomeClass.F
+ captureless: 0

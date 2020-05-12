@@ -60,10 +60,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       // todo: not the case in CS 6+?
       // report non-cached generic lambda expressions
-      if (inspector.TopLevelParametersOwner != null && inspector.CapturelessClosures.Count > 0)
-      {
-        ReportClosurelessAllocations(declaration, inspector.TopLevelParametersOwner, inspector, consumer);
-      }
+
+      ReportClosurelessAllocations(declaration, inspector, consumer);
 
       // report anonymous types in query expressions
       if (inspector.AnonymousTypes.Count > 0)
@@ -316,27 +314,26 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     private static void ReportClosurelessAllocations(
-      [NotNull] ITreeNode element, [NotNull] IParametersOwner function, [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] ITreeNode element, [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
-      if (function is ITypeParametersOwner typeParametersOwner && typeParametersOwner.TypeParameters.Count > 0)
+      // note: Roslyn compiler implements caching of such closures
+      if (!element.IsCSharp6Supported()
+          && inspector.TopLevelParametersOwner is ITypeParametersOwner typeParametersOwner
+          && typeParametersOwner.TypeParameters.Count > 0)
       {
-        foreach (var closure in inspector.CapturelessClosures)
+        foreach (var closure in (IEnumerable<ICSharpClosure>) inspector.CapturelessClosures)
         {
           if (IsExpressionTreeClosure(closure)) continue;
 
           var closureRange = GetClosureRange(closure);
           if (!closureRange.IsValid()) continue;
 
-          // note: Roslyn compiler implements caching of such closures
-          if (!element.IsCSharp6Supported())
-          {
-            consumer.AddHighlighting(
-              new DelegateAllocationHighlighting(closure, "from generic anonymous function (always non cached)"), closureRange);
-          }
+          consumer.AddHighlighting(
+            new DelegateAllocationHighlighting(closure, "from generic anonymous function (always non cached)"), closureRange);
         }
       }
 
-      foreach (var closure in inspector.CapturelessClosures)
+      foreach (var closure in (IEnumerable<ICSharpClosure>) inspector.CapturelessClosures)
       {
         if (!IsExpressionTreeClosure(closure)) continue;
 

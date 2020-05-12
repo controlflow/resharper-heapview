@@ -1,20 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+  <PropertyGroup>
+    <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(SdkVersion)" />
   </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\ReSharperPlugin.HeapView\ReSharperPlugin.HeapView.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="test/data/**/*" />
   </ItemGroup>
-
 </Project>
