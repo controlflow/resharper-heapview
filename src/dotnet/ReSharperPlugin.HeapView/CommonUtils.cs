@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -13,7 +12,8 @@ namespace ReSharperPlugin.HeapView
     [Pure]
     public static bool IsStringConcatOperatorReference([CanBeNull] this IReference reference)
     {
-      if (reference?.Resolve() is (ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
+      if (reference?.Resolve() is (
+            ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
       {
         var lhsType = parameters[0].Type;
         var rhsType = parameters[1].Type;
@@ -135,22 +135,6 @@ namespace ReSharperPlugin.HeapView
 
           default:
             return false;
-        }
-      }
-    }
-
-    class B { }
-    class C : B { }
-    class D : B { }
-
-    class Switch
-    {
-      void M(B b)
-      {
-        switch (b)
-        {
-          case C _:
-            break;
         }
       }
     }

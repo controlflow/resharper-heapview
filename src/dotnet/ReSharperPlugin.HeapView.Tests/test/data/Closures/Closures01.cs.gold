@@ -1,0 +1,15 @@
+﻿constructor SomeClass.SomeClass
+constructor SomeClass.SomeClass
+method SomeClass.ExpressionBodyMethod
+method SomeClass.BlockBodyMethod
+operator SomeClass.implicit string
+operator SomeClass.-
+destructor SomeClass.~SomeClass
+accessor SomeClass.get_PropertyWithAccessors
+accessor SomeClass.set_PropertyWithAccessors
+property SomeClass.ExpressionProperty
+accessor SomeClass.get_Item
+indexer SomeClass.this
+accessor SomeClass.add_CustomEvent
+accessor SomeClass.remove_CustomEvent
+method SomeClass.F

@@ -12,7 +12,7 @@ namespace ReSharperPlugin.HeapView.Tests
   [TestNetFramework46]
   [TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
   [TestReferences("System", "System.Core", "Microsoft.CSharp")]
-  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
+  [CSharpLanguageLevel(CSharpLanguageLevel.Latest)]
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
   {
     protected override string RelativeTestDataPath => "Daemon";
@@ -60,7 +60,7 @@ namespace ReSharperPlugin.HeapView.Tests
   [TestNetCore30]
   [TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
   [TestReferences("System", "System.Core", "Microsoft.CSharp")]
-  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
+  [CSharpLanguageLevel(CSharpLanguageLevel.Latest)]
   [TestAdditionalGoldSuffix(".netcore")]
   public class HeapViewNetCoreHighlightingTest : CSharpHighlightingTestBase
   {
