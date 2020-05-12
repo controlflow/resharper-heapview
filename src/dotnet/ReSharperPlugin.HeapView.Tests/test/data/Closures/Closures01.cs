@@ -9,8 +9,7 @@ class SomeClass {
   public void ExpressionBodyMethod() => F(() => "expr method");
 
   public void BlockBodyMethod() {
-    F(() => "block method");
-
+    var localVariable = F(() => "block method");
     void BlockLocalFunction() { F(() => "block local function"); }
     void ExpressionLocalFunction() => F(() => "expr local function");
   }
@@ -37,6 +36,11 @@ class SomeClass {
     add { F(() => "block adder"); }
     remove => F(() => "expr remover");
   }
+
+  public const string Const = "aaa";
+  public string Field = F(() => "field initializer");
+  public event EventHandler FieldLikeEvent = delegate { _ = "field like event"; };
+  public string[] AutoProperty { get; } = { F(() => "auto-property") };
 
   public static string F(Func<string> func) => func();
 }

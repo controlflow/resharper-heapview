@@ -1,48 +1,75 @@
-﻿constructor SomeClass.SomeClass
- captureless: 1
+﻿constructor 'SomeClass'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "ctor"'
-constructor SomeClass.SomeClass
- captureless: 1
+constructor 'SomeClass'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "ctor"'
-method SomeClass.ExpressionBodyMethod
- captureless: 1
+method 'ExpressionBodyMethod'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr method"'
-method SomeClass.BlockBodyMethod
- captureless: 5
+method 'BlockBodyMethod'
+> captures: 0
+> captureless: 5
   lambda expr  '() => "block method"'
   lambda expr  '() => "block local function"'
   local func   'void BlockLocalFunction() { F(() => "...'
   lambda expr  '() => "expr local function"'
   local func   'void ExpressionLocalFunction() => F((...'
-operator SomeClass.implicit string
- captureless: 1
+operator 'implicit string'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "conv operator"'
-operator SomeClass.-
- captureless: 1
+operator '-'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "sign operator"'
-destructor SomeClass.~SomeClass
- captureless: 1
+destructor '~SomeClass'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "destructor"'
-accessor SomeClass.get_PropertyWithAccessors
- captureless: 1
+accessor 'get_PropertyWithAccessors'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "block getter"'
-accessor SomeClass.set_PropertyWithAccessors
- captureless: 1
+accessor 'set_PropertyWithAccessors'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr setter"'
-property SomeClass.ExpressionProperty
- captureless: 1
+property 'ExpressionProperty'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr property"'
-accessor SomeClass.get_Item
- captureless: 1
+accessor 'get_Item'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr indexer getter"'
-indexer SomeClass.this
- captureless: 1
+indexer 'this'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr indexer"'
-accessor SomeClass.add_CustomEvent
- captureless: 1
+accessor 'add_CustomEvent'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "block adder"'
-accessor SomeClass.remove_CustomEvent
- captureless: 1
+accessor 'remove_CustomEvent'
+> captures: 0
+> captureless: 1
   lambda expr  '() => "expr remover"'
-method SomeClass.F
- captureless: 0
+field 'Field'
+> captures: 0
+> captureless: 1
+  lambda expr  '() => "field initializer"'
+event 'FieldLikeEvent'
+> captures: 0
+> captureless: 1
+  anon method  'delegate { _ = "field like event"; }'
+property 'AutoProperty'
+> captures: 0
+> captureless: 1
+  lambda expr  '() => "auto-property"'
+method 'F'
+> captures: 0
+> captureless: 0

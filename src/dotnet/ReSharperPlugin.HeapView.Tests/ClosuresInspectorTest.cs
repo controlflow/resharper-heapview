@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -22,6 +23,8 @@ namespace ReSharperPlugin.HeapView.Tests
     protected override string RelativeTestDataPath => "Closures";
 
     [Test] public void TestClosures01() { DoNamedTest2(); }
+    [Test] public void TestClosures02() { DoNamedTest2(); }
+    [Test] public void TestClosures03() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
@@ -38,17 +41,27 @@ namespace ReSharperPlugin.HeapView.Tests
             var inspector = ClosuresInspector.TryBuild(declaration);
             if (inspector == null) continue;
 
-            writer.WriteLine(DeclaredElementPresenter.Format(
-              declaration.Language, DeclaredElementPresenter.KIND_QUALIFIED_NAME_PRESENTER,
-              declaration.DeclaredElement.NotNull()));
+            writer.WriteLine(PresentElement(declaration.DeclaredElement));
 
             inspector.Run();
 
-            
+            writer.WriteLine($"> captures: {inspector.Captures.Count}");
 
-            writer.WriteLine($" captureless: {inspector.CapturelessClosures.Count}");
+            foreach (var (closure, captures) in inspector.Captures)
+            {
+              writer.WriteLine($"    {PresentClosure(closure)}");
+
+              foreach (var capture in captures)
+              {
+                writer.WriteLine($"      {PresentElement(capture)}");
+              }
+            }
+
+            writer.WriteLine($"> captureless: {inspector.CapturelessClosures.Count}");
             foreach (var closure in inspector.CapturelessClosures)
+            {
               writer.WriteLine($"  {PresentClosure(closure)}");
+            }
           }
         });
 
@@ -69,6 +82,14 @@ namespace ReSharperPlugin.HeapView.Tests
           default:
             throw new ArgumentOutOfRangeException(nameof(closure));
         }
+      }
+
+      static string PresentElement(IDeclaredElement declaredElement)
+      {
+        if (declaredElement is null) return "<null>";
+
+        return DeclaredElementPresenter.Format(
+          CSharpLanguage.Instance, DeclaredElementPresenter.KIND_QUOTED_NAME_PRESENTER, declaredElement).Text;
       }
     }
   }

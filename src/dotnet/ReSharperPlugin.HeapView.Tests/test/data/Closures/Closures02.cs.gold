@@ -1,0 +1,53 @@
+﻿constructor 'SomeClass'
+> captures: 2
+    lambda expr  '() => cp + "ctor initializer"'
+      parameter 'cp'
+    lambda expr  '() => cp + "ctor body"'
+      parameter 'cp'
+> captureless: 0
+method 'Method'
+> captures: 3
+    lambda expr  '() => mp + "method"'
+      parameter 'mp'
+    lambda expr  '() => mp + lp + "local func"'
+      parameter 'mp'
+      parameter 'lp'
+    local func   'void Local(string lp) => F(() => mp +...'
+      parameter 'mp'
+> captureless: 1
+  local func   'string OtherLocal() {...'
+accessor 'get_Property'
+> captures: 0
+> captureless: 0
+accessor 'set_Property'
+> captures: 1
+    lambda expr  '() => value + "property.set"'
+      parameter 'value'
+> captureless: 0
+indexer 'this'
+> captures: 1
+    lambda expr  '() => ip + "indexer"'
+      parameter 'ip'
+> captureless: 0
+accessor 'get_Item'
+> captures: 1
+    lambda expr  '() => ip2 + "indexer2.get"'
+      parameter 'ip2'
+> captureless: 0
+accessor 'set_Item'
+> captures: 1
+    lambda expr  '() => ip2 + value + "indexer2.get"'
+      parameter 'ip2'
+      parameter 'value'
+> captureless: 0
+operator 'implicit string'
+> captures: 1
+    lambda expr  '() => op + "operator"'
+      parameter 'op'
+> captureless: 0
+method 'F'
+> captures: 0
+> captureless: 0
+constructor 'BaseClass'
+> captures: 0
+> captureless: 0

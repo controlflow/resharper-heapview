@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
@@ -15,18 +14,20 @@ using JetBrains.Util;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: check ctor initializers
+  // todo: https://sharplab.io/#v2:EYLgtghgzgLgpgJwD4AEBMBGAsAKFygZgAJ0iBhIgb1yNpOJQBYiBZACgEoqa7eBLAHYwiADyIBeIgAYA3D1615Cpb2o4FGonwBmRNmPGTGaDis2VeZzXTEBqW3PXXNAcwD2MN0QA2EYHG9HZzoAXytlJ2Dwy0jnX39vEGi6NWCFQWEATwlpILS6FABWAB4MgD4ibQBXAQBjHM4JCrsiTLz8ogB6TvdPHz8A9ucw2N4R63ClEZCgA===
 
   public sealed class ClosuresInspector : IRecursiveElementProcessor
   {
     [NotNull] private readonly ICSharpDeclaration myDeclaration;
-    [CanBeNull] private readonly ILocalScope myTopScope;
+    [NotNull] private readonly ILocalScope myTopScope;
     [CanBeNull] private readonly IParametersOwner myTopLevelParametersOwner;
     [NotNull] private readonly Stack<ICSharpClosure> myCurrentClosures;
+    private int myDisplayClassCounter;
 
     public ClosuresInspector([NotNull] ICSharpDeclaration declaration, [CanBeNull] IParametersOwner topLevelParameterOwner)
     {
       myDeclaration = declaration;
-      myTopScope = declaration as ILocalScope;
+      myTopScope = (ILocalScope) declaration;
       myTopLevelParametersOwner = topLevelParameterOwner;
       myCurrentClosures = new Stack<ICSharpClosure>();
 
@@ -57,7 +58,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
           return new ClosuresInspector(declaration, parametersOwner);
 
         // field/event/auto-property initializer
-        case IInitializerOwnerDeclaration { Initializer: { } }:
+        case IFieldDeclaration { Initial: { } }:
+        case IEventDeclaration { Initial: { } }:
+        case IPropertyDeclaration { Initial: { } }:
           return new ClosuresInspector(declaration, null);
 
         default:
@@ -71,29 +74,64 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
+    [NotNull] public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; }
+    [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
+
+    // todo: remove?
     [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
+
+    [NotNull]
+    private DisplayClassInfo GetOrCreateDisplayClassForCapture([NotNull] IDeclaredElement capture)
+    {
+      var captureScope = GetScopeForCapture(capture);
+
+      if (!DisplayClasses.TryGetValue(captureScope, out var displayClass))
+      {
+        displayClass = new DisplayClassInfo(myDisplayClassCounter++);
+        DisplayClasses.Add(captureScope, displayClass);
+      }
+
+      displayClass.AddCapture(capture);
+
+      return displayClass;
+    }
+
+    [NotNull, Pure]
+    private ILocalScope GetScopeForCapture([NotNull] IDeclaredElement capture)
+    {
+      if (ReferenceEquals(capture, myTopLevelParametersOwner)) return myTopScope;
+
+      var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
+      return firstDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
+    }
+
     [Obsolete] [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
     [Obsolete] [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; }
-
-    public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; }
-
-    [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
 
     [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
     [NotNull] public OneToListMap<ILocalFunction, IReferenceExpression> DelayedUseLocalFunctions { get; }
 
     public sealed class DisplayClassInfo
     {
+      public DisplayClassInfo(int index)
+      {
+        Index = index;
+      }
+
+      public int Index { get; }
       public HashSet<IDeclaredElement> Captures { get; } = new HashSet<IDeclaredElement>();
       public HashSet<ICSharpClosure> Closures { get; } = new HashSet<ICSharpClosure>();
-      public DisplayClassInfo ParentDisplayClass { get; private set; }
+      [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; private set; }
 
       public TreeTextRange FirstCapturedVariableLocation { get; private set; }
 
 
+      public void AddCapture([NotNull] IDeclaredElement capture)
+      {
+        Captures.Add(capture);
 
-
-
+        // update 'FirstCapturedVariableLocation'
+      }
     }
 
     public bool ProcessingIsFinished => false;
@@ -170,23 +208,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var parametersOwner = myTopLevelParametersOwner;
       if (parametersOwner == null) return;
 
-      // todo: member is static?
+      if (parametersOwner is ITypeMember { IsStatic: true }) return;
 
-      NoteCaptureInTopLevelScope(parametersOwner);
+      // todo: display class?
 
       foreach (var closure in myCurrentClosures)
       {
         Captures.Add(closure, parametersOwner);
-      }
-    }
-
-    private void NoteCaptureInTopLevelScope([NotNull] IDeclaredElement capturedElement)
-    {
-      Assertion.Assert(myCurrentClosures.Count > 0, "myCurrentClosures.Count > 0");
-
-      if (myTopScope != null)
-      {
-        CapturesOfScope.Add(myTopScope, capturedElement);
       }
     }
 
@@ -220,31 +248,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private void AddParameterCapture([NotNull] IParameter parameter)
     {
-      var parametersOwner = parameter.ContainingParametersOwner;
-      if (parametersOwner == null) return; // should not happen anyway
+      var parameterOwner = parameter.ContainingParametersOwner;
+      if (parameterOwner == null) return; // should not happen anyway
+
+      GetOrCreateDisplayClassForCapture(parameter);
 
       foreach (var closure in myCurrentClosures)
       {
-        if (ReferenceEquals(parametersOwner, closure))
-        {
-          // todo: test with query parameter platforms
-          var parameterScope = closure.GetContainingScope<ILocalScope>(returnThis: true);
-          if (parameterScope != null)
-          {
-            CapturesOfScope.Add(parameterScope, parameter);
-            ClosuresOfScope.Add(parameterScope, closure); // todo: only this one? NO
-          }
-
-          return;
-        }
-
         Captures.Add(closure, parameter);
-      }
 
-      // todo: test with indexer parameters/value parameter
-      if (parametersOwner.Equals(myTopLevelParametersOwner))
-      {
-        NoteCaptureInTopLevelScope(parameter);
+        if (ReferenceEquals(parameterOwner, closure)) break;
       }
     }
 
@@ -252,40 +265,31 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (localVariable.IsConstant) return;
 
-      var variableDeclaration = localVariable.GetSingleDeclaration<IDeclaration>();
-      if (variableDeclaration == null) return;
+      GetOrCreateDisplayClassForCapture(localVariable);
 
-      var variableScope = variableDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
-      Assertion.AssertNotNull(variableScope, "Local scope expected");
-
-      // todo: test with out vars/pattern variables in weird scopes
-      CapturesOfScope.Add(variableScope, localVariable);
+      var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>().NotNull();
+      //var variableScope = variableDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
 
       foreach (var closure in myCurrentClosures)
       {
-        if (closure.Contains(variableDeclaration) && !(closure is IQueryParameterPlatform)) break;
+        if (closure.Contains(variableDeclaration)
+            && !(closure is IQueryParameterPlatform) // todo: query inside query?
+            ) break;
 
         Captures.Add(closure, localVariable);
-        ClosuresOfScope.Add(variableScope, closure);
       }
     }
 
     private void AddLocalFunctionCapture([NotNull] ILocalFunction localFunction)
     {
-      var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
-      if (localFunctionDeclaration == null) return;
-
-      var functionScope = localFunctionDeclaration.GetContainingScope<ILocalScope>(returnThis: true);
-      Assertion.AssertNotNull(functionScope, "Local scope expected");
-
-      CapturesOfScope.Add(functionScope, localFunction);
+      var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>().NotNull();
+      //var functionScope = localFunctionDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
 
       foreach (var closure in myCurrentClosures)
       {
         if (closure.Contains(localFunctionDeclaration)) break;
 
         Captures.Add(closure, localFunction);
-        ClosuresOfScope.Add(functionScope, closure);
       }
     }
 

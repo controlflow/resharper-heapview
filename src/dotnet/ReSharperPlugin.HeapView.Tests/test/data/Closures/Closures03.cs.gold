@@ -1,0 +1,11 @@
+﻿method 'Method'
+> captures: 2
+    lambda expr  '() => local2 + local'
+      local variable 'local2'
+      local variable 'local'
+    lambda expr  '() => {...'
+      local variable 'local'
+> captureless: 0
+method 'F'
+> captures: 0
+> captureless: 0
