@@ -1,16 +1,20 @@
 ﻿constructor 'SomeClass'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "ctor"'
 constructor 'SomeClass'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "ctor"'
 method 'ExpressionBodyMethod'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr method"'
 method 'BlockBodyMethod'
+> display classes: 0
 > captures: 0
 > captureless: 5
   lambda expr  '() => "block method"'
@@ -19,57 +23,71 @@ method 'BlockBodyMethod'
   lambda expr  '() => "expr local function"'
   local func   'void ExpressionLocalFunction() => F((...'
 operator 'implicit string'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "conv operator"'
 operator '-'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "sign operator"'
 destructor '~SomeClass'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "destructor"'
 accessor 'get_PropertyWithAccessors'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "block getter"'
 accessor 'set_PropertyWithAccessors'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr setter"'
 property 'ExpressionProperty'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr property"'
 accessor 'get_Item'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr indexer getter"'
 indexer 'this'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr indexer"'
 accessor 'add_CustomEvent'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "block adder"'
 accessor 'remove_CustomEvent'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "expr remover"'
 field 'Field'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "field initializer"'
 event 'FieldLikeEvent'
+> display classes: 0
 > captures: 0
 > captureless: 1
   anon method  'delegate { _ = "field like event"; }'
 property 'AutoProperty'
+> display classes: 0
 > captures: 0
 > captureless: 1
   lambda expr  '() => "auto-property"'
 method 'F'
+> display classes: 0
 > captures: 0
 > captureless: 0

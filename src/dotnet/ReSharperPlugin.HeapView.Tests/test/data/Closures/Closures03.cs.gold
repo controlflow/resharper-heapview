@@ -1,11 +1,16 @@
 ﻿method 'Method'
+> display classes: 2
+    display class #0: '{       var local2 = "local2";     ...'
+       captures: local variable 'local2'
+    display class #1: '{     var local = "local";     cons...'
+       captures: local variable 'local'
 > captures: 2
     lambda expr  '() => local2 + local'
-      local variable 'local2'
-      local variable 'local'
-    lambda expr  '() => {...'
-      local variable 'local'
+       captures: local variable 'local2', local variable 'local'
+    lambda expr  '() => {       var local2 = "local2";...'
+       captures: local variable 'local'
 > captureless: 0
 method 'F'
+> display classes: 0
 > captures: 0
 > captureless: 0

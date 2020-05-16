@@ -19,7 +19,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
   public sealed class ClosuresInspector : IRecursiveElementProcessor
   {
     [NotNull] private readonly ICSharpDeclaration myDeclaration;
-    [NotNull] private readonly ILocalScope myTopScope;
     [CanBeNull] private readonly IParametersOwner myTopLevelParametersOwner;
     [NotNull] private readonly Stack<ICSharpClosure> myCurrentClosures;
     private int myDisplayClassCounter;
@@ -27,14 +26,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
     public ClosuresInspector([NotNull] ICSharpDeclaration declaration, [CanBeNull] IParametersOwner topLevelParameterOwner)
     {
       myDeclaration = declaration;
-      myTopScope = (ILocalScope) declaration;
       myTopLevelParametersOwner = topLevelParameterOwner;
       myCurrentClosures = new Stack<ICSharpClosure>();
 
       Captures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
       CapturesOfScope = new OneToSetMap<ILocalScope, IDeclaredElement>();
       ClosuresOfScope = new OneToSetMap<ILocalScope, ICSharpClosure>();
-      DisplayClasses = new Dictionary<ILocalScope, DisplayClassInfo>();
+      DisplayClasses = new Dictionary<IScope, DisplayClassInfo>();
 
       AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
       CapturelessClosures = new List<ICSharpClosure>();
@@ -74,7 +72,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
-    [NotNull] public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; }
+    [NotNull] public Dictionary<IScope, DisplayClassInfo> DisplayClasses { get; }
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
 
     // todo: remove?
@@ -97,12 +95,21 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [NotNull, Pure]
-    private ILocalScope GetScopeForCapture([NotNull] IDeclaredElement capture)
+    private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
-      if (ReferenceEquals(capture, myTopLevelParametersOwner)) return myTopScope;
+      if (capture is IParameter { IsValueVariable: true } valueParameter)
+      {
+        capture = (IAccessor) valueParameter.ContainingParametersOwner.NotNull();
+      }
 
       var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
-      return firstDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
+      var containingScope = firstDeclaration.GetContainingScope(returnThis: true);
+      if (containingScope == null)
+      {
+        GC.KeepAlive(firstDeclaration);
+      }
+
+      return containingScope.NotNull();
     }
 
     [Obsolete] [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }

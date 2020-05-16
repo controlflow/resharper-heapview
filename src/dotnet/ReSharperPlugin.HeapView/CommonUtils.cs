@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -136,6 +138,55 @@ namespace ReSharperPlugin.HeapView
           default:
             return false;
         }
+      }
+    }
+
+    [Pure, NotNull]
+    public static string ToSingleLineAndTrim([NotNull] this string text, int maxLength, [NotNull] string ellipsis = "...")
+    {
+      if (maxLength <= ellipsis.Length)
+        throw new ArgumentOutOfRangeException(nameof(maxLength));
+
+      if (text.Length <= maxLength && !HasLineBreaksInBeginning())
+        return text;
+
+      return BuildTrimmedString();
+
+      bool HasLineBreaksInBeginning()
+      {
+        for (var index = 0; index < text.Length && index < maxLength; index++)
+        {
+          if (text[index] == '\r' || text[index] == '\n')
+          {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      string BuildTrimmedString()
+      {
+        maxLength -= ellipsis.Length;
+
+        var builder = new StringBuilder(capacity: maxLength);
+        var previous = '\0';
+
+        for (var index = 0; index < text.Length && index < maxLength; index++)
+        {
+          var ch = text[index];
+          if (ch == '\r' || ch == '\n')
+          {
+            if (previous == ' ') continue;
+
+            ch = ' ';
+          }
+
+          builder.Append(ch);
+          previous = ch;
+        }
+
+        return builder.Append(ellipsis).ToString();
       }
     }
   }

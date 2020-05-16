@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -6,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
@@ -45,16 +47,20 @@ namespace ReSharperPlugin.HeapView.Tests
 
             inspector.Run();
 
+            writer.WriteLine($"> display classes: {inspector.DisplayClasses.Count}");
+
+            foreach (var (localScope, displayClass) in inspector.DisplayClasses.OrderBy(x => x.Value.Index))
+            {
+              writer.WriteLine($"    display class #{displayClass.Index}: '{PresentScope(localScope)}'");
+              writer.WriteLine($"       captures: {displayClass.Captures.Select(PresentElement).AggregateString(separator: ", ")}");
+            }
+
             writer.WriteLine($"> captures: {inspector.Captures.Count}");
 
             foreach (var (closure, captures) in inspector.Captures)
             {
               writer.WriteLine($"    {PresentClosure(closure)}");
-
-              foreach (var capture in captures)
-              {
-                writer.WriteLine($"      {PresentElement(capture)}");
-              }
+              writer.WriteLine($"       captures: {captures.Select(PresentElement).AggregateString(separator: ", ")}");
             }
 
             writer.WriteLine($"> captureless: {inspector.CapturelessClosures.Count}");
@@ -67,7 +73,7 @@ namespace ReSharperPlugin.HeapView.Tests
 
       static string PresentClosure(ICSharpClosure closure)
       {
-        var code = closure.GetText().TrimToSingleLineWithMaxLength(maxLength: 40);
+        var code = closure.GetText().ToSingleLineAndTrim(maxLength: 40);
 
         switch (closure)
         {
@@ -90,6 +96,11 @@ namespace ReSharperPlugin.HeapView.Tests
 
         return DeclaredElementPresenter.Format(
           CSharpLanguage.Instance, DeclaredElementPresenter.KIND_QUOTED_NAME_PRESENTER, declaredElement).Text;
+      }
+
+      static string PresentScope(IScope localScope)
+      {
+        return localScope.GetText().ToSingleLineAndTrim(maxLength: 40);
       }
     }
   }
