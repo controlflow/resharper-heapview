@@ -22,7 +22,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: generics can be introduces by local functions - not a problem in Roslyn
   // todo: report delegate allocations from method group
-  // todo: implement "Implicitly captured closure"
+  // todo: implement "Implicitly captured closure" warning
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] {
@@ -69,8 +69,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
         ReportAnonymousTypes(inspector, consumer);
       }
     }
-
-    
 
     private static void ReportClosureAllocations(
       [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement,
