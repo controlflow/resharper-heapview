@@ -57,18 +57,18 @@ public class DisplayClasses {
     }
   }
 
-  public void S3() {
+  public void S3() { // display 0
     var x = "aaa";
-    if (x.Length > 0) {
+    if (x.Length > 0) { // display 1
       var y = "bbb";
-      F(() => {
+      F(() => { // display 2
         var z = "ccc";
-        F(() => x + z);
+        F(() => x + z); // 0+2 = 2
         return y;
-      });
+      }); // 0+1 = 1
         
       F(() => {
-        return F(() => y);
+        return F(() => y); // 1
       });
     }
   }

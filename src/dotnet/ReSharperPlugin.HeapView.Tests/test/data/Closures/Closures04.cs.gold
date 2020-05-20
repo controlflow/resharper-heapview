@@ -1,73 +1,78 @@
 ﻿method 'M'
 > display classes: 3
-    display class #0: '{       // shared display class    ...'
-       captures: local variable 'x', local variable 'y'
-       closures: 2
-         lambda expr  '() => x'
-         lambda expr  '() => y'
-    display class #1: '{       var z = "aaa";       F(() =...'
-       captures: local variable 'z', local function 'LocalFunc1'
-       closures: 2
-         local func   'string LocalFunc1() => z + "a";'
-         local func   'string Other() { z += "a2"; return Lo...'
-    display class #2: '{       var w = "bbb";       // thi...'
-       captures: local function 'LocalFunc2', local variable 'w'
-       closures: 2
-         lambda expr  '() => LocalFunc2()'
-         local func   'string LocalFunc2() => w + "b";'
-> captures: 6
-    lambda expr  '() => x'
-       captures: local variable 'x'
-    lambda expr  '() => y'
-       captures: local variable 'y'
-    local func   'string LocalFunc1() => z + "a";'
-       captures: local variable 'z'
-    local func   'string Other() { z += "a2"; return Lo...'
-       captures: local variable 'z', local function 'LocalFunc1'
-    lambda expr  '() => LocalFunc2()'
-       captures: local function 'LocalFunc2'
-    local func   'string LocalFunc2() => w + "b";'
-       captures: local variable 'w'
+  class #0: '{       // shared display class    ...'
+    members: local variable 'x', local variable 'y'
+    closures: 2
+      lambda expr  '() => x'
+        captures: local variable 'x'
+      lambda expr  '() => y'
+        captures: local variable 'y'
+  class #1: '{       var z = "aaa";       F(() =...'
+    members: local variable 'z', local function 'LocalFunc1'
+    closures: 2
+      local func   'string LocalFunc1() => z + "a";'
+        captures: local variable 'z'
+      local func   'string Other() { z += "a2"; return Lo...'
+        captures: local variable 'z', local function 'LocalFunc1'
+  class #2: '{       var w = "bbb";       // thi...'
+    members: local function 'LocalFunc2', local variable 'w'
+    closures: 2
+      lambda expr  '() => LocalFunc2()'
+        captures: local function 'LocalFunc2'
+      local func   'string LocalFunc2() => w + "b";'
+        captures: local variable 'w'
 > captureless: 3
   lambda expr  '() => "no capture"'
   lambda expr  '() => "no capture2"'
   lambda expr  '() => "no capture3"'
 method 'S'
 > display classes: 2
-    display class #0: 'for (var i = ""; i.Length < 100; i +=...'
-       captures: local variable 'i'
-       closures: 2
-         lambda expr  '() => i + "aa"'
-         lambda expr  '() => i + "cc"'
-    display class #1: '{         // inner display class   ...'
-       captures: local variable 'j'
-       closures: 1
-         lambda expr  '() => i + j + "bb"'
-> captures: 3
-    lambda expr  '() => i + "aa"'
-       captures: local variable 'i'
-    lambda expr  '() => i + j + "bb"'
-       captures: local variable 'i', local variable 'j'
-    lambda expr  '() => i + "cc"'
-       captures: local variable 'i'
+  class #0: 'for (var i = ""; i.Length < 100; i +=...'
+    members: local variable 'i'
+    closures: 2
+      lambda expr  '() => i + "aa"'
+        captures: local variable 'i'
+      lambda expr  '() => i + "cc"'
+        captures: local variable 'i'
+  class #1: '{         // inner display class   ...'
+    members: local variable 'j', parent display class #0
+    closures: 1
+      lambda expr  '() => i + j + "bb"'
+        captures: local variable 'i', local variable 'j'
 > captureless: 0
 method 'S2'
 > display classes: 2
-    display class #0: '{     var x = "aaa";     if (x.Leng...'
-       captures: local variable 'x'
-       closures: 1
-         lambda expr  '() => x'
-    display class #1: '{       var y = "bbb";       F(() =...'
-       captures: local variable 'y'
-       closures: 1
-         lambda expr  '() => {         F(() => x);        ...'
-> captures: 2
-    lambda expr  '() => x'
-       captures: local variable 'x'
-    lambda expr  '() => {         F(() => x);        ...'
-       captures: local variable 'x', local variable 'y'
+  class #0: '{     var x = "aaa";     if (x.Leng...'
+    members: local variable 'x'
+    closures: 1
+      lambda expr  '() => x'
+        captures: local variable 'x'
+  class #1: '{       var y = "bbb";       F(() =...'
+    members: local variable 'y', parent display class #0
+    closures: 1
+      lambda expr  '() => {         F(() => x);        ...'
+        captures: local variable 'x', local variable 'y'
+> captureless: 0
+method 'S3'
+> display classes: 3
+  class #0: '{ // display 0     var x = "aaa";  ...'
+    members: local variable 'x'
+    closures: 0
+  class #1: '{ // display 2         var z = "ccc"...'
+    members: local variable 'z', parent display class #2
+    closures: 1
+      lambda expr  '() => x + z'
+        captures: local variable 'x', local variable 'z'
+  class #2: '{ // display 1       var y = "bbb"; ...'
+    members: local variable 'y', parent display class #0
+    closures: 3
+      lambda expr  '() => { // display 2         var z =...'
+        captures: local variable 'x', local variable 'y'
+      lambda expr  '() => y'
+        captures: local variable 'y'
+      lambda expr  '() => {         return F(() => y); /...'
+        captures: local variable 'y'
 > captureless: 0
 method 'F'
 > display classes: 0
-> captures: 0
 > captureless: 0

@@ -72,15 +72,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       myDeclaration.ProcessThisAndDescendants(this);
 
-      foreach (var (scope, displayClass) in DisplayClasses)
-      foreach (var closure in displayClass.ClosuresWithCaptures)
-      {
-        var captures = Captures[closure];
-        if (!captures.IsSubsetOf(displayClass.ScopeMembers))
-        {
-          ConnectToParentDisplayClasses(scope, displayClass, captures);
-        }
-      }
+      ConnectDisplayClassesToParentOnes();
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
@@ -113,7 +105,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
           // attach only if captures have intersection with some containing display class
           if (captures.Overlaps(displayClass.ScopeMembers))
           {
-            displayClass.AddClosureWithCaptures(closure);
+            displayClass.Closures.AddRange(closure, captures);
             return;
           }
         }
@@ -122,22 +114,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
       Assertion.Fail("Should not be reachable");
     }
 
-    private void ConnectToParentDisplayClasses(
-      [NotNull] IScope scope, [NotNull] DisplayClassInfo displayClass, [NotNull] ISet<IDeclaredElement> captures)
+    private void ConnectDisplayClassesToParentOnes()
     {
-      var parentDisplayClass = displayClass.ParentDisplayClass;
-
-      // connect to containing display class containing closures
-      foreach (var evenMoreContainingScope in scope.ContainingScopes(returnThis: false))
+      foreach (var (scope, displayClass) in DisplayClasses)
+      foreach (var (_, captures) in displayClass.Closures)
       {
-        if (DisplayClasses.TryGetValue(evenMoreContainingScope, out var containingDisplayClass))
-        {
-          // already connected to some display class
-          if (containingDisplayClass == parentDisplayClass) return;
+        if (captures.IsSubsetOf(displayClass.ScopeMembers)) continue;
 
-          if (captures.Overlaps(containingDisplayClass.ScopeMembers))
+        // connect to containing display class containing closures
+        foreach (var containingScope in scope.ContainingScopes(returnThis: false))
+        {
+          if (DisplayClasses.TryGetValue(containingScope, out var parentDisplayClass))
           {
-            displayClass.ParentDisplayClass = containingDisplayClass;
+            displayClass.ParentDisplayClass = parentDisplayClass;
             break;
           }
         }
@@ -180,7 +169,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       public int Index { get; }
       public HashSet<IDeclaredElement> ScopeMembers { get; } = new HashSet<IDeclaredElement>();
-      public List<ICSharpClosure> ClosuresWithCaptures { get; } = new List<ICSharpClosure>();
+      public OneToSetMap<ICSharpClosure, IDeclaredElement> Closures { get; } = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
       public bool RequiredToBeLoweredIntoReferenceType { get; private set; }
 
       // we can only know it when we are exiting
@@ -198,14 +187,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
         // update 'FirstCapturedVariableLocation'
       }
-
-      public void AddClosureWithCaptures([NotNull] ICSharpClosure closure)
-      {
-        ClosuresWithCaptures.Add(closure);
-
-
-      }
-
 
       public HashSet<IDeclaredElement> GetDangerousToCaptureElements()
       {
@@ -264,6 +245,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (captures.Count > 0)
       {
         UpdateContainingDisplayClassWithClosureWithCaptures(closure, captures);
+        // todo: do this
+        // Captures.RemoveKey(closure);
       }
       else
       {
@@ -282,9 +265,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var dangerousCaptures = displayClass.GetDangerousToCaptureElements();
 
-      foreach (var closure in displayClass.ClosuresWithCaptures)
+      foreach (var closure in displayClass.Closures)
       {
-        var captures = Captures[closure];
+        
 
         // can compute implicit capture
         //   compute "dangerous" members first

@@ -52,27 +52,20 @@ namespace ReSharperPlugin.HeapView.Tests
 
             foreach (var (localScope, displayClass) in inspector.DisplayClasses.OrderBy(x => x.Value.Index))
             {
-              writer.WriteLine($"    display class #{displayClass.Index}: '{PresentScope(localScope)}'");
+              writer.WriteLine($"  class #{displayClass.Index}: '{PresentScope(localScope)}'");
 
-              var captures = displayClass.ScopeMembers.Select(PresentElement).ToList();
+              var members = displayClass.ScopeMembers.Select(PresentElement).ToList();
               if (displayClass.ParentDisplayClass is { Index: var index })
-                captures.Add($"parent display class #{index}");
+                members.Add($"parent display class #{index}");
 
-              writer.WriteLine($"       captures: {captures.AggregateString(separator: ", ")}");
-              writer.WriteLine($"       closures: {displayClass.ClosuresWithCaptures.Count}");
+              writer.WriteLine($"    members: {members.AggregateString(separator: ", ")}");
+              writer.WriteLine($"    closures: {displayClass.Closures.Count}");
 
-              foreach (var closure in displayClass.ClosuresWithCaptures)
+              foreach (var (closure, caps) in displayClass.Closures)
               {
-                writer.WriteLine($"         {PresentClosure(closure)}");
+                writer.WriteLine($"      {PresentClosure(closure)}");
+                writer.WriteLine($"        captures: {caps.Select(PresentElement).AggregateString(separator: ", ")}");
               }
-            }
-
-            writer.WriteLine($"> captures: {inspector.Captures.Count}");
-
-            foreach (var (closure, captures) in inspector.Captures)
-            {
-              writer.WriteLine($"    {PresentClosure(closure)}");
-              writer.WriteLine($"       captures: {captures.Select(PresentElement).AggregateString(separator: ", ")}");
             }
 
             writer.WriteLine($"> captureless: {inspector.CapturelessClosures.Count}");
