@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace ReSharperPlugin.HeapView.Analyzers
@@ -59,7 +60,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
         case IFieldDeclaration { Initial: { } }:
         case IEventDeclaration { Initial: { } }:
         case IPropertyDeclaration { Initial: { } }:
-          return new ClosuresInspector(declaration, null);
+          return new ClosuresInspector(declaration, topLevelParameterOwner: null);
 
         default:
           return null;
@@ -68,7 +69,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     public void Run()
     {
-      myDeclaration.ProcessDescendants(this);
+      myDeclaration.ProcessThisAndDescendants(this);
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
@@ -78,8 +79,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     // todo: remove?
     [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
 
-    [NotNull]
-    private DisplayClassInfo GetOrCreateDisplayClassForCapture([NotNull] IDeclaredElement capture)
+    private void CreateOrUpdateDisplayClassForCapture([NotNull] IDeclaredElement capture)
     {
       var captureScope = GetScopeForCapture(capture);
 
@@ -90,22 +90,42 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
 
       displayClass.AddCapture(capture);
+    }
 
-      return displayClass;
+    private void UpdateContainingDisplayClassWithClosureWithCaptures([NotNull] ICSharpClosure closure, ISet<IDeclaredElement> captures)
+    {
+
+      foreach (var containingScope in closure.ContainingScopes(returnThis: false))
+      {
+        if (DisplayClasses.TryGetValue(containingScope, out var displayClass))
+        {
+          // attach only if captures have intersection with some containing display class
+          if (captures.Overlaps(displayClass.ScopeMembers))
+          {
+            displayClass.AddClosureWithCaptures(closure);
+            return;
+          }
+        }
+      }
+
+      Assertion.Fail("Should not be reachable");
     }
 
     [NotNull, Pure]
-    private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
+    private static IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
       if (capture is IParameter { IsValueVariable: true } valueParameter)
       {
-        capture = (IAccessor) valueParameter.ContainingParametersOwner.NotNull();
+        var accessor = (IAccessor) valueParameter.ContainingParametersOwner.NotNull();
+        var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>().NotNull();
+        return (IScope) accessorDeclaration;
       }
 
       var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
-      var containingScope = firstDeclaration.GetContainingScope(returnThis: true);
+      var containingScope = firstDeclaration.GetContainingScope(returnThis: false);
       if (containingScope == null)
       {
+        // todo: remove
         GC.KeepAlive(firstDeclaration);
       }
 
@@ -126,8 +146,14 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
 
       public int Index { get; }
-      public HashSet<IDeclaredElement> Captures { get; } = new HashSet<IDeclaredElement>();
-      public HashSet<ICSharpClosure> Closures { get; } = new HashSet<ICSharpClosure>();
+      public HashSet<IDeclaredElement> ScopeMembers { get; } = new HashSet<IDeclaredElement>();
+      public List<ICSharpClosure> ClosuresWithCaptures { get; } = new List<ICSharpClosure>();
+      public bool RequiredToBeLoweredIntoReferenceType { get; private set; }
+
+      // we can only know it when we are exiting
+      public bool ShouldHaveParentDisplayClassReference { get; set; }
+
+
       [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; private set; }
 
       public TreeTextRange FirstCapturedVariableLocation { get; private set; }
@@ -135,13 +161,43 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       public void AddCapture([NotNull] IDeclaredElement capture)
       {
-        Captures.Add(capture);
+        ScopeMembers.Add(capture);
 
         // update 'FirstCapturedVariableLocation'
+      }
+
+      public void AddClosureWithCaptures([NotNull] ICSharpClosure closure)
+      {
+        ClosuresWithCaptures.Add(closure);
+
+
+      }
+
+
+      public HashSet<IDeclaredElement> GetDangerousToCaptureElements()
+      {
+        var captureElements = new HashSet<IDeclaredElement>();
+
+        foreach (var member in ScopeMembers)
+        {
+          // todo: include structs, unconstrained generics
+          if (member is ITypeOwner { Type: { Classify: TypeClassification.REFERENCE_TYPE } })
+          {
+            captureElements.Add(member);
+          }
+        }
+
+        return captureElements;
+      }
+
+      public void Finalize()
+      {
+        
       }
     }
 
     public bool ProcessingIsFinished => false;
+    //public bool InteriorShouldBeProcessed(ITreeNode element) => !(element is ILocalFunctionDeclaration);
     public bool InteriorShouldBeProcessed(ITreeNode element) => true;
 
     public void ProcessBeforeInterior(ITreeNode element)
@@ -160,9 +216,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
     public void ProcessAfterInterior(ITreeNode element)
     {
       if (element is ICSharpClosure closure)
-      {
         ProcessClosureAfterInterior(closure);
-      }
+
+      if (element is IScope scope)
+        ProcessDisplayClassAfterScopeInterior(scope);
     }
 
     private void ProcessClosureAfterInterior([NotNull] ICSharpClosure closure)
@@ -170,9 +227,46 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var lastClosure = myCurrentClosures.Pop();
       Assertion.Assert(lastClosure == closure, "lastClosure == closure");
 
-      if (!Captures.ContainsKey(closure))
+      var captures = Captures[closure];
+      if (captures.Count > 0)
+      {
+        UpdateContainingDisplayClassWithClosureWithCaptures(closure, captures);
+      }
+      else
       {
         CapturelessClosures.Add(closure);
+      }
+    }
+
+    private void ProcessDisplayClassAfterScopeInterior([NotNull] IScope scope)
+    {
+      if (!scope.IsActiveScope()) return;
+
+      var displayClass = DisplayClasses.TryGetValue(scope);
+      if (displayClass == null) return;
+
+      displayClass.Finalize();
+
+      var dangerousCaptures = displayClass.GetDangerousToCaptureElements();
+
+      foreach (var closure in displayClass.ClosuresWithCaptures)
+      {
+        var captures = Captures[closure];
+
+        // can compute implicit capture
+        //   compute "dangerous" members first
+        //   - base display class members can be "dangerous" as well :/
+        //   compute intersection with "dangerous"
+        //   note somewhere
+        // can compute outer capture
+
+        if (!captures.IsSubsetOf(displayClass.ScopeMembers))
+        {
+          displayClass.ShouldHaveParentDisplayClassReference = true;
+        }
+
+        // todo: do this later?
+        // Captures.RemoveKey(closure);
       }
     }
 
@@ -258,7 +352,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var parameterOwner = parameter.ContainingParametersOwner;
       if (parameterOwner == null) return; // should not happen anyway
 
-      GetOrCreateDisplayClassForCapture(parameter);
+      CreateOrUpdateDisplayClassForCapture(parameter);
 
       foreach (var closure in myCurrentClosures)
       {
@@ -272,10 +366,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (localVariable.IsConstant) return;
 
-      GetOrCreateDisplayClassForCapture(localVariable);
+      CreateOrUpdateDisplayClassForCapture(localVariable);
 
       var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>().NotNull();
-      //var variableScope = variableDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
 
       foreach (var closure in myCurrentClosures)
       {
@@ -289,8 +382,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private void AddLocalFunctionCapture([NotNull] ILocalFunction localFunction)
     {
+      if (localFunction.IsStatic) return; // todo: is this correct?
+
+      CreateOrUpdateDisplayClassForCapture(localFunction);
+
       var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>().NotNull();
-      //var functionScope = localFunctionDeclaration.GetContainingScope<ILocalScope>(returnThis: true).NotNull();
 
       foreach (var closure in myCurrentClosures)
       {

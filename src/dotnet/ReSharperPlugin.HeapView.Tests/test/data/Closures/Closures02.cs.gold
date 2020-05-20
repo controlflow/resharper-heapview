@@ -2,6 +2,9 @@
 > display classes: 1
     display class #0: 'public SomeClass(string cp)     : ba...'
        captures: parameter 'cp'
+       closures: 2
+         lambda expr  '() => cp + "ctor initializer"'
+         lambda expr  '() => cp + "ctor body"'
 > captures: 2
     lambda expr  '() => cp + "ctor initializer"'
        captures: parameter 'cp'
@@ -12,8 +15,13 @@ method 'Method'
 > display classes: 2
     display class #0: 'public string Method(string mp) {   ...'
        captures: parameter 'mp'
+       closures: 2
+         lambda expr  '() => mp + "method"'
+         local func   'void Local(string lp) => F(() => mp +...'
     display class #1: 'void Local(string lp) => F(() => mp +...'
        captures: parameter 'lp'
+       closures: 1
+         lambda expr  '() => mp + lp + "local func"'
 > captures: 3
     lambda expr  '() => mp + "method"'
        captures: parameter 'mp'
@@ -31,6 +39,8 @@ accessor 'set_Property'
 > display classes: 1
     display class #0: 'set { F(() => value + "property.set"); }'
        captures: parameter 'value'
+       closures: 1
+         lambda expr  '() => value + "property.set"'
 > captures: 1
     lambda expr  '() => value + "property.set"'
        captures: parameter 'value'
@@ -39,6 +49,8 @@ indexer 'this'
 > display classes: 1
     display class #0: 'public string this[string ip] => F(()...'
        captures: parameter 'ip'
+       closures: 1
+         lambda expr  '() => ip + "indexer"'
 > captures: 1
     lambda expr  '() => ip + "indexer"'
        captures: parameter 'ip'
@@ -47,6 +59,8 @@ accessor 'get_Item'
 > display classes: 1
     display class #0: 'public string this[string ip2, int x]...'
        captures: parameter 'ip2'
+       closures: 1
+         lambda expr  '() => ip2 + "indexer2.get"'
 > captures: 1
     lambda expr  '() => ip2 + "indexer2.get"'
        captures: parameter 'ip2'
@@ -55,8 +69,11 @@ accessor 'set_Item'
 > display classes: 2
     display class #0: 'public string this[string ip2, int x]...'
        captures: parameter 'ip2'
+       closures: 0
     display class #1: 'set => F(() => ip2 + value + "indexer...'
        captures: parameter 'value'
+       closures: 1
+         lambda expr  '() => ip2 + value + "indexer2.get"'
 > captures: 1
     lambda expr  '() => ip2 + value + "indexer2.get"'
        captures: parameter 'ip2', parameter 'value'
@@ -65,6 +82,8 @@ operator 'implicit string'
 > display classes: 1
     display class #0: 'public static implicit operator strin...'
        captures: parameter 'op'
+       closures: 1
+         lambda expr  '() => op + "operator"'
 > captures: 1
     lambda expr  '() => op + "operator"'
        captures: parameter 'op'

@@ -2,8 +2,12 @@
 > display classes: 2
     display class #0: '{       var local2 = "local2";     ...'
        captures: local variable 'local2'
+       closures: 1
+         lambda expr  '() => local2 + local'
     display class #1: '{     var local = "local";     cons...'
        captures: local variable 'local'
+       closures: 1
+         lambda expr  '() => {       var local2 = "local2";...'
 > captures: 2
     lambda expr  '() => local2 + local'
        captures: local variable 'local2', local variable 'local'
@@ -14,8 +18,12 @@ method 'Unsafe'
 > display classes: 2
     display class #0: '{     ref var refLocal = ref array[0...'
        captures: local variable 'refLocal'
+       closures: 1
+         lambda expr  '() => refLocal.ToString()'
     display class #1: 'fixed (int* ptr = &array[0]) {      ...'
        captures: local variable 'ptr'
+       closures: 1
+         lambda expr  '() => ptr->ToString()'
 > captures: 2
     lambda expr  '() => refLocal.ToString()'
        captures: local variable 'refLocal'
@@ -26,6 +34,9 @@ method 'Catch'
 > display classes: 1
     display class #0: 'catch (Exception exception) when (Dec...'
        captures: local variable 'outVar', local variable 'exception'
+       closures: 2
+         lambda expr  '() => outVar'
+         lambda expr  '() => exception.ToString()'
 > captures: 2
     lambda expr  '() => outVar'
        captures: local variable 'outVar'
@@ -36,26 +47,52 @@ method 'OutVars'
 > display classes: 11
     display class #0: '{     DeclaresVar(out var statement)...'
        captures: local variable 'statement', local variable 'declarationStatement'
+       closures: 1
+         lambda expr  '() => statement + declarationStatement'
     display class #1: 'do { }     while (DeclaresVar(out va...'
        captures: local variable 'doVariable'
+       closures: 1
+         lambda expr  '() => doVariable'
     display class #2: 'foreach ((var iterator1, var (iterato...'
        captures: local variable 'iterator1', local variable 'iterator2', local variable 'foreachCollection'
+       closures: 1
+         lambda expr  '() => iterator1 + iterator2 + foreach...'
     display class #3: 'for (DeclaresVar(out var forInitializ...'
        captures: local variable 'forInitializer', local variable 'forCondition'
+       closures: 2
+         lambda expr  '() => forInitializer'
+         lambda expr  '() => forInitializer + forCondition'
     display class #4: 'DeclaresVar(out var forIterator), F((...'
        captures: local variable 'forIterator'
+       closures: 1
+         lambda expr  '() => forIterator'
     display class #5: '() => DeclaresVar(out var lambdaVar) ...'
        captures: local variable 'lambdaVar'
+       closures: 1
+         lambda expr  '() => lambdaVar'
     display class #6: '=> DeclaresVar(out var localFuncVar) ...'
        captures: local variable 'localFuncVar'
+       closures: 1
+         lambda expr  '() => localFuncVar'
     display class #7: 'case string caseVar when DeclaresVar(...'
        captures: local variable 'switchSection', local variable 'caseVar', local variable 'line1'
+       closures: 2
+         lambda expr  '() => switchSection + caseVar'
+         lambda expr  '() => line1'
     display class #8: 'case string caseVar2:         var li...'
        captures: local variable 'caseVar2', local variable 'line2'
+       closures: 1
+         lambda expr  '() => caseVar2 + line2'
     display class #9: 'string armVar => DeclaresVar(out var ...'
        captures: local variable 'armOutVar', local variable 'armVar'
+       closures: 1
+         lambda expr  '() => armOutVar + armVar'
     display class #10: 'for (var forVariable = DeclaresVar(ou...'
        captures: local variable 'forInitializer', local variable 'forVariable'
+       closures: 3
+         lambda expr  '() => forInitializer'
+         lambda expr  '() => forVariable + forInitializer'
+         lambda expr  '() => forVariable + forInitializer'
 > captures: 15
     lambda expr  '() => statement + declarationStatement'
        captures: local variable 'statement', local variable 'declarationStatement'
@@ -99,6 +136,8 @@ constructor 'SomeClass'
 > display classes: 1
     display class #0: 'public SomeClass()     : this(out va...'
        captures: local variable 'ctorInitializer'
+       closures: 1
+         lambda expr  '() => ctorInitializer'
 > captures: 1
     lambda expr  '() => ctorInitializer'
        captures: local variable 'ctorInitializer'
@@ -107,18 +146,35 @@ method 'EmbeddedScope'
 > display classes: 7
     display class #0: 'if (DeclaresVar(out var ifEmbedded) &...'
        captures: local variable 'ifEmbedded'
+       closures: 1
+         lambda expr  '() => ifEmbedded'
     display class #1: '_ = DeclaresVar(out var expressionEmb...'
        captures: local variable 'expressionEmbedded'
+       closures: 1
+         lambda expr  '() => expressionEmbedded'
     display class #2: 'switch (DeclaresVar(out var switchEmb...'
        captures: local variable 'switchEmbedded'
+       closures: 1
+         lambda expr  '() => switchEmbedded'
     display class #3: 'throw new MyException(DeclaresVar(out...'
        captures: local variable 'throwStandalone'
+       closures: 1
+         lambda expr  '() => throwStandalone'
     display class #4: '{       if (flag)         throw new...'
        captures: local variable 'throwEmbedded'
+       closures: 1
+         lambda expr  '() => throwEmbedded'
     display class #5: 'return DeclaresVar(out var returnEmbe...'
        captures: local variable 'returnEmbedded'
+       closures: 1
+         lambda expr  '() => returnEmbedded'
     display class #6: '{     if (flag)       if (DeclaresV...'
        captures: local variable 'ifStandalone', local variable 'expressionStandalone', local variable 'switchStandalone', local variable 'returnStandalone'
+       closures: 4
+         lambda expr  '() => ifStandalone'
+         lambda expr  '() => expressionStandalone'
+         lambda expr  '() => switchStandalone'
+         lambda expr  '() => returnStandalone'
 > captures: 10
     lambda expr  '() => ifEmbedded'
        captures: local variable 'ifEmbedded'
