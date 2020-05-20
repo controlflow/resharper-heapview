@@ -51,6 +51,22 @@ method 'S'
     lambda expr  '() => i + "cc"'
        captures: local variable 'i'
 > captureless: 0
+method 'S2'
+> display classes: 2
+    display class #0: '{     var x = "aaa";     if (x.Leng...'
+       captures: local variable 'x'
+       closures: 1
+         lambda expr  '() => x'
+    display class #1: '{       var y = "bbb";       F(() =...'
+       captures: local variable 'y'
+       closures: 1
+         lambda expr  '() => {         F(() => x);        ...'
+> captures: 2
+    lambda expr  '() => x'
+       captures: local variable 'x'
+    lambda expr  '() => {         F(() => x);        ...'
+       captures: local variable 'x', local variable 'y'
+> captureless: 0
 method 'F'
 > display classes: 0
 > captures: 0

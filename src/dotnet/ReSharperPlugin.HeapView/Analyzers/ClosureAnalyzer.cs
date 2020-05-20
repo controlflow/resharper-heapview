@@ -55,6 +55,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       // report closures allocations
       if (inspector.Captures.Count > 0)
       {
+
+
         ReportClosureAllocations(declaration, inspector.TopLevelParametersOwner, inspector, consumer);
       }
 

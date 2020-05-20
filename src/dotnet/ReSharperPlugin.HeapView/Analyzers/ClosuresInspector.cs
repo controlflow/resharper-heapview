@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
@@ -70,6 +71,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
     public void Run()
     {
       myDeclaration.ProcessThisAndDescendants(this);
+
+      foreach (var (scope, displayClass) in DisplayClasses)
+      foreach (var closure in displayClass.ClosuresWithCaptures)
+      {
+        var captures = Captures[closure];
+        if (!captures.IsSubsetOf(displayClass.ScopeMembers))
+        {
+          ConnectToParentDisplayClasses(scope, displayClass, captures);
+        }
+      }
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
@@ -92,9 +103,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
       displayClass.AddCapture(capture);
     }
 
-    private void UpdateContainingDisplayClassWithClosureWithCaptures([NotNull] ICSharpClosure closure, ISet<IDeclaredElement> captures)
+    private void UpdateContainingDisplayClassWithClosureWithCaptures(
+      [NotNull] ICSharpClosure closure, [NotNull] ISet<IDeclaredElement> captures)
     {
-
       foreach (var containingScope in closure.ContainingScopes(returnThis: false))
       {
         if (DisplayClasses.TryGetValue(containingScope, out var displayClass))
@@ -109,6 +120,28 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
 
       Assertion.Fail("Should not be reachable");
+    }
+
+    private void ConnectToParentDisplayClasses(
+      [NotNull] IScope scope, [NotNull] DisplayClassInfo displayClass, [NotNull] ISet<IDeclaredElement> captures)
+    {
+      var parentDisplayClass = displayClass.ParentDisplayClass;
+
+      // connect to containing display class containing closures
+      foreach (var evenMoreContainingScope in scope.ContainingScopes(returnThis: false))
+      {
+        if (DisplayClasses.TryGetValue(evenMoreContainingScope, out var containingDisplayClass))
+        {
+          // already connected to some display class
+          if (containingDisplayClass == parentDisplayClass) return;
+
+          if (captures.Overlaps(containingDisplayClass.ScopeMembers))
+          {
+            displayClass.ParentDisplayClass = containingDisplayClass;
+            break;
+          }
+        }
+      }
     }
 
     [NotNull, Pure]
@@ -154,7 +187,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       public bool ShouldHaveParentDisplayClassReference { get; set; }
 
 
-      [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; private set; }
+      [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; internal set; }
 
       public TreeTextRange FirstCapturedVariableLocation { get; private set; }
 
@@ -260,10 +293,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
         //   note somewhere
         // can compute outer capture
 
-        if (!captures.IsSubsetOf(displayClass.ScopeMembers))
-        {
-          displayClass.ShouldHaveParentDisplayClassReference = true;
-        }
+
 
         // todo: do this later?
         // Captures.RemoveKey(closure);

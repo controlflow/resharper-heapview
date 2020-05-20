@@ -19,7 +19,7 @@ method 'Method'
          lambda expr  '() => mp + "method"'
          local func   'void Local(string lp) => F(() => mp +...'
     display class #1: 'void Local(string lp) => F(() => mp +...'
-       captures: parameter 'lp'
+       captures: parameter 'lp', parent display class #0
        closures: 1
          lambda expr  '() => mp + lp + "local func"'
 > captures: 3
@@ -71,7 +71,7 @@ accessor 'set_Item'
        captures: parameter 'ip2'
        closures: 0
     display class #1: 'set => F(() => ip2 + value + "indexer...'
-       captures: parameter 'value'
+       captures: parameter 'value', parent display class #0
        closures: 1
          lambda expr  '() => ip2 + value + "indexer2.get"'
 > captures: 1

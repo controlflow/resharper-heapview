@@ -46,5 +46,32 @@ public class DisplayClasses {
     }
   }
 
+  public void S2() {
+    var x = "aaa";
+    if (x.Length > 0) {
+      var y = "bbb";
+      F(() => {
+        F(() => x);
+        return y;
+      });
+    }
+  }
+
+  public void S3() {
+    var x = "aaa";
+    if (x.Length > 0) {
+      var y = "bbb";
+      F(() => {
+        var z = "ccc";
+        F(() => x + z);
+        return y;
+      });
+        
+      F(() => {
+        return F(() => y);
+      });
+    }
+  }
+
   public static string F(Func<string> func) => func();
 }

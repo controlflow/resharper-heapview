@@ -1,7 +1,7 @@
 ﻿method 'Ordinary'
 > display classes: 2
     display class #0: '{       var local2 = "local2";     ...'
-       captures: local variable 'local2'
+       captures: local variable 'local2', parent display class #1
        closures: 1
          lambda expr  '() => local2 + local'
     display class #1: '{     var local = "local";     cons...'

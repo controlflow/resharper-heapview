@@ -53,7 +53,12 @@ namespace ReSharperPlugin.HeapView.Tests
             foreach (var (localScope, displayClass) in inspector.DisplayClasses.OrderBy(x => x.Value.Index))
             {
               writer.WriteLine($"    display class #{displayClass.Index}: '{PresentScope(localScope)}'");
-              writer.WriteLine($"       captures: {displayClass.ScopeMembers.Select(PresentElement).AggregateString(separator: ", ")}");
+
+              var captures = displayClass.ScopeMembers.Select(PresentElement).ToList();
+              if (displayClass.ParentDisplayClass is { Index: var index })
+                captures.Add($"parent display class #{index}");
+
+              writer.WriteLine($"       captures: {captures.AggregateString(separator: ", ")}");
               writer.WriteLine($"       closures: {displayClass.ClosuresWithCaptures.Count}");
 
               foreach (var closure in displayClass.ClosuresWithCaptures)
