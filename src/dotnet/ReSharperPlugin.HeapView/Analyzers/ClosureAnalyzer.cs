@@ -2,14 +2,12 @@
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using JetBrains.Collections;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
@@ -23,6 +21,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
   // todo: generics can be introduces by local functions - not a problem in Roslyn
   // todo: report delegate allocations from method group
   // todo: implement "Implicitly captured closure" warning
+  // todo: document how this-only captures do not allocate display class
 
   [ElementProblemAnalyzer(
     ElementTypes: new[] {
@@ -52,8 +51,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       inspector.Run();
 
+      foreach (var displayClass in inspector.DisplayClasses.Values)
+      {
+        var displayClassDescription = FormatClosureDescription(displayClass.ScopeMembers);
+
+
+
+      }
+
       // report closures allocations
-      if (inspector.Captures.Count > 0)
+      //if (inspector.Captures.Count > 0)
       {
 
 
@@ -77,10 +84,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
       [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
     {
       // report allocations of delegate instances and expression trees
-      foreach (var (closure, captures) in inspector.Captures)
+      /*foreach (var (closure, captures) in inspector.Captures)
       {
         // local function is the only closure construct that do not allocates itself, it's usages do
-        if (closure is ILocalFunctionDeclaration) continue;
+        //if (closure is ILocalFunctionDeclaration) continue;
 
         var highlightingRange = GetClosureRange(closure);
         if (!highlightingRange.IsValid()) continue;
@@ -99,80 +106,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
           TryReportClosurelessOverloads(closure, consumer);
         }
       }
+      */
 
-      // todo: document how this-only captures do not allocate display class
+      
 
-      // compute the backwards map, IDeclaredElement -> it's display class scope
-      var scopesMap = new Dictionary<IDeclaredElement, ILocalScope>();
-
-      foreach (var (scope, captures) in inspector.CapturesOfScope)
-      foreach (var capture in captures)
-      {
-        scopesMap[capture] = scope;
-      }
-
-      // highlight first captured entity per every scope
-      foreach (var (localScope, caps) in inspector.CapturesOfScope)
-      {
-        if (inspector.IsDisplayClassForScopeCanBeLoweredToStruct(localScope))
-        {
-          continue; // do not report
-        }
-
-        // compute display class creation point
-        var firstOffset = TreeOffset.MaxValue;
-        IDeclaredElement firstCapture = null;
-
-        foreach (var capture in caps)
-        {
-          // todo: where this-only closure is created?
-          if (capture is IFunction) continue;
-
-          var offset = GetCaptureStartOffset(capture);
-          if (offset < firstOffset)
-          {
-            firstOffset = offset;
-            firstCapture = capture;
-          }
-        }
-
-        var scopeClosure = FormatClosureDescription(caps);
-
-        // collect outer captures
-        JetHashSet<IDeclaredElement> outerCaptures = null;
-        foreach (var (closure, captures) in inspector.Captures)
-        {
-          if (!localScope.Contains(closure)) continue;
-
-          // for every closure that is located inside current local scope
-
-
-          foreach (var capture in captures)
-          {
-            if (!scopesMap.TryGetValue(capture, out var scope)) continue;
-
-            if (localScope.Contains(scope)) continue;
-
-            outerCaptures ??= new JetHashSet<IDeclaredElement>();
-            outerCaptures.Add(capture);
-          }
-        }
-
-        if (outerCaptures != null)
-        {
-          var description = FormatClosureDescription(outerCaptures);
-          scopeClosure += $" + (outer closure of {description})";
-        }
-
-        if (firstCapture != null)
-        {
-          var anchor = GetCaptureHighlightingRange(topDeclaration, thisElement, firstCapture, out var highlightingRange);
-          if (anchor != null && highlightingRange.IsValid())
-          {
-            consumer.AddHighlighting(new ClosureAllocationHighlighting(anchor, scopeClosure), highlightingRange);
-          }
-        }
-      }
     }
 
     private static void TryReportClosurelessOverloads([NotNull] ICSharpClosure closure, [NotNull] IHighlightingConsumer consumer)
@@ -194,7 +131,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    [NotNull]
+    [NotNull, Pure]
     private static string FormatClosureDescription([NotNull] ISet<IDeclaredElement> declaredElements)
     {
       int parameters = 0, vars = 0;
@@ -360,21 +297,24 @@ namespace ReSharperPlugin.HeapView.Analyzers
         case ILocalFunctionDeclaration localFunctionDeclaration:
           return localFunctionDeclaration.GetNameDocumentRange();
 
-        case IQueryParameterPlatform queryParameterPlatform:
-        {
-          var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
-          if (previousToken != null && previousToken.GetTokenType().IsKeyword)
-            return previousToken.GetDocumentRange();
-
-          var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
-          if (queryClause != null)
-            return queryClause.FirstKeyword.GetDocumentRange();
-
-          goto default;
-        }
+        case IQueryParameterPlatform parameterPlatform:
+          return GetQueryRange(parameterPlatform);
 
         default:
           return DocumentRange.InvalidRange;
+      }
+
+      static DocumentRange GetQueryRange(IQueryParameterPlatform parameterPlatform)
+      {
+        var previousToken = parameterPlatform.GetPreviousMeaningfulToken();
+        if (previousToken != null && previousToken.GetTokenType().IsKeyword)
+          return previousToken.GetDocumentRange();
+
+        var queryClause = parameterPlatform.GetContainingNode<IQueryClause>();
+        if (queryClause != null)
+          return queryClause.FirstKeyword.GetDocumentRange();
+
+        return DocumentRange.InvalidRange;
       }
     }
 

@@ -28,6 +28,7 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestClosures02() { DoNamedTest2(); }
     [Test] public void TestClosures03() { DoNamedTest2(); }
     [Test] public void TestClosures04() { DoNamedTest2(); }
+    [Test] public void TestClosures05() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
@@ -44,17 +45,19 @@ namespace ReSharperPlugin.HeapView.Tests
             var inspector = ClosuresInspector.TryBuild(declaration);
             if (inspector == null) continue;
 
-            writer.WriteLine(PresentElement(declaration.DeclaredElement));
-
             inspector.Run();
 
+            if (inspector.DisplayClasses.Count == 0 && inspector.CapturelessClosures.Count == 0) continue;
+
+            writer.WriteLine(PresentElement(declaration.DeclaredElement));
             writer.WriteLine($"> display classes: {inspector.DisplayClasses.Count}");
 
             foreach (var (localScope, displayClass) in inspector.DisplayClasses.OrderBy(x => x.Value.Index))
             {
               writer.WriteLine($"  class #{displayClass.Index}: '{PresentScope(localScope)}'");
 
-              var members = displayClass.ScopeMembers.Select(PresentElement).ToList();
+              var members = displayClass.ScopeMembers.Select(PresentCaptureElement).ToList();
+
               if (displayClass.ParentDisplayClass is { Index: var index })
                 members.Add($"parent display class #{index}");
 
@@ -93,6 +96,13 @@ namespace ReSharperPlugin.HeapView.Tests
           default:
             throw new ArgumentOutOfRangeException(nameof(closure));
         }
+      }
+
+      static string PresentCaptureElement(IDeclaredElement declaredElement)
+      {
+        if (declaredElement is ITypeMember) return "'this' reference";
+
+        return PresentElement(declaredElement);
       }
 
       static string PresentElement(IDeclaredElement declaredElement)

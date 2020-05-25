@@ -1,0 +1,25 @@
+﻿method 'M'
+> display classes: 2
+  class #0: '{     F(() => Text);     F(() => th...'
+    members: 'this' reference, local variable 'x'
+    closures: 2
+      lambda expr  '() => Text'
+        captures: method 'M'
+      lambda expr  '() => this.ToString()'
+        captures: method 'M'
+  class #1: '{       var y = x + "yyy";       F(...'
+    members: local variable 'y', parent display class #0
+    closures: 1
+      lambda expr  '() => x + y + Text'
+        captures: local variable 'x', local variable 'y', method 'M'
+> captureless: 2
+  local func   'string L() => "L";'
+  lambda expr  '() => {         var z = "zzz";     ...'
+property 'P'
+> display classes: 1
+  class #0: '=> x => x + Text'
+    members: 'this' reference
+    closures: 1
+      lambda expr  'x => x + Text'
+        captures: property 'P'
+> captureless: 0

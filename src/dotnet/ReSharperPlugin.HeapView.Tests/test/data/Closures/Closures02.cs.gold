@@ -16,7 +16,7 @@ method 'Method'
       lambda expr  '() => mp + "method"'
         captures: parameter 'mp'
       local func   'void Local(string lp) => F(() => mp +...'
-        captures: parameter 'mp', parameter 'lp'
+        captures: parameter 'mp'
   class #1: 'void Local(string lp) => F(() => mp +...'
     members: parameter 'lp', parent display class #0
     closures: 1
@@ -24,9 +24,6 @@ method 'Method'
         captures: parameter 'mp', parameter 'lp'
 > captureless: 1
   local func   'string OtherLocal() {       return n...'
-accessor 'get_Property'
-> display classes: 0
-> captureless: 0
 accessor 'set_Property'
 > display classes: 1
   class #0: 'set { F(() => value + "property.set"); }'
@@ -69,10 +66,4 @@ operator 'implicit string'
     closures: 1
       lambda expr  '() => op + "operator"'
         captures: parameter 'op'
-> captureless: 0
-method 'F'
-> display classes: 0
-> captureless: 0
-constructor 'BaseClass'
-> display classes: 0
 > captureless: 0

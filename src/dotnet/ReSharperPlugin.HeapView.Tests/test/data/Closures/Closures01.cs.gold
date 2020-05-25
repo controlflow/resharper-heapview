@@ -70,6 +70,3 @@ property 'AutoProperty'
 > display classes: 0
 > captureless: 1
   lambda expr  '() => "auto-property"'
-method 'F'
-> display classes: 0
-> captureless: 0

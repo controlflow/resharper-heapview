@@ -104,9 +104,6 @@ method 'OutVars'
   lambda expr  '() => DeclaresVar(out var lambdaVar) ...'
   local func   'bool LocalFunc() => DeclaresVar(out v...'
 constructor 'SomeClass'
-> display classes: 0
-> captureless: 0
-constructor 'SomeClass'
 > display classes: 1
   class #0: 'public SomeClass()     : this(out va...'
     members: local variable 'ctorInitializer'
@@ -157,13 +154,4 @@ method 'EmbeddedScope'
         captures: local variable 'switchStandalone'
       lambda expr  '() => returnStandalone'
         captures: local variable 'returnStandalone'
-> captureless: 0
-method 'F'
-> display classes: 0
-> captureless: 0
-method 'C'
-> display classes: 0
-> captureless: 0
-constructor 'MyException'
-> display classes: 0
 > captureless: 0

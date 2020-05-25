@@ -73,6 +73,3 @@ method 'S3'
       lambda expr  '() => {         return F(() => y); /...'
         captures: local variable 'y'
 > captureless: 0
-method 'F'
-> display classes: 0
-> captureless: 0

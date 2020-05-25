@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace ReSharperPlugin.HeapView.Analyzers
@@ -23,6 +22,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
     [NotNull] private readonly ICSharpDeclaration myDeclaration;
     [CanBeNull] private readonly IParametersOwner myTopLevelParametersOwner;
     [NotNull] private readonly Stack<ICSharpClosure> myCurrentClosures;
+    [NotNull] private readonly OneToSetMap<ICSharpClosure, IDeclaredElement> myCaptures;
+
+    [NotNull] private readonly OneToSetMap<ILocalFunction, ILocalFunction> myLocalInvocations;
+    [NotNull] private readonly HashSet<ILocalFunction> myDelayedFunctions;
+
     private int myDisplayClassCounter;
 
     public ClosuresInspector([NotNull] ICSharpDeclaration declaration, [CanBeNull] IParametersOwner topLevelParameterOwner)
@@ -31,14 +35,14 @@ namespace ReSharperPlugin.HeapView.Analyzers
       myTopLevelParametersOwner = topLevelParameterOwner;
       myCurrentClosures = new Stack<ICSharpClosure>();
 
-      Captures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
-      CapturesOfScope = new OneToSetMap<ILocalScope, IDeclaredElement>();
-      ClosuresOfScope = new OneToSetMap<ILocalScope, ICSharpClosure>();
+      myCaptures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
       DisplayClasses = new Dictionary<IScope, DisplayClassInfo>();
+
+      myLocalInvocations = new OneToSetMap<ILocalFunction, ILocalFunction>();
+      myDelayedFunctions = new HashSet<ILocalFunction>();
 
       AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
       CapturelessClosures = new List<ICSharpClosure>();
-      DelayedUseLocalFunctions = new OneToListMap<ILocalFunction, IReferenceExpression>();
     }
 
     [CanBeNull, Pure]
@@ -76,15 +80,18 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
+
     [NotNull] public Dictionary<IScope, DisplayClassInfo> DisplayClasses { get; }
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
-
-    // todo: remove?
-    [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; }
 
     private void CreateOrUpdateDisplayClassForCapture([NotNull] IDeclaredElement capture)
     {
       var captureScope = GetScopeForCapture(capture);
+
+      if (myCurrentClosures.TryPeek() is { } currentClosure && currentClosure.Contains(captureScope))
+      {
+        return; // not a capture
+      }
 
       if (!DisplayClasses.TryGetValue(captureScope, out var displayClass))
       {
@@ -93,25 +100,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
 
       displayClass.AddCapture(capture);
-    }
-
-    private void UpdateContainingDisplayClassWithClosureWithCaptures(
-      [NotNull] ICSharpClosure closure, [NotNull] ISet<IDeclaredElement> captures)
-    {
-      foreach (var containingScope in closure.ContainingScopes(returnThis: false))
-      {
-        if (DisplayClasses.TryGetValue(containingScope, out var displayClass))
-        {
-          // attach only if captures have intersection with some containing display class
-          if (captures.Overlaps(displayClass.ScopeMembers))
-          {
-            displayClass.Closures.AddRange(closure, captures);
-            return;
-          }
-        }
-      }
-
-      Assertion.Fail("Should not be reachable");
     }
 
     private void ConnectDisplayClassesToParentOnes()
@@ -134,31 +122,36 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     [NotNull, Pure]
-    private static IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
+    private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
       if (capture is IParameter { IsValueVariable: true } valueParameter)
       {
         var accessor = (IAccessor) valueParameter.ContainingParametersOwner.NotNull();
         var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>().NotNull();
+
         return (IScope) accessorDeclaration;
       }
 
-      var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
-      var containingScope = firstDeclaration.GetContainingScope(returnThis: false);
-      if (containingScope == null)
+      if (capture.Equals(myTopLevelParametersOwner))
       {
-        // todo: remove
-        GC.KeepAlive(firstDeclaration);
+        switch (myDeclaration)
+        {
+          case ICSharpFunctionDeclaration { Body: { } body }:
+            return (IScope) body;
+          case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+            return (IScope) arrowClause;
+        }
+
+        Assertion.Fail("Should not be reachable");
       }
 
-      return containingScope.NotNull();
+      var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
+      var containingScope = firstDeclaration.GetContainingScope(returnThis: false).NotNull();
+
+      return containingScope;
     }
 
-    [Obsolete] [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; }
-    [Obsolete] [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; }
-
     [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
-    [NotNull] public OneToListMap<ILocalFunction, IReferenceExpression> DelayedUseLocalFunctions { get; }
 
     public sealed class DisplayClassInfo
     {
@@ -170,16 +163,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
       public int Index { get; }
       public HashSet<IDeclaredElement> ScopeMembers { get; } = new HashSet<IDeclaredElement>();
       public OneToSetMap<ICSharpClosure, IDeclaredElement> Closures { get; } = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
-      public bool RequiredToBeLoweredIntoReferenceType { get; private set; }
 
       // we can only know it when we are exiting
-      public bool ShouldHaveParentDisplayClassReference { get; set; }
-
 
       [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; internal set; }
 
       public TreeTextRange FirstCapturedVariableLocation { get; private set; }
-
 
       public void AddCapture([NotNull] IDeclaredElement capture)
       {
@@ -203,16 +192,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
         return captureElements;
       }
-
-      public void Finalize()
-      {
-        
-      }
     }
 
     public bool ProcessingIsFinished => false;
-    //public bool InteriorShouldBeProcessed(ITreeNode element) => !(element is ILocalFunctionDeclaration);
     public bool InteriorShouldBeProcessed(ITreeNode element) => true;
+
+    #region Before interior
 
     public void ProcessBeforeInterior(ITreeNode element)
     {
@@ -227,74 +212,22 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
-    public void ProcessAfterInterior(ITreeNode element)
-    {
-      if (element is ICSharpClosure closure)
-        ProcessClosureAfterInterior(closure);
-
-      if (element is IScope scope)
-        ProcessDisplayClassAfterScopeInterior(scope);
-    }
-
-    private void ProcessClosureAfterInterior([NotNull] ICSharpClosure closure)
-    {
-      var lastClosure = myCurrentClosures.Pop();
-      Assertion.Assert(lastClosure == closure, "lastClosure == closure");
-
-      var captures = Captures[closure];
-      if (captures.Count > 0)
-      {
-        UpdateContainingDisplayClassWithClosureWithCaptures(closure, captures);
-        // todo: do this
-        // Captures.RemoveKey(closure);
-      }
-      else
-      {
-        CapturelessClosures.Add(closure);
-      }
-    }
-
-    private void ProcessDisplayClassAfterScopeInterior([NotNull] IScope scope)
-    {
-      if (!scope.IsActiveScope()) return;
-
-      var displayClass = DisplayClasses.TryGetValue(scope);
-      if (displayClass == null) return;
-
-      displayClass.Finalize();
-
-      var dangerousCaptures = displayClass.GetDangerousToCaptureElements();
-
-      foreach (var closure in displayClass.Closures)
-      {
-        
-
-        // can compute implicit capture
-        //   compute "dangerous" members first
-        //   - base display class members can be "dangerous" as well :/
-        //   compute intersection with "dangerous"
-        //   note somewhere
-        // can compute outer capture
-
-
-
-        // todo: do this later?
-        // Captures.RemoveKey(closure);
-      }
-    }
-
-    private void ProcessExpression(ICSharpExpression expression)
+    private void ProcessExpression([NotNull] ICSharpExpression expression)
     {
       switch (expression)
       {
         case IThisExpression _:
         case IBaseExpression _:
+        {
           AddThisCapture();
           break;
+        }
 
         case IReferenceExpression { QualifierExpression: null } referenceExpression:
+        {
           ProcessNotQualifiedReferenceExpression(referenceExpression);
           break;
+        }
       }
     }
 
@@ -311,28 +244,12 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       if (myCurrentClosures.Count > 0 && declaredElement != null)
       {
-        ProcessElementUsedByNonQualifiedReferenceExpressionInClosure(declaredElement);
+        ProcessElementUsedByNonQualifiedReferenceExpressionInsideClosure(declaredElement, referenceExpression);
       }
     }
 
-    private void AddThisCapture()
-    {
-      if (myCurrentClosures.Count == 0) return;
-
-      var parametersOwner = myTopLevelParametersOwner;
-      if (parametersOwner == null) return;
-
-      if (parametersOwner is ITypeMember { IsStatic: true }) return;
-
-      // todo: display class?
-
-      foreach (var closure in myCurrentClosures)
-      {
-        Captures.Add(closure, parametersOwner);
-      }
-    }
-
-    private void ProcessElementUsedByNonQualifiedReferenceExpressionInClosure([NotNull] IDeclaredElement declaredElement)
+    private void ProcessElementUsedByNonQualifiedReferenceExpressionInsideClosure(
+      [NotNull] IDeclaredElement declaredElement, [NotNull] IReferenceExpression referenceExpression)
     {
       switch (declaredElement)
       {
@@ -360,6 +277,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+    #endregion
+    #region Captures
+
     private void AddParameterCapture([NotNull] IParameter parameter)
     {
       var parameterOwner = parameter.ContainingParametersOwner;
@@ -369,9 +289,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       foreach (var closure in myCurrentClosures)
       {
-        Captures.Add(closure, parameter);
-
         if (ReferenceEquals(parameterOwner, closure)) break;
+
+        myCaptures.Add(closure, parameter);
       }
     }
 
@@ -386,10 +306,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
       foreach (var closure in myCurrentClosures)
       {
         if (closure.Contains(variableDeclaration)
-            && !(closure is IQueryParameterPlatform) // todo: query inside query?
-            ) break;
+            // todo: query inside query?
+            && !(closure is IQueryParameterPlatform)) break;
 
-        Captures.Add(closure, localVariable);
+        myCaptures.Add(closure, localVariable);
       }
     }
 
@@ -405,7 +325,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         if (closure.Contains(localFunctionDeclaration)) break;
 
-        Captures.Add(closure, localFunction);
+        myCaptures.Add(closure, localFunction);
       }
     }
 
@@ -422,6 +342,104 @@ namespace ReSharperPlugin.HeapView.Analyzers
       AddThisCapture();
     }
 
+    private void AddThisCapture()
+    {
+      if (myCurrentClosures.Count == 0) return;
+
+      var parametersOwner = myTopLevelParametersOwner;
+      if (parametersOwner == null) return;
+
+      if (parametersOwner is ITypeMember { IsStatic: true }) return;
+
+      CreateOrUpdateDisplayClassForCapture(parametersOwner);
+
+      foreach (var closure in myCurrentClosures)
+      {
+        myCaptures.Add(closure, parametersOwner);
+      }
+    }
+
+    #endregion
+    #region After interior
+
+    public void ProcessAfterInterior(ITreeNode element)
+    {
+      if (element is ICSharpClosure closure)
+      {
+        ProcessClosureAfterInterior(closure);
+      }
+
+      if (element is IScope scope)
+      {
+        ProcessDisplayClassAfterScopeInterior(scope);
+      }
+    }
+
+    private void ProcessClosureAfterInterior([NotNull] ICSharpClosure closure)
+    {
+      var lastClosure = myCurrentClosures.Pop();
+      Assertion.Assert(lastClosure == closure, "lastClosure == closure");
+
+      var captures = myCaptures[closure];
+      if (captures.Count > 0)
+      {
+        AppendClosureToContainingDisplayClass();
+        myCaptures.RemoveKey(closure);
+      }
+      else
+      {
+        CapturelessClosures.Add(closure);
+      }
+
+
+      void AppendClosureToContainingDisplayClass()
+      {
+        foreach (var containingScope in closure.ContainingScopes(returnThis: false))
+        {
+          if (!DisplayClasses.TryGetValue(containingScope, out var displayClass)) continue;
+
+          // attach only if captures have intersection with some containing display class
+          if (!captures.Overlaps(displayClass.ScopeMembers)) continue;
+
+          // copy data
+          displayClass.Closures.AddRange(closure, captures);
+          return;
+        }
+
+        Assertion.Fail("Should not be reachable");
+      }
+    }
+
+    private void ProcessDisplayClassAfterScopeInterior([NotNull] IScope scope)
+    {
+      if (!scope.IsActiveScope()) return;
+
+      var displayClass = DisplayClasses.TryGetValue(scope);
+      if (displayClass == null) return;
+
+      var dangerousCaptures = displayClass.GetDangerousToCaptureElements();
+
+      foreach (var closure in displayClass.Closures)
+      {
+        
+
+        // can compute implicit capture
+        //   compute "dangerous" members first
+        //   - base display class members can be "dangerous" as well :/
+        //   compute intersection with "dangerous"
+        //   note somewhere
+        // can compute outer capture
+
+
+
+        // todo: do this later?
+        // Captures.RemoveKey(closure);
+      }
+    }
+
+    #endregion
+    #region Local functions
+
     private void ProcessLocalFunctionUsage([NotNull] ILocalFunction localFunction, [NotNull] IReferenceExpression referenceExpression)
     {
       var containingExpression = referenceExpression.GetContainingParenthesizedExpression();
@@ -429,10 +447,49 @@ namespace ReSharperPlugin.HeapView.Analyzers
       if (invocationExpression == null)
       {
         // note: nameof(LocalFunc) already filtered here
-
-        DelayedUseLocalFunctions.Add(localFunction, referenceExpression);
+        myDelayedFunctions.Add(localFunction);
+      }
+      else
+      {
+        // todo: should not be applied inside delayed func itself
+        if (IsInsideDelayedBodyClosure())
+        {
+          myDelayedFunctions.Add(localFunction);
+        }
+        else
+        {
+          if (myCurrentClosures.Count > 0)
+          {
+            var currentClosure = myCurrentClosures.Peek();
+            if (currentClosure is ILocalFunctionDeclaration { DeclaredElement: var currentLocalFunction })
+            {
+              myLocalInvocations.Add(localFunction, currentLocalFunction);
+            }
+          }
+        }
       }
     }
+
+    // todo: should not work for local functions
+    [Pure]
+    private bool IsInsideDelayedBodyClosure()
+    {
+      if (myCurrentClosures.Count == 0) return false;
+
+      var closure = myCurrentClosures.Peek();
+      if (closure is ILocalFunctionDeclaration { DeclaredElement: var localFunction })
+      {
+        return localFunction.IsIterator || localFunction.IsAsync;
+      }
+
+      return false;
+    }
+
+    
+
+    
+
+    #endregion
 
     // note: invoked only inside closures
     private void ProcessAnonymousProperty([NotNull] IQueryAnonymousTypeProperty anonymousProperty)
@@ -448,26 +505,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
           AnonymousTypes.Add(declaration);
         }
       }
-    }
-
-    public bool IsDisplayClassForScopeCanBeLoweredToStruct([NotNull] ILocalScope scope)
-    {
-      foreach (var closure in ClosuresOfScope[scope])
-      {
-        if (closure is ILocalFunctionDeclaration localFunctionDeclaration)
-        {
-          if (DelayedUseLocalFunctions.ContainsKey(localFunctionDeclaration.DeclaredElement))
-          {
-            return false;
-          }
-        }
-        else // lambdas, query - all delayed
-        {
-          return false;
-        }
-      }
-
-      return true;
     }
   }
 }
