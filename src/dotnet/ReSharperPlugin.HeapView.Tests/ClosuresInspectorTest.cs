@@ -29,6 +29,7 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestClosures03() { DoNamedTest2(); }
     [Test] public void TestClosures04() { DoNamedTest2(); }
     [Test] public void TestClosures05() { DoNamedTest2(); }
+    [Test] public void TestClosures06() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
@@ -55,6 +56,8 @@ namespace ReSharperPlugin.HeapView.Tests
             foreach (var (localScope, displayClass) in inspector.DisplayClasses.OrderBy(x => x.Value.Index))
             {
               writer.WriteLine($"  class #{displayClass.Index}: '{PresentScope(localScope)}'");
+
+              writer.WriteLine($"    kind: {displayClass.Kind.ToString().Decapitalize()}");
 
               var members = displayClass.ScopeMembers.Select(PresentCaptureElement).ToList();
 

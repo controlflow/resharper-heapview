@@ -189,5 +189,22 @@ namespace ReSharperPlugin.HeapView
         return builder.Append(ellipsis).ToString();
       }
     }
+
+    [Pure, NotNull]
+    public static string Decapitalize([NotNull] this string text)
+    {
+      if (text == null)
+        throw new ArgumentNullException(nameof(text));
+
+      if (text.Length == 0) return text;
+
+      var first = text[0];
+      var lowFirst = char.ToLowerInvariant(first);
+      if (lowFirst == first) return text;
+
+      var builder = new StringBuilder(text);
+      builder[0] = lowFirst;
+      return builder.ToString();
+    }
   }
 }

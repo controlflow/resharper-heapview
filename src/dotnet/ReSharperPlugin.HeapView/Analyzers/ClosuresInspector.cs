@@ -77,12 +77,69 @@ namespace ReSharperPlugin.HeapView.Analyzers
       myDeclaration.ProcessThisAndDescendants(this);
 
       ConnectDisplayClassesToParentOnes();
+      OptimizeDisplayClasses();
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
 
     [NotNull] public Dictionary<IScope, DisplayClassInfo> DisplayClasses { get; }
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
+    [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
+
+    #region Display classes
+
+    public sealed class DisplayClassInfo
+    {
+      public DisplayClassInfo(int index)
+      {
+        Index = index;
+        Closures = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
+        ScopeMembers = new HashSet<IDeclaredElement>();
+        Kind = DisplayClassKind.Class;
+      }
+
+      public int Index { get; }
+      public HashSet<IDeclaredElement> ScopeMembers { get; }
+      public OneToSetMap<ICSharpClosure, IDeclaredElement> Closures { get; }
+
+      // we can only know it when we are exiting
+
+      [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; set; }
+
+      public TreeTextRange FirstCapturedVariableLocation { get; private set; }
+
+      public DisplayClassKind Kind { get; set; }
+
+      public void AddCapture([NotNull] IDeclaredElement capture)
+      {
+        ScopeMembers.Add(capture);
+
+        // update 'FirstCapturedVariableLocation'
+      }
+
+      public HashSet<IDeclaredElement> GetDangerousToCaptureElements()
+      {
+        var captureElements = new HashSet<IDeclaredElement>();
+
+        foreach (var member in ScopeMembers)
+        {
+          // todo: include structs, unconstrained generics
+          if (member is ITypeOwner { Type: { Classify: TypeClassification.REFERENCE_TYPE } })
+          {
+            captureElements.Add(member);
+          }
+        }
+
+        return captureElements;
+      }
+    }
+
+    public enum DisplayClassKind
+    {
+      Class,
+      Struct,
+      ClassInstance
+    }
 
     private void CreateOrUpdateDisplayClassForCapture([NotNull] IDeclaredElement capture)
     {
@@ -121,6 +178,23 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+    private void OptimizeDisplayClasses()
+    {
+      if (myTopLevelParametersOwner != null)
+      {
+        var topScope = GetScopeForCapture(myTopLevelParametersOwner);
+
+        if (DisplayClasses.TryGetValue(topScope, out var topDisplayClass))
+        {
+          if (topDisplayClass.ScopeMembers.Count == 1
+              && topDisplayClass.ScopeMembers.Contains(myTopLevelParametersOwner))
+          {
+            topDisplayClass.Kind = DisplayClassKind.ClassInstance;
+          }
+        }
+      }
+    }
+
     [NotNull, Pure]
     private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
@@ -151,53 +225,11 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return containingScope;
     }
 
-    [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
-
-    public sealed class DisplayClassInfo
-    {
-      public DisplayClassInfo(int index)
-      {
-        Index = index;
-      }
-
-      public int Index { get; }
-      public HashSet<IDeclaredElement> ScopeMembers { get; } = new HashSet<IDeclaredElement>();
-      public OneToSetMap<ICSharpClosure, IDeclaredElement> Closures { get; } = new OneToSetMap<ICSharpClosure, IDeclaredElement>();
-
-      // we can only know it when we are exiting
-
-      [CanBeNull] public DisplayClassInfo ParentDisplayClass { get; internal set; }
-
-      public TreeTextRange FirstCapturedVariableLocation { get; private set; }
-
-      public void AddCapture([NotNull] IDeclaredElement capture)
-      {
-        ScopeMembers.Add(capture);
-
-        // update 'FirstCapturedVariableLocation'
-      }
-
-      public HashSet<IDeclaredElement> GetDangerousToCaptureElements()
-      {
-        var captureElements = new HashSet<IDeclaredElement>();
-
-        foreach (var member in ScopeMembers)
-        {
-          // todo: include structs, unconstrained generics
-          if (member is ITypeOwner { Type: { Classify: TypeClassification.REFERENCE_TYPE } })
-          {
-            captureElements.Add(member);
-          }
-        }
-
-        return captureElements;
-      }
-    }
+    #endregion
+    #region Before interior
 
     public bool ProcessingIsFinished => false;
     public bool InteriorShouldBeProcessed(ITreeNode element) => true;
-
-    #region Before interior
 
     public void ProcessBeforeInterior(ITreeNode element)
     {
@@ -390,7 +422,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         CapturelessClosures.Add(closure);
       }
-
 
       void AppendClosureToContainingDisplayClass()
       {
