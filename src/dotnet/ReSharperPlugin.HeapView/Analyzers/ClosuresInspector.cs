@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -16,22 +16,24 @@ namespace ReSharperPlugin.HeapView.Analyzers
 {
   // todo: check ctor initializers
   // todo: https://sharplab.io/#v2:EYLgtghgzgLgpgJwD4AEBMBGAsAKFygZgAJ0iBhIgb1yNpOJQBYiBZACgEoqa7eBLAHYwiADyIBeIgAYA3D1615Cpb2o4FGonwBmRNmPGTGaDis2VeZzXTEBqW3PXXNAcwD2MN0QA2EYHG9HZzoAXytlJ2Dwy0jnX39vEGi6NWCFQWEATwlpILS6FABWAB4MgD4ibQBXAQBjHM4JCrsiTLz8ogB6TvdPHz8A9ucw2N4R63ClEZCgA===
+  // todo: iterator/async function allocations?
+  // todo: closure creation point if display contains only local functions
 
   public sealed class ClosuresInspector : IRecursiveElementProcessor
   {
-    [NotNull] private readonly ICSharpDeclaration myDeclaration;
+    [NotNull] private readonly ICSharpDeclaration myTopLevelDeclaration;
     [CanBeNull] private readonly IParametersOwner myTopLevelParametersOwner;
     [NotNull] private readonly Stack<ICSharpClosure> myCurrentClosures;
     [NotNull] private readonly OneToSetMap<ICSharpClosure, IDeclaredElement> myCaptures;
 
     [NotNull] private readonly OneToSetMap<ILocalFunction, ILocalFunction> myLocalInvocations;
-    [NotNull] private readonly HashSet<ILocalFunction> myDelayedFunctions;
+    [NotNull] private readonly HashSet<ILocalFunction> myDelayedUseFunctions;
 
     private int myDisplayClassCounter;
 
     public ClosuresInspector([NotNull] ICSharpDeclaration declaration, [CanBeNull] IParametersOwner topLevelParameterOwner)
     {
-      myDeclaration = declaration;
+      myTopLevelDeclaration = declaration;
       myTopLevelParametersOwner = topLevelParameterOwner;
       myCurrentClosures = new Stack<ICSharpClosure>();
 
@@ -39,10 +41,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
       DisplayClasses = new Dictionary<IScope, DisplayClassInfo>();
 
       myLocalInvocations = new OneToSetMap<ILocalFunction, ILocalFunction>();
-      myDelayedFunctions = new HashSet<ILocalFunction>();
+      myDelayedUseFunctions = new HashSet<ILocalFunction>();
 
-      AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
       CapturelessClosures = new List<ICSharpClosure>();
+      AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
     }
 
     [CanBeNull, Pure]
@@ -74,7 +76,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     public void Run()
     {
-      myDeclaration.ProcessThisAndDescendants(this);
+      myTopLevelDeclaration.ProcessThisAndDescendants(this);
 
       ConnectDisplayClassesToParentOnes();
       OptimizeDisplayClasses();
@@ -180,6 +182,14 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private void OptimizeDisplayClasses()
     {
+      foreach (var (_, displayClassInfo) in DisplayClasses)
+      {
+        if (CanBeLoweredToStruct(displayClassInfo))
+        {
+          displayClassInfo.Kind = DisplayClassKind.Struct;
+        }
+      }
+
       if (myTopLevelParametersOwner != null)
       {
         var topScope = GetScopeForCapture(myTopLevelParametersOwner);
@@ -195,34 +205,79 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+    private bool CanBeLoweredToStruct([NotNull] DisplayClassInfo displayClass)
+    {
+      var closures = displayClass.Closures;
+      if (closures.Count == 0) return false;
+
+      if (!closures.All(x => x.Key is ILocalFunctionDeclaration)) return false;
+
+      foreach (var (closure, _) in closures)
+      {
+        var localFunctionDeclaration = (ILocalFunctionDeclaration) closure;
+        var localFunction = localFunctionDeclaration.DeclaredElement;
+
+        // used to create delegate instance somewhere
+        if (myDelayedUseFunctions.Contains(localFunction)) return false;
+
+        // delayed body means it's closure should be on the heap as well
+        if (localFunction.IsIterator || localFunction.IsAsync) return false;
+
+
+
+        //foreach (var closureThatInvokesThisFunction in myLocalInvocations[localFunction])
+        //{
+
+        //}
+      }
+
+      return true;
+    }
+
+    // todo: partial methods
+
     [NotNull, Pure]
     private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
-      if (capture is IParameter { IsValueVariable: true } valueParameter)
+      if (capture is IParameter parameter)
       {
-        var accessor = (IAccessor) valueParameter.ContainingParametersOwner.NotNull();
-        var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>().NotNull();
+        if (parameter.IsValueVariable)
+          return GetValueParameterSetterScope(parameter);
 
-        return (IScope) accessorDeclaration;
-      }
+        var parametersOwner = parameter.ContainingParametersOwner.NotNull();
+        var ownerDeclaration = parametersOwner.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
+        var ownerScope = ownerDeclaration.GetContainingScope(returnThis: true).NotNull();
 
-      if (capture.Equals(myTopLevelParametersOwner))
-      {
-        switch (myDeclaration)
-        {
-          case ICSharpFunctionDeclaration { Body: { } body }:
-            return (IScope) body;
-          case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
-            return (IScope) arrowClause;
-        }
-
-        Assertion.Fail("Should not be reachable");
+        return CoerceMemberScopeToBodyScope(ownerScope);
       }
 
       var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
-      var containingScope = firstDeclaration.GetContainingScope(returnThis: false).NotNull();
+      var returnThis = capture.Equals(myTopLevelParametersOwner);
+      var containingScope = firstDeclaration.GetContainingScope(returnThis).NotNull();
 
-      return containingScope;
+      return CoerceMemberScopeToBodyScope(containingScope);
+
+      static IScope GetValueParameterSetterScope(IParameter parameter)
+      {
+        var accessor = (IAccessor) parameter.ContainingParametersOwner.NotNull();
+        var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>().NotNull();
+
+        return CoerceMemberScopeToBodyScope((IScope) accessorDeclaration);
+      }
+    }
+
+    [NotNull, Pure]
+    private static IScope CoerceMemberScopeToBodyScope([NotNull] IScope scope)
+    {
+      switch (scope)
+      {
+        case ICSharpFunctionDeclaration { Body: { } body }:
+          return (IScope) body;
+        case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+          return (IScope) arrowClause;
+        default:
+          return scope;
+      }
     }
 
     #endregion
@@ -349,6 +404,10 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       if (localFunction.IsStatic) return; // todo: is this correct?
 
+      // recursive invocation is not a capture
+      var currentClosure = myCurrentClosures.TryPeek();
+      if (currentClosure != null && Equals(currentClosure.DeclaredElement, localFunction)) return;
+
       CreateOrUpdateDisplayClassForCapture(localFunction);
 
       var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>().NotNull();
@@ -427,7 +486,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
       {
         foreach (var containingScope in closure.ContainingScopes(returnThis: false))
         {
-          if (!DisplayClasses.TryGetValue(containingScope, out var displayClass)) continue;
+          var fixedScope = CoerceMemberScopeToBodyScope(containingScope);
+
+          if (!DisplayClasses.TryGetValue(fixedScope, out var displayClass)) continue;
 
           // attach only if captures have intersection with some containing display class
           if (!captures.Overlaps(displayClass.ScopeMembers)) continue;
@@ -473,31 +534,53 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
     private void ProcessLocalFunctionUsage([NotNull] ILocalFunction localFunction, [NotNull] IReferenceExpression referenceExpression)
     {
+      // local function can be
+      // - async/iterator
+      // - invoked, the containing function can be
+      //   - that local function itself
+      //     - if delayed - 
+      //   - some other closure
+      //     - 
+
+      // - invoked recursively inside it's declaration (delayed or not)
+      //   - invoked inside some other closure
+      //   - invoked directly in local function scope
+      // - invoked outside it's declaration (delayed scope or not)
+      //   - invoked inside some other closure
+      //   - invoked directly in containing scope
+      // - used to create delegate instance
+      //   * no struct display class optimization
+
       var containingExpression = referenceExpression.GetContainingParenthesizedExpression();
       var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(containingExpression);
       if (invocationExpression == null)
       {
         // note: nameof(LocalFunc) already filtered here
-        myDelayedFunctions.Add(localFunction);
+        myDelayedUseFunctions.Add(localFunction);
       }
       else
       {
-        // todo: should not be applied inside delayed func itself
         if (IsInsideDelayedBodyClosure())
         {
-          myDelayedFunctions.Add(localFunction);
+          //
         }
-        else
-        {
-          if (myCurrentClosures.Count > 0)
-          {
-            var currentClosure = myCurrentClosures.Peek();
-            if (currentClosure is ILocalFunctionDeclaration { DeclaredElement: var currentLocalFunction })
-            {
-              myLocalInvocations.Add(localFunction, currentLocalFunction);
-            }
-          }
-        }
+
+        // todo: should not be applied inside delayed func itself
+        //if (IsInsideDelayedBodyClosure())
+        //{
+        //  myDelayedUseFunctions.Add(localFunction);
+        //}
+        //else
+        //{
+        //  if (myCurrentClosures.Count > 0)
+        //  {
+        //    var currentClosure = myCurrentClosures.Peek();
+        //    if (currentClosure is ILocalFunctionDeclaration { DeclaredElement: var currentLocalFunction })
+        //    {
+        //      myLocalInvocations.Add(localFunction, currentLocalFunction);
+        //    }
+        //  }
+        //}
       }
     }
 

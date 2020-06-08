@@ -14,6 +14,7 @@ public class C {
       L2();
       Func<int> a = () => p + u;
       L3();
+      Action l2 = L2;
     }
 
     yield break; // whole body is delayed

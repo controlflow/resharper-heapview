@@ -1,0 +1,17 @@
+﻿method 'M'
+> display classes: 2
+  class #0: '{     int x = p;     void L1() { } ...'
+    kind: struct
+    members: local variable 'x', parameter 'p'
+    closures: 1
+      local func   'void L3() => x++;'
+        captures: local variable 'x'
+  class #1: '{       int u = x;       L1();    ...'
+    kind: class
+    members: local variable 'u', parent display class #0
+    closures: 1
+      lambda expr  '() => p + u'
+        captures: parameter 'p', local variable 'u'
+> captureless: 2
+  local func   'void L1() { }'
+  local func   'void L2() { }'

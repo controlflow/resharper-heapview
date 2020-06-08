@@ -1,25 +1,28 @@
 ﻿method 'M'
 > display classes: 2
   class #0: '{     F(() => Text);     F(() => th...'
+    kind: class
     members: 'this' reference, local variable 'x'
     closures: 2
       lambda expr  '() => Text'
-        captures: method 'M'
+        captures: 'this' reference
       lambda expr  '() => this.ToString()'
-        captures: method 'M'
+        captures: 'this' reference
   class #1: '{       var y = x + "yyy";       F(...'
+    kind: class
     members: local variable 'y', parent display class #0
     closures: 1
       lambda expr  '() => x + y + Text'
-        captures: local variable 'x', local variable 'y', method 'M'
+        captures: local variable 'x', local variable 'y', 'this' reference
 > captureless: 2
   local func   'string L() => "L";'
   lambda expr  '() => {         var z = "zzz";     ...'
 property 'P'
 > display classes: 1
   class #0: '=> x => x + Text'
+    kind: classInstance
     members: 'this' reference
     closures: 1
       lambda expr  'x => x + Text'
-        captures: property 'P'
+        captures: 'this' reference
 > captureless: 0

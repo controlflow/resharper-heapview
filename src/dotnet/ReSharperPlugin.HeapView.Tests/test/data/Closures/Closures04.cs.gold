@@ -1,6 +1,7 @@
 ﻿method 'M'
 > display classes: 3
   class #0: '{       // shared display class    ...'
+    kind: class
     members: local variable 'x', local variable 'y'
     closures: 2
       lambda expr  '() => x'
@@ -8,6 +9,7 @@
       lambda expr  '() => y'
         captures: local variable 'y'
   class #1: '{       var z = "aaa";       F(() =...'
+    kind: struct
     members: local variable 'z', local function 'LocalFunc1'
     closures: 2
       local func   'string LocalFunc1() => z + "a";'
@@ -15,6 +17,7 @@
       local func   'string Other() { z += "a2"; return Lo...'
         captures: local variable 'z', local function 'LocalFunc1'
   class #2: '{       var w = "bbb";       // thi...'
+    kind: class
     members: local function 'LocalFunc2', local variable 'w'
     closures: 2
       lambda expr  '() => LocalFunc2()'
@@ -28,6 +31,7 @@
 method 'S'
 > display classes: 2
   class #0: 'for (var i = ""; i.Length < 100; i +=...'
+    kind: class
     members: local variable 'i'
     closures: 2
       lambda expr  '() => i + "aa"'
@@ -35,6 +39,7 @@ method 'S'
       lambda expr  '() => i + "cc"'
         captures: local variable 'i'
   class #1: '{         // inner display class   ...'
+    kind: class
     members: local variable 'j', parent display class #0
     closures: 1
       lambda expr  '() => i + j + "bb"'
@@ -43,11 +48,13 @@ method 'S'
 method 'S2'
 > display classes: 2
   class #0: '{     var x = "aaa";     if (x.Leng...'
+    kind: class
     members: local variable 'x'
     closures: 1
       lambda expr  '() => x'
         captures: local variable 'x'
   class #1: '{       var y = "bbb";       F(() =...'
+    kind: class
     members: local variable 'y', parent display class #0
     closures: 1
       lambda expr  '() => {         F(() => x);        ...'
@@ -56,14 +63,17 @@ method 'S2'
 method 'S3'
 > display classes: 3
   class #0: '{ // display 0     var x = "aaa";  ...'
+    kind: class
     members: local variable 'x'
     closures: 0
   class #1: '{ // display 2         var z = "ccc"...'
+    kind: class
     members: local variable 'z', parent display class #2
     closures: 1
       lambda expr  '() => x + z'
         captures: local variable 'x', local variable 'z'
   class #2: '{ // display 1       var y = "bbb"; ...'
+    kind: class
     members: local variable 'y', parent display class #0
     closures: 3
       lambda expr  '() => { // display 2         var z =...'

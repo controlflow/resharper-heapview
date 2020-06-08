@@ -1,6 +1,7 @@
 ﻿constructor 'SomeClass'
 > display classes: 1
-  class #0: 'public SomeClass(string cp)     : ba...'
+  class #0: '=> F(() => cp + "ctor body")'
+    kind: class
     members: parameter 'cp'
     closures: 2
       lambda expr  '() => cp + "ctor initializer"'
@@ -10,14 +11,16 @@
 > captureless: 0
 method 'Method'
 > display classes: 2
-  class #0: 'public string Method(string mp) {   ...'
+  class #0: '{     F(() => mp + "method");     v...'
+    kind: class
     members: parameter 'mp'
     closures: 2
       lambda expr  '() => mp + "method"'
         captures: parameter 'mp'
       local func   'void Local(string lp) => F(() => mp +...'
         captures: parameter 'mp'
-  class #1: 'void Local(string lp) => F(() => mp +...'
+  class #1: '=> F(() => mp + lp + "local func")'
+    kind: class
     members: parameter 'lp', parent display class #0
     closures: 1
       lambda expr  '() => mp + lp + "local func"'
@@ -26,7 +29,8 @@ method 'Method'
   local func   'string OtherLocal() {       return n...'
 accessor 'set_Property'
 > display classes: 1
-  class #0: 'set { F(() => value + "property.set"); }'
+  class #0: '{ F(() => value + "property.set"); }'
+    kind: class
     members: parameter 'value'
     closures: 1
       lambda expr  '() => value + "property.set"'
@@ -34,7 +38,8 @@ accessor 'set_Property'
 > captureless: 0
 indexer 'this'
 > display classes: 1
-  class #0: 'public string this[string ip] => F(()...'
+  class #0: '=> F(() => ip + "indexer")'
+    kind: class
     members: parameter 'ip'
     closures: 1
       lambda expr  '() => ip + "indexer"'
@@ -43,6 +48,7 @@ indexer 'this'
 accessor 'get_Item'
 > display classes: 1
   class #0: 'public string this[string ip2, int x]...'
+    kind: class
     members: parameter 'ip2'
     closures: 1
       lambda expr  '() => ip2 + "indexer2.get"'
@@ -51,9 +57,11 @@ accessor 'get_Item'
 accessor 'set_Item'
 > display classes: 2
   class #0: 'public string this[string ip2, int x]...'
+    kind: class
     members: parameter 'ip2'
     closures: 0
-  class #1: 'set => F(() => ip2 + value + "indexer...'
+  class #1: '=> F(() => ip2 + value + "indexer2.get")'
+    kind: class
     members: parameter 'value', parent display class #0
     closures: 1
       lambda expr  '() => ip2 + value + "indexer2.get"'
@@ -61,7 +69,8 @@ accessor 'set_Item'
 > captureless: 0
 operator 'implicit string'
 > display classes: 1
-  class #0: 'public static implicit operator strin...'
+  class #0: '=> F(() => op + "operator")'
+    kind: class
     members: parameter 'op'
     closures: 1
       lambda expr  '() => op + "operator"'

@@ -30,6 +30,7 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestClosures04() { DoNamedTest2(); }
     [Test] public void TestClosures05() { DoNamedTest2(); }
     [Test] public void TestClosures06() { DoNamedTest2(); }
+    [Test] public void TestClosures07() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
@@ -70,7 +71,7 @@ namespace ReSharperPlugin.HeapView.Tests
               foreach (var (closure, caps) in displayClass.Closures)
               {
                 writer.WriteLine($"      {PresentClosure(closure)}");
-                writer.WriteLine($"        captures: {caps.Select(PresentElement).AggregateString(separator: ", ")}");
+                writer.WriteLine($"        captures: {caps.Select(PresentCaptureElement).AggregateString(separator: ", ")}");
               }
             }
 
