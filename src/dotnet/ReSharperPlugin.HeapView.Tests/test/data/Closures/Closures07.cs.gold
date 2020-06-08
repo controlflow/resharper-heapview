@@ -1,15 +1,15 @@
 ﻿method 'Delegate01'
 > display classes: 1
-  class #0: '{     void Local() {       Action a...'
+  class #0: 'void Delegate01(int p) {     void Lo...'
     kind: class
-    members: 'this' reference, parameter 'p'
+    members: parameter 'p', 'this' reference
     closures: 1
       local func   'void Local() {       Action a = Loca...'
         captures: 'this' reference, parameter 'p'
 > captureless: 0
 method 'Delegate02'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void Delegate02(int p) {     void Lo...'
     kind: class
     members: parameter 'p'
     closures: 1
@@ -18,18 +18,18 @@ method 'Delegate02'
 > captureless: 0
 method 'Delegate03'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void Delegate03(int p) {     void Lo...'
     kind: class
-    members: parameter 'p', local function 'Local'
+    members: parameter 'p'
     closures: 2
       local func   'void Local() {       p++;     }...'
         captures: parameter 'p'
       lambda expr  '() => {       Action a = Local;    ...'
-        captures: local function 'Local'
+        captures: parameter 'p'
 > captureless: 0
 method 'NotInvoked01'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void NotInvoked01(int p) {     void ...'
     kind: struct
     members: parameter 'p'
     closures: 1
@@ -38,7 +38,7 @@ method 'NotInvoked01'
 > captureless: 0
 method 'NotInvoked02'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void NotInvoked02(int p) {     void ...'
     kind: struct
     members: parameter 'p'
     closures: 1
@@ -47,7 +47,7 @@ method 'NotInvoked02'
 > captureless: 0
 method 'Invocation01'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void Invocation01(int p) {     void ...'
     kind: struct
     members: parameter 'p'
     closures: 1
@@ -56,7 +56,7 @@ method 'Invocation01'
 > captureless: 0
 method 'Invocation02'
 > display classes: 1
-  class #0: '{     void Local() {       p++;   ...'
+  class #0: 'void Invocation02(int p) {     void ...'
     kind: struct
     members: parameter 'p'
     closures: 1
@@ -65,7 +65,7 @@ method 'Invocation02'
 > captureless: 0
 method 'Invocation03'
 > display classes: 1
-  class #0: '{     async void Local() {       p+...'
+  class #0: 'void Invocation03(int p) {     async...'
     kind: class
     members: parameter 'p'
     closures: 2
@@ -76,7 +76,7 @@ method 'Invocation03'
 > captureless: 0
 method 'Invocation04'
 > display classes: 1
-  class #0: '{     IEnumerable Local() {       p...'
+  class #0: 'void Invocation04(int p) {     IEnum...'
     kind: class
     members: parameter 'p'
     closures: 2

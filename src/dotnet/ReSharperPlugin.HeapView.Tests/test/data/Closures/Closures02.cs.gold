@@ -1,6 +1,6 @@
 ﻿constructor 'SomeClass'
 > display classes: 1
-  class #0: '=> F(() => cp + "ctor body")'
+  class #0: 'public SomeClass(string cp)     : ba...'
     kind: class
     members: parameter 'cp'
     closures: 2
@@ -11,7 +11,7 @@
 > captureless: 0
 method 'Method'
 > display classes: 2
-  class #0: '{     F(() => mp + "method");     v...'
+  class #0: 'public string Method(string mp) {   ...'
     kind: class
     members: parameter 'mp'
     closures: 2
@@ -19,7 +19,7 @@ method 'Method'
         captures: parameter 'mp'
       local func   'void Local(string lp) => F(() => mp +...'
         captures: parameter 'mp'
-  class #1: '=> F(() => mp + lp + "local func")'
+  class #1: 'void Local(string lp) => F(() => mp +...'
     kind: class
     members: parameter 'lp', parent display class #0
     closures: 1
@@ -29,7 +29,7 @@ method 'Method'
   local func   'string OtherLocal() {       return n...'
 accessor 'set_Property'
 > display classes: 1
-  class #0: '{ F(() => value + "property.set"); }'
+  class #0: 'set { F(() => value + "property.set"); }'
     kind: class
     members: parameter 'value'
     closures: 1
@@ -38,7 +38,7 @@ accessor 'set_Property'
 > captureless: 0
 indexer 'this'
 > display classes: 1
-  class #0: '=> F(() => ip + "indexer")'
+  class #0: 'public string this[string ip] => F(()...'
     kind: class
     members: parameter 'ip'
     closures: 1
@@ -60,7 +60,7 @@ accessor 'set_Item'
     kind: class
     members: parameter 'ip2'
     closures: 0
-  class #1: '=> F(() => ip2 + value + "indexer2.get")'
+  class #1: 'set => F(() => ip2 + value + "indexer...'
     kind: class
     members: parameter 'value', parent display class #0
     closures: 1
@@ -69,7 +69,7 @@ accessor 'set_Item'
 > captureless: 0
 operator 'implicit string'
 > display classes: 1
-  class #0: '=> F(() => op + "operator")'
+  class #0: 'public static implicit operator strin...'
     kind: class
     members: parameter 'op'
     closures: 1

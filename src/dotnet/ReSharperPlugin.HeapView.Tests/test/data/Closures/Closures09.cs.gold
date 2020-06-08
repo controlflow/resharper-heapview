@@ -1,0 +1,28 @@
+﻿constructor 'C'
+> display classes: 2
+  class #0: 'public C(int x) : this(() => x++) { ...'
+    kind: class
+    members: parameter 'x'
+    closures: 1
+      lambda expr  '() => x++'
+        captures: parameter 'x'
+  class #1: '{     int y = x + 1;     Action b =...'
+    kind: class
+    members: local variable 'y', parent display class #0
+    closures: 1
+      lambda expr  '() => { y++; x++; }'
+        captures: local variable 'y', parameter 'x'
+> captureless: 0
+constructor 'C'
+> display classes: 2
+  class #0: '{     int y = x + z;     Action b =...'
+    kind: class
+    members: local variable 'y', parent display class #1
+    closures: 1
+      lambda expr  '() => { y++; x++; }'
+        captures: local variable 'y', parameter 'x'
+  class #1: 'public C(int x, int z) {     int y =...'
+    kind: class
+    members: parameter 'x'
+    closures: 0
+> captureless: 0

@@ -5,7 +5,7 @@ class LocalFunctions {
   void Delegate01(int p) {
     void Local() {
       Action a = Local;
-      Delegate01();
+      Delegate01(42);
       p++;
     }
   }

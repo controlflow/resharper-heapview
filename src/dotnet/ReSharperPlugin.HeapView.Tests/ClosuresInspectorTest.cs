@@ -31,6 +31,8 @@ namespace ReSharperPlugin.HeapView.Tests
     [Test] public void TestClosures05() { DoNamedTest2(); }
     [Test] public void TestClosures06() { DoNamedTest2(); }
     [Test] public void TestClosures07() { DoNamedTest2(); }
+    [Test] public void TestClosures08() { DoNamedTest2(); }
+    [Test] public void TestClosures09() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {

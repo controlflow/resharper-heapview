@@ -121,7 +121,7 @@ method 'OutVars'
   local func   'bool LocalFunc() => DeclaresVar(out v...'
 constructor 'SomeClass'
 > display classes: 1
-  class #0: '{     F(() => ctorInitializer);   }...'
+  class #0: 'public SomeClass()     : this(out va...'
     kind: class
     members: local variable 'ctorInitializer'
     closures: 1

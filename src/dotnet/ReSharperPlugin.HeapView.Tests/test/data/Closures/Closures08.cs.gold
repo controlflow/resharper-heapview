@@ -1,0 +1,9 @@
+﻿method 'M'
+> display classes: 1
+  class #0: 'partial void M(int p) {     Action a...'
+    kind: class
+    members: parameter 'p', 'this' reference
+    closures: 1
+      lambda expr  '() => { p++; M(123); }'
+        captures: parameter 'p', 'this' reference
+> captureless: 0

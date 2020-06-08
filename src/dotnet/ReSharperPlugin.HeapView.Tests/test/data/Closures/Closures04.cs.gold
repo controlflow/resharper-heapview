@@ -10,18 +10,18 @@
         captures: local variable 'y'
   class #1: '{       var z = "aaa";       F(() =...'
     kind: struct
-    members: local variable 'z', local function 'LocalFunc1'
+    members: local variable 'z'
     closures: 2
       local func   'string LocalFunc1() => z + "a";'
         captures: local variable 'z'
       local func   'string Other() { z += "a2"; return Lo...'
-        captures: local variable 'z', local function 'LocalFunc1'
+        captures: local variable 'z'
   class #2: '{       var w = "bbb";       // thi...'
     kind: class
-    members: local function 'LocalFunc2', local variable 'w'
+    members: local variable 'w'
     closures: 2
       lambda expr  '() => LocalFunc2()'
-        captures: local function 'LocalFunc2'
+        captures: local variable 'w'
       local func   'string LocalFunc2() => w + "b";'
         captures: local variable 'w'
 > captureless: 3

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections;
@@ -44,6 +45,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
       myDelayedUseFunctions = new HashSet<ILocalFunction>();
 
       CapturelessClosures = new List<ICSharpClosure>();
+      InstanceMethodClosures = new List<ICSharpClosure>();
       AnonymousTypes = new HashSet<IQueryRangeVariableDeclaration>();
     }
 
@@ -78,14 +80,19 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       myTopLevelDeclaration.ProcessThisAndDescendants(this);
 
+      FlattenLocalFunctionCaptures();
+      AttachClosuresToDisplayClasses();
+      PropagateThisCaptureToMembers();
       ConnectDisplayClassesToParentOnes();
-      OptimizeDisplayClasses();
+      OptimizeThisReferenceClosure();
+      OptimizeLocalFunctionsDisplayClasses();
     }
 
     [CanBeNull] public IParametersOwner TopLevelParametersOwner => myTopLevelParametersOwner;
 
     [NotNull] public Dictionary<IScope, DisplayClassInfo> DisplayClasses { get; }
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; }
+    [NotNull] public List<ICSharpClosure> InstanceMethodClosures { get; }
     [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; }
 
     #region Display classes
@@ -139,8 +146,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     public enum DisplayClassKind
     {
       Class,
-      Struct,
-      ClassInstance
+      Struct
     }
 
     private void CreateOrUpdateDisplayClassForCapture([NotNull] IDeclaredElement capture)
@@ -161,26 +167,122 @@ namespace ReSharperPlugin.HeapView.Analyzers
       displayClass.AddCapture(capture);
     }
 
+    private void FlattenLocalFunctionCaptures()
+    {
+      var toRemove = new HashSet<ILocalFunction>();
+      var additionalCaptures = new HashSet<IDeclaredElement>();
+
+      for (var hasChanges = true; hasChanges; )
+      {
+        hasChanges = false;
+
+        foreach (var (closure, captures) in myCaptures)
+        {
+          toRemove.Clear();
+          additionalCaptures.Clear();
+
+          foreach (var element in captures)
+          {
+            if (element is ILocalFunction capturedLocalFunction)
+            {
+              toRemove.Add(capturedLocalFunction);
+
+              var declaration = capturedLocalFunction.GetSingleDeclaration<ILocalFunctionDeclaration>().NotNull();
+              additionalCaptures.AddRange(myCaptures[declaration]);
+            }
+          }
+
+          if (additionalCaptures.Count > 0)
+          {
+            foreach (var additionalCapture in additionalCaptures)
+            {
+              if (myCaptures.Add(closure, additionalCapture))
+              {
+                hasChanges = true;
+              }
+            }
+          }
+
+          foreach (var localFunctionToRemove in toRemove)
+          {
+            myCaptures.Remove(closure, localFunctionToRemove);
+          }
+
+          if (hasChanges)
+            break; // can't enumerate
+        }
+      }
+    }
+
+    private void AttachClosuresToDisplayClasses()
+    {
+      foreach (var (closure, captures) in myCaptures)
+      {
+        if (captures.Count > 0)
+        {
+          AppendClosureToContainingDisplayClass();
+        }
+        else
+        {
+          CapturelessClosures.Add(closure);
+        }
+
+        void AppendClosureToContainingDisplayClass()
+        {
+          foreach (var containingScope in closure.ContainingScopes(returnThis: false))
+          {
+            if (!DisplayClasses.TryGetValue(containingScope, out var displayClass)) continue;
+
+            // attach only if captures have intersection with some containing display class
+            if (!captures.Overlaps(displayClass.ScopeMembers)) continue;
+
+            // copy data
+            displayClass.Closures.AddRange(closure, captures);
+            return;
+          }
+
+          Assertion.Fail("Should not be reachable");
+        }
+      }
+
+      myCaptures.Clear();
+    }
+
+    private void PropagateThisCaptureToMembers()
+    {
+      if (myTopLevelParametersOwner == null) return;
+
+      foreach (var (_, displayClass) in DisplayClasses)
+      {
+        if (displayClass.Closures.Values.Contains(myTopLevelParametersOwner))
+        {
+          displayClass.ScopeMembers.Add(myTopLevelParametersOwner);
+        }
+      }
+    }
+
     private void ConnectDisplayClassesToParentOnes()
     {
       foreach (var (scope, displayClass) in DisplayClasses)
-      foreach (var (_, captures) in displayClass.Closures)
       {
-        if (captures.IsSubsetOf(displayClass.ScopeMembers)) continue;
-
-        // connect to containing display class containing closures
-        foreach (var containingScope in scope.ContainingScopes(returnThis: false))
+        foreach (var (_, captures) in displayClass.Closures)
         {
-          if (DisplayClasses.TryGetValue(containingScope, out var parentDisplayClass))
+          if (captures.IsSubsetOf(displayClass.ScopeMembers)) continue;
+
+          // connect to containing display class containing closures
+          foreach (var containingScope in scope.ContainingScopes(returnThis: false))
           {
-            displayClass.ParentDisplayClass = parentDisplayClass;
-            break;
+            if (DisplayClasses.TryGetValue(containingScope, out var parentDisplayClass))
+            {
+              displayClass.ParentDisplayClass = parentDisplayClass;
+              break;
+            }
           }
         }
       }
     }
 
-    private void OptimizeDisplayClasses()
+    private void OptimizeLocalFunctionsDisplayClasses()
     {
       foreach (var (_, displayClassInfo) in DisplayClasses)
       {
@@ -189,19 +291,33 @@ namespace ReSharperPlugin.HeapView.Analyzers
           displayClassInfo.Kind = DisplayClassKind.Struct;
         }
       }
+    }
 
-      if (myTopLevelParametersOwner != null)
+    private void OptimizeThisReferenceClosure()
+    {
+      if (myTopLevelParametersOwner == null) return;
+
+      var topScope = GetScopeForCapture(myTopLevelParametersOwner);
+      if (!DisplayClasses.TryGetValue(topScope, out var thisDisplayClass)) return;
+
+      if (thisDisplayClass.ScopeMembers.Count == 1
+          && thisDisplayClass.ParentDisplayClass == null
+          && thisDisplayClass.ScopeMembers.Contains(myTopLevelParametersOwner))
       {
-        var topScope = GetScopeForCapture(myTopLevelParametersOwner);
+        // note: closures of this display class compile as instance methods
+        InstanceMethodClosures.AddRange(thisDisplayClass.Closures.Keys);
 
-        if (DisplayClasses.TryGetValue(topScope, out var topDisplayClass))
+        // note: `this` reference is inlined into child display classes
+        foreach (var (_, displayClass) in DisplayClasses)
         {
-          if (topDisplayClass.ScopeMembers.Count == 1
-              && topDisplayClass.ScopeMembers.Contains(myTopLevelParametersOwner))
+          if (displayClass.ParentDisplayClass == thisDisplayClass)
           {
-            topDisplayClass.Kind = DisplayClassKind.ClassInstance;
+            displayClass.ParentDisplayClass = null;
+            displayClass.ScopeMembers.Add(myTopLevelParametersOwner);
           }
         }
+
+        DisplayClasses.Remove(topScope);
       }
     }
 
@@ -234,8 +350,6 @@ namespace ReSharperPlugin.HeapView.Analyzers
       return true;
     }
 
-    // todo: partial methods
-
     [NotNull, Pure]
     private IScope GetScopeForCapture([NotNull] IDeclaredElement capture)
     {
@@ -245,38 +359,67 @@ namespace ReSharperPlugin.HeapView.Analyzers
           return GetValueParameterSetterScope(parameter);
 
         var parametersOwner = parameter.ContainingParametersOwner.NotNull();
-        var ownerDeclaration = parametersOwner.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
+        var ownerDeclaration = ChooseNonPartialDeclaration(parametersOwner);
         var ownerScope = ownerDeclaration.GetContainingScope(returnThis: true).NotNull();
 
-        return CoerceMemberScopeToBodyScope(ownerScope);
+        return ownerScope;
       }
 
-      var firstDeclaration = capture.GetFirstDeclaration<ICSharpDeclaration>().NotNull();
-      var returnThis = capture.Equals(myTopLevelParametersOwner);
-      var containingScope = firstDeclaration.GetContainingScope(returnThis).NotNull();
+      if (capture.Equals(myTopLevelParametersOwner))
+      {
+        return GetTopLevelThisCaptureScope(myTopLevelParametersOwner.NotNull());
+      }
 
-      return CoerceMemberScopeToBodyScope(containingScope);
+      var declaration = ChooseNonPartialDeclaration(capture);
+      var containingScope = declaration.GetContainingScope(returnThis: false).NotNull();
+
+      return containingScope;
 
       static IScope GetValueParameterSetterScope(IParameter parameter)
       {
         var accessor = (IAccessor) parameter.ContainingParametersOwner.NotNull();
         var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>().NotNull();
 
-        return CoerceMemberScopeToBodyScope((IScope) accessorDeclaration);
+        return (IScope) accessorDeclaration;
       }
     }
 
     [NotNull, Pure]
-    private static IScope CoerceMemberScopeToBodyScope([NotNull] IScope scope)
+    private static ICSharpDeclaration ChooseNonPartialDeclaration([NotNull] IDeclaredElement declaredElement)
     {
-      switch (scope)
+      foreach (var declaration in declaredElement.GetDeclarations())
+      {
+        switch (declaration)
+        {
+          case IMethodDeclaration { IsPartial: true } methodDeclaration when !methodDeclaration.HasCodeBody():
+            continue;
+          case ICSharpDeclaration csDeclaration:
+            return csDeclaration;
+        }
+      }
+
+      throw new InvalidOperationException("Declaration not found");
+    }
+
+    [NotNull, Pure]
+    private static IScope GetTopLevelThisCaptureScope([NotNull] IParametersOwner parametersOwner)
+    {
+      var declaration = ChooseNonPartialDeclaration(parametersOwner);
+
+      return declaration.GetContainingScope(returnThis: true).NotNull();
+
+      //var typeDeclaration = (IClassLikeDeclaration) declaration.GetContainingTypeDeclaration().NotNull();
+      //return (IScope) typeDeclaration.Body;
+
+
+      switch (declaration)
       {
         case ICSharpFunctionDeclaration { Body: { } body }:
           return (IScope) body;
         case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
           return (IScope) arrowClause;
         default:
-          return scope;
+          throw new InvalidOperationException("Top-level declaration without a body");
       }
     }
 
@@ -408,7 +551,8 @@ namespace ReSharperPlugin.HeapView.Analyzers
       var currentClosure = myCurrentClosures.TryPeek();
       if (currentClosure != null && Equals(currentClosure.DeclaredElement, localFunction)) return;
 
-      CreateOrUpdateDisplayClassForCapture(localFunction);
+      // note: do not create display class for the local function itself
+      // CreateOrUpdateDisplayClassForCapture(localFunction);
 
       var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>().NotNull();
 
@@ -442,7 +586,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       if (parametersOwner is ITypeMember { IsStatic: true }) return;
 
-      CreateOrUpdateDisplayClassForCapture(parametersOwner);
+      //CreateOrUpdateDisplayClassForCapture(parametersOwner);
 
       foreach (var closure in myCurrentClosures)
       {
@@ -466,39 +610,16 @@ namespace ReSharperPlugin.HeapView.Analyzers
       }
     }
 
+
     private void ProcessClosureAfterInterior([NotNull] ICSharpClosure closure)
     {
       var lastClosure = myCurrentClosures.Pop();
       Assertion.Assert(lastClosure == closure, "lastClosure == closure");
 
       var captures = myCaptures[closure];
-      if (captures.Count > 0)
-      {
-        AppendClosureToContainingDisplayClass();
-        myCaptures.RemoveKey(closure);
-      }
-      else
+      if (captures.Count == 0)
       {
         CapturelessClosures.Add(closure);
-      }
-
-      void AppendClosureToContainingDisplayClass()
-      {
-        foreach (var containingScope in closure.ContainingScopes(returnThis: false))
-        {
-          var fixedScope = CoerceMemberScopeToBodyScope(containingScope);
-
-          if (!DisplayClasses.TryGetValue(fixedScope, out var displayClass)) continue;
-
-          // attach only if captures have intersection with some containing display class
-          if (!captures.Overlaps(displayClass.ScopeMembers)) continue;
-
-          // copy data
-          displayClass.Closures.AddRange(closure, captures);
-          return;
-        }
-
-        Assertion.Fail("Should not be reachable");
       }
     }
 
