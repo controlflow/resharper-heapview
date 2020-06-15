@@ -6,14 +6,13 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-[assembly: RegisterConfigurableSeverity(
-  DelegateAllocationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
-  "Highlights places where delegate instance creation happens",
-  Severity.HINT)]
-
 namespace ReSharperPlugin.HeapView.Highlightings
 {
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
+    "Highlights places where delegate instance creation happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,

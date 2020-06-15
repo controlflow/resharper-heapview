@@ -6,26 +6,13 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-[assembly: RegisterConfigurableSeverity(
-  ObjectAllocationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation",
-  "Highlights language construct or expression where object allocation happens",
-  Severity.HINT)]
-
-[assembly: RegisterConfigurableSeverity(
-  ObjectAllocationEvidentHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation (evident)",
-  "Highlights object creation expressions where explicit allocation happens",
-  Severity.HINT)]
-
-[assembly: RegisterConfigurableSeverity(
-  ObjectAllocationPossibleHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation (possible)",
-  "Highlights language construct where object allocation can possibly happens",
-  Severity.HINT)]
-
 namespace ReSharperPlugin.HeapView.Highlightings
 {
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Object allocation",
+    "Highlights language construct or expression where object allocation happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
@@ -40,6 +27,11 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Object allocation (evident)",
+    "Highlights object creation expressions where explicit allocation happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
@@ -54,6 +46,11 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Object allocation (possible)",
+    "Highlights language construct where object allocation can possibly happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,

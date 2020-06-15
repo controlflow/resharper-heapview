@@ -6,21 +6,13 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-[assembly: RegisterConfigurableSeverity(
-  ClosureAllocationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Closure allocation",
-  "Highlights places where closure class creation happens",
-  Severity.HINT)]
-
-[assembly: RegisterConfigurableSeverity(
-  CanEliminateClosureCreationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Closure creation can be eliminated",
-  "Highlights places where closure can be eliminated by using the overload(s) of containing method invocation, " +
-  "allowing passing extra state parameter(s) to closure function",
-  Severity.SUGGESTION)]
-
 namespace ReSharperPlugin.HeapView.Highlightings
 {
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Closure allocation",
+    "Highlights places where closure class creation happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
@@ -35,6 +27,12 @@ namespace ReSharperPlugin.HeapView.Highlightings
       : base(element, MESSAGE, description) { }
   }
 
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Closure creation can be eliminated",
+    "Highlights places where closure can be eliminated by using the overload(s) of containing method invocation, " +
+    "allowing passing extra state parameter(s) to closure function",
+    Severity.SUGGESTION)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     ShowToolTipInStatusBar = false,
