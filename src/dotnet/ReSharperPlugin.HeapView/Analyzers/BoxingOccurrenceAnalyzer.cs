@@ -17,7 +17,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    ElementTypes: new[] { typeof(ICSharpExpression), typeof(IPatternWithTypeCheck) },
+    ElementTypes: new[] { typeof(ICSharpExpression), typeof(IPatternWithTypeUsage) },
     HighlightingTypes = new[] {
       typeof(BoxingAllocationHighlighting),
       typeof(PossibleBoxingAllocationHighlighting)
@@ -48,7 +48,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
           CheckDeconstructingAssignmentConversions(assignmentExpression, data, consumer);
           break;
 
-        case IPatternWithTypeCheck typeCheckPattern:
+        case IPatternWithTypeUsage typeCheckPattern:
           CheckPatternMatchingConversion(typeCheckPattern, data, consumer);
           break;
 
@@ -289,7 +289,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     private static void CheckPatternMatchingConversion(
-      [NotNull] IPatternWithTypeCheck typeCheckPattern, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] IPatternWithTypeUsage typeCheckPattern, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
     {
       var typeCheckTypeUsage = typeCheckPattern.TypeUsage;
       if (typeCheckTypeUsage == null) return;
