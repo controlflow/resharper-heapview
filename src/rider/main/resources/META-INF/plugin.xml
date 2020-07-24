@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
   <id>com.intellij.resharper.HeapAllocationsViewer</id>
   <name>Heap Allocations Viewer</name>
   <version>_PLACEHOLDER_</version>
