@@ -8,12 +8,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharperPlugin.HeapView.Rider", "src\dotnet\ReSharperPlugin.HeapView\ReSharperPlugin.HeapView.Rider.csproj", "{084172D1-A9C6-46D0-96AD-05C5B09A5E5D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{4A9ABB95-3762-448B-B5BF-099E46DB22DE}"
-	ProjectSection(SolutionItems) = preProject
-		CHANGELOG.md = CHANGELOG.md
-		src\dotnet\Plugin.props = src\dotnet\Plugin.props
-		src\rider\main\resources\META-INF\plugin.xml = src\rider\main\resources\META-INF\plugin.xml
-		README.md = README.md
-	EndProjectSection
+ProjectSection(SolutionItems) = preProject
+	src\rider\main\resources\META-INF\plugin.xml = src\rider\main\resources\META-INF\plugin.xml
+	src\dotnet\Plugin.props = src\dotnet\Plugin.props
+	README.md = README.md
+	CHANGELOG.md = CHANGELOG.md
+	gradle.properties = gradle.properties
+EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReSharperPlugin.HeapView.Tests", "src\dotnet\ReSharperPlugin.HeapView.Tests\ReSharperPlugin.HeapView.Tests.csproj", "{C5B8606B-17DB-422E-8872-28231EF95FA7}"
 EndProject

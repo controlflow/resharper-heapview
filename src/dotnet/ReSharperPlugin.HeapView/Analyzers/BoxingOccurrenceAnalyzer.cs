@@ -17,7 +17,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers
 {
   [ElementProblemAnalyzer(
-    ElementTypes: new[] { typeof(ICSharpExpression), typeof(ITypeCheckPattern) },
+    ElementTypes: new[] { typeof(ICSharpExpression), typeof(IPatternWithTypeUsage) },
     HighlightingTypes = new[] {
       typeof(BoxingAllocationHighlighting),
       typeof(PossibleBoxingAllocationHighlighting)
@@ -48,7 +48,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
           CheckDeconstructingAssignmentConversions(assignmentExpression, data, consumer);
           break;
 
-        case ITypeCheckPattern typeCheckPattern:
+        case IPatternWithTypeUsage typeCheckPattern:
           CheckPatternMatchingConversion(typeCheckPattern, data, consumer);
           break;
 
@@ -289,7 +289,7 @@ namespace ReSharperPlugin.HeapView.Analyzers
     }
 
     private static void CheckPatternMatchingConversion(
-      [NotNull] ITypeCheckPattern typeCheckPattern, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
+      [NotNull] IPatternWithTypeUsage typeCheckPattern, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
     {
       var typeCheckTypeUsage = typeCheckPattern.TypeUsage;
       if (typeCheckTypeUsage == null) return;
@@ -339,13 +339,13 @@ namespace ReSharperPlugin.HeapView.Analyzers
 
       var targetType = isExpression.IsType;
 
-      var typeOperandNode = isExpression.GetTypeOperandTypeUsageOrReferenceExpression();
-      if (typeOperandNode == null) return;
+      var typeCheckTypeUsageNode = isExpression.GetTypeCheckTypeUsageNode();
+      if (typeCheckTypeUsageNode == null) return;
 
       var classification = CanTypeCheckIntroduceBoxing(dispatchType, targetType, data);
 
       ReportBoxingAllocation(
-        dispatchType, targetType, typeOperandNode, classification, consumer,
+        dispatchType, targetType, typeCheckTypeUsageNode, classification, consumer,
         action: "type testing '{0}' value for '{1}' type");
     }
 

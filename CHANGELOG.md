@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 2020.2.5
+- Fixed plugin to signal that IDE restart is required
+
+## 2020.2.4
+- Updated for ReSharper and Rider 2020.2 EAP8
+
+## 2020.2.3
+- Updated for ReSharper and Rider 2020.2 EAP7
+
+## 2020.2.2
+- Updated for ReSharper and Rider 2020.2 EAP4
+
+## 2020.2.1
+- Updated for ReSharper and Rider 2020.2 EAP3
+
+## 2020.2.0
+- Updated for ReSharper and Rider 2020.2 EAP2
+
+## 1.2.21
+- Updated for ReSharper and Rider 2020.1
+
 ## 1.2.20
 - Updated for ReSharper and Rider 2019.3
 

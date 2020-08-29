@@ -6,20 +6,13 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-[assembly: RegisterConfigurableSeverity(
-  BoxingAllocationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Boxing allocation",
-  "Highlights language construct or expression where boxing happens",
-  Severity.HINT)]
-
-[assembly: RegisterConfigurableSeverity(
-  PossibleBoxingAllocationHighlighting.SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Possible boxing allocation",
-  "Highlights language construct or expression where boxing possibly happens",
-  Severity.HINT)]
-
 namespace ReSharperPlugin.HeapView.Highlightings
 {
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Boxing allocation",
+    "Highlights language construct or expression where boxing happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
@@ -33,7 +26,12 @@ namespace ReSharperPlugin.HeapView.Highlightings
     public BoxingAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
       : base(element, MESSAGE, description) { }
   }
-  
+
+  [RegisterConfigurableSeverity(
+    SEVERITY_ID, null,
+    HeapViewHighlightingsGroupIds.ID, "Possible boxing allocation",
+    "Highlights language construct or expression where boxing possibly happens",
+    Severity.HINT)]
   [ConfigurableSeverityHighlighting(
     SEVERITY_ID, CSharpLanguage.Name,
     AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
