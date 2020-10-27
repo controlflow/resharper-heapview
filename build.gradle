@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.jetbrains.rd:rd-gen:0.201.57") // https://github.com/JetBrains/rd#rdgen
+        classpath("com.jetbrains.rd:rd-gen:0.201.57") // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
     }
 }
 
@@ -37,9 +37,6 @@ wrapper {
 }
 
 version = ext.PluginVersion
-
-if (ext.has("username")) intellij.publish.username = ext.username
-if (ext.has("password")) intellij.publish.password = ext.password
 
 sourceSets {
     main {
@@ -95,7 +92,6 @@ intellij {
 runIde {
     // TODO: adapt runtime if necessary
     // jbrVersion("jbr_jcef-11_0_6b765.40") // https://confluence.jetbrains.com/display/JBR/Release+notes
-    args '/Users/jetbrains/code/nuke/nuke-common.sln'
 }
 
 apply plugin: 'com.jetbrains.rdgen'
@@ -159,5 +155,18 @@ prepareSandbox {
             def file = file(f)
             if (!file.exists()) throw new RuntimeException("File ${file} does not exist")
         })
+    }
+}
+
+publishPlugin {
+    token = "${PublishToken}"
+    channels(!version.contains("-") ? 'Stable' : 'EAP')
+
+    doLast {
+        exec {
+            executable "dotnet"
+            args "nuget","push","output/${DotnetPluginId}.${version}.nupkg","--api-key",token,"--source","https://plugins.jetbrains.com"
+            workingDir rootDir
+        }
     }
 }

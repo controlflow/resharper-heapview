@@ -1,6 +1,7 @@
-<Project>
+﻿<Project>
+
   <PropertyGroup>
-    <SdkVersion>2020.2.0-eap08</SdkVersion>
+    <SdkVersion>2020.3.0-eap04</SdkVersion>
 
     <Title>Heap Allocations Viewer</Title>
     <Description>Highlights local object allocations, boxing, delegates and closure creations points.</Description>
@@ -13,4 +14,5 @@
     <PackageLicenseUrl>https://github.com/controlflow/resharper-heapview/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/controlflow/resharper-heapview/master/Content/icon.png</PackageIconUrl>
   </PropertyGroup>
+
 </Project>
