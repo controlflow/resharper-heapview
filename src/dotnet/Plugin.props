@@ -15,4 +15,8 @@
     <PackageIconUrl>https://raw.githubusercontent.com/controlflow/resharper-heapview/master/Content/icon.png</PackageIconUrl>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
 </Project>
