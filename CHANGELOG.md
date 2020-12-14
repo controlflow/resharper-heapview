@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## vNext
 
-## [2020.3.0] / 2020-12-14
+## 2020.3.0
 - Added support for ReSharper and Rider 2020.3
 
 ## 2020.2.5
