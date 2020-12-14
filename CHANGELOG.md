@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## vNext
+
+## [2020.3.0] / 2020-12-14
 - Added support for ReSharper and Rider 2020.3
 
 ## 2020.2.5
@@ -95,3 +97,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 0.9
 - Initial version, support for ReSharper >8.1.
+
