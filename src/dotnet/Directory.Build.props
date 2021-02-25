@@ -19,6 +19,7 @@
   <PropertyGroup>
     <WaveVersionBase>$(SdkVersion.Substring(2,2))$(SdkVersion.Substring(5,1))</WaveVersionBase>
     <WaveVersion>$(WaveVersionBase).0.0$(SdkVersion.Substring(8))</WaveVersion>
+    <UpperWaveVersion>$(WaveVersionBase).9999.0</UpperWaveVersion>
   </PropertyGroup>
 
   <ItemGroup>
