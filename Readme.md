@@ -98,4 +98,4 @@ class Closures {
 * You can change highlighting severity or search for all issues in project/solution as usual - via Alt+Enter menu over highlighting;
 * This plugin highly relies on Microsoft's implementation of C# compiler shipping with VS,
   it may produce false positives for other C# implementations like Mono C# compiler;
-* Plugin's [changelog is here](Changelog.md).
+* Plugin's [changelog is here](CHANGELOG.md).
