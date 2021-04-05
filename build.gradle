@@ -49,18 +49,44 @@ compileKotlin {
     kotlinOptions { jvmTarget = "1.8" }
 }
 
-task compileDotNet {
+task setBuildTool {
     doLast {
+        ext.args = []
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream()
+        if (isWindows) {
+            exec {
+                executable "${rootDir}\\tools\\vswhere.exe"
+                args '-latest','-property','installationPath','-products','*'
+                standardOutput = stdout
+                workingDir rootDir
+            }
+            List<String> files = new FileNameFinder().getFileNames("${stdout.toString().trim()}\\MSBuild", "**/MSBuild.exe")
+            ext.executable = files.get(0)
+            ext.args << "/v:minimal"
+        } else {
+            ext.executable = "dotnet"
+            ext.args << "msbuild"
+        }
+        ext.args << "${DotnetSolution}"
+        ext.args << "/p:Configuration=${BuildConfiguration}"
+        ext.args << "/p:HostFullIdentifier="
+    }
+}
+
+task compileDotNet {
+    dependsOn setBuildTool
+    doLast {
+        def arguments = setBuildTool.args.clone()
+        arguments << "/t:Restore;Rebuild"
         exec {
-            executable "dotnet"
-            args "msbuild","/t:Restore;Rebuild","${DotnetSolution}","/p:Configuration=${BuildConfiguration}","/p:HostFullIdentifier="
+            executable setBuildTool.executable
+            args arguments
             workingDir rootDir
         }
     }
 }
 
 buildPlugin {
-    outputs.upToDateWhen { false }
     doLast {
         copy {
             from "${buildDir}/distributions/${rootProject.name}-${version}.zip"
@@ -70,12 +96,18 @@ buildPlugin {
         def changelogText = file("${rootDir}/CHANGELOG.md").text
         def changelogMatches = changelogText =~ /(?s)(-.+?)(?=##|$)/
         def changeNotes = changelogMatches.collect {
-            it[1].replaceAll(/(?s)- /, "\u2022 ").replaceAll(/`/, "").replaceAll(/,/, "%2C")
+            it[1].replaceAll(/(?s)- /, "\u2022 ").replaceAll(/`/, "").replaceAll(/,/, "%2C").replaceAll(/;/, "%3B")
         }.take(1).join("")
 
+        def arguments = setBuildTool.args.clone()
+        arguments << "/t:Pack"
+        arguments << "/p:PackageOutputPath=${rootDir}/output"
+        arguments << "/p:PackageReleaseNotes=${changeNotes}"
+        arguments << "/p:PackageVersion=${version}"
         exec {
-            executable "dotnet"
-            args "msbuild","/t:Pack","${DotnetSolution}","/p:Configuration=${BuildConfiguration}","/p:HostFullIdentifier=","/p:PackageOutputPath=${rootDir}/output","/p:PackageReleaseNotes=${changeNotes}","/p:PackageVersion=${version}"
+            executable setBuildTool.executable
+            args arguments
+            workingDir rootDir
         }
     }
 }
@@ -160,6 +192,7 @@ prepareSandbox {
 
 publishPlugin {
     dependsOn buildPlugin
+
     token = "${PublishToken}"
 
     doLast {
