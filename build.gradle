@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.jetbrains.rd:rd-gen:0.211.221") // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
+        classpath("com.jetbrains.rd:rd-gen:0.211.235") // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
     }
 }
 
