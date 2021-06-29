@@ -1,4 +1,3 @@
-$PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 $PluginId = "ReSharperPlugin.HeapView"
 $SolutionPath = "$PSScriptRoot\HeapView.sln"
 $SourceBasePath = "$PSScriptRoot\src\dotnet"
