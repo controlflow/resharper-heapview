@@ -5,17 +5,23 @@ namespace ReSharperPlugin.HeapView.Highlightings
   [RegisterHighlighter(
     BOXING_HIGHLIGHTING_ID,
     GroupId = GROUP_ID,
-    EffectColor = "Red", EffectType = EffectType.SOLID_UNDERLINE,
+    ForegroundColor = "Red",
+    DarkForegroundColor = "Red",
+    EffectType = EffectType.SOLID_UNDERLINE,
     Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
   [RegisterHighlighter(
     ALLOCATION_HIGHLIGHTING_ID,
     GroupId = GROUP_ID,
-    EffectColor = "Orange", EffectType = EffectType.SOLID_UNDERLINE,
+    ForegroundColor = "Orange",
+    DarkForegroundColor = "Orange",
+    EffectType = EffectType.SOLID_UNDERLINE,
     Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
   [RegisterHighlighter(
     STRUCT_COPY_ID,
     GroupId = GROUP_ID,
-    EffectColor = "SkyBlue", EffectType = EffectType.SOLID_UNDERLINE,
+    ForegroundColor = "SkyBlue",
+    DarkForegroundColor = "SkyBlue",
+    EffectType = EffectType.SOLID_UNDERLINE,
     Layer = HighlighterLayer.SYNTAX, VSPriority = VSPriority.IDENTIFIERS)]
   [RegisterHighlighterGroup(
     GROUP_ID, "Heap Allocation Viewer", HighlighterGroupPriority.COMMON_SETTINGS,
