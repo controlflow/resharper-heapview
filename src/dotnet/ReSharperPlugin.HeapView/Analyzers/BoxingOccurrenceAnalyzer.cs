@@ -401,6 +401,9 @@ namespace ReSharperPlugin.HeapView.Analyzers
     {
       // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
 
+      if (sourceExpressionType is IAnonymousFunctionType)
+        return; // nothing to box and classifying a conversion might be expensive
+
       var conversionRule = data.GetTypeConversionRule();
       var conversion = isExplicitCast
         ? conversionRule.ClassifyConversionFromExpression(sourceExpressionType, targetType)
