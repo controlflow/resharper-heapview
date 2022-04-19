@@ -3,9 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.20-RC'
-    id 'org.jetbrains.intellij' version '1.4.0'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'org.jetbrains.intellij' version '1.5.3'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id 'com.jetbrains.rdgen' version '0.213.394'    // https://www.myget.org/feed/rd-snapshots/package/maven/com.jetbrains.rd/rd-gen
+    id 'me.filippov.gradle.jvm.wrapper' version '0.10.0'
 }
 
 ext {

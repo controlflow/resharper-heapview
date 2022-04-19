@@ -1,6 +1,7 @@
 <Project>
 
   <PropertyGroup>
+    <LangVersion>Latest</LangVersion>
     <NoWarn>MSB3277</NoWarn>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -18,13 +19,15 @@
   <Import Project="Plugin.props" />
 
   <PropertyGroup>
-    <WaveVersionBase>$(SdkVersion.Substring(2,2))$(SdkVersion.Substring(5,1))</WaveVersionBase>
-    <WaveVersion>$(WaveVersionBase).0.0$(SdkVersion.Substring(8))</WaveVersion>
-    <UpperWaveVersion>$(WaveVersionBase).9999.0</UpperWaveVersion>
+    <WaveVersion>$(SdkVersion.Substring(2,2))$(SdkVersion.Substring(5,1)).0.0</WaveVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="*.DotSettings" />
   </ItemGroup>
 
 </Project>
