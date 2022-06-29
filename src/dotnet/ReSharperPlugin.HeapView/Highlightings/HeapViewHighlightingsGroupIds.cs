@@ -1,11 +1,10 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace ReSharperPlugin.HeapView.Highlightings
+namespace ReSharperPlugin.HeapView.Highlightings;
+
+[RegisterConfigurableHighlightingsGroup(
+  ID, "[Heap Allocations Plugin] Allocation hints")]
+public static class HeapViewHighlightingsGroupIds
 {
-  [RegisterConfigurableHighlightingsGroup(
-    ID, "[Heap Allocations Plugin] Allocation hints")]
-  public static class HeapViewHighlightingsGroupIds
-  {
-    public const string ID = "AllocationHints";
-  }
+  public const string ID = "AllocationHints";
 }

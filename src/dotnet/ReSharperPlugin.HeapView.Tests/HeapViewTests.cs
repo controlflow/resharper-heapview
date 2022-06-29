@@ -10,7 +10,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Tests
 {
   [TestNetFramework46]
-  [TestPackages(Packages = new[] {SYSTEM_VALUE_TUPLE_PACKAGE})]
+  [TestPackages(Packages = new[] { SYSTEM_VALUE_TUPLE_PACKAGE })]
   [TestReferences("System", "System.Core", "Microsoft.CSharp")]
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp80)]
   public class HeapViewHighlightingTest : CSharpHighlightingTestBase
