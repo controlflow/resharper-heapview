@@ -1,0 +1,8 @@
+﻿(object, (bool, object)) v = ("1", (true, System.ConsoleKey.|A|(0)));
+v = (|1|(1), checked((default, System.ConsoleKey.|A|(2))));
+var u = ((object, (|System.Enum|(3), bool))) ("1", (System.ConsoleKey.A, true));
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'ConsoleKey' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'ConsoleKey' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'ConsoleKey' to 'Enum' requires boxing of the value type

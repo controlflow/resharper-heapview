@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -64,6 +63,7 @@ public static class CommonUtils
       switch (statement)
       {
         case IBlock block:
+        {
           foreach (var blockStatement in block.StatementsEnumerable)
           {
             if (HasControlFlowJumps(blockStatement, allowContinue, allowBreak))
@@ -71,24 +71,36 @@ public static class CommonUtils
           }
 
           return false;
+        }
 
         case ICheckedStatement checkedStatement:
+        {
           return HasControlFlowJumps(checkedStatement.Body, allowContinue, allowBreak);
+        }
 
         case IUncheckedStatement uncheckedStatement:
+        {
           return HasControlFlowJumps(uncheckedStatement.Body, allowContinue, allowBreak);
+        }
 
         case ILoopStatement loopStatement:
+        {
           return HasControlFlowJumps(loopStatement.Body, allowContinue: true, allowBreak: true);
+        }
 
         case IIfStatement ifStatement:
+        {
           return HasControlFlowJumps(ifStatement.Then, allowContinue, allowBreak)
                  || HasControlFlowJumps(ifStatement.Else, allowContinue, allowBreak);
+        }
 
         case ILockStatement lockStatement:
+        {
           return HasControlFlowJumps(lockStatement.Body, allowContinue, allowBreak);
+        }
 
         case ISwitchStatement switchStatement:
+        {
           foreach (var switchSection in switchStatement.SectionsEnumerable)
           foreach (var switchSectionStatement in switchSection.StatementsEnumerable)
           {
@@ -97,30 +109,45 @@ public static class CommonUtils
           }
 
           return false;
+        }
 
         case ITryStatement tryStatement:
+        {
           if (HasControlFlowJumps(tryStatement.Try, allowContinue, allowBreak)) return true;
 
           foreach (var catchClause in tryStatement.CatchesEnumerable)
+          {
             if (HasControlFlowJumps(catchClause.Body, allowContinue, allowBreak))
               return true;
+          }
 
           return HasControlFlowJumps(tryStatement.FinallyBlock, allowContinue, allowBreak);
+        }
 
         case IUnsafeCodeFixedStatement fixedStatement:
+        {
           return HasControlFlowJumps(fixedStatement.Body, allowContinue, allowBreak);
+        }
 
         case IUnsafeCodeUnsafeStatement unsafeStatement:
+        {
           return HasControlFlowJumps(unsafeStatement.Body, allowContinue, allowBreak);
+        }
 
         case IUsingStatement usingStatement:
+        {
           return HasControlFlowJumps(usingStatement.Body, allowContinue, allowBreak);
+        }
 
         case { }:
+        {
           return IsControlFlowJumpStatement(statement, allowContinue, allowBreak);
+        }
 
         case null:
+        {
           return false;
+        }
       }
     }
 
@@ -139,22 +166,6 @@ public static class CommonUtils
 
         default:
           return false;
-      }
-    }
-  }
-
-  class B { }
-  class C : B { }
-  class D : B { }
-
-  class Switch
-  {
-    void M(B b)
-    {
-      switch (b)
-      {
-        case C:
-          break;
       }
     }
   }

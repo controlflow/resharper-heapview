@@ -1,0 +1,10 @@
+﻿(object, object) v = (|1|(0), |true|(1));
+v = (|1|(2), |true|(3));
+var u = ((|object|(4), |System.ValueType|(5))) (1, true);
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'ValueType' requires boxing of the value type

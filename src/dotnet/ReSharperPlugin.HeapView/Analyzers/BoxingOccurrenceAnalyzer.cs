@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Feature.Services.CSharp.Util;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -12,6 +13,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -45,7 +47,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         break;
 
       case IAssignmentExpression assignmentExpression:
-        CheckDeconstructingAssignmentConversions(assignmentExpression, data, consumer);
+        //CheckDeconstructingAssignmentConversions(assignmentExpression, data, consumer);
         break;
 
       case IPatternWithTypeUsage typeCheckPattern:
@@ -162,7 +164,13 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return expressionType.ToIType();
   }
 
-  private enum BoxingClassification { Definitely, Possibly, Not }
+  private enum BoxingClassification
+  {
+    Definitely,
+    Possibly,
+    Not,
+    HasInner
+  }
 
   [Pure]
   private static BoxingClassification IsQualifierOfValueType([NotNull] IType type, bool includeStructTypeParameters)
@@ -210,10 +218,12 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var unwrappedExpression = expression.GetContainingParenthesizedExpression();
 
     var castExpression = CastExpressionNavigator.GetByOp(unwrappedExpression);
-    if (castExpression != null) return false; // filter out explicit casts
+    if (castExpression != null)
+      return false; // filter out explicit casts
 
     var tupleComponent = TupleComponentNavigator.GetByValue(unwrappedExpression);
-    if (tupleComponent != null) return false; // report whole tuple instead
+    if (tupleComponent != null)
+      return false; // report whole tuple instead
 
     var assignmentExpression = AssignmentExpressionNavigator.GetBySource(unwrappedExpression);
     if (assignmentExpression != null)
@@ -406,21 +416,84 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   {
     // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
 
+    // todo: if source is reference type - can't be boxing?
+    // todo: if target is value type and not ValueTuple - can't be boxing, right?
+
     var conversionRule = data.GetTypeConversionRule();
     var conversion = isExplicitCast
       ? conversionRule.ClassifyConversionFromExpression(sourceExpressionType, targetType)
       : conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
 
-    var classification = CheckConversionRequiresBoxing(conversion, sourceExpressionType, targetType);
+    var boxing = Boxing.TryFind(conversion, sourceExpressionType, targetType, nodeToHighlight);
+    if (boxing != null)
+    {
+      if (!nodeToHighlight.IsInTheContextWhereAllocationsAreNotImportant())
+      {
+        boxing.Report(consumer);
+      }
+    }
+
+    return;
+
+    var classification = CheckConversionRequiresBoxing2(conversion, sourceExpressionType, targetType);
+    switch (classification)
+    {
+      case BoxingClassification.Not:
+        return;
+      case BoxingClassification.Definitely:
+      case BoxingClassification.Possibly:
+        break;
+
+      case BoxingClassification.HasInner:
+        break;
+    }
+
+    switch (conversion.Kind)
+    {
+      case ConversionKind.ExplicitTuple:
+      case ConversionKind.ExplicitTupleLiteral:
+      case ConversionKind.ImplicitTuple:
+      case ConversionKind.ImplicitTupleLiteral:
+      {
+        foreach (var (nestedConversion, componentIndex) in conversion.GetTopLevelNestedConversionsWithTypeInfo().WithIndexes())
+        {
+          var nestedClassification = CheckConversionRequiresBoxing2(nestedConversion.Conversion, nestedConversion.SourceType, nestedConversion.TargetType);
+          if (nestedClassification is BoxingClassification.Definitely or BoxingClassification.Possibly)
+          {
+            // var componentNode = TryGetComponentNode(nodeToHighlight, componentIndex);
+            // if (componentNode != null)
+            // {
+            //   ReportBoxingAllocation(
+            //     nestedConversion.SourceType,
+            //     nestedConversion.TargetType,
+            //     componentNode,
+            //     nestedClassification,
+            //     consumer,
+            //     action: "tuple component conversion from '{0}' to '{1}' type");
+            // }
+
+
+            // todo: try get nodeToHighlight
+
+            break;
+          }
+        }
+
+        return;
+      }
+    }
 
     ReportBoxingAllocation(
       sourceExpressionType, targetType, nodeToHighlight, classification, consumer);
   }
 
   private static void ReportBoxingAllocation(
-    [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType,
-    [NotNull] ITreeNode nodeToHighlight, BoxingClassification boxingClassification,
-    [NotNull] IHighlightingConsumer consumer, string action = "conversion from '{0}' to '{1}'")
+    [NotNull] IExpressionType sourceExpressionType,
+    [NotNull] IType targetType,
+    [NotNull] ITreeNode nodeToHighlight,
+    BoxingClassification boxingClassification,
+    [NotNull] IHighlightingConsumer consumer,
+    string action = "conversion from '{0}' to '{1}'")
   {
     if (boxingClassification == BoxingClassification.Not) return;
 
@@ -433,14 +506,14 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (boxingClassification == BoxingClassification.Definitely)
     {
       var description = BakeDescriptionWithTypes(
-        action + " requires boxing of value type", sourceExpressionType, targetType);
+        action + " requires boxing of the value type", sourceExpressionType, targetType);
 
       consumer.AddHighlighting(new BoxingAllocationHighlighting(nodeToHighlight, description), range);
     }
     else
     {
       var description = BakeDescriptionWithTypes(
-        action + " possibly requires boxing of value type", sourceExpressionType, targetType);
+        action + " possibly requires boxing of the value type", sourceExpressionType, targetType);
 
       consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(nodeToHighlight, description), range);
     }
@@ -487,9 +560,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
         if (targetType.IsTypeParameterType())
         {
-          return fromTypeParameterType.IsValueType()
-            ? BoxingClassification.Possibly
-            : BoxingClassification.Not; // very unlikely
+          if (fromTypeParameterType.IsValueType())
+            return BoxingClassification.Possibly;
+
+          return BoxingClassification.Not; // very unlikely
         }
 
         if (!fromTypeParameterType.IsValueType())
@@ -501,14 +575,87 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       return BoxingClassification.Definitely;
     }
 
-    static BoxingClassification RefineUnboxingResult([CanBeNull] IType sourceType, IType targetType)
+    static BoxingClassification RefineUnboxingResult([CanBeNull] IType sourceType, [NotNull] IType targetType)
     {
       // yep, some "unboxing" conversions do actually cause boxing at runtime
       if (targetType.Classify == TypeClassification.REFERENCE_TYPE && sourceType != null)
       {
-        return (sourceType.Classify == TypeClassification.VALUE_TYPE)
-          ? BoxingClassification.Definitely
-          : BoxingClassification.Possibly;
+        // value type to reference type
+        if (sourceType.Classify == TypeClassification.VALUE_TYPE)
+        {
+          return BoxingClassification.Definitely;
+        }
+
+        // unconstrained generic to reference type
+        return BoxingClassification.Possibly;
+      }
+
+      return BoxingClassification.Not;
+    }
+  }
+
+  [Pure]
+  private static BoxingClassification CheckConversionRequiresBoxing2(
+    Conversion conversion, [NotNull] IExpressionType sourceType, [NotNull] IType targetType)
+  {
+    switch (conversion.Kind)
+    {
+      case ConversionKind.Boxing:
+        return RefineResult(sourceType, targetType);
+      case ConversionKind.Unboxing:
+        return RefineUnboxingResult(sourceType.ToIType(), targetType);
+    }
+
+    foreach (var nested in conversion.GetTopLevelNestedConversionsWithTypeInfo())
+    {
+      switch (CheckConversionRequiresBoxing2(nested.Conversion, nested.SourceType, nested.TargetType))
+      {
+        case BoxingClassification.Definitely:
+        case BoxingClassification.Possibly:
+        case BoxingClassification.HasInner:
+          return BoxingClassification.HasInner;
+      }
+    }
+
+    return BoxingClassification.Not;
+
+    static BoxingClassification RefineResult(IExpressionType sourceType, IType targetType)
+    {
+      var type = sourceType.ToIType();
+      if (type is IDeclaredType (ITypeParameter, _) fromTypeParameterType)
+      {
+        Assertion.Assert(!fromTypeParameterType.IsReferenceType());
+
+        if (targetType.IsTypeParameterType())
+        {
+          if (fromTypeParameterType.IsValueType())
+            return BoxingClassification.Possibly;
+
+          return BoxingClassification.Not; // very unlikely
+        }
+
+        if (!fromTypeParameterType.IsValueType())
+        {
+          return BoxingClassification.Possibly;
+        }
+      }
+
+      return BoxingClassification.Definitely;
+    }
+
+    static BoxingClassification RefineUnboxingResult([CanBeNull] IType sourceType, [NotNull] IType targetType)
+    {
+      // yep, some "unboxing" conversions do actually cause boxing at runtime
+      if (targetType.Classify == TypeClassification.REFERENCE_TYPE && sourceType != null)
+      {
+        // value type to reference type
+        if (sourceType.Classify == TypeClassification.VALUE_TYPE)
+        {
+          return BoxingClassification.Definitely;
+        }
+
+        // unconstrained generic to reference type
+        return BoxingClassification.Possibly;
       }
 
       return BoxingClassification.Not;

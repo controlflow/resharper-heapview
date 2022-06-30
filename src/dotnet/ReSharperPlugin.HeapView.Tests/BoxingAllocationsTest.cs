@@ -20,4 +20,14 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   }
 
   [Test] public void TestBoxing01() { DoNamedTest2(); }
+
+  // todo: possible boxing
+  // todo: test refinements
+
+  [Test] public void TestTuples01() { DoNamedTest2(); }
+
+  [Test] public void TestTuplesIndividualRight01() { DoNamedTest2(); }
+  [Test] public void TestTuplesIndividualRight02() { DoNamedTest2(); }
+  [Test] public void TestTuplesIndividualRight03() { DoNamedTest2(); }
+
 }
