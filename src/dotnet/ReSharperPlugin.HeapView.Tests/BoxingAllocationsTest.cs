@@ -37,6 +37,8 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   [Test] public void TestTuplesIndividualLeft03() { DoNamedTest2(); }
 
   [Test] public void TestTuplesForeach01() { DoNamedTest2(); }
+
+  [Test] public void TestTuplesMerged01() { DoNamedTest2(); }
 }
 
 [TestNet60]

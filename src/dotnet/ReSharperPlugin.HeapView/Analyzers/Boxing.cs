@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -9,18 +10,22 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 public abstract class Boxing
 {
-  protected Boxing([NotNull] ITreeNode correspondingNode)
+  private Boxing([NotNull] ITreeNode correspondingNode)
   {
     CorrespondingNode = correspondingNode;
   }
 
   [NotNull] public ITreeNode CorrespondingNode { get; }
+
+  protected abstract bool IsPossible { get; }
+  protected abstract string GetReason([NotNull] string indent = "");
 
   public abstract void Report([NotNull] IHighlightingConsumer consumer);
 
@@ -114,12 +119,6 @@ public abstract class Boxing
 
       return null;
     }
-
-    [CanBeNull]
-    Boxing CheckNestedConversions()
-    {
-      return null;
-    }
   }
 
   [CanBeNull]
@@ -188,10 +187,9 @@ public abstract class Boxing
     return null;
   }
 
-  public sealed class Ordinary : Boxing
+  private sealed class Ordinary : Boxing
   {
-    public bool IsPossible { get; }
-    public string Reason { get; }
+    private readonly string myReason;
 
     public Ordinary(IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode, bool isPossible = false)
       : base(correspondingNode)
@@ -200,35 +198,78 @@ public abstract class Boxing
 
       var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
       var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
-      Reason = $"conversion from '{sourceTypeText}' to '{targetTypeText}'";
+      myReason = $"conversion from '{sourceTypeText}' to '{targetTypeText}'";
     }
+
+    protected override bool IsPossible { get; }
+
+    protected override string GetReason(string indent = "") => indent + myReason;
 
     public override void Report(IHighlightingConsumer consumer)
     {
-      var documentRange = CorrespondingNode is ICSharpExpression expression ? expression.GetExpressionRange() : CorrespondingNode.GetDocumentRange();
+      var reason = GetReason();
 
       if (!IsPossible)
       {
-        var description = Reason + " requires boxing of the value type";
-        consumer.AddHighlighting(new BoxingAllocationHighlighting(CorrespondingNode, description), documentRange);
+        var description = reason + " requires boxing of the value type";
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(CorrespondingNode, description));
       }
       else
       {
-        var description = Reason + " possibly requires boxing of the value type";
-        consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(CorrespondingNode, description), documentRange);
+        var description = reason + " possibly requires boxing of the value type";
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(CorrespondingNode, description));
       }
     }
   }
 
-  public sealed class InsideTupleConversion : Boxing
+  private sealed class InsideTupleConversion : Boxing
   {
+    private const string IndentLevel = "  ";
+
     public InsideTupleConversion([NotNull] IReadOnlyList<Boxing> componentBoxings, [NotNull] ITreeNode correspondingNode)
       : base(correspondingNode)
     {
+      Assertion.Assert(componentBoxings.Count > 0);
+
       ComponentBoxings = componentBoxings;
     }
 
     [NotNull] public IReadOnlyList<Boxing> ComponentBoxings { get; }
+
+    protected override bool IsPossible
+    {
+      get
+      {
+        foreach (var componentBoxing in ComponentBoxings)
+        {
+          if (!componentBoxing.IsPossible)
+            return false;
+        }
+
+        return true;
+      }
+    }
+
+    protected override string GetReason(string indent = "")
+    {
+      if (ComponentBoxings.Count == 1)
+      {
+        return ComponentBoxings[0].GetReason(indent);
+      }
+
+      using var builder = PooledStringBuilder.GetInstance();
+
+      var innerIndent = indent + IndentLevel;
+
+      foreach (var componentBoxing in ComponentBoxings)
+      {
+        builder.AppendLine(componentBoxing.GetReason(innerIndent));
+      }
+
+      return builder.ToString();
+    }
 
 
     public override void Report(IHighlightingConsumer consumer)
@@ -253,7 +294,24 @@ public abstract class Boxing
       }
       else
       {
+        var reason = GetReason();
 
+        var isMultiline = reason.Contains("\n");
+
+
+
+        if (!IsPossible)
+        {
+          var description = $"tuple component {reason} performs boxing of the value type: ";
+          consumer.AddHighlighting(
+            new BoxingAllocationHighlighting(CorrespondingNode, description));
+        }
+        else
+        {
+          var description = "tuple component conversion possible performs boxing of the value type: " + Environment.NewLine + reason;
+          consumer.AddHighlighting(
+            new PossibleBoxingAllocationHighlighting(CorrespondingNode, description));
+        }
       }
     }
   }

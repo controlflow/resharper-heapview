@@ -16,7 +16,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: extension deconstruction method invocation boxing
-// todo: extension GetEnumerator() boxing
+// todo: extension GetEnumerator() boxing, extension .Add() for collection initializers
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -47,13 +47,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // var obj = (object) intValue;
       case ICastExpression castExpression:
         CheckExpressionExplicitConversion(castExpression, data, consumer);
-        break;
-
-      // todo: only leave this for foreach + foreach with deconstruction support
-      // todo: await foreach
-      // todo: two casts in foreach?
-      case IDeclarationExpression declarationExpression:
-        //CheckDeclarationExpressionConversion(declarationExpression, data, consumer);
         break;
 
       // foreach ((object o, _) in arrayOfIntIntTuples)
@@ -184,8 +177,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   {
     Definitely,
     Possibly,
-    Not,
-    HasInner
+    Not
   }
 
   [Pure]
@@ -273,7 +265,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExpressionExplicitConversion(
-    [NotNull] ICastExpression castExpression, [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] ICastExpression castExpression,
+    [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
     var castOperand = castExpression.Op;
@@ -347,9 +340,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
           break;
         }
 
-        // (_, _) = e;
-        // (object _, _) = e;
-        // (var (a, b), _) = e;
+        // (_, _) = e;           - discards elimiate access to component
+        // (object _, _) = e;    - discard designations elimiate access as well
+        // (var a, _) = e;       - source type captured, no conversion
+        // (var (a, b), _) = e;  - source type deconstructed, no conversion
         case IReferenceExpression discardReferenceExpression when discardReferenceExpression.IsDiscardReferenceExpression():
         case IDeclarationExpression { Designation: IDiscardDesignation }:
         case IDeclarationExpression { TypeUsage: null }:
@@ -381,7 +375,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckPatternMatchingConversion(
-    [NotNull] IPatternWithTypeUsage typeCheckPattern, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
+    [NotNull] IPatternWithTypeUsage typeCheckPattern,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
   {
     var typeCheckTypeUsage = typeCheckPattern.TypeUsage;
     if (typeCheckTypeUsage == null) return;
@@ -421,7 +417,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckTypeCheckBoxing(
-    [NotNull] IIsExpression isExpression, [NotNull] ElementProblemAnalyzerData data, [NotNull] IHighlightingConsumer consumer)
+    [NotNull] IIsExpression isExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
   {
     var isExpressionKind = isExpression.GetKind(unresolvedIsTypeCheck: false);
     if (isExpressionKind != IsExpressionKind.TypeCheck) return;
@@ -466,7 +464,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static BoxingClassification ClassifyBoxingInTypeCheckPattern([NotNull] IType dispatchType, [NotNull] IType targetType)
+  private static BoxingClassification ClassifyBoxingInTypeCheckPattern(
+    [NotNull] IType dispatchType, [NotNull] IType targetType)
   {
     var sourceClassification = dispatchType.Classify;
     if (sourceClassification == TypeClassification.REFERENCE_TYPE) return BoxingClassification.Not;
