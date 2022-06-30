@@ -1,0 +1,12 @@
+﻿(int, (bool, byte))[] array = null;
+
+foreach (var (a, (b, c)) in array) { }
+foreach ((_, (_, _)) in array) { }
+foreach ((object _, (object _, object _)) in array) { }
+foreach ((|object|(0) d, (|object|(1) e, |object|(2) f)) in array) { }
+foreach ((|object|(3) g, var (h, i)) in array) { }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'byte' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

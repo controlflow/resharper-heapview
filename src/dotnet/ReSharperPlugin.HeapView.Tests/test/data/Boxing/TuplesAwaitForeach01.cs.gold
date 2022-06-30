@@ -1,0 +1,9 @@
+﻿using System.Collections.Generic;
+
+IAsyncEnumerable<(int, int, bool)> xs = null;
+
+await foreach ((|object|(0) a, object _, |object|(1) b) in xs) { }
+
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type

@@ -5,7 +5,7 @@ build
 output
 /packages
 .gradle
-.tmp
+*.tmp
 
 # User-specific files
 *.suo

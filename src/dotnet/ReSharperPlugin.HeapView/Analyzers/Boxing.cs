@@ -26,7 +26,7 @@ public abstract class Boxing
 
   [CanBeNull, Pure]
   public static Boxing TryFind(
-    Conversion conversion, [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType, [NotNull] ITreeNode correspondingTreeNode)
+    Conversion conversion, [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType, [NotNull] ITreeNode correspondingNode)
   {
     switch (conversion.Kind)
     {
@@ -49,7 +49,7 @@ public abstract class Boxing
 
         foreach (var (nested, componentIndex) in conversion.GetTopLevelNestedConversionsWithTypeInfo().WithIndexes())
         {
-          var componentNode = TryGetComponentNode(correspondingTreeNode, componentIndex) ?? correspondingTreeNode;
+          var componentNode = TryGetComponentNode(correspondingNode, componentIndex) ?? correspondingNode;
 
           var nestedBoxing = TryFind(nested.Conversion, nested.SourceType, nested.TargetType, componentNode);
           if (nestedBoxing != null)
@@ -60,7 +60,7 @@ public abstract class Boxing
 
         if (components.Count > 0)
         {
-          return new InsideTupleConversion(components.ReadOnlyList(), correspondingTreeNode);
+          return new InsideTupleConversion(components.ReadOnlyList(), correspondingNode);
         }
 
         break;
@@ -80,18 +80,18 @@ public abstract class Boxing
         if (targetType.IsTypeParameterType())
         {
           if (sourceTypeParameterType.IsValueType())
-            return new Ordinary(sourceExpressionType, targetType, correspondingTreeNode, isPossible: true);
+            return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
 
           return null; // very unlikely
         }
 
         if (!sourceTypeParameterType.IsValueType())
         {
-          return new Ordinary(sourceExpressionType, targetType, correspondingTreeNode, isPossible: true);
+          return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
         }
       }
 
-      return new Ordinary(sourceExpressionType, targetType, correspondingTreeNode);
+      return new Ordinary(sourceExpressionType, targetType, correspondingNode);
     }
 
     [CanBeNull]
@@ -105,11 +105,11 @@ public abstract class Boxing
         // value type to reference type
         if (sourceType.Classify == TypeClassification.VALUE_TYPE)
         {
-          return new Ordinary(sourceExpressionType, targetType, correspondingTreeNode);
+          return new Ordinary(sourceExpressionType, targetType, correspondingNode);
         }
 
         // unconstrained generic to reference type
-        return new Ordinary(sourceExpressionType, targetType, correspondingTreeNode, isPossible: true);
+        return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
       }
 
       return null;
@@ -127,8 +127,10 @@ public abstract class Boxing
   {
     switch (nodeToHighlight)
     {
-      case ICSharpExpression expressionToHighlight
-        when expressionToHighlight.GetOperandThroughParenthesis() is ITupleExpression tupleExpression:
+      // (object, int) t;
+      // t = (1, 2);
+      case ICSharpExpression sourceExpression
+        when sourceExpression.GetOperandThroughParenthesis() is ITupleExpression tupleExpression:
       {
         foreach (var tupleComponent in tupleExpression.ComponentsEnumerable)
         {
@@ -143,6 +145,30 @@ public abstract class Boxing
         break;
       }
 
+      // (object a, int b) = intIntTuple;
+      case ICSharpExpression sourceExpression
+        when AssignmentExpressionNavigator.GetBySource(sourceExpression.GetContainingParenthesizedExpression())
+          is { AssignmentType: AssignmentType.EQ, Dest: ITupleExpression tupleExpression }:
+      {
+        foreach (var tupleComponent in tupleExpression.ComponentsEnumerable)
+        {
+          if (componentIndex == 0)
+          {
+            if (tupleComponent is { NameIdentifier: null, Value: IDeclarationExpression { TypeUsage: { } typeUsage } })
+            {
+              return typeUsage;
+            }
+
+            return null;
+          }
+
+          componentIndex--;
+        }
+
+        break;
+      }
+
+      // var t = ((object, int)) intIntTuple;
       case ITupleTypeUsage tupleTypeUsage:
       {
         foreach (var tupleTypeComponent in tupleTypeUsage.ComponentsEnumerable)
