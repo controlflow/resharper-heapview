@@ -43,7 +43,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(ObjectAllocationEvidentHighlighting),
     typeof(ObjectAllocationPossibleHighlighting),
     typeof(ClosureAllocationHighlighting),
-    typeof(DelegateAllocationHighlighting)
+    typeof(DelegateAllocationHighlighting),
+    typeof(CanEliminateClosureCreationHighlighting)
   })]
 public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
 {

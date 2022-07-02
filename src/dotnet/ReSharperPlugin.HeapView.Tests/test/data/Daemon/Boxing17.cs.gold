@@ -20,7 +20,7 @@ class C {
   public bool P6<T, U>(T t) where U : T => t is U u; // very unlikely
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
-(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of value type
-(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of value type
+(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of the value type

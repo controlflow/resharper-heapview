@@ -100,18 +100,25 @@ public abstract class Boxing
       var sourceType = sourceExpressionType.ToIType();
       if (sourceType is IDeclaredType (ITypeParameter, _) sourceTypeParameterType)
       {
+        // TUnconstrained unconstrainedSource;
+        // TValueType valueSource;
         Assertion.Assert(!sourceTypeParameterType.IsReferenceType());
 
         if (targetType.IsTypeParameterType())
         {
           if (sourceTypeParameterType.IsValueType())
+          {
+            // (TUnconstrained) valueSource; - how?
             return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
+          }
 
           return null; // very unlikely
         }
 
         if (!sourceTypeParameterType.IsValueType())
         {
+          // TUnconstrained t;
+          // object o = t;
           return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
         }
       }

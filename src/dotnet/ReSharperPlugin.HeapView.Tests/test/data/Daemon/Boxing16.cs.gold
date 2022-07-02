@@ -26,13 +26,13 @@ struct S : I {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
-(2): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
-(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
-(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
-(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of value type
-(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of value type
-(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'U' to 'I' possibly requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type

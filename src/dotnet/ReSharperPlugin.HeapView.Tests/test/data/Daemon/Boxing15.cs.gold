@@ -43,4 +43,4 @@ struct HasToString { public override string ToString() => ""; }
 (12): ReSharper HeapView Allocation: Object allocation: string concatenation
 (13): ReSharper HeapView Allocation: Object allocation: string concatenation
 (14): ReSharper HeapView Allocation: Object allocation: string concatenation
-(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

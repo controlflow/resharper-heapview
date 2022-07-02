@@ -29,33 +29,33 @@ struct NoToString { }
 struct HasToString { public override string ToString() => ""; }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: string concatenation
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of the value type
 (2): ReSharper HeapView Allocation: Object allocation: string concatenation
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of the value type
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (6): ReSharper HeapView Allocation: Object allocation: string concatenation
-(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
-(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
 (9): ReSharper HeapView Allocation: Object allocation: string concatenation
 (10): ReSharper HeapView Allocation: Object allocation: string concatenation
-(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NoToString' to 'object' requires boxing of value type
+(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NoToString' to 'object' requires boxing of the value type
 (12): ReSharper HeapView Allocation: Object allocation: string concatenation
-(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'HasToString' to 'object' requires boxing of value type
+(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'HasToString' to 'object' requires boxing of the value type
 (14): ReSharper HeapView Allocation: Object allocation: string concatenation
-(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of value type
+(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of the value type
 (16): ReSharper HeapView Allocation: Object allocation: string concatenation
-(17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of value type
+(17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of the value type
 (18): ReSharper HeapView Allocation: Object allocation: string concatenation
-(19): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of value type
+(19): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of the value type
 (20): ReSharper HeapView Allocation: Object allocation: string concatenation
-(21): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of value type
+(21): ReSharper HeapView Boxing: Boxing allocation: conversion from 'char' to 'object' requires boxing of the value type
 (22): ReSharper HeapView Allocation: Object allocation: string concatenation
-(23): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(23): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (24): ReSharper HeapView Allocation: Object allocation: string concatenation
-(25): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of value type
+(25): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
 (26): ReSharper HeapView Allocation: Object allocation: string concatenation
-(27): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of value type
+(27): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of the value type
 (28): ReSharper HeapView Allocation: Object allocation: string concatenation
-(29): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of value type
-(30): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(29): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of the value type
+(30): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
