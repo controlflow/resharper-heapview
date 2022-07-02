@@ -17,6 +17,10 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: extension deconstruction method invocation boxing
 // todo: extension GetEnumerator() boxing, extension .Add() for collection initializers
+// todo: if designation exists, but not used - C# eliminates boxing in Release mode
+// todo: boxing elimiation by the compiler under string concatenation
+// todo: do string interpolation optimized? in C# 10 only?
+// todo: C# 8 causes boxing by invoimg the non-overriden .ToString under string concatenation?
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -49,9 +53,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckExpressionExplicitConversion(castExpression, data, consumer);
         break;
 
-      // foreach ((object o, _) in arrayOfIntIntTuples)
+      // foreach (object o in arrayOfInts) { }
+      // foreach ((object o, _) in arrayOfIntIntTuples) { }
       case IForeachStatement foreachStatement:
-        CheckDeconstructingForeachImplicitConversions(foreachStatement, data, consumer);
+        CheckForeachImplicitConversions(foreachStatement, data, consumer);
         break;
 
       // (object o, objVariable) = intIntTuple;
@@ -214,7 +219,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var targetType = expression.GetImplicitlyConvertedTo();
     if (targetType.IsUnknown) return;
 
-    if (IsBoxingEliminatedAtRuntime(expression, data)) return;
+    if (IsBoxingEliminatedAtRuntime(expression)) return;
+    if (IsBoxingEliminatedByTheCompiler(expression, data)) return;
 
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, expression, isExplicitCast: false, data, consumer);
@@ -277,7 +283,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var targetType = castExpression.GetExpressionType().ToIType();
     if (targetType == null) return;
 
-    if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
+    if (IsBoxingEliminatedAtRuntime(castExpression)) return;
+    if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
     if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
 
     CheckConversionRequiresBoxing(
@@ -311,16 +318,42 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
   }
 
-  private static void CheckDeconstructingForeachImplicitConversions(
+  private static void CheckForeachImplicitConversions(
     [NotNull] IForeachStatement foreachStatement,
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
-    var targetTupleExpression = foreachStatement.ForeachHeader?.DeconstructionTuple;
-    if (targetTupleExpression == null) return;
+    var foreachHeader = foreachStatement.ForeachHeader;
+    if (foreachHeader == null) return;
 
-    UniversalContext resolveContext = null;
-    CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
+    switch (foreachStatement.ForeachHeader)
+    {
+      // foreach (object o in xs) { }
+      case {
+             DeclarationExpression: { TypeUsage: { } explicitTypeUsage, Designation: ISingleVariableDesignation } declarationExpression,
+             Collection: { } collection
+           }:
+      {
+        var collectionType = collection.Type();
+
+        var elementType = CollectionTypeUtil.ElementTypeByCollectionType(collectionType, foreachStatement, foreachStatement.IsAwait);
+        if (elementType != null)
+        {
+          CheckConversionRequiresBoxing(
+            elementType, declarationExpression.Type(), explicitTypeUsage, isExplicitCast: false, data, consumer);
+        }
+
+        break;
+      }
+
+      // foreach ((object o, _) in xs) { }
+      case { DeconstructionTuple: { } targetTupleExpression }:
+      {
+        UniversalContext resolveContext = null;
+        CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
+        break;
+      }
+    }
   }
 
   private static void CheckImplicitConversionsInDeconstruction(
@@ -560,7 +593,33 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression, [NotNull] ElementProblemAnalyzerData data)
+  private static bool IsBoxingEliminatedByTheCompiler([NotNull] ICSharpExpression boxedExpression, [NotNull] ElementProblemAnalyzerData data)
+  {
+    var containingParenthesized = boxedExpression.GetContainingParenthesizedExpression();
+
+    if (data.IsCSharp8Supported())
+    {
+      // C# 8.0 eliminates boxing in string concatenation by invoking the .ToString() method
+      // note: this works for all types, not only BCL ones (including unconstrained types)
+
+      if (BinaryExpressionNavigator.GetByAnyOperand(containingParenthesized) is IAdditiveExpression additiveExpression
+          && additiveExpression.OperatorReference.IsStringConcatOperatorReference())
+      {
+        return true;
+      }
+
+      if (AssignmentExpressionNavigator.GetBySource(containingParenthesized) is { AssignmentType: AssignmentType.PLUSEQ } additiveAssignmentExpression
+          && additiveAssignmentExpression.OperatorReference.IsStringConcatOperatorReference())
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  [Pure]
+  private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression)
   {
     var containingParenthesized = expression.GetContainingParenthesizedExpression();
 
@@ -576,24 +635,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         case NullCheckKind.NullPattern:
           return true; // optimized in all modern runtimes
       }
-    }
-
-    // C# 8.0 eliminates boxing in string concatenation
-    var additiveExpression = AdditiveExpressionNavigator.GetByLeftOperand(containingParenthesized)
-                             ?? AdditiveExpressionNavigator.GetByRightOperand(containingParenthesized);
-    if (additiveExpression != null
-        && data.IsCSharp8Supported()
-        && additiveExpression.OperatorReference.IsStringConcatOperatorReference())
-    {
-      return true;
-    }
-
-    var assignmentExpression = AssignmentExpressionNavigator.GetBySource(containingParenthesized);
-    if (assignmentExpression is { AssignmentType: AssignmentType.PLUSEQ }
-        && data.IsCSharp8Supported()
-        && assignmentExpression.OperatorReference.IsStringConcatOperatorReference())
-    {
-      return true;
     }
 
     return false;

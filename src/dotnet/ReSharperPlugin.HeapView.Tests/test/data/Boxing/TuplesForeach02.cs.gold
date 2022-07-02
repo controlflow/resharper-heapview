@@ -1,0 +1,11 @@
+﻿int[] xs = null;
+string[] ys = null;
+
+foreach (|object|(0) x in xs) { }
+foreach (object y in ys) { }
+foreach (|object|(1) _ in xs) { } // optimized
+foreach (|object|(2) _ in xs) { var t = _ }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

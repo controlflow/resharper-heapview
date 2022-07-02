@@ -2,6 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -16,7 +17,7 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   protected override bool HighlightingPredicate(
     IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
   {
-    return highlighting is PerformanceHighlightingBase;
+    return highlighting is BoxingAllocationHighlighting or PossibleBoxingAllocationHighlighting;
   }
 
   [Test] public void TestBoxing01() { DoNamedTest2(); }
@@ -42,6 +43,7 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   [Test] public void TestTuplesIndividualLeft03() { DoNamedTest2(); }
 
   [Test] public void TestTuplesForeach01() { DoNamedTest2(); }
+  [Test] public void TestTuplesForeach02() { DoNamedTest2(); }
 
   [Test] public void TestTuplesMerged01() { DoNamedTest2(); }
   [Test] public void TestTuplesMerged02() { DoNamedTest2(); }
@@ -51,6 +53,10 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
 
   [Test] public void TestTuplesAndUserDefined01() { DoNamedTest2(); }
   [Test] public void TestTuplesAndUserDefined02() { DoNamedTest2(); }
+
+  [CSharpLanguageLevel(CSharpLanguageLevel.CSharp73)]
+  [Test] public void TestConcatenationOptimization01() { DoNamedTest2(); }
+  [Test] public void TestConcatenationOptimization02() { DoNamedTest2(); }
 }
 
 [TestNet60]
