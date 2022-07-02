@@ -75,6 +75,21 @@ public abstract class Boxing
 
         break;
       }
+
+      case ConversionKind.ImplicitUserDefined:
+      case ConversionKind.ExplicitUserDefined:
+      {
+        foreach (var nested in conversion.GetTopLevelNestedConversionsWithTypeInfo())
+        {
+          var nestedBoxing = TryFind(nested.Conversion, nested.SourceType, nested.TargetType, correspondingNode);
+          if (nestedBoxing != null)
+          {
+            return nestedBoxing;
+          }
+        }
+
+        break;
+      }
     }
 
     return null;
