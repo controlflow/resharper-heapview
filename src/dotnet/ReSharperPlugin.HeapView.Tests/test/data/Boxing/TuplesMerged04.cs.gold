@@ -1,0 +1,26 @@
+﻿void AllPossible<T>(T u)
+{
+  var s = (u, u);
+  (object, object) t = |s|(0);
+  t = |s|(1);
+}
+
+void Partial<T>(T u)
+{
+  var s = (u, 1);
+  (object, object) t = |s|(2);
+  t = |s|(3);
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: tuple conversion contains component type conversions that perform possible boxing of the value types
+    Conversion from 'T' to 'object'
+    Conversion from 'T' to 'object'
+(1): ReSharper HeapView Boxing: Possible boxing allocation: tuple conversion contains component type conversions that perform possible boxing of the value types
+    Conversion from 'T' to 'object'
+    Conversion from 'T' to 'object'
+(2): ReSharper HeapView Boxing: Boxing allocation: tuple conversion contains component type conversions that perform boxing of the value types
+    Conversion from 'T' to 'object' (possible boxing)
+    Conversion from 'int' to 'object'
+(3): ReSharper HeapView Boxing: Boxing allocation: tuple conversion contains component type conversions that perform boxing of the value types
+    Conversion from 'T' to 'object' (possible boxing)
+    Conversion from 'int' to 'object'

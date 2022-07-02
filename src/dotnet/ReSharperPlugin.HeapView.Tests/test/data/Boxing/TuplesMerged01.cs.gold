@@ -1,0 +1,6 @@
+﻿var s = (1, 2);
+(object, int) t = |s|(0);
+t = |s|(1);
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
