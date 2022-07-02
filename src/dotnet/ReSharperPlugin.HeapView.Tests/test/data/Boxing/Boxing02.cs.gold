@@ -1,0 +1,10 @@
+﻿using System;
+
+int? x = 42;
+object o = |x|(0);
+IConvertible c = |x|(1);
+ValueType v = |x|(2);
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int?' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int?' to 'IConvertible' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int?' to 'ValueType' requires boxing of the value type

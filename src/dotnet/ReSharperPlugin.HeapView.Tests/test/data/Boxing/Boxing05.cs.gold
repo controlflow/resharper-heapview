@@ -1,0 +1,7 @@
+﻿dynamic d1 = |42|(0);
+dynamic d2 = |new S()|(1);
+
+struct S { }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'dynamic' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'dynamic' requires boxing of the value type

@@ -20,13 +20,14 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   }
 
   [Test] public void TestBoxing01() { DoNamedTest2(); }
+  [Test] public void TestBoxing02() { DoNamedTest2(); }
+  [Test] public void TestBoxing03() { DoNamedTest2(); }
+  [Test] public void TestBoxing04() { DoNamedTest2(); }
+  [Test] public void TestBoxing05() { DoNamedTest2(); }
 
+  // todo: test conversion logic in-depth
   // todo: possible boxing
   // todo: test refinements
-  // todo: compiler do not emits boxing when component is discarded: (object _, var y) = t;
-  // todo: possible + definite boxing inside tuple conversion - what is the highlighting type?
-
-  [Test] public void TestTuples01() { DoNamedTest2(); }
 
   [Test] public void TestTuplesIndividualRight01() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualRight02() { DoNamedTest2(); }
