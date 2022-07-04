@@ -30,10 +30,7 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   [Test] public void TestGenericBoxing02() { DoNamedTest2(); }
   [Test] public void TestGenericBoxing03() { DoNamedTest2(); }
   [Test] public void TestGenericBoxing04() { DoNamedTest2(); }
-
-  // todo: test conversion logic in-depth
-  // todo: possible boxing
-  // todo: test refinements
+  [Test] public void TestGenericBoxing05() { DoNamedTest2(); }
 
   [Test] public void TestTuplesIndividualRight01() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualRight02() { DoNamedTest2(); }

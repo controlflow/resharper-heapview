@@ -99,15 +99,16 @@ public abstract class Boxing
     Boxing RefineBoxingConversionResult()
     {
       var sourceType = sourceExpressionType.ToIType();
-      if (sourceType is IDeclaredType (ITypeParameter sourceTypeParameter, _) sourceTypeParameterType)
+      if (sourceType is IDeclaredType (ITypeParameter, _) sourceTypeParameterType)
       {
-        // TUnconstrained unconstrainedSource;
-        // TValueType valueSource;
+        // TUnconstrained source;
+        // TValueType source;
         Assertion.Assert(!sourceTypeParameterType.IsReferenceType());
 
+        // type parameter type to type parameter type conversions
         if (targetType.IsTypeParameterType())
         {
-          if (sourceTypeParameterType.IsValueType())
+          if (IsValueTypeOrEffectivelyTypeParameterType(sourceTypeParameterType))
           {
             // (TUnconstrained) valueSource; - how?
             return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
@@ -116,21 +117,34 @@ public abstract class Boxing
           return null; // very unlikely
         }
 
-        // targetType is some concrete type, not type parameter type here
-
-        // if source type parameter type has no 'struct' constraint
-        // and no concrete value type was substituted to type constraints (T is indirectly 'struct')
-        // we can't be sure that the boxing will be produced at runtime
-        if (!sourceTypeParameterType.IsValueType()
-            && !sourceTypeParameter.TypeConstraints.Any(typeConstraint => typeConstraint.IsValueType()))
+        // target type is some concrete type, not type parameter type here
+        if (!IsValueTypeOrEffectivelyTypeParameterType(sourceTypeParameterType))
         {
-          // TUnconstrained t;
-          // object o = t;
+          // we can't be sure that the boxing will be produced at runtime
           return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
         }
       }
 
       return new Ordinary(sourceExpressionType, targetType, correspondingNode);
+
+      [Pure]
+      static bool IsValueTypeOrEffectivelyTypeParameterType([NotNull] IType type)
+      {
+        if (type.IsValueType())
+          return true;
+
+        if (type is IDeclaredType(ITypeParameter typeParameter))
+        {
+          // where T : int - indirectly 'struct', can happen in type argument substitutions in type hierarchies
+          foreach (var typeConstraint in typeParameter.TypeConstraints)
+          {
+            if (IsValueTypeOrEffectivelyTypeParameterType(typeConstraint))
+              return true;
+          }
+        }
+
+        return false;
+      }
     }
 
     [CanBeNull]
