@@ -18,7 +18,6 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: extension deconstruction method invocation boxing
 // todo: extension GetEnumerator() boxing, extension .Add() for collection initializers
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
-// todo: boxing elimiation by the compiler under string concatenation
 // todo: do string interpolation optimized? in C# 10 only?
 // todo: C# 8 causes boxing by invoimg the non-overriden .ToString under string concatenation?
 

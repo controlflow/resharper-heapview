@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -98,7 +99,7 @@ public abstract class Boxing
     Boxing RefineBoxingConversionResult()
     {
       var sourceType = sourceExpressionType.ToIType();
-      if (sourceType is IDeclaredType (ITypeParameter, _) sourceTypeParameterType)
+      if (sourceType is IDeclaredType (ITypeParameter sourceTypeParameter, _) sourceTypeParameterType)
       {
         // TUnconstrained unconstrainedSource;
         // TValueType valueSource;
@@ -115,7 +116,13 @@ public abstract class Boxing
           return null; // very unlikely
         }
 
-        if (!sourceTypeParameterType.IsValueType())
+        // targetType is some concrete type, not type parameter type here
+
+        // if source type parameter type has no 'struct' constraint
+        // and no concrete value type was substituted to type constraints (T is indirectly 'struct')
+        // we can't be sure that the boxing will be produced at runtime
+        if (!sourceTypeParameterType.IsValueType()
+            && !sourceTypeParameter.TypeConstraints.Any(typeConstraint => typeConstraint.IsValueType()))
         {
           // TUnconstrained t;
           // object o = t;

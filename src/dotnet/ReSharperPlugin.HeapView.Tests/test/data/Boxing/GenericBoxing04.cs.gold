@@ -1,0 +1,39 @@
+﻿using System;
+
+abstract class B<U>
+{
+  protected abstract void M<T>(T t) where T : U;
+}
+
+class D : B<int>
+{
+  protected override void M<T>(T t)
+  {
+    M(42); // boxing
+  
+    ValueType v = |t|(0);
+    IConvertible c = |t|(1); // error
+  }
+}
+
+class E : B<ConsoleKey>
+{
+  protected override void M<T>(T t)
+  {
+    M(ConsoleKey.A);
+
+    Enum e = |t|(2);
+    ValueType v = |t|(3);
+    IComparable c = |t|(4);
+    IConvertible cv = |t|(5);
+    IFormattable f = |t|(6);
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'ValueType' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'IConvertible' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'Enum' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'ValueType' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'IComparable' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'IConvertible' requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'IFormattable' requires boxing of the value type
