@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -135,11 +136,22 @@ public abstract class Boxing
 
         if (type is IDeclaredType(ITypeParameter typeParameter))
         {
-          // where T : int - indirectly 'struct', can happen in type argument substitutions in type hierarchies
-          foreach (var typeConstraint in typeParameter.TypeConstraints)
+          var parametersInProgress = TypeParametersInProgress ??= new HashSet<ITypeParameter>(DeclaredElementEqualityComparer.TypeElementComparer);
+          try
           {
-            if (IsValueTypeOrEffectivelyTypeParameterType(typeConstraint))
-              return true;
+            if (parametersInProgress.Add(typeParameter))
+            {
+              // where T : int - indirectly 'struct', can happen in type argument substitutions in type hierarchies
+              foreach (var typeConstraint in typeParameter.TypeConstraints)
+              {
+                if (IsValueTypeOrEffectivelyTypeParameterType(typeConstraint))
+                  return true;
+              }
+            }
+          }
+          finally
+          {
+            parametersInProgress.Remove(typeParameter);
           }
         }
 
@@ -168,6 +180,8 @@ public abstract class Boxing
       return null;
     }
   }
+
+  [CanBeNull] private static HashSet<ITypeParameter> TypeParametersInProgress;
 
   [CanBeNull]
   private static ITreeNode TryGetComponentNode([NotNull] ITreeNode nodeToHighlight, int componentIndex)
