@@ -39,6 +39,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   {
     switch (element)
     {
+      // structWithNoToString.ToString()
       case IInvocationExpression invocationExpression:
         CheckInheritedVirtualMethodInvocationOverValueType(invocationExpression, consumer);
         break;
