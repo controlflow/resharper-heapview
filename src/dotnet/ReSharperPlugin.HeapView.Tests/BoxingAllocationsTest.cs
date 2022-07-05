@@ -55,6 +55,11 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp73)]
   [Test] public void TestConcatenationOptimization01() { DoNamedTest2(); }
   [Test] public void TestConcatenationOptimization02() { DoNamedTest2(); }
+
+  [Test] public void TestStrictVirtualMethodInvocation01() { DoNamedTest2(); }
+  [Test] public void TestStrictVirtualMethodInvocation02() { DoNamedTest2(); }
+  [Test] public void TestStrictVirtualMethodInvocation03() { DoNamedTest2(); }
+  [Test] public void TestStrictVirtualMethodInvocation04() { DoNamedTest2(); }
 }
 
 [TestNet60]

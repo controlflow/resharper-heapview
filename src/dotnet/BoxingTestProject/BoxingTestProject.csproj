@@ -5,6 +5,10 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>10</LangVersion>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+
+    <BaseIntermediateOutputPath>obj\$(TargetFramework)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <OutputPath>bin\$(MSBuildProjectName)\$(TargetFramework)\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

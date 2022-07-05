@@ -7,7 +7,7 @@ namespace BoxingTestProject;
 
 public static class Allocations
 {
-  private const int IterationsCount = 10000000;
+  private const int IterationsCount = 50000000;
 
   public static void AssertNoAllocations<T>(Func<T> func)
   {
@@ -21,45 +21,63 @@ public static class Allocations
 
   public static void AssertNoAllocations(Action action)
   {
+    for (var count = 0; count < IterationsCount; count++)
+    {
+      action();
+    }
+
     GC.Collect();
     GC.WaitForPendingFinalizers();
     GC.Collect();
 
     var before = DumpAllocationsCount();
+    var memoryBefore = GC.GetTotalMemory(false);
 
     for (var count = 0; count < IterationsCount; count++)
     {
       action();
     }
 
+    var memoryAfter = GC.GetTotalMemory(false);
     var after = DumpAllocationsCount();
 
+    //if (memoryBefore != memoryAfter)
     if (!before.SequenceEqual(after))
     {
       var bef = before.Aggregate("", (s, i) => s + "/" + i);
       var aft = after.Aggregate("", (s, i) => s + "/" + i);
-      Assert.Fail($"Found allocations: {bef} -> {aft}");
+      Assert.Fail($"Found allocations: {bef} -> {aft}, {memoryBefore} -> {memoryAfter}");
     }
   }
 
   public static void AssertAllocates(Action action)
   {
+    for (var count = 0; count < IterationsCount; count++)
+    {
+      action();
+    }
+
     GC.Collect();
     GC.WaitForPendingFinalizers();
     GC.Collect();
 
-    var before = DumpAllocationsCount();
+    var allocationsBefore = DumpAllocationsCount();
+    var memoryBefore = GC.GetTotalMemory(false);
 
     for (var count = 0; count < IterationsCount; count++)
     {
       action();
     }
 
-    var after = DumpAllocationsCount();
+    var memoryAfter = GC.GetTotalMemory(false);
+    var allocationsAfter = DumpAllocationsCount();
 
-    if (before.SequenceEqual(after))
+    //if (memoryAfter == memoryBefore)
+    if (allocationsBefore.SequenceEqual(allocationsAfter))
     {
-      Assert.Fail("Found no allocations");
+      var bef = allocationsBefore.Aggregate("", (s, i) => s + "/" + i);
+      var aft = allocationsAfter.Aggregate("", (s, i) => s + "/" + i);
+      Assert.Fail($"Found no allocations, {bef} -> {aft}, {memoryBefore} -> {memoryAfter}");
     }
   }
 

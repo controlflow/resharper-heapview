@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -9,8 +10,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
+using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -41,7 +44,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     {
       // structWithNoToString.ToString()
       case IInvocationExpression invocationExpression:
-        CheckInheritedVirtualMethodInvocationOverValueType(invocationExpression, consumer);
+        CheckInheritedVirtualMethodInvocationOverValueType(invocationExpression, data, consumer);
         break;
 
       case IReferenceExpression referenceExpression:
@@ -86,7 +89,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckInheritedVirtualMethodInvocationOverValueType(
-    [NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
+    [NotNull] IInvocationExpression invocationExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
   {
     var invokedReferenceExpression = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
     if (invokedReferenceExpression == null) return;
@@ -98,15 +103,55 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (method == null) return; // we are not interested in local functions or anything else
     if (method.IsStatic) return;
 
-    var methodClassType = method.ContainingType as IClass;
-    if (methodClassType == null) return;
+    var containingType = method.ContainingType;
+    bool mustUnwrapAndCheckOverride;
+
+    switch (containingType)
+    {
+      // resolve did not found the overriden method in type
+      case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
+        mustUnwrapAndCheckOverride = false;
+        break;
+
+      // Nullable<T> overrides everything, but invokes the same methods on T
+      case IStruct structType when structType.IsNullableOfT():
+        mustUnwrapAndCheckOverride = true;
+        break;
+
+      default:
+        return;
+    }
 
     var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression);
     if (qualifierType == null) return;
 
+    // skip some errorneous code
+    if (qualifierType is IDeclaredType (IStruct { IsByRefLike: true })) return;
+
+    if (mustUnwrapAndCheckOverride)
+    {
+      qualifierType = qualifierType.Unlift();
+
+      if (qualifierType is not IDeclaredType (IStruct structType))
+        return;
+
+      // resolve over Nullable<T> won't help us to detect if the corresponding method in T is overriden or not
+      // so we have to do this manually
+      if (IsMethodOverridenInStruct(structType, method, data))
+        return; // corresponding method is overriden
+    }
+
     const string description = "inherited 'System.Object' virtual method call on value type instance";
 
-    var notNullableType = qualifierType.Unlift(); // Nullable<T> overrides everything, but invokes the same methods on T
+    var notNullableType = qualifierType.Unlift();
+
+    // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
+    if (method.ShortName == nameof(GetHashCode)
+        && qualifierType.IsEnumType()
+        && data.GetTargetRuntime() == TargetRuntime.NetCore)
+    {
+      return;
+    }
 
     var qualifierTypeKind = IsQualifierOfValueType(notNullableType, includeStructTypeParameters: false);
     if (qualifierTypeKind == BoxingClassification.Not) return;
@@ -120,6 +165,63 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     {
       consumer.AddHighlighting(
         new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+    }
+
+
+  }
+
+  [Flags]
+  private enum StandardMethodOverrides
+  {
+    None        = 0,
+    GetHashCode = 1 << 0,
+    Equals      = 1 << 1,
+    ToString    = 1 << 2
+  }
+
+  private static readonly Key<Dictionary<IStruct, StandardMethodOverrides>> StructOverridesCache = new(nameof(StructOverridesCache));
+
+  private static bool IsMethodOverridenInStruct(
+    [NotNull] IStruct structType, [NotNull] IMethod method, [NotNull] ElementProblemAnalyzerData data)
+  {
+    var overridesMap = data.GetOrCreateDataUnderLock(
+      StructOverridesCache, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
+
+    StandardMethodOverrides overrides;
+    lock (overridesMap)
+    {
+      if (!overridesMap.TryGetValue(structType, out overrides))
+      {
+        overridesMap[structType] = overrides = DiscoverOverrides(structType);
+      }
+    }
+
+    return (overrides & NameToOverride(method.ShortName)) != 0;
+
+    static StandardMethodOverrides DiscoverOverrides([NotNull] IStruct structType)
+    {
+      var allOverrides = StandardMethodOverrides.None;
+
+      foreach (var methodOfStruct in structType.Methods)
+      {
+        if (!methodOfStruct.IsStatic && methodOfStruct.IsOverride)
+        {
+          allOverrides |= NameToOverride(methodOfStruct.ShortName);
+        }
+      }
+
+      return allOverrides;
+    }
+
+    static StandardMethodOverrides NameToOverride([NotNull] string overrideName)
+    {
+      return overrideName switch
+      {
+        nameof(GetHashCode) => StandardMethodOverrides.GetHashCode,
+        nameof(Equals) => StandardMethodOverrides.Equals,
+        nameof(ToString) => StandardMethodOverrides.ToString,
+        _ => StandardMethodOverrides.None
+      };
     }
   }
 
@@ -162,11 +264,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   [CanBeNull, Pure]
   private static IType TryGetQualifierExpressionType([NotNull] IReferenceExpression referenceExpression)
   {
-    var qualifierExpression = referenceExpression.QualifierExpression;
+    var qualifierExpression = referenceExpression.QualifierExpression.GetOperandThroughParenthesis();
     if (qualifierExpression.IsThisOrBaseOrNull())
     {
       var typeDeclaration = referenceExpression.GetContainingTypeDeclaration();
-      if (typeDeclaration is IStructDeclaration { DeclaredElement: { } structTypeElement })
+      if (typeDeclaration is { DeclaredElement: IStruct structTypeElement })
       {
         return TypeFactory.CreateType(structTypeElement);
       }
