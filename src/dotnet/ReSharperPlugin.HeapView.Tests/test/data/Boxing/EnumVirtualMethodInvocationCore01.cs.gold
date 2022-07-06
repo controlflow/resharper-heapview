@@ -1,0 +1,24 @@
+﻿using System;
+
+var e = ConsoleKey.A;
+_ = e.GetHashCode(); // optimized in Core
+_ = e.|Equals|(0)(null);
+_ = e.|ToString|(1)();
+_ = e.GetTypeCode();
+
+ConsoleKey? ne = e;
+_ = ne.GetHashCode(); // optimized in Core
+_ = ne.|Equals|(2)(null);
+_ = ne.|ToString|(3)();
+
+_ = ne?.GetHashCode(); // optimized in Core
+_ = ne?.|Equals|(4)(null);
+_ = ne?.|ToString|(5)();
+_ = ne?.GetTypeCode();
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(3): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(4): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance

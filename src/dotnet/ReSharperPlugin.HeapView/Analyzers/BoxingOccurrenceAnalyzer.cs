@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -10,10 +9,8 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
-using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -23,6 +20,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 // todo: C# 8 causes boxing by invoimg the non-overriden .ToString under string concatenation?
+// todo: this parameter conversion classification for extension method invocations?
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -42,9 +40,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   {
     switch (element)
     {
+      // todo: test type parameters as qualifiers
+
       // structWithNoToString.ToString()
       case IInvocationExpression invocationExpression:
-        CheckInheritedVirtualMethodInvocationOverValueType(invocationExpression, data, consumer);
+        CheckInheritedMethodInvocationOverValueType(invocationExpression, data, consumer);
         break;
 
       case IReferenceExpression referenceExpression:
@@ -88,7 +88,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
   }
 
-  private static void CheckInheritedVirtualMethodInvocationOverValueType(
+  #region Struct virtual method invocation
+
+  // todo: GetType() invocation
+
+  private static void CheckInheritedMethodInvocationOverValueType(
     [NotNull] IInvocationExpression invocationExpression,
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
@@ -100,29 +104,51 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (!resolveErrorType.IsAcceptable) return;
 
     var method = declaredElement as IMethod;
-    if (method == null) return; // we are not interested in local functions or anything else
-    if (method.IsStatic) return;
+    if (method == null) return;
+
+    if (method.IsStatic) return; // we are only insterested in instance methods
 
     var containingType = method.ContainingType;
     bool mustUnwrapAndCheckOverride;
 
-    switch (containingType)
+    switch (method.ShortName)
     {
-      // resolve did not found the overriden method in type
-      case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
+      case nameof(GetHashCode):
+      case nameof(Equals):
+      case nameof(ToString):
+      {
+        switch (containingType)
+        {
+          // we've found non-overriden Equals/GetHashCode/ToString invoked over something
+          case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
+            mustUnwrapAndCheckOverride = false;
+            break;
+
+          // Nullable<T> overrides Equals/GetHashCode/ToString, but invokes the same methods on T
+          case IStruct structType when structType.IsNullableOfT():
+            mustUnwrapAndCheckOverride = true;
+            break;
+
+          default:
+            return;
+        }
+
+        break;
+      }
+
+      case nameof(GetType) when containingType.IsSystemObject():
+      {
         mustUnwrapAndCheckOverride = false;
         break;
-
-      // Nullable<T> overrides everything, but invokes the same methods on T
-      case IStruct structType when structType.IsNullableOfT():
-        mustUnwrapAndCheckOverride = true;
-        break;
+      }
 
       default:
+      {
         return;
+      }
     }
 
-    var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression);
+    var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression).Unlift();
     if (qualifierType == null) return;
 
     // skip some errorneous code
@@ -130,30 +156,69 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     if (mustUnwrapAndCheckOverride)
     {
-      qualifierType = qualifierType.Unlift();
+      switch (qualifierType)
+      {
+        // resolve over Nullable<T> won't help us to detect if the corresponding method in T is overriden or not
+        // so we have to do the override check manually
+        case IDeclaredType (IStruct structType) when !StructOverridesChecker.IsMethodOverridenInStruct(structType, method, data):
+          break;
 
-      if (qualifierType is not IDeclaredType (IStruct structType))
-        return;
+        case IDeclaredType (IEnum):
+          break; // enums do not have method overrides
 
-      // resolve over Nullable<T> won't help us to detect if the corresponding method in T is overriden or not
-      // so we have to do this manually
-      if (IsMethodOverridenInStruct(structType, method, data))
-        return; // corresponding method is overriden
+        default:
+          return; // corresponding method is overriden, no boxing inside Nullable<T>
+      }
+    }
+
+    if (IsStructVirtualMethodInvocationOptimizedAtRuntime(method, qualifierType, data))
+      return;
+
+    // todo: "Boxing allocation: non-overriden inherited 'System.Object'/'System.Enum' virtual method call
+    //
+    // todo: "Possible boxing allocation: inherited 'GetType()' method call over the value type instance"
+    // over the type parameter that can be substituted with value type
+
+    if (method.ShortName is nameof(GetType))
+    {
+      if (qualifierType.IsValueType())
+      {
+        consumer.AddHighlighting(new BoxingAllocationHighlighting(
+          invokedReferenceExpression.NameIdentifier,
+          "special 'Object.GetType()' method invocation over the value type instance"));
+      }
+      else if (qualifierType.IsUnconstrainedGenericType(out var unconstrainedTypeParameter))
+      {
+        consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
+          invokedReferenceExpression.NameIdentifier,
+          "special 'Object.GetType()' method may be invoked over the value type instance "
+          + $"if '{unconstrainedTypeParameter.ShortName}' type parameter will be substituted with the value type"));
+      }
+
+      return;
     }
 
     const string description = "inherited 'System.Object' virtual method call on value type instance";
 
-    var notNullableType = qualifierType.Unlift();
-
-    // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
-    if (method.ShortName == nameof(GetHashCode)
-        && qualifierType.IsEnumType()
-        && data.GetTargetRuntime() == TargetRuntime.NetCore)
+    if (qualifierType.IsTypeParameterType(out var typeParameter))
     {
+      if (qualifierType.IsValueType()) // todo: effectively value type
+      {
+
+        // todo: GetType() must have different message?
+
+        var d = $"inherited '{method.ShortName}' virtual method call over the value type instance if the type argument for '{typeParameter.ShortName}' type parameter do no overrides '{{0}}' virtual method";
+
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, d));
+
+        // todo: "Possible boxing allocation: possible inherited '{0}()' method call over the value type instance + if the substituted type do no overrides '{0}' method"
+      }
+
       return;
     }
 
-    var qualifierTypeKind = IsQualifierOfValueType(notNullableType, includeStructTypeParameters: false);
+    var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: false);
     if (qualifierTypeKind == BoxingClassification.Not) return;
 
     if (qualifierTypeKind == BoxingClassification.Definitely)
@@ -166,64 +231,24 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       consumer.AddHighlighting(
         new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
     }
-
-
   }
 
-  [Flags]
-  private enum StandardMethodOverrides
+  [Pure]
+  private static bool IsStructVirtualMethodInvocationOptimizedAtRuntime(
+    [NotNull] IMethod method, [NotNull] IType qualifierType, [NotNull] ElementProblemAnalyzerData data)
   {
-    None        = 0,
-    GetHashCode = 1 << 0,
-    Equals      = 1 << 1,
-    ToString    = 1 << 2
+    if (method.ShortName == nameof(GetHashCode)
+        && qualifierType.IsEnumType()
+        && data.GetTargetRuntime() == TargetRuntime.NetCore)
+    {
+      // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
+      return true;
+    }
+
+    return false;
   }
 
-  private static readonly Key<Dictionary<IStruct, StandardMethodOverrides>> StructOverridesCache = new(nameof(StructOverridesCache));
-
-  private static bool IsMethodOverridenInStruct(
-    [NotNull] IStruct structType, [NotNull] IMethod method, [NotNull] ElementProblemAnalyzerData data)
-  {
-    var overridesMap = data.GetOrCreateDataUnderLock(
-      StructOverridesCache, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
-
-    StandardMethodOverrides overrides;
-    lock (overridesMap)
-    {
-      if (!overridesMap.TryGetValue(structType, out overrides))
-      {
-        overridesMap[structType] = overrides = DiscoverOverrides(structType);
-      }
-    }
-
-    return (overrides & NameToOverride(method.ShortName)) != 0;
-
-    static StandardMethodOverrides DiscoverOverrides([NotNull] IStruct structType)
-    {
-      var allOverrides = StandardMethodOverrides.None;
-
-      foreach (var methodOfStruct in structType.Methods)
-      {
-        if (!methodOfStruct.IsStatic && methodOfStruct.IsOverride)
-        {
-          allOverrides |= NameToOverride(methodOfStruct.ShortName);
-        }
-      }
-
-      return allOverrides;
-    }
-
-    static StandardMethodOverrides NameToOverride([NotNull] string overrideName)
-    {
-      return overrideName switch
-      {
-        nameof(GetHashCode) => StandardMethodOverrides.GetHashCode,
-        nameof(Equals) => StandardMethodOverrides.Equals,
-        nameof(ToString) => StandardMethodOverrides.ToString,
-        _ => StandardMethodOverrides.None
-      };
-    }
-  }
+  #endregion
 
   private static void CheckStructMethodConversionToDelegateInstance(
     [NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)

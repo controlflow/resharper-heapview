@@ -169,4 +169,32 @@ public static class CommonUtils
       }
     }
   }
+
+  [Pure]
+  public static bool IsTypeParameterType(this IType type, out ITypeParameter typeParameter)
+  {
+    if (type is IDeclaredType declaredType)
+    {
+      typeParameter = declaredType.GetTypeElement() as ITypeParameter;
+      return typeParameter != null;
+    }
+
+    typeParameter = null;
+    return false;
+  }
+
+  [Pure]
+  public static bool IsUnconstrainedGenericType(this IType type, out ITypeParameter typeParameter)
+  {
+    if (type is IDeclaredType { Classify: TypeClassification.UNKNOWN } declaredType)
+    {
+      typeParameter = declaredType.GetTypeElement() as ITypeParameter;
+      return typeParameter != null;
+    }
+
+    typeParameter = null;
+    return false;
+  }
+
+
 }

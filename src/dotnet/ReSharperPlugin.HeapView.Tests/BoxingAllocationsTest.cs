@@ -10,7 +10,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Tests;
 
 [TestNetFramework46]
-public class BoxingAllocationsTest : CSharpHighlightingTestBase
+public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
 {
   protected override string RelativeTestDataPath => "Boxing";
 
@@ -56,17 +56,28 @@ public class BoxingAllocationsTest : CSharpHighlightingTestBase
   [Test] public void TestConcatenationOptimization01() { DoNamedTest2(); }
   [Test] public void TestConcatenationOptimization02() { DoNamedTest2(); }
 
-  [Test] public void TestStrictVirtualMethodInvocation01() { DoNamedTest2(); }
-  [Test] public void TestStrictVirtualMethodInvocation02() { DoNamedTest2(); }
-  [Test] public void TestStrictVirtualMethodInvocation03() { DoNamedTest2(); }
-  [Test] public void TestStrictVirtualMethodInvocation04() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation01() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation02() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation03() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation04() { DoNamedTest2(); }
+
+  [Test] public void TestStructGetTypeInvocation01() { DoNamedTest2(); }
+  [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
+}
+
+[TestNetFramework46]
+public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
+{
+  [Test] public void TestEnumVirtualMethodInvocationFramework01() { DoNamedTest2(); }
 }
 
 [TestNet60]
-//[TestAdditionalGoldSuffixes(".net6")]
-public class BoxingAllocationsNetCoreTest : BoxingAllocationsTest
+public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 {
   // note: use the same gold
 
   [Test] public void TestTuplesAwaitForeach01() { DoNamedTest2(); }
+  [Test] public void TestTuplesAwaitForeach02() { DoNamedTest2(); }
+
+  [Test] public void TestEnumVirtualMethodInvocationCore01() { DoNamedTest2(); }
 }
