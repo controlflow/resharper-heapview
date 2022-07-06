@@ -45,12 +45,12 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckInheritedMethodInvocationOverValueType(invocationExpression, data, consumer);
         break;
 
-      ///////////////////////////////////////////////////////////
-
       // Action a = structValue.InstanceMethod;
       case IReferenceExpression referenceExpression:
         CheckStructMethodConversionToDelegateInstance(referenceExpression, consumer);
         break;
+
+      ///////////////////////////////////////////////////////////
 
       // var obj = (object) intValue;
       case ICastExpression castExpression:
@@ -271,27 +271,32 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var qualifierType = TryGetQualifierExpressionType(referenceExpression);
     if (qualifierType == null) return;
 
-    var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: true);
-    if (qualifierTypeKind == BoxingClassification.Not) return;
+    if (qualifierType.IsReferenceType()) return;
 
     var delegateType = TryFindTargetDelegateType(referenceExpression);
     if (delegateType == null) return;
 
-    if (referenceExpression.IsUnderLinqExpressionTree())
-      return; // not a real invocation
+    if (referenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
 
-    var description = BakeDescriptionWithTypes(
-      "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, delegateType);
+    var language = referenceExpression.Language;
+    var sourceTypeText = qualifierType.GetPresentableName(language);
+    var delegateTypeText = delegateType.GetPresentableName(language);
 
-    if (qualifierTypeKind == BoxingClassification.Definitely)
+    if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
     {
       consumer.AddHighlighting(
-        new BoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+        new PossibleBoxingAllocationHighlighting(
+          referenceExpression.NameIdentifier,
+          $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"
+          + $" if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
     }
     else
     {
       consumer.AddHighlighting(
-        new PossibleBoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+        new BoxingAllocationHighlighting(
+          referenceExpression.NameIdentifier,
+          $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"));
     }
 
     [CanBeNull, Pure]
@@ -339,27 +344,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     Definitely,
     Possibly,
     Not
-  }
-
-  [Pure]
-  private static BoxingClassification IsQualifierOfValueType([NotNull] IType type, bool includeStructTypeParameters)
-  {
-    if (type.IsTypeParameterType())
-    {
-      return type.Classify switch
-      {
-        TypeClassification.REFERENCE_TYPE => BoxingClassification.Not,
-        TypeClassification.VALUE_TYPE when includeStructTypeParameters => BoxingClassification.Definitely,
-        _ => BoxingClassification.Possibly
-      };
-    }
-
-    if (type.IsValueType())
-    {
-      return BoxingClassification.Definitely;
-    }
-
-    return BoxingClassification.Not;
   }
 
   private static void CheckExpressionImplicitConversion(

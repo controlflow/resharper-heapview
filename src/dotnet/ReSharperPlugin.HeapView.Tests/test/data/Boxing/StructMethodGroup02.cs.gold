@@ -1,0 +1,24 @@
+﻿void Method<TClass, TValue, TUnconstrained>(
+  TClass tc, TValue tv, TUnconstrained tu)
+  where TClass : class, I
+  where TValue : struct, I
+  where TUnconstrained : I
+{
+  var tcm = tc.Method;
+  var tvm = tv.|Method|(0);
+  var tum = tu.|Method|(1);
+
+  var tcg = tc.GetHashCode;
+  var tvg = tv.|GetHashCode|(2);
+  var tug = tu.|GetHashCode|(3);
+}
+
+interface I
+{
+  void Method();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TValue' instance method to 'Action' delegate type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type if 'TUnconstrained' type parameter will be substituted with the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TValue' instance method to 'Func<int>' delegate type
+(3): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Func<int>' delegate type if 'TUnconstrained' type parameter will be substituted with the value type

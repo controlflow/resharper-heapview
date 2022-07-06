@@ -38,7 +38,7 @@ public interface I {
 (3): ReSharper HeapView Allocation: Delegate allocation: from method group
 (4): ReSharper HeapView Allocation: Delegate allocation: from method group
 (5): ReSharper HeapView Allocation: Delegate allocation: from method group
-(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type if 'T' type parameter will be substituted with the value type
 (7): ReSharper HeapView Allocation: Delegate allocation: from method group
 (8): ReSharper HeapView Allocation: Delegate allocation: from method group
 (9): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type

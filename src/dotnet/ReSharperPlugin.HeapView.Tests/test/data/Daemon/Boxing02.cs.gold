@@ -229,7 +229,7 @@ public static class A {
 (70): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of the value type
 (71): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of the value type
 (72): ReSharper HeapView Allocation: Delegate allocation: from method group
-(73): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type
+(73): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type if 'TUnconstrained' type parameter will be substituted with the value type
 (74): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of the value type
 (75): ReSharper HeapView Boxing: Possible boxing allocation: special 'Object.GetType()' method may be invoked over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type
 (76): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
