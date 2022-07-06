@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
@@ -49,8 +50,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       case IReferenceExpression referenceExpression:
         CheckStructMethodConversionToDelegateInstance(referenceExpression, consumer);
         break;
-
-      ///////////////////////////////////////////////////////////
 
       // var obj = (object) intValue;
       case ICastExpression castExpression:
@@ -338,6 +337,32 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
+  #region Explicit casts
+
+  private static void CheckExpressionExplicitConversion(
+    [NotNull] ICastExpression castExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var castOperand = castExpression.Op;
+    if (castOperand == null) return;
+
+    var sourceExpressionType = castOperand.GetExpressionType();
+
+    var targetType = castExpression.GetExpressionType().ToIType();
+    if (targetType == null) return;
+
+    if (IsBoxingEliminatedAtRuntime(castExpression)) return;
+    if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
+    if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, castExpression.TargetType,
+      static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
+      data, consumer);
+  }
+
+  #endregion
 
   private enum BoxingClassification
   {
@@ -363,7 +388,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (IsBoxingEliminatedByTheCompiler(expression, data)) return;
 
     CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, expression, isExplicitCast: false, data, consumer);
+      sourceExpressionType, targetType, expression,
+      static (rule, source, target) => rule.ClassifyImplicitConversionFromExpression(source, target),
+      data, consumer);
   }
 
   [Pure]
@@ -410,26 +437,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return true;
   }
 
-  private static void CheckExpressionExplicitConversion(
-    [NotNull] ICastExpression castExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
-  {
-    var castOperand = castExpression.Op;
 
-    var sourceExpressionType = castOperand?.GetExpressionType();
-    if (sourceExpressionType == null) return;
-
-    var targetType = castExpression.GetExpressionType().ToIType();
-    if (targetType == null) return;
-
-    if (IsBoxingEliminatedAtRuntime(castExpression)) return;
-    if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
-    if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, castExpression.TargetType, isExplicitCast: true, data, consumer);
-  }
 
   #region Implicit conversions in deconstructions
 
@@ -482,7 +490,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         if (elementType != null)
         {
           CheckConversionRequiresBoxing(
-            elementType, declarationExpression.Type(), explicitTypeUsage, isExplicitCast: false, data, consumer);
+            sourceExpressionType: elementType, targetType: declarationExpression.Type(), explicitTypeUsage,
+            static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
+            data, consumer);
         }
 
         break;
@@ -542,7 +552,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
             : lValueExpression;
 
           CheckConversionRequiresBoxing(
-            sourceExpressionType, targetComponentType, correspondingNode, isExplicitCast: false, data, consumer);
+            sourceExpressionType, targetComponentType, correspondingNode,
+            static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
+            data, consumer);
           break;
         }
       }
@@ -666,7 +678,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     [NotNull] IExpressionType sourceExpressionType,
     [NotNull] IType targetType,
     [NotNull] ITreeNode correspondingNode,
-    bool isExplicitCast,
+    [NotNull, RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
@@ -676,18 +688,14 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     // todo: if target is value type and not ValueTuple - can't be boxing, right?
 
     var conversionRule = data.GetTypeConversionRule();
-    var conversion = isExplicitCast
-      ? conversionRule.ClassifyConversionFromExpression(sourceExpressionType, targetType)
-      : conversionRule.ClassifyImplicitConversionFromExpression(sourceExpressionType, targetType);
+    var conversion = getConversion(conversionRule, sourceExpressionType, targetType);
 
     var boxing = Boxing.TryFind(conversion, sourceExpressionType, targetType, correspondingNode);
-    if (boxing != null)
-    {
-      if (!correspondingNode.IsInTheContextWhereAllocationsAreNotImportant())
-      {
-        boxing.Report(consumer);
-      }
-    }
+    if (boxing == null) return;
+
+    if (correspondingNode.IsInTheContextWhereAllocationsAreNotImportant()) return;
+
+    boxing.Report(consumer);
   }
 
   private static void ReportBoxingAllocation(
