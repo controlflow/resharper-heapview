@@ -90,8 +90,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
   #region Struct virtual method invocation
 
-  // todo: GetType() invocation
-
   private static void CheckInheritedMethodInvocationOverValueType(
     [NotNull] IInvocationExpression invocationExpression,
     [NotNull] ElementProblemAnalyzerData data,
@@ -109,7 +107,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (method.IsStatic) return; // we are only insterested in instance methods
 
     var containingType = method.ContainingType;
-    bool mustUnwrapAndCheckOverride;
 
     switch (method.ShortName)
     {
@@ -117,119 +114,127 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       case nameof(Equals):
       case nameof(ToString):
       {
-        switch (containingType)
-        {
-          // we've found non-overriden Equals/GetHashCode/ToString invoked over something
-          case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
-            mustUnwrapAndCheckOverride = false;
-            break;
-
-          // Nullable<T> overrides Equals/GetHashCode/ToString, but invokes the same methods on T
-          case IStruct structType when structType.IsNullableOfT():
-            mustUnwrapAndCheckOverride = true;
-            break;
-
-          default:
-            return;
-        }
-
-        break;
+        CheckValueTypeVirtualMethodInvocation();
+        return;
       }
 
       case nameof(GetType) when containingType.IsSystemObject():
       {
-        mustUnwrapAndCheckOverride = false;
-        break;
-      }
-
-      default:
-      {
+        CheckGetTypeMethodInvocation();
         return;
       }
     }
 
-    var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression).Unlift();
-    if (qualifierType == null) return;
-
-    // skip some errorneous code
-    if (qualifierType is IDeclaredType (IStruct { IsByRefLike: true })) return;
-
-    if (mustUnwrapAndCheckOverride)
+    void CheckGetTypeMethodInvocation()
     {
-      switch (qualifierType)
-      {
-        // resolve over Nullable<T> won't help us to detect if the corresponding method in T is overriden or not
-        // so we have to do the override check manually
-        case IDeclaredType (IStruct structType) when !StructOverridesChecker.IsMethodOverridenInStruct(structType, method, data):
-          break;
+      var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression);
+      if (qualifierType == null)
+        return;
 
-        case IDeclaredType (IEnum):
-          break; // enums do not have method overrides
+      if (!qualifierType.IsTypeBoxable())
+        return; // errorneous invocation
 
-        default:
-          return; // corresponding method is overriden, no boxing inside Nullable<T>
-      }
-    }
-
-    if (IsStructVirtualMethodInvocationOptimizedAtRuntime(method, qualifierType, data))
-      return;
-
-    // todo: "Boxing allocation: non-overriden inherited 'System.Object'/'System.Enum' virtual method call
-    //
-    // todo: "Possible boxing allocation: inherited 'GetType()' method call over the value type instance"
-    // over the type parameter that can be substituted with value type
-
-    if (method.ShortName is nameof(GetType))
-    {
       if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(new BoxingAllocationHighlighting(
           invokedReferenceExpression.NameIdentifier,
           "special 'Object.GetType()' method invocation over the value type instance"));
       }
-      else if (qualifierType.IsUnconstrainedGenericType(out var unconstrainedTypeParameter))
+      else if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
       {
         consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
           invokedReferenceExpression.NameIdentifier,
           "special 'Object.GetType()' method may be invoked over the value type instance "
-          + $"if '{unconstrainedTypeParameter.ShortName}' type parameter will be substituted with the value type"));
+          + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
       }
-
-      return;
     }
 
-    const string description = "inherited 'System.Object' virtual method call on value type instance";
-
-    if (qualifierType.IsTypeParameterType(out var typeParameter))
+    void CheckValueTypeVirtualMethodInvocation()
     {
-      if (qualifierType.IsValueType()) // todo: effectively value type
+      bool mustCheckOverride;
+
+      switch (containingType)
       {
+        // we've found non-overriden Equals/GetHashCode/ToString invoked over something
+        case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
+          mustCheckOverride = false;
+          break;
 
-        // todo: GetType() must have different message?
+        // Nullable<T> overrides Equals/GetHashCode/ToString, but invokes the corresponding methods on T
+        case IStruct structType when structType.IsNullableOfT():
+          mustCheckOverride = true;
+          break;
 
-        var d = $"inherited '{method.ShortName}' virtual method call over the value type instance if the type argument for '{typeParameter.ShortName}' type parameter do no overrides '{{0}}' virtual method";
-
-        consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, d));
-
-        // todo: "Possible boxing allocation: possible inherited '{0}()' method call over the value type instance + if the substituted type do no overrides '{0}' method"
+        default:
+          return;
       }
 
-      return;
-    }
+      var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression).Unlift();
+      if (qualifierType == null) return;
 
-    var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: false);
-    if (qualifierTypeKind == BoxingClassification.Not) return;
+      if (!qualifierType.IsTypeBoxable())
+        return; // errorneous invocation
 
-    if (qualifierTypeKind == BoxingClassification.Definitely)
-    {
-      consumer.AddHighlighting(
-        new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
-    }
-    else
-    {
-      consumer.AddHighlighting(
-        new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+      if (mustCheckOverride && CheckHasVirtualMethodOverride(qualifierType.GetTypeElement()))
+        return;
+
+      if (IsStructVirtualMethodInvocationOptimizedAtRuntime(method, qualifierType, data))
+        return;
+
+      // todo: "Boxing allocation: non-overriden inherited 'System.Object'/'System.Enum' virtual method call
+      // todo: "Possible boxing allocation: inherited 'GetType()' method call over the value type instance"
+      // over the type parameter that can be substituted with value type
+
+      const string description = "inherited 'System.Object' virtual method call on value type instance";
+
+      if (qualifierType.IsTypeParameterType(out var typeParameter))
+      {
+        if (qualifierType.IsValueType()) // todo: effectively value type
+        {
+          var d =
+            $"inherited '{method.ShortName}' virtual method call over the value type instance if the type argument for '{typeParameter.ShortName}' type parameter do no overrides '{{0}}' virtual method";
+
+          consumer.AddHighlighting(
+            new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, d));
+
+          // todo: "Possible boxing allocation: possible inherited '{0}()' method call over the value type instance + if the substituted type do no overrides '{0}' method"
+        }
+
+        // todo: unconstrained?
+        // todo: all possible
+
+        return;
+      }
+
+      var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: false);
+      if (qualifierTypeKind == BoxingClassification.Not) return;
+
+      if (qualifierTypeKind == BoxingClassification.Definitely)
+      {
+        consumer.AddHighlighting(
+          new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+      }
+      else
+      {
+        consumer.AddHighlighting(
+          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+      }
+
+      [Pure]
+      bool CheckHasVirtualMethodOverride([CanBeNull] ITypeElement typeElement)
+      {
+        switch (typeElement)
+        {
+          // Nullable<T> overrides won't help us to detect if the corresponding method in T
+          // is overriden or not, so we have to do the override check manually
+          case IStruct structType:
+            return StructOverridesChecker.IsMethodOverridenInStruct(structType, method, data);
+          case IEnum:
+            return false; // enums do not have virtual method overrides
+          default:
+            return true; // corresponding method is overriden, no boxing inside Nullable<T>
+        }
+      }
     }
   }
 
