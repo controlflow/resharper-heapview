@@ -27,17 +27,19 @@ public static class CommonUtils
   [Pure]
   public static bool IsInTheContextWhereAllocationsAreNotImportant([NotNull] this ITreeNode context)
   {
+    if (context.IsUnderLinqExpressionTree())
+      return true; // not a "real" code
+
     foreach (var containingNode in context.ContainingNodes(returnThis: true))
     {
-      if (containingNode is IAttribute) return true; // compile-time boxing, array creations
-
-      // throw arguments
-      if (containingNode is IThrowExpression) return true;
-      if (containingNode is IThrowStatement) return true;
-
-      if (containingNode is ICSharpStatement statement)
+      switch (containingNode)
       {
-        return NextStatementsExecutionAlwaysEndsWithThrowStatement(statement);
+        case IAttribute: // compile-time boxing, array creations
+        case IThrowExpression or IThrowStatement: // throw arguments
+          return true;
+
+        case ICSharpStatement statement:
+          return NextStatementsExecutionAlwaysEndsWithThrowStatement(statement);
       }
     }
 
@@ -47,18 +49,28 @@ public static class CommonUtils
   [Pure]
   private static bool NextStatementsExecutionAlwaysEndsWithThrowStatement([NotNull] ICSharpStatement statement)
   {
-    var nextStatement = statement.GetNextStatement();
+    var nextStatement = statement.GetNextStatement(skipPreprocessor: false);
+
     while (nextStatement != null)
     {
       if (nextStatement is IThrowStatement) return true;
+
       if (HasControlFlowJumps(nextStatement)) return false;
 
-      nextStatement = nextStatement.GetNextStatement();
+      nextStatement = nextStatement.GetNextStatement(skipPreprocessor: false);
     }
 
+    // todo: support "next" statement by unwrapping
+    /*
+     * if (...) {
+     *    ...boxing...
+     * }
+     *
+     * throw ...;
+     */
     return false;
 
-    static bool HasControlFlowJumps(ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
+    static bool HasControlFlowJumps([CanBeNull] ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
     {
       switch (statement)
       {
@@ -104,8 +116,12 @@ public static class CommonUtils
           foreach (var switchSection in switchStatement.SectionsEnumerable)
           foreach (var switchSectionStatement in switchSection.StatementsEnumerable)
           {
-            if (IsControlFlowJumpStatement(switchSectionStatement, allowContinue, allowBreak: true))
+            if (HasControlFlowJumps(switchSectionStatement, allowContinue, allowBreak: true))
               return true;
+
+            // todo: why not recursive call
+            //if (IsControlFlowJumpStatement(switchSectionStatement, allowContinue, allowBreak: true))
+            //  return true;
           }
 
           return false;

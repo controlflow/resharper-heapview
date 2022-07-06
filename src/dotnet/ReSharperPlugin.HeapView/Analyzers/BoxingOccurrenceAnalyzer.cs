@@ -19,8 +19,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: extension GetEnumerator() boxing, extension .Add() for collection initializers
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
-// todo: C# 8 causes boxing by invoimg the non-overriden .ToString under string concatenation?
 // todo: this parameter conversion classification for extension method invocations?
+// todo: [ReSharper] disable method group natural types under nameof() expression
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -40,13 +40,14 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   {
     switch (element)
     {
-      // todo: test type parameters as qualifiers
-
       // structWithNoToString.ToString()
       case IInvocationExpression invocationExpression:
         CheckInheritedMethodInvocationOverValueType(invocationExpression, data, consumer);
         break;
 
+      ///////////////////////////////////////////////////////////
+
+      // Action a = structValue.InstanceMethod;
       case IReferenceExpression referenceExpression:
         CheckStructMethodConversionToDelegateInstance(referenceExpression, consumer);
         break;
@@ -88,7 +89,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
   }
 
-  #region Struct virtual method invocation
+  #region Struct inherited instance method invocation
 
   private static void CheckInheritedMethodInvocationOverValueType(
     [NotNull] IInvocationExpression invocationExpression,
@@ -134,6 +135,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       if (!qualifierType.IsTypeBoxable())
         return; // errorneous invocation
 
+      if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
+        return;
+
       if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(new BoxingAllocationHighlighting(
@@ -156,17 +160,22 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       switch (containingType)
       {
         // we've found non-overriden Equals/GetHashCode/ToString invoked over something
-        case IClass classType when classType.IsSystemValueTypeClass() || classType.IsSystemEnumClass():
+        case IClass classType when classType.IsSystemValueTypeClass()
+                                   || classType.IsSystemEnumClass()
+                                   || classType.IsSystemObject():
+        {
           mustCheckOverride = false;
           break;
+        }
 
         // Nullable<T> overrides Equals/GetHashCode/ToString, but invokes the corresponding methods on T
         case IStruct structType when structType.IsNullableOfT():
+        {
           mustCheckOverride = true;
           break;
+        }
 
-        default:
-          return;
+        default: return;
       }
 
       var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression).Unlift();
@@ -178,46 +187,30 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       if (mustCheckOverride && CheckHasVirtualMethodOverride(qualifierType.GetTypeElement()))
         return;
 
+      if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
+        return;
+
       if (IsStructVirtualMethodInvocationOptimizedAtRuntime(method, qualifierType, data))
         return;
 
-      // todo: "Boxing allocation: non-overriden inherited 'System.Object'/'System.Enum' virtual method call
-      // todo: "Possible boxing allocation: inherited 'GetType()' method call over the value type instance"
-      // over the type parameter that can be substituted with value type
-
-      const string description = "inherited 'System.Object' virtual method call on value type instance";
-
       if (qualifierType.IsTypeParameterType(out var typeParameter))
       {
-        if (qualifierType.IsValueType()) // todo: effectively value type
+        if (!qualifierType.IsReferenceType())
         {
-          var d =
-            $"inherited '{method.ShortName}' virtual method call over the value type instance if the type argument for '{typeParameter.ShortName}' type parameter do no overrides '{{0}}' virtual method";
-
           consumer.AddHighlighting(
-            new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, d));
-
-          // todo: "Possible boxing allocation: possible inherited '{0}()' method call over the value type instance + if the substituted type do no overrides '{0}' method"
+            new PossibleBoxingAllocationHighlighting(
+              invokedReferenceExpression.NameIdentifier,
+              $"inherited 'Object.{method.ShortName}()' virtual method invocation over the value type instance "
+              + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type "
+              + $"that do not overrides '{method.ShortName}' virtual method"));
         }
-
-        // todo: unconstrained?
-        // todo: all possible
-
-        return;
       }
-
-      var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: false);
-      if (qualifierTypeKind == BoxingClassification.Not) return;
-
-      if (qualifierTypeKind == BoxingClassification.Definitely)
+      else if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
-      }
-      else
-      {
-        consumer.AddHighlighting(
-          new PossibleBoxingAllocationHighlighting(invokedReferenceExpression.NameIdentifier, description));
+          new BoxingAllocationHighlighting(
+            invokedReferenceExpression.NameIdentifier,
+            $"inherited 'Object.{method.ShortName}()' virtual method invocation over the value type instance"));
       }
 
       [Pure]
@@ -231,6 +224,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
             return StructOverridesChecker.IsMethodOverridenInStruct(structType, method, data);
           case IEnum:
             return false; // enums do not have virtual method overrides
+          case ITypeParameter:
+            return false; // in generic code we are not assuming any overrides
           default:
             return true; // corresponding method is overriden, no boxing inside Nullable<T>
         }
@@ -254,30 +249,39 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
+  #region Struct method group delegate creation
 
   private static void CheckStructMethodConversionToDelegateInstance(
-    [NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)
+    [NotNull] IReferenceExpression referenceExpression,
+    [NotNull] IHighlightingConsumer consumer)
   {
-    var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
-    if (invocationExpression != null) return; // also filters out 'nameof(o.M)'
+    var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression.GetContainingParenthesizedExpression());
+    if (invocationExpression != null) return;
+
+    if (referenceExpression.IsNameofOperatorTopArgument()) return;
 
     var (declaredElement, _, resolveErrorType) = referenceExpression.Reference.Resolve();
     if (!resolveErrorType.IsAcceptable) return;
 
     var method = declaredElement as IMethod;
-    if (method == null || method.IsStatic) return;
+    if (method == null) return;
+
+    if (method.IsStatic) return;
 
     var qualifierType = TryGetQualifierExpressionType(referenceExpression);
     if (qualifierType == null) return;
 
-    var targetType = referenceExpression.GetImplicitlyConvertedTo();
-    if (!targetType.IsDelegateType()) return;
-
     var qualifierTypeKind = IsQualifierOfValueType(qualifierType, includeStructTypeParameters: true);
     if (qualifierTypeKind == BoxingClassification.Not) return;
 
+    var delegateType = TryFindTargetDelegateType(referenceExpression);
+    if (delegateType == null) return;
+
+    if (referenceExpression.IsUnderLinqExpressionTree())
+      return; // not a real invocation
+
     var description = BakeDescriptionWithTypes(
-      "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, targetType);
+      "conversion of value type '{0}' instance method to '{1}' delegate type", qualifierType, delegateType);
 
     if (qualifierTypeKind == BoxingClassification.Definitely)
     {
@@ -288,6 +292,24 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     {
       consumer.AddHighlighting(
         new PossibleBoxingAllocationHighlighting(referenceExpression.NameIdentifier, description));
+    }
+
+    [CanBeNull, Pure]
+    static IType TryFindTargetDelegateType([NotNull] IReferenceExpression methodGroupExpression)
+    {
+      var targetType = methodGroupExpression.GetImplicitlyConvertedTo();
+      if (targetType.IsDelegateType())
+      {
+        return targetType;
+      }
+
+      var naturalType = methodGroupExpression.GetExpressionType().ToIType();
+      if (naturalType != null && naturalType.IsDelegateType())
+      {
+        return naturalType;
+      }
+
+      return null;
     }
   }
 
@@ -309,6 +331,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var expressionType = qualifierExpression.GetExpressionType();
     return expressionType.ToIType();
   }
+
+  #endregion
 
   private enum BoxingClassification
   {
@@ -422,6 +446,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, castExpression.TargetType, isExplicitCast: true, data, consumer);
   }
+
+  #region Implicit conversions in deconstructions
 
   private static void CheckDeconstructingAssignmentImplicitConversions(
     [NotNull] IAssignmentExpression assignmentExpression,
@@ -538,6 +564,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       }
     }
   }
+
+  #endregion
 
   private static void CheckPatternMatchingConversion(
     [NotNull] IPatternWithTypeUsage typeCheckPattern,

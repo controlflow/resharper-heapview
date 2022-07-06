@@ -8,8 +8,12 @@ _ = ns?.|GetType|(2)();
 var rs = new RS();
 _ = rs.|GetType|(3)();
 
+var re = new REF();
+_ = re.GetType();
+
 struct S { }
 record struct RS { }
+ref struct REF { }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
 (1): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance

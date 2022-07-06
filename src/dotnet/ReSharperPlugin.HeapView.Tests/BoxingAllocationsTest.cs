@@ -1,4 +1,5 @@
 using JetBrains.Application.Settings;
+using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -60,24 +61,34 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestStructVirtualMethodInvocation02() { DoNamedTest2(); }
   [Test] public void TestStructVirtualMethodInvocation03() { DoNamedTest2(); }
   [Test] public void TestStructVirtualMethodInvocation04() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation05() { DoNamedTest2(); }
+  [Test] public void TestStructVirtualMethodInvocation06() { DoNamedTest2(); }
 
   [Test] public void TestStructGetTypeInvocation01() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
+  [Test] public void TestStructGetTypeInvocation03() { DoNamedTest2(); }
+
+  [Test] public void TestStructMethodGroup01() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]
 public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
 {
   [Test] public void TestEnumVirtualMethodInvocationFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestStructMethodGroupFramework01() { DoNamedTest2(); }
+  [Test] public void TestStructMethodGroupFramework02() { DoNamedTest2(); }
 }
 
 [TestNet60]
+[NullableContext(NullableContextKind.Disable)]
 public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 {
-  // note: use the same gold
-
   [Test] public void TestTuplesAwaitForeach01() { DoNamedTest2(); }
   [Test] public void TestTuplesAwaitForeach02() { DoNamedTest2(); }
 
   [Test] public void TestEnumVirtualMethodInvocationCore01() { DoNamedTest2(); }
+
+  [Test] public void TestStructMethodGroupCore01() { DoNamedTest2(); }
+  [Test] public void TestStructMethodGroupCore02() { DoNamedTest2(); }
 }

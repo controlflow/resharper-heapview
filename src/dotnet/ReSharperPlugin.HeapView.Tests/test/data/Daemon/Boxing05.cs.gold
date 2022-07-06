@@ -34,11 +34,11 @@
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
-(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(2): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(5): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(6): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(7): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(8): ReSharper HeapView Boxing: Boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
+(3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
+(5): ReSharper HeapView Boxing: Possible boxing allocation: special 'Object.GetType()' method may be invoked over the value type instance if 'T' type parameter will be substituted with the value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(7): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
+(8): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
