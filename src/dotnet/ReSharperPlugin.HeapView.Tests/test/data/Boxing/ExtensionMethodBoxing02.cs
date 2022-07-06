@@ -21,6 +21,11 @@ IFoo ifoo = foo;
 if (ifoo is (_, _)) { }
 if (ifoo is var (_, _)) { }
 
+var tuple = (foo, (IFoo) foo);
+if (tuple is ((_, _), (_, _))) { }
+var ((_, _), (_, _)) = tuple;
+((_, _), (_, _)) = tuple;
+
 struct Foo : IFoo
 {
   public Foo Inner => default;

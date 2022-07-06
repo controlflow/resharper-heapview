@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -34,6 +35,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
     typeof(IDeconstructionPatternClause),
     typeof(IVarDeconstructionPattern),
+    typeof(ICollectionElementInitializer)
   },
   HighlightingTypes = new[]
   {
@@ -79,6 +81,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // (_, _) = e; + extension Deconstruct() this parameter boxing
       case ITupleExpression tupleExpression:
         CheckExtensionDeconstructionInvocation(tupleExpression, data, consumer);
+        break;
+
+      // new T { e } + extension Add() this parameter boxing
+      case ICollectionElementInitializer collectionElementInitializer:
+        CheckExtensionCollectionAddInvocation(collectionElementInitializer, data, consumer);
         break;
 
       // foreach (object o in arrayOfInts) { }
@@ -394,8 +401,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-
-  #region Deconstruction extension method invocation
+  #region Extension method invocations
 
   private static void CheckExtensionDeconstructionInvocation(
     [NotNull] IDeconstructionPatternClause deconstructionPatternClause,
@@ -472,8 +478,30 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       data, consumer);
   }
 
+  private static void CheckExtensionCollectionAddInvocation(
+    [NotNull] ICollectionElementInitializer collectionElementInitializer,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var collectionInitializer = CollectionInitializerNavigator.GetByElementInitializer(collectionElementInitializer);
+    if (collectionInitializer == null) return;
+
+    var invocationReference = collectionElementInitializer.Reference;
+    if (invocationReference == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(invocationReference);
+    if (targetType == null) return;
+
+    var sourceExpressionType = collectionInitializer.GetConstructedType();
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, collectionElementInitializer,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
   [CanBeNull, Pure]
-  private static IType FindExtensionMethodWithReferenceTypeThisParameter([NotNull] IDeconstructionReference deconstructionReference)
+  private static IType FindExtensionMethodWithReferenceTypeThisParameter([NotNull] IReference deconstructionReference)
   {
     var resolveResult = deconstructionReference.Resolve();
     if (resolveResult.ResolveErrorType.IsAcceptable
