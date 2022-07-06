@@ -1,0 +1,51 @@
+﻿var foo = new Foo();
+
+|var|(0) (a, b) = foo;
+|(a, b)|(1) = foo;
+
+var xs = new[] { foo };
+foreach (|var|(2) (x, y) in xs) { }
+foreach (|(var xx, var yy)|(3) in xs) { }
+
+if (foo is |(_, _)|(4)) { }
+if (foo is |var|(5) (_, _)) { }
+if (foo is { Inner: |(_, _)|(6) }) { }
+if (foo is { Inner: |var|(7) (_, _) }) { }
+
+object obj = |foo|(8);
+if (obj is Foo |(_, _)|(9)) { }
+if (obj is Foo { Inner: |(_, _)|(10) }) { }
+if (obj is Foo { Inner: |var|(11) (_, _) }) { }
+
+IFoo ifoo = |foo|(12);
+if (ifoo is (_, _)) { }
+if (ifoo is var (_, _)) { }
+
+struct Foo : IFoo
+{
+  public Foo Inner => default;
+}
+
+interface IFoo { }
+
+static class Extensions
+{
+  public static void Deconstruct(this IFoo foo, out int a, out int b)
+  {
+    a = b = 0;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'object' requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(10): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type

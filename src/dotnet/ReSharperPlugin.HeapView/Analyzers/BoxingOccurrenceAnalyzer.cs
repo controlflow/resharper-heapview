@@ -6,10 +6,12 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
+using JetBrains.ReSharper.Psi.CSharp.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
+using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -28,7 +30,10 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   {
     typeof(ICSharpExpression),
     typeof(IPatternWithTypeUsage),
-    typeof(IForeachStatement)
+    typeof(IForeachStatement),
+
+    typeof(IDeconstructionPatternClause),
+    typeof(IVarDeconstructionPattern),
   },
   HighlightingTypes = new[]
   {
@@ -54,6 +59,26 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // var obj = (object) intValue;
       case ICastExpression castExpression:
         CheckExpressionExplicitConversion(castExpression, data, consumer);
+        break;
+
+      // is StructType (_, _) + extension Deconstruct() this parameter boxing
+      case IDeconstructionPatternClause deconstructionPatternClause:
+        CheckExtensionDeconstructionInvocation(deconstructionPatternClause, data, consumer);
+        break;
+
+      // is var (_, _) + extension Deconstruct() this parameter boxing
+      case IVarDeconstructionPattern varDeconstructionPattern:
+        CheckExtensionDeconstructionInvocation(varDeconstructionPattern, data, consumer);
+        break;
+
+      // var (_, _) = e; + extension Deconstruct() this parameter boxing
+      case IDeclarationExpression declarationExpression:
+        CheckExtensionDeconstructionInvocation(declarationExpression, data, consumer);
+        break;
+
+      // (_, _) = e; + extension Deconstruct() this parameter boxing
+      case ITupleExpression tupleExpression:
+        CheckExtensionDeconstructionInvocation(tupleExpression, data, consumer);
         break;
 
       // foreach (object o in arrayOfInts) { }
@@ -87,6 +112,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       CheckExpressionImplicitConversion(expression, data, consumer);
     }
   }
+
+
 
   #region Struct inherited instance method invocation
 
@@ -352,14 +379,114 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var targetType = castExpression.GetExpressionType().ToIType();
     if (targetType == null) return;
 
+    // todo: test this
     if (IsBoxingEliminatedAtRuntime(castExpression)) return;
+
     if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
+
+    // todo: test this
     if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
 
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, castExpression.TargetType,
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
+  }
+
+  #endregion
+
+  #region Deconstruction extension method invocation
+
+  private static void CheckExtensionDeconstructionInvocation(
+    [NotNull] IDeconstructionPatternClause deconstructionPatternClause,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var recursivePattern = RecursivePatternNavigator.GetByDeconstructionPatternClause(deconstructionPatternClause);
+    if (recursivePattern == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(deconstructionPatternClause.DeconstructionReference);
+    if (targetType == null) return;
+
+    var sourceExpressionType = recursivePattern.GetSourceExpressionType(new UniversalContext(recursivePattern));
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, deconstructionPatternClause,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  private static void CheckExtensionDeconstructionInvocation(
+    [NotNull] IVarDeconstructionPattern varDeconstructionPattern,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var designation = varDeconstructionPattern.Designation;
+    if (designation == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(designation.DeconstructionReference);
+    if (targetType == null) return;
+
+    var dispatchType = varDeconstructionPattern.GetDispatchType();
+
+    CheckConversionRequiresBoxing(
+      dispatchType, targetType, varDeconstructionPattern.VarKeyword,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  private static void CheckExtensionDeconstructionInvocation(
+    [NotNull] IDeclarationExpression declarationExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var designation = declarationExpression.Designation as IParenthesizedVariableDesignation;
+    if (designation == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(designation.DeconstructionReference);
+    if (targetType == null) return;
+
+    var sourceExpressionType = declarationExpression.GetSourceExpressionType(new UniversalContext(declarationExpression));
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, declarationExpression.TypeDesignator,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  private static void CheckExtensionDeconstructionInvocation(
+    [NotNull] ITupleExpression tupleExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    if (!tupleExpression.IsLValueTupleExpression()) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(tupleExpression.DeconstructionReference);
+    if (targetType == null) return;
+
+    var dispatchType = tupleExpression.GetSourceExpressionType(new UniversalContext(tupleExpression));
+
+    CheckConversionRequiresBoxing(
+      dispatchType, targetType, tupleExpression,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  [CanBeNull, Pure]
+  private static IType FindExtensionMethodWithReferenceTypeThisParameter([NotNull] IDeconstructionReference deconstructionReference)
+  {
+    var resolveResult = deconstructionReference.Resolve();
+    if (resolveResult.ResolveErrorType.IsAcceptable
+        && resolveResult.Result.IsExtensionMethodInvocation()
+        && resolveResult.DeclaredElement is IMethod { IsExtensionMethod: true } extensionsMethod)
+    {
+      foreach (var parameter in extensionsMethod.Parameters)
+      {
+        return resolveResult.Substitution[parameter.Type];
+      }
+    }
+
+    return null;
   }
 
   #endregion
