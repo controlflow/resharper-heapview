@@ -74,6 +74,8 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestExtensionMethodBoxing01() { DoNamedTest2(); }
   [Test] public void TestExtensionMethodBoxing02() { DoNamedTest2(); }
   [Test] public void TestExtensionMethodBoxing03() { DoNamedTest2(); }
+
+  [Test] public void TestArgList01() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

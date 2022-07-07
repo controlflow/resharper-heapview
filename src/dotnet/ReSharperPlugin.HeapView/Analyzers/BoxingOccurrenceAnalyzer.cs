@@ -25,7 +25,9 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 // todo: this parameter conversion classification for extension method invocations?
+
 // todo: [ReSharper] disable method group natural types under nameof() expression
+// todo: [ReSharper] no implictly converted to 'object' under __arglist() expression
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -614,10 +616,16 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       }
     }
 
+    var argument = CSharpArgumentNavigator.GetByValue(unwrappedExpression);
+    if (argument != null)
+    {
+      // __arglist(42, true)
+      if (ArglistExpressionNavigator.GetByArgument(argument) != null)
+        return false;
+    }
+
     return true;
   }
-
-
 
   #region Implicit conversions in deconstructions
 
