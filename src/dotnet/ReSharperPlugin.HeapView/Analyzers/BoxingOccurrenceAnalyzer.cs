@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
-using JetBrains.ReSharper.Psi.CSharp.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
@@ -19,8 +18,10 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: extension deconstruction method invocation boxing
-// todo: extension GetEnumerator() boxing, extension .Add() for collection initializers
+// todo: extension GetEnumerator() boxing
+// todo: .Current/MoveNext() boxing?
+// todo: awaiter pattern boxing?
+
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 // todo: this parameter conversion classification for extension method invocations?
@@ -90,8 +91,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
       // foreach (object o in arrayOfInts) { }
       // foreach ((object o, _) in arrayOfIntIntTuples) { }
+      // foreach (var x in structTypeWithExtensionGetEnumerator) { }
       case IForeachStatement foreachStatement:
         CheckForeachImplicitConversions(foreachStatement, data, consumer);
+        CheckExtensionGetEnumeratorInvocation(foreachStatement, data, consumer);
         break;
 
       // (object o, objVariable) = intIntTuple;
@@ -496,6 +499,28 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, collectionElementInitializer,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  private static void CheckExtensionGetEnumeratorInvocation(
+    [NotNull] IForeachStatement foreachStatement,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var foreachHeader = foreachStatement.ForeachHeader;
+    if (foreachHeader == null) return;
+
+    var collection = foreachHeader.Collection;
+    if (collection == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(foreachStatement.GetEnumeratorReference);
+    if (targetType == null) return;
+
+    var sourceExpressionType = collection.Type();
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, foreachHeader.InKeyword,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
   }

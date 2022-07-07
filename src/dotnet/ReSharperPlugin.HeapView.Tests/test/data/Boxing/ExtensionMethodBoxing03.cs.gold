@@ -1,0 +1,19 @@
+﻿using System.Collections.Generic;
+
+var foo = new Foo();
+
+foreach (var x |in|(0) foo) { }
+
+struct Foo : IFoo { }
+
+interface IFoo { }
+
+static class Extensions
+{
+  public static IEnumerator<int> GetEnumerator(this IFoo foo)
+  {
+    yield break;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
