@@ -105,6 +105,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckDeconstructingAssignmentImplicitConversions(assignmentExpression, data, consumer);
         break;
 
+      //
       case IPatternWithTypeUsage typeCheckPattern:
         CheckPatternMatchingConversion(typeCheckPattern, data, consumer);
         break;
@@ -125,8 +126,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       CheckExpressionImplicitConversion(expression, data, consumer);
     }
   }
-
-
 
   #region Struct inherited instance method invocation
 
@@ -568,88 +567,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-
-  private enum BoxingClassification
-  {
-    Definitely,
-    Possibly,
-    Not
-  }
-
-  private static void CheckExpressionImplicitConversion(
-    [NotNull] ICSharpExpression expression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
-  {
-    if (!IsImplicitConversionActuallyHappens(expression)) return;
-
-    var sourceExpressionType = expression.GetExpressionType();
-    if (sourceExpressionType.IsUnknown) return;
-
-    var targetType = expression.GetImplicitlyConvertedTo();
-    if (targetType.IsUnknown) return;
-
-    if (IsBoxingEliminatedAtRuntime(expression)) return;
-    if (IsBoxingEliminatedByTheCompiler(expression, data)) return;
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, expression,
-      static (rule, source, target) => rule.ClassifyImplicitConversionFromExpression(source, target),
-      data, consumer);
-  }
-
-  [Pure]
-  private static bool IsImplicitConversionActuallyHappens([NotNull] ICSharpExpression expression)
-  {
-    switch (expression)
-    {
-      // (int a, int b) = t; - here the tuple is not actually a tuple construction, it's in LValue position
-      case ITupleExpression tupleExpression when tupleExpression.IsLValueTupleExpression():
-      // is not a subject for implicit conversions for now
-      case IDeclarationExpression:
-      case IRefExpression:
-      {
-        return false;
-      }
-    }
-
-    var unwrappedExpression = expression.GetContainingParenthesizedExpression();
-
-    var castExpression = CastExpressionNavigator.GetByOp(unwrappedExpression);
-    if (castExpression != null)
-    {
-      return false; // filter out explicit casts
-    }
-
-    var tupleComponent = TupleComponentNavigator.GetByValue(unwrappedExpression);
-    if (tupleComponent != null)
-    {
-      return false; // check the whole tuple expression conversion instead
-    }
-
-    var assignmentExpression = AssignmentExpressionNavigator.GetBySource(unwrappedExpression);
-    if (assignmentExpression != null)
-    {
-      var assignmentKind = assignmentExpression.GetAssignmentKind();
-      if (assignmentKind != AssignmentKind.OrdinaryAssignment)
-      {
-        // tuple deconstrutions do not have a "target type" for the assignment source,
-        // so we have to handle conversions in deconstructions separately (ad-hoc)
-        return false;
-      }
-    }
-
-    var argument = CSharpArgumentNavigator.GetByValue(unwrappedExpression);
-    if (argument != null)
-    {
-      // __arglist(42, true)
-      if (ArglistExpressionNavigator.GetByArgument(argument) != null)
-        return false;
-    }
-
-    return true;
-  }
-
   #region Implicit conversions in deconstructions
 
   private static void CheckDeconstructingAssignmentImplicitConversions(
@@ -773,6 +690,119 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
+  #region Pattern-matching conversions
+
+  // ..
+
+  #endregion
+  #region Implicit conversions in expressions
+
+  private static void CheckExpressionImplicitConversion(
+    [NotNull] ICSharpExpression expression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    if (!IsImplicitConversionActuallyHappens(expression)) return;
+
+    var sourceExpressionType = expression.GetExpressionType();
+    if (sourceExpressionType.IsUnknown) return;
+
+    var targetType = expression.GetImplicitlyConvertedTo();
+    if (targetType.IsUnknown) return;
+
+    if (IsBoxingEliminatedAtRuntime(expression)) return;
+    if (IsBoxingEliminatedByTheCompiler(expression, data)) return;
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, expression,
+      static (rule, source, target) => rule.ClassifyImplicitConversionFromExpression(source, target),
+      data, consumer);
+  }
+
+  private static void CheckConversionRequiresBoxing(
+    [NotNull] IExpressionType sourceExpressionType,
+    [NotNull] IType targetType,
+    [NotNull] ITreeNode correspondingNode,
+    [NotNull, RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
+
+    // todo: if source is reference type - can't be boxing?
+    // todo: if target is value type and not ValueTuple - can't be boxing, right?
+
+    var conversionRule = data.GetTypeConversionRule();
+    var conversion = getConversion(conversionRule, sourceExpressionType, targetType);
+
+    var boxing = Boxing.TryFind(conversion, sourceExpressionType, targetType, correspondingNode);
+    if (boxing == null) return;
+
+    if (correspondingNode.IsInTheContextWhereAllocationsAreNotImportant()) return;
+
+    boxing.Report(consumer);
+  }
+
+  [Pure]
+  private static bool IsImplicitConversionActuallyHappens([NotNull] ICSharpExpression expression)
+  {
+    switch (expression)
+    {
+      // (int a, int b) = t; - here the tuple is not actually a tuple construction, it's in LValue position
+      case ITupleExpression tupleExpression when tupleExpression.IsLValueTupleExpression():
+      // is not a subject for implicit conversions for now
+      case IDeclarationExpression:
+      case IRefExpression:
+      {
+        return false;
+      }
+    }
+
+    var unwrappedExpression = expression.GetContainingParenthesizedExpression();
+
+    var castExpression = CastExpressionNavigator.GetByOp(unwrappedExpression);
+    if (castExpression != null)
+    {
+      return false; // filter out explicit casts
+    }
+
+    var tupleComponent = TupleComponentNavigator.GetByValue(unwrappedExpression);
+    if (tupleComponent != null)
+    {
+      return false; // check the whole tuple expression conversion instead
+    }
+
+    var assignmentExpression = AssignmentExpressionNavigator.GetBySource(unwrappedExpression);
+    if (assignmentExpression != null)
+    {
+      var assignmentKind = assignmentExpression.GetAssignmentKind();
+      if (assignmentKind != AssignmentKind.OrdinaryAssignment)
+      {
+        // tuple deconstrutions do not have a "target type" for the assignment source,
+        // so we have to handle conversions in deconstructions separately (ad-hoc)
+        return false;
+      }
+    }
+
+    var argument = CSharpArgumentNavigator.GetByValue(unwrappedExpression);
+    if (argument != null)
+    {
+      // __arglist(42, true)
+      if (ArglistExpressionNavigator.GetByArgument(argument) != null)
+        return false;
+    }
+
+    return true;
+  }
+
+  #endregion
+
+  private enum BoxingClassification
+  {
+    Definitely,
+    Possibly,
+    Not
+  }
 
   private static void CheckPatternMatchingConversion(
     [NotNull] IPatternWithTypeUsage typeCheckPattern,
@@ -885,29 +915,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return BoxingClassification.Not;
   }
 
-  private static void CheckConversionRequiresBoxing(
-    [NotNull] IExpressionType sourceExpressionType,
-    [NotNull] IType targetType,
-    [NotNull] ITreeNode correspondingNode,
-    [NotNull, RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
-  {
-    // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
 
-    // todo: if source is reference type - can't be boxing?
-    // todo: if target is value type and not ValueTuple - can't be boxing, right?
-
-    var conversionRule = data.GetTypeConversionRule();
-    var conversion = getConversion(conversionRule, sourceExpressionType, targetType);
-
-    var boxing = Boxing.TryFind(conversion, sourceExpressionType, targetType, correspondingNode);
-    if (boxing == null) return;
-
-    if (correspondingNode.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-    boxing.Report(consumer);
-  }
 
   private static void ReportBoxingAllocation(
     [NotNull] IExpressionType sourceExpressionType,
@@ -955,6 +963,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return string.Format(format, args);
   }
 
+  #region Compiler optimizations
+
   [Pure]
   private static bool IsBoxingEliminatedByTheCompiler([NotNull] ICSharpExpression boxedExpression, [NotNull] ElementProblemAnalyzerData data)
   {
@@ -981,6 +991,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return false;
   }
 
+  #endregion
+  #region Runtime optimizations
+
+  // todo: not tested
   [Pure]
   private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression)
   {
@@ -1003,6 +1017,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return false;
   }
 
+  // todo: not tested
   [Pure]
   private static bool IsBoxingEliminatedAtRuntimeForCast(
     [NotNull] ICastExpression castExpression, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)
@@ -1035,4 +1050,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     return false;
   }
+
+  #endregion
+
+
 }
