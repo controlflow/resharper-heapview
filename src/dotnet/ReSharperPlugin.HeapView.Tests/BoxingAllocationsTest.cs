@@ -10,7 +10,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Tests;
 
-[TestNetFramework46]
 public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
 {
   protected override string RelativeTestDataPath => "Boxing";
