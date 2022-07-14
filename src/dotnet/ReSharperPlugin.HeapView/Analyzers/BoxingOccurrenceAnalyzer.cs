@@ -18,10 +18,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: extension GetEnumerator() boxing
-// todo: .Current/MoveNext() boxing?
-// todo: awaiter pattern boxing?
-
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 // todo: this parameter conversion classification for extension method invocations?
@@ -97,6 +93,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       case IForeachStatement foreachStatement:
         CheckForeachImplicitConversions(foreachStatement, data, consumer);
         CheckExtensionGetEnumeratorInvocation(foreachStatement, data, consumer);
+        break;
+
+      // await e + extension GetAwaiter() method
+      case IAwaitExpression awaitExpression:
+        CheckExtensionGetAwaiterInvocation(awaitExpression, data, consumer);
         break;
 
       // (object o, objVariable) = intIntTuple;
@@ -523,6 +524,28 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, foreachHeader.InKeyword,
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      data, consumer);
+  }
+
+  private static void CheckExtensionGetAwaiterInvocation(
+    [NotNull] IAwaitExpression awaitExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var taskExpression = awaitExpression.Task;
+    if (taskExpression == null) return;
+
+    var getAwaiterReference = awaitExpression.GetAwaiterReference;
+    if (getAwaiterReference == null) return;
+
+    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(getAwaiterReference);
+    if (targetType == null) return;
+
+    var sourceExpressionType = taskExpression.Type();
+
+    CheckConversionRequiresBoxing(
+      sourceExpressionType, targetType, awaitExpression.AwaitKeyword,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
   }
