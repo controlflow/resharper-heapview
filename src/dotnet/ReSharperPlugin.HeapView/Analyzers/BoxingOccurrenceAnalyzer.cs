@@ -176,6 +176,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
         return;
 
+      // todo: DEBUG-only allocations setting
+
       if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(new BoxingAllocationHighlighting(
@@ -915,8 +917,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return BoxingClassification.Not;
   }
 
-
-
   private static void ReportBoxingAllocation(
     [NotNull] IExpressionType sourceExpressionType,
     [NotNull] IType targetType,
@@ -1052,6 +1052,4 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-
-
 }
