@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -6,153 +5,212 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace ReSharperPlugin.HeapView
+namespace ReSharperPlugin.HeapView;
+
+public static class CommonUtils
 {
-  public static class CommonUtils
+  [Pure]
+  public static bool IsStringConcatOperatorReference([CanBeNull] this IReference reference)
   {
-    [Pure]
-    public static bool IsStringConcatOperatorReference([CanBeNull] this IReference reference)
+    if (reference?.Resolve() is (ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
     {
-      if (reference?.Resolve() is (ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
-      {
-        var lhsType = parameters[0].Type;
-        var rhsType = parameters[1].Type;
+      var lhsType = parameters[0].Type;
+      var rhsType = parameters[1].Type;
 
-        if (lhsType.IsString()) return rhsType.IsString() || rhsType.IsObject();
-        if (rhsType.IsString()) return lhsType.IsString() || lhsType.IsObject();
-      }
-
-      return false;
+      if (lhsType.IsString()) return rhsType.IsString() || rhsType.IsObject();
+      if (rhsType.IsString()) return lhsType.IsString() || lhsType.IsObject();
     }
 
-    [Pure]
-    public static bool IsInTheContextWhereAllocationsAreNotImportant([NotNull] this ITreeNode context)
+    return false;
+  }
+
+  [Pure]
+  public static bool IsInTheContextWhereAllocationsAreNotImportant([NotNull] this ITreeNode context)
+  {
+    if (context.IsUnderLinqExpressionTree())
+      return true; // not a "real" code
+
+    foreach (var containingNode in context.ContainingNodes(returnThis: true))
     {
-      foreach (var containingNode in context.ContainingNodes(returnThis: true))
+      switch (containingNode)
       {
-        if (containingNode is IAttribute) return true; // compile-time boxing, array creations
+        case IAttribute: // compile-time boxing, array creations
+        case IThrowExpression or IThrowStatement: // throw arguments
+          return true;
 
-        // throw arguments
-        if (containingNode is IThrowExpression) return true;
-        if (containingNode is IThrowStatement) return true;
-
-        if (containingNode is ICSharpStatement statement)
-        {
+        case ICSharpStatement statement:
           return NextStatementsExecutionAlwaysEndsWithThrowStatement(statement);
-        }
-      }
-
-      return false;
-    }
-
-    [Pure]
-    private static bool NextStatementsExecutionAlwaysEndsWithThrowStatement([NotNull] ICSharpStatement statement)
-    {
-      var nextStatement = statement.GetNextStatement();
-      while (nextStatement != null)
-      {
-        if (nextStatement is IThrowStatement) return true;
-        if (HasControlFlowJumps(nextStatement)) return false;
-
-        nextStatement = nextStatement.GetNextStatement();
-      }
-
-      return false;
-
-      static bool HasControlFlowJumps(ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
-      {
-        switch (statement)
-        {
-          case IBlock block:
-            foreach (var blockStatement in block.StatementsEnumerable)
-              if (HasControlFlowJumps(blockStatement, allowContinue, allowBreak))
-                return true;
-
-            return false;
-
-          case ICheckedStatement checkedStatement:
-            return HasControlFlowJumps(checkedStatement.Body, allowContinue, allowBreak);
-
-          case IUncheckedStatement uncheckedStatement:
-            return HasControlFlowJumps(uncheckedStatement.Body, allowContinue, allowBreak);
-
-          case ILoopStatement loopStatement:
-            return HasControlFlowJumps(loopStatement.Body, allowContinue: true, allowBreak: true);
-
-          case IIfStatement ifStatement:
-            return HasControlFlowJumps(ifStatement.Then, allowContinue, allowBreak)
-                || HasControlFlowJumps(ifStatement.Else, allowContinue, allowBreak);
-
-          case ILockStatement lockStatement:
-            return HasControlFlowJumps(lockStatement.Body, allowContinue, allowBreak);
-
-          case ISwitchStatement switchStatement:
-            foreach (var switchSection in switchStatement.SectionsEnumerable)
-            foreach (var switchSectionStatement in switchSection.StatementsEnumerable)
-              if (IsControlFlowJumpStatement(switchSectionStatement, allowContinue, allowBreak: true))
-                return true;
-
-            return false;
-
-          case ITryStatement tryStatement:
-            if (HasControlFlowJumps(tryStatement.Try, allowContinue, allowBreak)) return true;
-
-            foreach (var catchClause in tryStatement.CatchesEnumerable)
-              if (HasControlFlowJumps(catchClause.Body, allowContinue, allowBreak))
-                return true;
-
-            return HasControlFlowJumps(tryStatement.FinallyBlock, allowContinue, allowBreak);
-
-          case IUnsafeCodeFixedStatement fixedStatement:
-            return HasControlFlowJumps(fixedStatement.Body, allowContinue, allowBreak);
-
-          case IUnsafeCodeUnsafeStatement unsafeStatement:
-            return HasControlFlowJumps(unsafeStatement.Body, allowContinue, allowBreak);
-
-          case IUsingStatement usingStatement:
-            return HasControlFlowJumps(usingStatement.Body, allowContinue, allowBreak);
-
-          case { }:
-            return IsControlFlowJumpStatement(statement, allowContinue, allowBreak);
-
-          case null:
-            return false;
-        }
-      }
-
-      static bool IsControlFlowJumpStatement(ICSharpStatement statement, bool allowContinue, bool allowBreak)
-      {
-        switch (statement)
-        {
-          case IBreakStatement _ when !allowBreak:
-          case IContinueStatement _ when !allowContinue:
-          case IGotoCaseStatement _:
-          case IGotoStatement _:
-          case ILoopStatement _:
-          case IReturnStatement _:
-          case IYieldStatement _:
-            return true;
-
-          default:
-            return false;
-        }
       }
     }
 
-    class B { }
-    class C : B { }
-    class D : B { }
+    return false;
+  }
 
-    class Switch
+  [Pure]
+  private static bool NextStatementsExecutionAlwaysEndsWithThrowStatement([NotNull] ICSharpStatement statement)
+  {
+    var nextStatement = statement.GetNextStatement(skipPreprocessor: false);
+
+    while (nextStatement != null)
     {
-      void M(B b)
+      if (nextStatement is IThrowStatement) return true;
+
+      if (HasControlFlowJumps(nextStatement)) return false;
+
+      nextStatement = nextStatement.GetNextStatement(skipPreprocessor: false);
+    }
+
+    // todo: support "next" statement by unwrapping
+    /*
+     * if (...) {
+     *    ...boxing...
+     * }
+     *
+     * throw ...;
+     */
+    return false;
+
+    static bool HasControlFlowJumps([CanBeNull] ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
+    {
+      switch (statement)
       {
-        switch (b)
+        case IBlock block:
         {
-          case C _:
-            break;
+          foreach (var blockStatement in block.StatementsEnumerable)
+          {
+            if (HasControlFlowJumps(blockStatement, allowContinue, allowBreak))
+              return true;
+          }
+
+          return false;
         }
+
+        case ICheckedStatement checkedStatement:
+        {
+          return HasControlFlowJumps(checkedStatement.Body, allowContinue, allowBreak);
+        }
+
+        case IUncheckedStatement uncheckedStatement:
+        {
+          return HasControlFlowJumps(uncheckedStatement.Body, allowContinue, allowBreak);
+        }
+
+        case ILoopStatement loopStatement:
+        {
+          return HasControlFlowJumps(loopStatement.Body, allowContinue: true, allowBreak: true);
+        }
+
+        case IIfStatement ifStatement:
+        {
+          return HasControlFlowJumps(ifStatement.Then, allowContinue, allowBreak)
+                 || HasControlFlowJumps(ifStatement.Else, allowContinue, allowBreak);
+        }
+
+        case ILockStatement lockStatement:
+        {
+          return HasControlFlowJumps(lockStatement.Body, allowContinue, allowBreak);
+        }
+
+        case ISwitchStatement switchStatement:
+        {
+          foreach (var switchSection in switchStatement.SectionsEnumerable)
+          foreach (var switchSectionStatement in switchSection.StatementsEnumerable)
+          {
+            if (HasControlFlowJumps(switchSectionStatement, allowContinue, allowBreak: true))
+              return true;
+
+            // todo: why not recursive call
+            //if (IsControlFlowJumpStatement(switchSectionStatement, allowContinue, allowBreak: true))
+            //  return true;
+          }
+
+          return false;
+        }
+
+        case ITryStatement tryStatement:
+        {
+          if (HasControlFlowJumps(tryStatement.Try, allowContinue, allowBreak)) return true;
+
+          foreach (var catchClause in tryStatement.CatchesEnumerable)
+          {
+            if (HasControlFlowJumps(catchClause.Body, allowContinue, allowBreak))
+              return true;
+          }
+
+          return HasControlFlowJumps(tryStatement.FinallyBlock, allowContinue, allowBreak);
+        }
+
+        case IUnsafeCodeFixedStatement fixedStatement:
+        {
+          return HasControlFlowJumps(fixedStatement.Body, allowContinue, allowBreak);
+        }
+
+        case IUnsafeCodeUnsafeStatement unsafeStatement:
+        {
+          return HasControlFlowJumps(unsafeStatement.Body, allowContinue, allowBreak);
+        }
+
+        case IUsingStatement usingStatement:
+        {
+          return HasControlFlowJumps(usingStatement.Body, allowContinue, allowBreak);
+        }
+
+        case { }:
+        {
+          return IsControlFlowJumpStatement(statement, allowContinue, allowBreak);
+        }
+
+        case null:
+        {
+          return false;
+        }
+      }
+    }
+
+    static bool IsControlFlowJumpStatement(ICSharpStatement statement, bool allowContinue, bool allowBreak)
+    {
+      switch (statement)
+      {
+        case IBreakStatement when !allowBreak:
+        case IContinueStatement when !allowContinue:
+        case IGotoCaseStatement:
+        case IGotoStatement:
+        case ILoopStatement:
+        case IReturnStatement:
+        case IYieldStatement:
+          return true;
+
+        default:
+          return false;
       }
     }
   }
+
+  [Pure]
+  public static bool IsTypeParameterType(this IType type, out ITypeParameter typeParameter)
+  {
+    if (type is IDeclaredType declaredType)
+    {
+      typeParameter = declaredType.GetTypeElement() as ITypeParameter;
+      return typeParameter != null;
+    }
+
+    typeParameter = null;
+    return false;
+  }
+
+  [Pure]
+  public static bool IsUnconstrainedGenericType(this IType type, out ITypeParameter typeParameter)
+  {
+    if (type is IDeclaredType { Classify: TypeClassification.UNKNOWN } declaredType)
+    {
+      typeParameter = declaredType.GetTypeElement() as ITypeParameter;
+      return typeParameter != null;
+    }
+
+    typeParameter = null;
+    return false;
+  }
+
+
 }

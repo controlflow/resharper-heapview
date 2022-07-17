@@ -1,0 +1,24 @@
+﻿using System;
+
+void EnumConstraint<T>(T e) where T : Enum
+{
+  object o = |e|(0);
+  Enum x = |e|(1);
+}
+
+void EnumConstraint2<T>(T e) where T : struct, Enum
+{
+  object o = |e|(2);
+  Enum x = |e|(3);
+}
+
+void DelegateConstraint<T>(T e) where T : Delegate
+{
+  object o = e;
+  Delegate d = e;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of the value type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'Enum' possibly requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'Enum' requires boxing of the value type

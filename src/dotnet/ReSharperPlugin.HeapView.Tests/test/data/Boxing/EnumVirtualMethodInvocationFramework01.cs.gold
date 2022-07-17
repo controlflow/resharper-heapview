@@ -1,0 +1,27 @@
+﻿using System;
+
+var e = ConsoleKey.A;
+_ = e.|GetHashCode|(0)();
+_ = e.|Equals|(1)(null);
+_ = e.|ToString|(2)();
+_ = e.GetTypeCode();
+
+ConsoleKey? ne = e;
+_ = ne.|GetHashCode|(3)();
+_ = ne.|Equals|(4)(null);
+_ = ne.|ToString|(5)();
+
+_ = ne?.|GetHashCode|(6)();
+_ = ne?.|Equals|(7)(null);
+_ = ne?.|ToString|(8)();
+_ = ne?.GetTypeCode();
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance
+(3): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
+(4): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
+(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance
+(6): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
+(7): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
+(8): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance

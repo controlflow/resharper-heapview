@@ -46,6 +46,6 @@ class ThrowContexts {
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: reference type creation
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (2): ReSharper HeapView Allocation: Object allocation: reference type creation
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

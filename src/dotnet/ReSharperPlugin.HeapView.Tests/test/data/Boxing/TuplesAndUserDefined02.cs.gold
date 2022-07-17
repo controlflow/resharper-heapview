@@ -1,0 +1,10 @@
+﻿(int, object) a = |new A()|(0);
+M(|new A()|(1));
+void M((int, object) x) { }
+
+struct A {
+  public static implicit operator (int, int)(A t) => default;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type

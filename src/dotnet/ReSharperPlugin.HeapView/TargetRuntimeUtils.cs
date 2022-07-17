@@ -3,36 +3,35 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
-namespace ReSharperPlugin.HeapView
+namespace ReSharperPlugin.HeapView;
+
+public static class TargetRuntimeUtils
 {
-  public static class TargetRuntimeUtils
+  [NotNull] private static readonly Key<Boxed<TargetRuntime>> RuntimeKey = new(nameof(RuntimeKey));
+
+  [Pure]
+  public static TargetRuntime GetTargetRuntime([NotNull] this ElementProblemAnalyzerData data)
   {
-    [NotNull] private static readonly Key<Boxed<TargetRuntime>> RuntimeKey = new Key<Boxed<TargetRuntime>>(nameof(RuntimeKey));
+    return (TargetRuntime)
+      data.GetOrCreateDataNoLock(RuntimeKey, data.File, static file =>
+      {
+        var psiModule = file.GetPsiModule();
+        var frameworkId = psiModule.TargetFrameworkId;
 
-    [Pure]
-    public static TargetRuntime GetTargetRuntime([NotNull] this ElementProblemAnalyzerData data)
-    {
-      return (TargetRuntime)
-        data.GetOrCreateDataNoLock(RuntimeKey, data.File, file =>
-        {
-          var psiModule = file.GetPsiModule();
-          var frameworkId = psiModule.TargetFrameworkId;
+        if (frameworkId.IsNetCoreApp || frameworkId.IsNetCore)
+          return Boxed.From(TargetRuntime.NetCore);
 
-          if (frameworkId.IsNetCoreApp || frameworkId.IsNetCore)
-            return Boxed.From(TargetRuntime.NetCore);
+        if (frameworkId.IsNetFramework)
+          return Boxed.From(TargetRuntime.NetFramework);
 
-          if (frameworkId.IsNetFramework)
-            return Boxed.From(TargetRuntime.NetFramework);
-
-          return Boxed.From(TargetRuntime.Unknown);
-        });
-    }
+        return Boxed.From(TargetRuntime.Unknown);
+      });
   }
+}
 
-  public enum TargetRuntime
-  {
-    Unknown,
-    NetFramework,
-    NetCore
-  }
+public enum TargetRuntime
+{
+  Unknown,
+  NetFramework,
+  NetCore
 }

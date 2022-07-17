@@ -1,0 +1,14 @@
+﻿void Method<TClass, TValue, TUnconstrained>(
+  TClass tc, TValue tv, TUnconstrained tu, TValue? tn)
+  where TClass : class
+  where TValue : struct
+{
+  tc.GetType();
+  tv.|GetType|(0)();
+  tu.|GetType|(1)(); // possible
+  tn.|GetType|(2)();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Possible boxing allocation: special 'Object.GetType()' method may be invoked over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance

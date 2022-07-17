@@ -1,0 +1,30 @@
+﻿void Method<TClass, TValue, TUnconstrained>(
+  TClass tc, TValue tv, TUnconstrained tu, TValue? tn)
+  where TClass : class
+  where TValue : struct
+{
+  tc.GetHashCode();
+  tv.|GetHashCode|(0)();
+  tu.|GetHashCode|(1)();
+  tn.|GetHashCode|(2)();
+
+  tc.Equals(null);
+  tv.|Equals|(3)(null);
+  tu.|Equals|(4)(null);
+  tn.|Equals|(5)(null);
+
+  tc.ToString();
+  tv.|ToString|(6)();
+  tu.|ToString|(7)();
+  tn.|ToString|(8)();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(1): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(2): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
+(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
+(5): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
+(6): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
+(7): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
+(8): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'TValue' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method

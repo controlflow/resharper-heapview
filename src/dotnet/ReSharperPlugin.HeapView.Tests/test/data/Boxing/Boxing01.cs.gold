@@ -1,0 +1,5 @@
+﻿object o1 = |42|(0);
+var o2 = (|object|(1)) args.Length;
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

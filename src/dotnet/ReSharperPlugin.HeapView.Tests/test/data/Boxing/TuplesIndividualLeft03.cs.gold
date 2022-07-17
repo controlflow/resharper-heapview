@@ -1,0 +1,5 @@
+﻿(|M()|(0), _) = (1, 2);
+
+static extern ref object M();
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

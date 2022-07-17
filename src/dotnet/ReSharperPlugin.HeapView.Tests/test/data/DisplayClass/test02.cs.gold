@@ -1,0 +1,5 @@
+﻿Owner: top-level code
+Delay use local functions:
+> local function 'Void Local3()'
+
+========

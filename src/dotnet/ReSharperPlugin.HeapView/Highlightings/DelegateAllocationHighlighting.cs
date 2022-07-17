@@ -6,24 +6,23 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace ReSharperPlugin.HeapView.Highlightings
-{
-  [RegisterConfigurableSeverity(
-    SEVERITY_ID, null,
-    HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
-    "Highlights places where delegate instance creation happens",
-    Severity.HINT)]
-  [ConfigurableSeverityHighlighting(
-    SEVERITY_ID, CSharpLanguage.Name,
-    AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    ShowToolTipInStatusBar = false,
-    ToolTipFormatString = MESSAGE)]
-  public class DelegateAllocationHighlighting : PerformanceHighlightingBase
-  {
-    public const string SEVERITY_ID = "HeapView.DelegateAllocation";
-    public const string MESSAGE = "Delegate allocation: {0}";
+namespace ReSharperPlugin.HeapView.Highlightings;
 
-    public DelegateAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
-      : base(element, MESSAGE, description) { }
-  }
+[RegisterConfigurableSeverity(
+  SEVERITY_ID, null,
+  HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
+  "Highlights places where delegate instance creation happens",
+  Severity.HINT)]
+[ConfigurableSeverityHighlighting(
+  SEVERITY_ID, CSharpLanguage.Name,
+  AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+  ShowToolTipInStatusBar = false,
+  ToolTipFormatString = MESSAGE)]
+public class DelegateAllocationHighlighting : PerformanceHighlightingBase
+{
+  public const string SEVERITY_ID = "HeapView.DelegateAllocation";
+  public const string MESSAGE = "Delegate allocation: {0}";
+
+  public DelegateAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+    : base(element, MESSAGE, description) { }
 }

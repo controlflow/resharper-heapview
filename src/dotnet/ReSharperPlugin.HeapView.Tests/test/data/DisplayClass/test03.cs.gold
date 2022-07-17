@@ -1,0 +1,8 @@
+﻿Owner: top-level code
+Delay use local functions:
+> local function 'Void Local1()'
+> local function 'Void Local2()'
+> local function 'Void Local3()'
+> local function 'Void Local4()'
+
+========

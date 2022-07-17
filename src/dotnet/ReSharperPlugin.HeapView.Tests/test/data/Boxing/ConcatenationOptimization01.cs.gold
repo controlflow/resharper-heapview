@@ -1,0 +1,42 @@
+﻿string s = null;
+
+s = s + |42|(0);
+s = |true|(1) + s;
+s += checked(|42|(2));
+s += (|object|(3)) 42L;
+
+int? n = 42;
+s = s + |n|(4);
+s += |n|(5);
+
+s = s + |new S1()|(6);
+s = |new S1()|(7) + s;
+s += |new S1()|(8);
+s += (|object|(9)) new S1();
+
+s = s + |new S2()|(10);
+s = |new S2()|(11) + s;
+s += |new S2()|(12);
+
+s += System.DateTime.|Now|(13);
+
+string F<TUnconstrained>(TUnconstrained t, string s) => s + |t|(14);
+
+struct S1 { }
+struct S2 { public override string ToString() => ""; }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'long' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int?' to 'object' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int?' to 'object' requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'object' requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'object' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'object' requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'object' requires boxing of the value type
+(10): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S2' to 'object' requires boxing of the value type
+(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S2' to 'object' requires boxing of the value type
+(12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S2' to 'object' requires boxing of the value type
+(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'DateTime' to 'object' requires boxing of the value type
+(14): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of the value type

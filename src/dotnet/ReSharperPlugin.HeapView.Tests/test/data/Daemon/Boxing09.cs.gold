@@ -20,13 +20,13 @@ public struct S {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
-(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of value type
-(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of value type
-(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of value type
-(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of value type
-(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of value type
-(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of value type
-(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of value type
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'object' requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'ValueType' requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E' to 'Enum' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'object' requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'E?' to 'dynamic' requires boxing of the value type

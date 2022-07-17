@@ -1,0 +1,24 @@
+﻿using System;
+
+void Complex<T>(T u)
+{
+  var s = (1, true, (5, u, ConsoleKey.B), "abc");
+  (int, object, (int, object, Enum), object) t = |s|(0);
+  t = |s|(1);
+  (int, bool, object, string) t2 = |s|(2);
+  (int, object, Enum) tt;
+  (int _, _, |tt|(3), string _) = s;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: tuple conversion contains component type conversions that perform boxing of the value types
+    Conversion from 'bool' to 'object'
+    Conversion from 'T' to 'object' (possible boxing)
+    Conversion from 'ConsoleKey' to 'Enum'
+(1): ReSharper HeapView Boxing: Boxing allocation: tuple conversion contains component type conversions that perform boxing of the value types
+    Conversion from 'bool' to 'object'
+    Conversion from 'T' to 'object' (possible boxing)
+    Conversion from 'ConsoleKey' to 'Enum'
+(2): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from '(int, T u, ConsoleKey B)' to 'object' performs boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: tuple conversion contains component type conversions that perform boxing of the value types
+    Conversion from 'T' to 'object' (possible boxing)
+    Conversion from 'ConsoleKey' to 'Enum'

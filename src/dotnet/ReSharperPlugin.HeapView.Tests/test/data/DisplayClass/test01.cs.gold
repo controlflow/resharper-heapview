@@ -1,0 +1,45 @@
+﻿Owner: top-level code
+
+========
+Owner: constructor 'Class.Class(Int32 constructorParameter)'
+
+========
+Owner: destructor 'Class.~Class'
+
+========
+Owner: method 'Void Class.Method(String methodParameter)'
+
+========
+Owner: property 'Int32 Class.ExpressionBodiedProperty'
+
+========
+Owner: property 'Int32 Class.Property'
+
+========
+Owner: accessor 'Int32 Class.Property.get'
+
+========
+Owner: accessor 'Int32 Class.Property.set'
+
+========
+Owner: indexer 'String Class.this[Int32 indexerParameter]'
+
+========
+Owner: accessor 'String Class.this[Int32 parameter1, Boolean parameter2].get'
+
+========
+Owner: accessor 'String Class.this[Int32 parameter1, Boolean parameter2].init'
+
+========
+Owner: operator 'Class.implicit Boolean(Class c)'
+
+========
+Owner: field 'Int32 Class.Field'
+
+========
+Owner: event 'EventHandler Class.E'
+
+========
+Owner: extended type of constructor 'Derived.Derived()'
+
+========

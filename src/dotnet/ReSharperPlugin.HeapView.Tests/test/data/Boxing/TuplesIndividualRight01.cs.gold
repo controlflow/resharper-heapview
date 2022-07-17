@@ -1,0 +1,7 @@
+﻿(object, int) v = (|1|(0), 2);
+v = (|1|(1), 2);
+var u = ((|object|(2), int)) (1, 2);
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

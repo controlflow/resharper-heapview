@@ -1,0 +1,13 @@
+﻿void F<TValue, TClass, TAny>(TValue val, TClass cl, TAny any, TValue? nul)
+  where TValue : struct
+  where TClass : class
+{
+  object o1 = |val|(0);
+  object o2 = cl;
+  object o3 = |any|(1);
+  object o4 = |nul|(2);
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TValue' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TAny' to 'object' possibly requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TValue?' to 'object' requires boxing of the value type

@@ -1,0 +1,17 @@
+﻿A a = (|1|(0), 2);
+M((|1|(1), 2));
+var t = (1, 2);
+M(|t|(2));
+var aa = (|A|(3)) t;
+var ab = (|A|(4)) (1, 2);
+void M(A x) { }
+
+class A {
+  public static implicit operator A((object, int) t) => null;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
