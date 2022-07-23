@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Types;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
@@ -733,7 +734,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     // todo: if source is reference type - can't be boxing?
     // todo: if target is value type and not ValueTuple - can't be boxing, right?
-    
+
     if (sourceExpressionType is IAnonymousFunctionType)
         return; // nothing to box and classifying a conversion might be expensive
 
