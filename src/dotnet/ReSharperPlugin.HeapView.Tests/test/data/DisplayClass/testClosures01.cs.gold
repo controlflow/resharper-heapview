@@ -1,0 +1,9 @@
+﻿Owner: top-level code
+Closures:
+> local function 'ref int LocalFunction(ref int x)'
+> lambda expression 'int (bool x) => { var l = (ref bool b) => r...'
+> lambda expression 'ref bool (ref bool b) => ref x'
+> anonymous method 'int (int i) => { return i; }'
+> query lambda 'int (int x) => x + 1'
+
+========

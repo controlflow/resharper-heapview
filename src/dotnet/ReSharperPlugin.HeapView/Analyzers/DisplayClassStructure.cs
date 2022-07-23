@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
@@ -24,7 +25,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     ShowNameInQuotes = true,
     ShowName = NameStyle.QUALIFIED,
     ShowType = TypeStyle.DEFAULT,
-    TypePresentationStyle = new TypePresentationStyle { Options = TypePresentationOptions.None },
+    TypePresentationStyle = new TypePresentationStyle
+    {
+      Options = TypePresentationOptions.UseKeywordsForPredefinedTypes
+                | TypePresentationOptions.IncludeNullableAnnotations
+                | TypePresentationOptions.UseTupleSyntax
+    },
     ShowParameterNames = true,
     ShowParameterTypes = true,
     ShowTypeParameters = TypeParameterStyle.FULL
@@ -40,16 +46,106 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   {
     return treeNode switch
     {
-      ITopLevelCode => "top-level code",
-      IDeclaration { DeclaredElement: { } declaredElement } declaration =>
-        DeclaredElementPresenter.Format(declaration.Language, OwnerPresenterStyle, declaredElement).Text,
+      ILambdaExpression lambdaExpression
+        => PresentLambdaExpression(lambdaExpression),
+      IAnonymousMethodExpression anonymousMethodExpression
+        => PresentAnonymousMethodExpression(anonymousMethodExpression),
+      IQueryParameterPlatform queryParameterPlatform
+        => PresentQueryParameterPlatform(queryParameterPlatform),
+      ITopLevelCode
+        => "top-level code",
+      IDeclaration { DeclaredElement: { } declaredElement } declaration
+        => DeclaredElementPresenter.Format(declaration.Language, OwnerPresenterStyle, declaredElement).Text,
       IExtendedType extendedType
         when ClassLikeDeclarationNavigator.GetByExtendsList(
           ExtendsListNavigator.GetByExtendedType(extendedType)) is { PrimaryConstructorDeclaration: { } primaryConstructorDeclaration }
         => "extended type of " + GetOwnerPresentation(primaryConstructorDeclaration),
-      IExtendedType => "extended type",
-      _ => throw new ArgumentOutOfRangeException()
+      IExtendedType
+        => "extended type",
+      _
+        => throw new ArgumentOutOfRangeException()
     };
+
+    [NotNull]
+    static string PresentLambdaExpression([NotNull] ILambdaExpression lambdaExpression)
+    {
+      var anonymousMethod = (IAnonymousMethod)lambdaExpression.DeclaredElement.NotNull();
+      var builder = new StringBuilder("lambda expression '");
+
+      PresentAnonymousMethodSignature(builder, anonymousMethod, lambdaExpression.Language);
+
+      builder.Append(" => ");
+
+      var bodyBlock = lambdaExpression.BodyExpression ?? (ITreeNode) lambdaExpression.BodyBlock;
+      if (bodyBlock != null)
+      {
+        builder.Append(bodyBlock.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(30));
+      }
+
+      builder.Append('\'');
+
+      return builder.ToString();
+    }
+
+    [NotNull]
+    static string PresentAnonymousMethodExpression([NotNull] IAnonymousMethodExpression anonymousMethodExpression)
+    {
+      var anonymousMethod = (IAnonymousMethod)anonymousMethodExpression.DeclaredElement.NotNull();
+      var builder = new StringBuilder("anonymous method '");
+
+      PresentAnonymousMethodSignature(builder, anonymousMethod, anonymousMethodExpression.Language);
+
+      builder.Append(" => ");
+
+      var bodyBlock = anonymousMethodExpression.Body;
+      if (bodyBlock != null)
+      {
+        builder.Append(bodyBlock.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(30));
+      }
+
+      builder.Append('\'');
+
+      return builder.ToString();
+    }
+
+    [NotNull]
+    static string PresentQueryParameterPlatform([NotNull] IQueryParameterPlatform parameterPlatform)
+    {
+      var anonymousMethod = (IAnonymousMethod)parameterPlatform.DeclaredElement.NotNull();
+      var builder = new StringBuilder("query lambda '");
+
+      PresentAnonymousMethodSignature(builder, anonymousMethod, parameterPlatform.Language);
+
+      builder.Append(" => ");
+
+      var expression = parameterPlatform.Value;
+      if (expression != null)
+      {
+        builder.Append(expression.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(30));
+      }
+
+      builder.Append('\'');
+
+      return builder.ToString();
+    }
+
+    static void PresentAnonymousMethodSignature(
+      [NotNull] StringBuilder builder, [NotNull] IAnonymousMethod anonymousMethod, [NotNull] PsiLanguageType language)
+    {
+      builder.Append(CSharpDeclaredElementPresenter.ReturnKindText(anonymousMethod.ReturnKind, appendSpaceIfByRef: true));
+      builder.Append(anonymousMethod.ReturnType.GetPresentableName(language, OwnerPresenterStyle.TypePresentationStyle));
+      builder.Append(" (");
+
+      foreach (var anonymousMethodParameter in anonymousMethod.Parameters)
+      {
+        builder.Append(CSharpDeclaredElementPresenter.ParameterKindText(anonymousMethodParameter.Kind, appendSpaceIfByRef: true));
+        builder.Append(anonymousMethodParameter.Type.GetPresentableName(language, OwnerPresenterStyle.TypePresentationStyle));
+        builder.Append(' ');
+        builder.Append(anonymousMethodParameter.ShortName);
+      }
+
+      builder.Append(')');
+    }
   }
 
   [CanBeNull]
@@ -130,6 +226,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     var builder = new StringBuilder();
     builder.AppendLine($"Owner: {GetOwnerPresentation(myDeclaration)}");
 
+    if (myClosuresList.Count > 0)
+    {
+      builder.AppendLine("Closures:");
+
+      foreach (var closure in myClosuresList)
+      {
+        builder.AppendLine($"> {GetOwnerPresentation(closure)}");
+      }
+    }
+
     if (myDelayedUseLocalFunctions != null)
     {
       builder.AppendLine("Delay use local functions:");
@@ -142,6 +248,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
     return builder.ToString();
   }
+
+  private readonly List<ICSharpClosure> myClosuresList = new();
 
   [NotNull] private readonly Stack<ClosureInfo> myClosures = new();
   [CanBeNull] private HashSet<ILocalFunctionDeclaration> myDelayedUseLocalFunctions;
@@ -167,6 +275,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     if (element is ICSharpClosure closure)
     {
       myClosures.Push(new ClosureInfo(closure));
+      myClosuresList.Add(closure);
     }
 
     if (element is IReferenceExpression referenceExpression)
