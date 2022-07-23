@@ -13,6 +13,7 @@ using ReSharperPlugin.HeapView.Analyzers;
 namespace ReSharperPlugin.HeapView.Tests;
 
 [TestFixture]
+[TestNet60]
 public class DisplayClassStructureTest : BaseTestWithSingleProject
 {
   protected override string RelativeTestDataPath => @"DisplayClass";
@@ -20,6 +21,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void Test01() { DoNamedTest(); }
   [Test] public void Test02() { DoNamedTest(); }
   [Test] public void Test03() { DoNamedTest(); }
+  [Test] public void TestClosures01() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {
@@ -36,7 +38,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
         var enumerator = psiFile.ThisAndDescendants();
         while (enumerator.MoveNext())
         {
-          switch (enumerator.Current)
+          var current = enumerator.Current;
+
+          switch (current)
           {
             case ICSharpFunctionDeclaration:
             case IExpressionBodyOwnerDeclaration:
@@ -44,7 +48,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
             case ITopLevelCode:
             case IExtendedType:
             {
-              var displayClassStructure = DisplayClassStructure.Build(enumerator.Current);
+              var displayClassStructure = DisplayClassStructure.Build(current);
               if (displayClassStructure != null)
               {
                 writer.WriteLine(displayClassStructure.Dump());
@@ -53,10 +57,14 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
 
               break;
             }
+          }
 
+          switch (current)
+          {
             case IBlock:
             case IArrowExpressionClause:
             case IVariableInitializer:
+            case ITopLevelCode:
             {
               enumerator.SkipThisNode();
               break;
