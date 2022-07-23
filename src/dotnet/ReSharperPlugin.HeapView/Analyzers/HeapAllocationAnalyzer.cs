@@ -18,6 +18,7 @@ using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable RedundantExplicitParamsArrayCreation
+// TODO: "fake" string concatenations between interpolated string handlers - do not allocates
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
