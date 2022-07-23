@@ -49,8 +49,6 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
               {
                 writer.WriteLine(displayClassStructure.Dump());
                 writer.WriteLine("========");
-
-                enumerator.SkipThisNode();
               }
 
               break;
@@ -60,7 +58,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
             case IArrowExpressionClause:
             case IVariableInitializer:
             {
-
+              enumerator.SkipThisNode();
               break;
             }
           }

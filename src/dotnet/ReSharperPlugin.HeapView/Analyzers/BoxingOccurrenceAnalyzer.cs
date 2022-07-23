@@ -736,7 +736,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     // todo: if target is value type and not ValueTuple - can't be boxing, right?
 
     if (sourceExpressionType is IAnonymousFunctionType)
-        return; // nothing to box and classifying a conversion might be expensive
+      return; // nothing to box and classifying a conversion might be expensive
 
     var conversionRule = data.GetTypeConversionRule();
     var conversion = getConversion(conversionRule, sourceExpressionType, targetType);
