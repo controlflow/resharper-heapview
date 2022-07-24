@@ -1,0 +1,8 @@
+﻿Owner: top-level code
+Closures:
+> anonymous method 'string () => { return catchVariable + lo...'
+    Captures:
+    > local variable 'catchVariable'
+    > local variable 'localVariable'
+
+========

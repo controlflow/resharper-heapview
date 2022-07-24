@@ -1,0 +1,10 @@
+﻿Owner: top-level code
+Closures:
+> lambda expression 'string (int parameter) => parameter + local + nameof(...'
+    Captures:
+    > local variable 'local'
+> lambda expression 'string () => { var inner = other; return...'
+    Captures:
+    > local variable 'other'
+
+========

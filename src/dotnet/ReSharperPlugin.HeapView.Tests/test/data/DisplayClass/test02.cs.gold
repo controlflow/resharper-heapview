@@ -1,5 +1,9 @@
 ﻿Owner: top-level code
+Closures:
+> local function 'void Local()'
+> local function 'void Local2()'
+> local function 'void Local3()'
 Delay use local functions:
-> local function 'Void Local3()'
+> local function 'void Local3()'
 
 ========

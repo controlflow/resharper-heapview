@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
@@ -34,6 +35,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     ShowParameterNames = true,
     ShowParameterTypes = true,
     ShowTypeParameters = TypeParameterStyle.FULL
+  };
+
+  private static readonly DeclaredElementPresenterStyle CapturePresenterStyle = new()
+  {
+    ShowEntityKind = EntityKindForm.NORMAL,
+    ShowNameInQuotes = true,
+    ShowName = NameStyle.QUALIFIED,
+    ShowType = TypeStyle.NONE
   };
 
   public DisplayClassStructure([NotNull] ITreeNode declaration)
@@ -233,6 +242,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       foreach (var closure in myClosuresList)
       {
         builder.AppendLine($"> {GetOwnerPresentation(closure)}");
+
+        if (myClosureToCaptures.TryGetValue(closure, out var captures))
+        {
+          builder.AppendLine("    Captures:");
+
+          foreach (var capturedEntity in captures.CapturedEntities)
+          {
+            builder.AppendLine($"    > {DeclaredElementPresenter.Format(myDeclaration.Language, CapturePresenterStyle, capturedEntity).Text}");
+          }
+        }
       }
     }
 
@@ -249,11 +268,13 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     return builder.ToString();
   }
 
-  private readonly List<ICSharpClosure> myClosuresList = new();
-
-  [NotNull] private readonly Stack<ClosureInfo> myClosures = new();
+  [NotNull] private readonly List<ICSharpClosure> myClosuresList = new();
+  [NotNull] private readonly Stack<ClosureInfo> myClosuresStack = new();
+  [NotNull] private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
+  [NotNull] private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
   [CanBeNull] private HashSet<ILocalFunctionDeclaration> myDelayedUseLocalFunctions;
   [CanBeNull] private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration> myDirectInvocationsBetweenLocalFunctions;
+
 
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
   {
@@ -261,6 +282,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     {
       case ITypeUsage:
       case IInvocationExpression invocationExpression when invocationExpression.IsNameofOperator():
+      case IAttributeSectionList: // attrs from local functions and lambdas
         return false;
 
       default:
@@ -274,12 +296,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   {
     if (element is ICSharpClosure closure)
     {
-      myClosures.Push(new ClosureInfo(closure));
+      myClosuresStack.Push(new ClosureInfo(closure));
       myClosuresList.Add(closure);
     }
 
     if (element is IReferenceExpression referenceExpression)
     {
+      // todo: nameof usages
+
       var resolveResult = referenceExpression.Reference.Resolve();
 
       switch (resolveResult.DeclaredElement)
@@ -297,9 +321,9 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           {
             // direct invocation
 
-            if (myClosures.Count > 0)
+            if (myClosuresStack.Count > 0)
             {
-              var currentClosure = myClosures.Peek();
+              var currentClosure = myClosuresStack.Peek();
               if (currentClosure.HasDelayedBody)
               {
                 myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
@@ -314,10 +338,44 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           }
 
           break;
+
+          // todo:
         }
 
-        case ILocalVariable or IParameter:
+        case ILocalVariable { IsConstant: false } localVariable:
         {
+          if (myClosuresStack.Count > 0)
+          {
+            var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>();
+            if (variableDeclaration != null)
+            {
+              var localScope = variableDeclaration.GetContainingScope<ILocalScope>();
+              if (localScope != null)
+              {
+                if (IsCapturedFromOutside(localScope))
+                {
+                  var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static () => new DisplayClass());
+
+                  displayClass.AddCapturedVariable(localVariable);
+
+                  var captures = myClosureToCaptures.GetOrCreateValue(myClosuresStack.Peek().Closure, static () => new Captures());
+                  captures.CapturedEntities.Add(localVariable);
+                  captures.CapturedDisplayClasses.Add(displayClass);
+                }
+              }
+            }
+
+            // todo: local variable
+            // todo: local constant
+            // todo: variable designation
+            // todo: catch variable
+            // todo: fixed declaration variable - cannot be captured
+
+
+          }
+
+          //resolveResult.DeclaredElement.
+
           // todo: get or create a scope for a variable
           // todo: args parameter, value parameter
 
@@ -327,6 +385,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
+  [Pure]
+  private bool IsCapturedFromOutside(ITreeNode scope)
+  {
+    Assertion.Assert(myClosuresStack.Count > 0);
+
+    var currentClosure = myClosuresStack.Peek().Closure;
+    return currentClosure != null && !currentClosure.Contains(scope);
+  }
+
+  [Pure]
   private static bool IsDirectInvocation([NotNull] IReferenceExpression referenceExpression)
   {
     var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(
@@ -338,7 +406,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   {
     if (element is ICSharpClosure closure)
     {
-      var poppedClosure = myClosures.Pop();
+      var poppedClosure = myClosuresStack.Pop();
       Assertion.Assert(closure == poppedClosure.Closure);
     }
 
@@ -356,4 +424,22 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     [CanBeNull] public readonly ICSharpClosure Closure;
     public readonly bool HasDelayedBody;
   }
+
+  private class DisplayClass
+  {
+    [NotNull] public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+
+    public void AddCapturedVariable([NotNull] IDeclaredElement localEntity)
+    {
+      CapturedEntities.Add(localEntity);
+    }
+  }
+
+  private class Captures
+  {
+    [NotNull] public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
+    [NotNull] public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+  }
 }
+
+

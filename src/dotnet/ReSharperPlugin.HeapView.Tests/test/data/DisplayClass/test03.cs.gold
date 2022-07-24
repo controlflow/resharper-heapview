@@ -1,8 +1,13 @@
 ﻿Owner: top-level code
+Closures:
+> local function 'void Local1()'
+> local function 'void Local2()'
+> local function 'void Local3()'
+> local function 'void Local4()'
 Delay use local functions:
-> local function 'Void Local1()'
-> local function 'Void Local2()'
-> local function 'Void Local3()'
-> local function 'Void Local4()'
+> local function 'void Local1()'
+> local function 'void Local2()'
+> local function 'void Local3()'
+> local function 'void Local4()'
 
 ========

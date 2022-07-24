@@ -1,14 +1,8 @@
-using System.Linq;
-
-static ref int LocalFunction(ref int x) => ref x;
-
-var f = static int (bool x) =>
+var local = 0;
+var other = 0;
+var f = (int parameter) => parameter + local + nameof(other);
+var g = () =>
 {
-  var l = (ref bool b) => ref x;
-  return x.GetHashCode();
+  var inner = other;
+  return nameof(local) + inner;
 };
-
-var d = delegate(int i) { return i; }
-
-var xs = from x in new int[0]
-         select x + 1;
