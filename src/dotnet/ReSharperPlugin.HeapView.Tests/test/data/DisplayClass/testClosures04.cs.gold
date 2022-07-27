@@ -14,17 +14,23 @@ Closures:
     > local variable 'a'
 Display classes:
   Display class #1
-   Scope: TopLevelCode 'bool F(object o) => true; var a = 0; if ...'
+    Scope: TopLevelCode 'bool F(object o) => true; var a = 0; if ...'
     Members:
     > local variable 'a'
     > local variable 't3'
+    Closures:
+    > lambda expression 'int () => t3 + a'
   Display class #2
-   Scope: ExpressionStatement '_ = a is var t1 && F(() => t1);'
+    Scope: ExpressionStatement '_ = a is var t1 && F(() => t1);'
     Members:
     > local variable 't1'
+    Closures:
+    > lambda expression 'int () => t1'
   Display class #3
-   Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a);'
+    Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a);'
     Members:
     > local variable 't2'
+    Closures:
+    > lambda expression 'int () => t2 + a'
 
 ========
