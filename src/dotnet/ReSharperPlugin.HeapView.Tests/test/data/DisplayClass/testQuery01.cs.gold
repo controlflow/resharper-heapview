@@ -1,0 +1,25 @@
+﻿Owner: top-level code
+Closures:
+> query lambda 'string (string x) => x'
+> query lambda 'IEnumerable<string> (string x) => args'
+    Captures:
+    > parameter 'args'
+> query lambda 'string (string x, string y) => x + y'
+> query lambda 'IEnumerable<string> (string x) => args'
+    Captures:
+    > parameter 'args'
+> query lambda 'IEnumerable<string> ({string x, string y} transparent_variable) => args'
+    Captures:
+    > parameter 'args'
+> query lambda 'string ({string x, string y} transparent_variable, string z) => x + y + z'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'var xs1 = from x in args select x; var x...'
+    Members:
+    > parameter 'args'
+    Closures:
+    > query lambda 'IEnumerable<string> (string x) => args'
+    > query lambda 'IEnumerable<string> (string x) => args'
+    > query lambda 'IEnumerable<string> ({string x, string y} transparent_variable) => args'
+
+========

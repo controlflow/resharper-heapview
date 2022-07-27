@@ -31,6 +31,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClosures07() { DoNamedTest(); }
 
   [Test] public void TestParameters01() { DoNamedTest(); }
+  [Test] public void TestParameters02() { DoNamedTest(); }
+
+  [Test] public void TestQuery01() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {

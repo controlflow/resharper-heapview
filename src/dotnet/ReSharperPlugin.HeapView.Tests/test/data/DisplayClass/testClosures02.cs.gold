@@ -8,7 +8,7 @@ Closures:
     > local variable 'other'
 Display classes:
   Display class #1
-    Scope: TopLevelCode 'var local = 0; var other = 0; var f = (i...'
+    Scope: ITopLevelCode 'var local = 0; var other = 0; var f = (i...'
     Members:
     > local variable 'local'
     > local variable 'other'

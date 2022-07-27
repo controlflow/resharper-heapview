@@ -12,16 +12,16 @@ Closures:
     > local variable 'a'
 Display classes:
   Display class #1
-    Scope: TopLevelCode 'bool F(object o) => true; var a = 0; if ...'
+    Scope: ITopLevelCode 'bool F(object o) => true; var a = 0; if ...'
     Members:
     > local variable 'a'
   Display class #2
-    Scope: IfStatement 'if (a is var t1) _ = a is var t2 && F(()...'
+    Scope: IIfStatement 'if (a is var t1) _ = a is var t2 && F(()...'
     Members:
     > local variable 't1'
     > display class #1
   Display class #3
-    Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a) && F(...'
+    Scope: IExpressionStatement '_ = a is var t2 && F(() => t2 + a) && F(...'
     Members:
     > local variable 't2'
     > display class #2

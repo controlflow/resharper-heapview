@@ -3,7 +3,16 @@ Closures:
 > local function 'ref int LocalFunction(ref int x)'
 > lambda expression 'int (bool x) => { var l = (ref bool b) => r...'
 > lambda expression 'ref bool (ref bool b) => ref x'
+    Captures:
+    > parameter 'x'
 > anonymous method 'int (int i) => { return i; }'
 > query lambda 'int (int x) => x + 1'
+Display classes:
+  Display class #1
+    Scope: ILambdaExpression 'static int (bool x) => { var l = (ref bo...'
+    Members:
+    > parameter 'x'
+    Closures:
+    > lambda expression 'ref bool (ref bool b) => ref x'
 
 ========

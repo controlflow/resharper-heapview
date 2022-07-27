@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -9,14 +10,16 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
-using JetBrains.Util.Special;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
+
+// todo: args can be captured - allocation on the first statement
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor
 {
@@ -125,7 +128,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   }
 
   [NotNull] private readonly List<ICSharpClosure> myClosuresList = new();
-  [NotNull] private readonly Stack<ClosureInfo> myClosuresStack = new();
+  [NotNull] private readonly Stack<ClosureInfo> myCurrentClosures = new();
   [NotNull] private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
   [NotNull] private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
   [CanBeNull] private HashSet<ILocalFunctionDeclaration> myDelayedUseLocalFunctions;
@@ -151,7 +154,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   {
     if (element is ICSharpClosure closure)
     {
-      myClosuresStack.Push(new ClosureInfo(closure));
+      myCurrentClosures.Push(new ClosureInfo(closure));
       myClosuresList.Add(closure);
     }
 
@@ -174,9 +177,9 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           {
             // direct invocation
 
-            if (myClosuresStack.Count > 0)
+            if (myCurrentClosures.Count > 0)
             {
-              var currentClosure = myClosuresStack.Peek();
+              var currentClosure = myCurrentClosures.Peek();
               if (currentClosure.HasDelayedBody)
               {
                 myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
@@ -192,71 +195,103 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
           break;
         }
+      }
 
-        case ILocalVariable { IsConstant: false } localVariable:
-        {
-          if (myClosuresStack.Count > 0)
-          {
-            var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>();
-            if (variableDeclaration != null)
-            {
-              var localScope = variableDeclaration.GetContainingScope<ILocalScope>();
-              if (localScope != null)
-              {
-                if (IsCapturedFromOutside(localScope))
-                {
-                  var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static key => new DisplayClass(key));
-                  displayClass.AddMember(localVariable);
-
-                  var captures = myClosureToCaptures.GetOrCreateValue(myClosuresStack.Peek().Closure, static () => new Captures());
-                  captures.CapturedEntities.Add(localVariable);
-                  captures.CapturedDisplayClasses.Add(displayClass);
-                }
-              }
-            }
-          }
-
-          break;
-        }
-
-        case IParameter parameter:
-        {
-          if (myClosuresStack.Count > 0)
-          {
-            var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
-            if (parameterDeclaration != null)
-            {
-              var localScope = parameterDeclaration.GetContainingScope<ILocalScope>();
-              if (localScope != null)
-              {
-                if (IsCapturedFromOutside(localScope))
-                {
-
-                }
-              }
-            }
-            else
-            {
-              // args parameter
-              // value parameter in setters/adders/removers
-
-              // get scope?
-            }
-          }
-
-          break;
-        }
+      if (myCurrentClosures.Count > 0)
+      {
+        ProcessReferenceExpressionInsideClosure(referenceExpression, resolveResult);
       }
     }
   }
 
-  [Pure]
-  private bool IsCapturedFromOutside(ITreeNode scope)
+  private void ProcessReferenceExpressionInsideClosure(
+    [NotNull] IReferenceExpression referenceExpression, [NotNull] ResolveResultWithInfo resolveResult)
   {
-    Assertion.Assert(myClosuresStack.Count > 0);
+    switch (resolveResult.DeclaredElement)
+    {
+      case ICSharpLocalVariable { IsConstant: false, ReferenceKind: ReferenceKind.VALUE } localVariable:
+      {
+        var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>();
+        if (variableDeclaration == null) return; // should never happen
 
-    var currentClosure = myClosuresStack.Peek().Closure;
-    return currentClosure != null && !currentClosure.Contains(scope);
+        var localScope = variableDeclaration.GetContainingScope<ILocalScope>();
+        if (localScope != null)
+        {
+          NoteCapture(localScope, localVariable);
+        }
+
+        break;
+      }
+
+      case IParameter { Kind: ParameterKind.VALUE } parameter:
+      {
+        var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
+        if (parameterDeclaration is IQueryRangeVariableDeclaration rangeVariableDeclaration)
+        {
+          var queryParameterPlatform = FindParameterPlatformOfRangeVariableInContext(rangeVariableDeclaration, referenceExpression);
+          if (queryParameterPlatform != null)
+          {
+            NoteCapture(queryParameterPlatform, parameter);
+          }
+        }
+        else if (parameterDeclaration != null)
+        {
+          var localScope = parameterDeclaration.GetContainingScope<ILocalScope>();
+          if (localScope != null)
+          {
+            NoteCapture(localScope, parameter);
+          }
+        }
+        else
+        {
+          // implicit 'args' parameter
+          if (parameter.ContainingParametersOwner is ITopLevelEntryPoint topLevelEntryPoint)
+          {
+            var topLevelCode = topLevelEntryPoint.GetSingleDeclaration<ITopLevelCode>();
+            if (topLevelCode != null)
+            {
+              NoteCapture(topLevelCode, parameter);
+            }
+          }
+
+          // args parameter
+          // value parameter in setters/adders/removers
+
+          // get scope?
+        }
+
+        break;
+      }
+    }
+
+    void NoteCapture([NotNull] ITreeNode localScope, [NotNull] IDeclaredElement capturedEntity)
+    {
+      var currentClosure = myCurrentClosures.Peek().Closure;
+      if (currentClosure != null && !currentClosure.Contains(localScope))
+      {
+        var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static key => new DisplayClass(key));
+        displayClass.AddMember(capturedEntity);
+
+        var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => new Captures());
+        captures.CapturedEntities.Add(capturedEntity);
+        captures.CapturedDisplayClasses.Add(displayClass);
+      }
+    }
+
+    [CanBeNull, Pure]
+    static IQueryParameterPlatform FindParameterPlatformOfRangeVariableInContext([NotNull] IQueryRangeVariableDeclaration rangeVariableDeclaration, [NotNull] ITreeNode context)
+    {
+      // note: multiple query parameter platforms can have the same range variable as a parameter
+
+      foreach (var containingPlatform in context.ContainingNodes<IQueryParameterPlatform>())
+      foreach (var queryVariable in containingPlatform.GetVariables())
+      {
+        if (queryVariable.Declaration == rangeVariableDeclaration)
+          return containingPlatform;
+      }
+
+      return null;
+    }
   }
 
   [Pure]
@@ -271,7 +306,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   {
     if (element is ICSharpClosure closure)
     {
-      var poppedClosure = myClosuresStack.Pop();
+      var poppedClosure = myCurrentClosures.Pop();
       Assertion.Assert(closure == poppedClosure.Closure);
 
       if (myClosureToCaptures.TryGetValue(closure, out var captures))
@@ -567,7 +602,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         builder.Append(CSharpDeclaredElementPresenter.ParameterKindText(anonymousMethodParameter.Kind, appendSpaceIfByRef: true));
         builder.Append(anonymousMethodParameter.Type.GetPresentableName(language, OwnerPresenterStyle.TypePresentationStyle));
         builder.Append(' ');
-        builder.Append(anonymousMethodParameter.ShortName);
+        builder.Append(anonymousMethodParameter switch
+        {
+          ITransparentVariable => "transparent_variable",
+          _ => anonymousMethodParameter.ShortName
+        });
       }
 
       builder.Append(')');
@@ -578,7 +617,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   private string PresentScope([NotNull] ITreeNode treeNode)
   {
     var nodeText = treeNode.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(43);
-    return $"{treeNode.GetType().Name} '{nodeText}'";
+
+    var nodePresentation = treeNode.ToString();
+    var interfaceName = Regex.Match(nodePresentation, "^I\\w+");
+    if (interfaceName.Success)
+    {
+      return $"{interfaceName.Value} '{nodeText}'";
+    }
+
+    var typeName = treeNode.GetType().Name;
+    return $"{typeName} '{nodeText}'";
   }
 
   [NotNull]
