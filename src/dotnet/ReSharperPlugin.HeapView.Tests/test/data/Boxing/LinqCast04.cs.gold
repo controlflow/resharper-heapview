@@ -1,0 +1,8 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var xs = new List<ConsoleKey>();
+var ys = Enumerable.Cast<|Enum|(0)>(xs);
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'ConsoleKey' to 'Enum' requires boxing of the value type

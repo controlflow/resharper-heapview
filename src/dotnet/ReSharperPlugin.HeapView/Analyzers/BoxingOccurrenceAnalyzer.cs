@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -15,13 +17,13 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
-// todo: this parameter conversion classification for extension method invocations?
 
 // todo: [ReSharper] disable method group natural types under nameof() expression
 // todo: [ReSharper] no implictly converted to 'object' under __arglist() expression
@@ -32,10 +34,10 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(ICSharpExpression),
     typeof(IPatternWithTypeUsage),
     typeof(IForeachStatement),
-
     typeof(IDeconstructionPatternClause),
     typeof(IVarDeconstructionPattern),
-    typeof(ICollectionElementInitializer)
+    typeof(ICollectionElementInitializer),
+    typeof(IQueryCastReferenceProvider)
   },
   HighlightingTypes = new[]
   {
@@ -49,8 +51,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     switch (element)
     {
       // structWithNoToString.ToString()
+      // intArray.Cast<object>();
       case IInvocationExpression invocationExpression:
         CheckInheritedMethodInvocationOverValueType(invocationExpression, data, consumer);
+        CheckLinqEnumerableCastConversion(invocationExpression, data, consumer);
         break;
 
       // Action a = structValue.InstanceMethod;
@@ -104,6 +108,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // (object o, objVariable) = intIntTuple;
       case IAssignmentExpression assignmentExpression:
         CheckDeconstructingAssignmentImplicitConversions(assignmentExpression, data, consumer);
+        break;
+
+      // from object o in intArray
+      case IQueryCastReferenceProvider queryCastReferenceProvider:
+        CheckLinqQueryCastConversion(queryCastReferenceProvider, data, consumer);
         break;
 
       //
@@ -690,6 +699,136 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         }
       }
     }
+  }
+
+  #endregion
+  #region Casts in LINQ queries
+
+  private static void CheckLinqQueryCastConversion(
+    [NotNull] IQueryCastReferenceProvider queryCastReferenceProvider,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    var castReference = queryCastReferenceProvider.CastReference;
+    if (castReference == null) return;
+
+    var collection = queryCastReferenceProvider.Expression;
+    if (collection == null) return;
+
+    var targetTypeUsage = GetCastNode(queryCastReferenceProvider);
+    if (targetTypeUsage == null) return;
+
+    var resolveResult = castReference.Resolve();
+    if (!resolveResult.ResolveErrorType.IsAcceptable) return;
+
+    if (resolveResult.DeclaredElement is not IMethod { ShortName: nameof(Enumerable.Cast) } castMethod) return;
+
+    var targetTypeParameter = castMethod.TypeParameters.SingleItem();
+    if (targetTypeParameter == null) return;
+
+    var castTargetType = resolveResult.Substitution[targetTypeParameter];
+
+    var sourceType = TryGetEnumerableCollectionType(collection.Type());
+    if (sourceType == null) return;
+
+    CheckConversionRequiresBoxing(
+      sourceType, castTargetType, targetTypeUsage,
+      static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
+      data, consumer);
+
+    [CanBeNull]
+    static ITypeUsage GetCastNode(IQueryCastReferenceProvider queryCastReferenceProvider)
+    {
+      return queryCastReferenceProvider switch
+      {
+        IQueryFirstFrom queryFirstFrom => queryFirstFrom.TypeUsage,
+        IQueryFromClause queryFromClause => queryFromClause.TypeUsage,
+        IQueryJoinClause queryJoinClause => queryJoinClause.TypeUsage,
+        _ => throw new ArgumentOutOfRangeException(nameof(queryCastReferenceProvider))
+      };
+    }
+  }
+
+  [NotNull] private static readonly ClrTypeName SystemEnumerableClassTypeName = new("System.Linq.Enumerable");
+
+  private static void CheckLinqEnumerableCastConversion(
+    [NotNull] IInvocationExpression invocationExpression,
+    [NotNull] ElementProblemAnalyzerData data,
+    [NotNull] IHighlightingConsumer consumer)
+  {
+    if (invocationExpression.InvokedExpression is not IReferenceExpression invokedReferenceExpression) return;
+
+    var typeArgumentList = invokedReferenceExpression.TypeArgumentList;
+    if (typeArgumentList == null) return;
+
+    if (!typeArgumentList.CommasEnumerable.IsEmpty()) return; // single type argument expected
+
+    var resolveResult = invocationExpression.Reference.Resolve();
+    if (!resolveResult.ResolveErrorType.IsAcceptable) return;
+
+    if (resolveResult.DeclaredElement is not IMethod
+        {
+          ShortName: nameof(Enumerable.Cast),
+          ContainingType: { ShortName: nameof(Enumerable) } containingType
+        } castMethod)
+    {
+      return;
+    }
+
+    if (!containingType.GetClrName().Equals(SystemEnumerableClassTypeName)) return;
+
+    var collectionExpression = resolveResult.Result.IsExtensionMethodInvocation()
+      ? invokedReferenceExpression.QualifierExpression
+      : invocationExpression.ArgumentsEnumerable.SingleItem?.Value;
+
+    if (collectionExpression == null) return;
+
+    var targetTypeUsage = typeArgumentList.TypeArgumentNodes.SingleItem();
+    if (targetTypeUsage == null) return;
+
+    var targetTypeParameter = castMethod.TypeParameters.SingleItem();
+    if (targetTypeParameter == null) return;
+
+    var castTargetType = resolveResult.Substitution[targetTypeParameter];
+
+    var sourceType = TryGetEnumerableCollectionType(collectionExpression.Type());
+    if (sourceType == null) return;
+
+    CheckConversionRequiresBoxing(
+      sourceType, castTargetType, targetTypeUsage,
+      static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
+      data, consumer);
+  }
+
+  [CanBeNull, Pure]
+  private static IType TryGetEnumerableCollectionType([NotNull] IType sourceType)
+  {
+    switch (sourceType)
+    {
+      case IArrayType arrayType:
+      {
+        return arrayType.ElementType;
+      }
+
+      case IDeclaredType ({ } typeElement, var substitution):
+      {
+        var predefinedType = sourceType.Module.GetPredefinedType();
+
+        var iEnumerable = predefinedType.GenericIEnumerable.GetTypeElement();
+        if (iEnumerable is { TypeParameters: { Count: 1 } typeParameters })
+        {
+          var singleImplementation = typeElement.GetAncestorSubstitution(iEnumerable).SingleItem;
+          if (singleImplementation != null)
+          {
+            return substitution.Apply(singleImplementation).Apply(typeParameters[0]);
+          }
+        }
+
+        break;
+      }
+    }
+
+    return null;
   }
 
   #endregion

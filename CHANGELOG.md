@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Boxing allocations analysis was rewritten to match the recent compiler/runtime
 - Boxing is now detected in implicit extension method invocations (in deconstruction, foreach statement, await expression, collection initializers)
 - Boxing detection inside tuple conversions was completely rewritten (fix a few unrecognized allocations, better allocation reports, better highlighting placements when possible)
+- Boxing is now detected in Enumerable.Cast<T>() method invocations (including query expressions)
 - Added support for ReSharper and Rider 2022.2
 
 ## 2022.1.0

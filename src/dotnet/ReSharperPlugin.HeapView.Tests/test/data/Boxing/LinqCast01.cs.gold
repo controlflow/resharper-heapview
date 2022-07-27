@@ -1,0 +1,12 @@
+﻿using System.Linq;
+
+var xs = new int[0];
+
+var ys = from |object|(0) o in xs
+         from |object|(1) v in xs
+         join |object|(2) u in xs on o equals u
+         select o;
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

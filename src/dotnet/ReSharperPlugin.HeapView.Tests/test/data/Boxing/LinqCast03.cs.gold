@@ -1,0 +1,6 @@
+﻿using System.Linq;
+
+var xs = new int[0];
+var ys = xs.Cast<|object|(0)>();
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
