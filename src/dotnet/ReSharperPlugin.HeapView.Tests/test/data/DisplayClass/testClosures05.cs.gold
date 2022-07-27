@@ -19,10 +19,12 @@ Display classes:
     Scope: IfStatement 'if (a is var t1) _ = a is var t2 && F(()...'
     Members:
     > local variable 't1'
+    > display class #1
   Display class #3
     Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a) && F(...'
     Members:
     > local variable 't2'
+    > display class #2
     Closures:
     > lambda expression 'int () => t2 + a'
     > lambda expression 'int () => t1 + t2 + a'

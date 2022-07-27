@@ -30,6 +30,7 @@ Display classes:
     Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a);'
     Members:
     > local variable 't2'
+    > display class #1
     Closures:
     > lambda expression 'int () => t2 + a'
 

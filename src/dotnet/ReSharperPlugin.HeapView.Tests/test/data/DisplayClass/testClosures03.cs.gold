@@ -13,6 +13,7 @@ Display classes:
     Scope: Block '{ string localVariable = "aaa"; const st...'
     Members:
     > local variable 'localVariable'
+    > display class #1
     Closures:
     > anonymous method 'string () => { return catchVariable + lo...'
 

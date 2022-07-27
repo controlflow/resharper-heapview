@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
+using JetBrains.Util.Special;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
@@ -286,6 +287,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
           displayClasses[0].AttachClosure(closure);
 
+          for (var index = 1; index < displayClasses.Count; index++)
+          {
+            var inner = displayClasses[index - 1];
+            var containing = displayClasses[index];
+
+            inner.AddContainingDisplayClassReference(containing);
+          }
+
           // join them togeter
 
         }
@@ -321,21 +330,32 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     public readonly bool HasDelayedBody;
   }
 
-  private class DisplayClass : IComparable<DisplayClass>
+  private sealed class DisplayClass : IComparable<DisplayClass>
   {
-    [NotNull] private readonly ITreeNode myScopeNode;
-
     public DisplayClass([NotNull] ITreeNode scopeNode)
     {
-      myScopeNode = scopeNode;
+      ScopeNode = scopeNode;
     }
 
+    [NotNull] public ITreeNode ScopeNode { get; }
     [NotNull] public HashSet<IDeclaredElement> Members { get; } = new();
     [NotNull] public List<ICSharpClosure> Closures { get; } = new();
+
+    [CanBeNull] public DisplayClass ContainingDisplayClass { get; private set; }
 
     public void AddMember([NotNull] IDeclaredElement localEntity)
     {
       Members.Add(localEntity);
+    }
+
+    public void AddContainingDisplayClassReference([NotNull] DisplayClass other)
+    {
+      Assertion.Assert(other != this);
+
+      if (ContainingDisplayClass == null || ContainingDisplayClass.CompareTo(other) > 0)
+      {
+        ContainingDisplayClass = other;
+      }
     }
 
     public void AttachClosure([NotNull] ICSharpClosure closure)
@@ -345,15 +365,15 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
     public int CompareTo(DisplayClass other)
     {
-      var otherScope = other.myScopeNode;
+      var otherScope = other.ScopeNode;
 
-      if (myScopeNode == otherScope)
+      if (ScopeNode == otherScope)
         return 0;
 
-      if (myScopeNode.Contains(otherScope))
+      if (ScopeNode.Contains(otherScope))
         return +1;
 
-      Assertion.Assert(otherScope.Contains(myScopeNode), "Scopes must be contained inside each other");
+      Assertion.Assert(otherScope.Contains(ScopeNode), "Scopes must be contained inside each other");
       return -1;
     }
   }
@@ -413,6 +433,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         foreach (var capturedEntity in displayClass.Members)
         {
           builder.AppendLine($"    > {PresentCapture(capturedEntity)}");
+        }
+
+        var containingDisplayClass = displayClass.ContainingDisplayClass;
+        if (containingDisplayClass != null)
+        {
+          builder.AppendLine($"    > display class #{displayClassIndexes[containingDisplayClass]}");
         }
 
         if (displayClass.Closures.Count > 0)
