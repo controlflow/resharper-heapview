@@ -32,6 +32,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
 
   [Test] public void TestParameters01() { DoNamedTest(); }
   [Test] public void TestParameters02() { DoNamedTest(); }
+  [Test] public void TestParameters03() { DoNamedTest(); }
 
   [Test] public void TestQuery01() { DoNamedTest(); }
 

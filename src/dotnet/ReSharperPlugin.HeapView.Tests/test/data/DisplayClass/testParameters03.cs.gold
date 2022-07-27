@@ -1,0 +1,48 @@
+﻿Owner: method 'void C.F(object o)'
+
+========
+Owner: accessor 'object C.Property.get'
+
+========
+Owner: accessor 'object C.Property.init'
+Closures:
+> lambda expression 'object () => value'
+    Captures:
+    > parameter 'value'
+Display classes:
+  Display class #1
+    Scope: IAccessorDeclaration 'init => F(() => value);'
+    Members:
+    > parameter 'value'
+    Closures:
+    > lambda expression 'object () => value'
+
+========
+Owner: accessor 'EventHandler C.Event.add'
+Closures:
+> lambda expression 'EventHandler () => value'
+    Captures:
+    > parameter 'value'
+Display classes:
+  Display class #1
+    Scope: IAccessorDeclaration 'add => F(() => value);'
+    Members:
+    > parameter 'value'
+    Closures:
+    > lambda expression 'EventHandler () => value'
+
+========
+Owner: accessor 'EventHandler C.Event.remove'
+Closures:
+> lambda expression 'EventHandler () => value'
+    Captures:
+    > parameter 'value'
+Display classes:
+  Display class #1
+    Scope: IAccessorDeclaration 'remove => F(() => value);'
+    Members:
+    > parameter 'value'
+    Closures:
+    > lambda expression 'EventHandler () => value'
+
+========

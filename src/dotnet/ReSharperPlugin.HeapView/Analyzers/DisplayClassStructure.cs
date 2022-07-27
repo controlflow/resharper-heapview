@@ -254,6 +254,18 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
             }
           }
 
+          if (parameter.IsValueVariable)
+          {
+            if (parameter.ContainingParametersOwner is IAccessor accessor)
+            {
+              var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>();
+              if (accessorDeclaration != null)
+              {
+                NoteCapture(accessorDeclaration, parameter);
+              }
+            }
+          }
+
           // args parameter
           // value parameter in setters/adders/removers
 

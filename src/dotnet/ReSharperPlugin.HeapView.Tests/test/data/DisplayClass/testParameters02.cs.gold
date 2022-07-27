@@ -1,0 +1,35 @@
+﻿Owner: top-level code
+Closures:
+> local function 'object LocalFunction(int parameter)'
+> lambda expression 'int () => parameter + localVariable'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'localVariable'
+Display classes:
+  Display class #1
+    Scope: ILocalFunctionDeclaration 'object LocalFunction(int parameter) { in...'
+    Members:
+    > parameter 'parameter'
+  Display class #2
+    Scope: IBlock '{ int localVariable = 0; return () => pa...'
+    Members:
+    > local variable 'localVariable'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => parameter + localVariable'
+
+========
+Owner: operator 'object C.+(C parameter)'
+Closures:
+> lambda expression 'C () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: ISignOperatorDeclaration 'public static object operator+(C paramet...'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'C () => parameter'
+
+========
