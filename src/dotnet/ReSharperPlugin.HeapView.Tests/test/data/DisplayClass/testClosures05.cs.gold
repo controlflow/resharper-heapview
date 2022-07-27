@@ -1,0 +1,30 @@
+﻿Owner: top-level code
+Closures:
+> local function 'bool F(object o)'
+> lambda expression 'int () => t2 + a'
+    Captures:
+    > local variable 't2'
+    > local variable 'a'
+> lambda expression 'int () => t1 + t2 + a'
+    Captures:
+    > local variable 't1'
+    > local variable 't2'
+    > local variable 'a'
+Display classes:
+  Display class #1
+    Scope: TopLevelCode 'bool F(object o) => true; var a = 0; if ...'
+    Members:
+    > local variable 'a'
+  Display class #2
+    Scope: IfStatement 'if (a is var t1) _ = a is var t2 && F(()...'
+    Members:
+    > local variable 't1'
+  Display class #3
+    Scope: ExpressionStatement '_ = a is var t2 && F(() => t2 + a) && F(...'
+    Members:
+    > local variable 't2'
+    Closures:
+    > lambda expression 'int () => t2 + a'
+    > lambda expression 'int () => t1 + t2 + a'
+
+========

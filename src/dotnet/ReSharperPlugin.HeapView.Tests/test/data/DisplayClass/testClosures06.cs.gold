@@ -1,0 +1,7 @@
+﻿Owner: top-level code
+Closures:
+> query lambda 'string (string x) => x'
+> query lambda 'string (string z) => z'
+> query lambda 'string (string x, string z) => x + z'
+
+========

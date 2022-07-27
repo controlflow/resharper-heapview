@@ -439,28 +439,12 @@ public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
     }
 
     [NotNull] public OneToSetMap<ICSharpClosure, IDeclaredElement> Captures { get; } = new();
-    [Obsolete] [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; } = new();
-    [Obsolete] [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; } = new();
-
-    public Dictionary<ILocalScope, DisplayClassInfo> DisplayClasses { get; } = new();
+    [NotNull] public OneToSetMap<ILocalScope, IDeclaredElement> CapturesOfScope { get; } = new();
+    [NotNull] public OneToSetMap<ILocalScope, ICSharpClosure> ClosuresOfScope { get; } = new();
 
     [NotNull] public List<ICSharpClosure> CapturelessClosures { get; } = new();
     [NotNull] public HashSet<IQueryRangeVariableDeclaration> AnonymousTypes { get; } = new();
     [NotNull] public OneToListMap<ILocalFunction, IReferenceExpression> DelayedUseLocalFunctions { get; } = new();
-
-    public sealed class DisplayClassInfo
-    {
-      public HashSet<IDeclaredElement> Captures { get; } = new();
-      public HashSet<ICSharpClosure> Closures { get; } = new();
-      public DisplayClassInfo ParentDisplayClass { get; private set; }
-
-      public TreeTextRange FirstCapturedVariableLocation { get; private set; }
-
-
-
-
-
-    }
 
     public bool ProcessingIsFinished => false;
     public bool InteriorShouldBeProcessed(ITreeNode element) => true;
