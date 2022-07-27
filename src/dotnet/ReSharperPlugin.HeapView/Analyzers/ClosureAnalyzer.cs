@@ -575,6 +575,8 @@ public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
       {
         if (ReferenceEquals(parametersOwner, closure))
         {
+          if (parametersOwner is IQueryParameterPlatform) return;
+
           // todo: test with query parameter platforms
           var parameterScope = closure.GetContainingScope<ILocalScope>(returnThis: true);
           if (parameterScope != null)

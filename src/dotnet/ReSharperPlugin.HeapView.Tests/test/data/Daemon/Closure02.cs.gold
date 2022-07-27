@@ -56,77 +56,77 @@ class Closures
              where x > 0
              select x + z;
     var t2 = from x in XS
-             from y |in|(13) YS.Concat(t1)
+             from y |in|(13) YS.|Concat|(14)(t1)
              select x into y
-             |select|(14) y + i;
+             |select|(15) y + i;
     var t3 = from x in XS
-             group x |by|(15) x / 10 + i;
+             group x |by|(16) x / 10 + i;
     var t4 = from x in XS
-             |group|(16) x + i by x / 10;
+             |group|(17) x + i by x / 10;
     var t5 = from x in XS
              group x by x / 10 into g
-             |select|(17) g.Key + i;
+             |select|(18) g.Key + i;
     var t6 = from x in XS
-             join y in YS |on|(18) x + i |equals|(19) y + i
-             |select|(20) x + y + i;
+             join y in YS |on|(19) x + i |equals|(20) y + i
+             |select|(21) x + y + i;
     var t7 = from x in XS
-             join y in YS |on|(21) x + i equals y
+             join y in YS |on|(22) x + i equals y
              into z select x;
   
     var t8 = from x in XS select (
                from y in YS select y);
-    var t9 = from x in XS |select|(22) (
-               from y in YS.Concat(t7)
-               |select|(23) y + x + 123);
+    var t9 = from x in XS |select|(23) (
+               from y in YS.|Concat|(24)(t7)
+               |select|(25) y + x + 123);
   }
 
   public void M4()
   {
-    |int i|(24) = I, j = I;
-    F(() |=>|(25) M() + X);
-    F(() |=>|(26) M() + X + i);
-    F(() |=>|(27) X + j);
+    |int i|(26) = I, j = I;
+    F(() |=>|(27) M() + X);
+    F(() |=>|(28) M() + X + i);
+    F(() |=>|(29) X + j);
   }
 
   public void M5()
   {
-    |var i|(28) = I;
-    F(() |=>|(29) i);
+    |var i|(30) = I;
+    F(() |=>|(31) i);
 
     {
-      |var j|(30) = I;
-      F(() |=>|(31) j);
+      |var j|(32) = I;
+      F(() |=>|(33) j);
     }
   }
 
   public void M6()
   {
-    |var i|(32) = I;
-    F(() |=>|(33) i);
+    |var i|(34) = I;
+    F(() |=>|(35) i);
 
     var j = I;
-    F(() |=>|(34) j);
+    F(() |=>|(36) j);
   }
 
   public void M7()
   {
-    F(() |=>|(35)
+    F(() |=>|(37)
     {
       M();
-      |var i|(36) = I;
-      F(() |=>|(37) i);
+      |var i|(38) = I;
+      F(() |=>|(39) i);
     });
   }
 
   public void M8(bool b)
   {
-    |int a|(38);
+    |int a|(40);
     Console.WriteLine();
     if (b)
     {
       a = I;
-      F(() |=>|(39) a);
-      F(() |=>|(40) a);
+      F(() |=>|(41) a);
+      F(() |=>|(42) a);
     }
   }
 
@@ -134,15 +134,15 @@ class Closures
   {
     if (t)
     {
-      |var a|(41) = I;
-      F(() |=>|(42) a);
-      F(() |=>|(43) a);
+      |var a|(43) = I;
+      F(() |=>|(44) a);
+      F(() |=>|(45) a);
     }
     else
     {
       int z = I, b = I;
-      F(() |=>|(44) b);
-      F(() |=>|(45) b);
+      F(() |=>|(46) b);
+      F(() |=>|(47) b);
     }
   }
 
@@ -150,43 +150,43 @@ class Closures
   {
     if (t)
     {
-      |var a|(46) = I;
-      F(() |=>|(47) a);
+      |var a|(48) = I;
+      F(() |=>|(49) a);
 
       {
-        |var c|(48) = I;
-        F(() |=>|(49) a + c);
+        |var c|(50) = I;
+        F(() |=>|(51) a + c);
 
         var d = I;
-        F(() |=>|(50) a + d);
+        F(() |=>|(52) a + d);
       }
     }
     else
     {
-      |var b|(51) = I;
-      F(() |=>|(52) b);
-      F(() |=>|(53) b);
+      |var b|(53) = I;
+      F(() |=>|(54) b);
+      F(() |=>|(55) b);
     }
   }
 
-  public void M11(int |arg|(54))
+  public void M11(int arg)
   {
-    F(() |=>|(55)
+    F(() |=>|(56)
     {
-      F(|delegate|(56)(|int u|(57))
+      F(|delegate|(57)(|int u|(58))
       {
-        F(t |=>|(58) arg + t + u);
+        F(|t|(59) |=>|(60) arg + t + u);
       });
     });
   }
 
   public void M12()
   {
-    |var i|(59) = I;
+    |var i|(61) = I;
     {
-      |var j|(60) = I;
+      |var j|(62) = I;
       {
-        F(() |=>|(61)
+        F(() |=>|(63)
         {
           M();
           return i + j;
@@ -197,9 +197,9 @@ class Closures
 
   public void M13()
   {
-    F(() |=>|(62)
+    F(() |=>|(64)
     {
-      F(() |=>|(63)
+      F(() |=>|(65)
       {
         M();
         M();
@@ -209,28 +209,28 @@ class Closures
 
   public void M14<T>()
   {
-    F(() |=>|(64) { });
+    F(() => { });
 
     var xs = from x in XS
-             |where|(65) x > 0
-             |group|(66) x + 1 |by|(67) x + 2
+             where x > 0
+             group x + 1 by x + 2
              into x // should not be highlighted
-             join |y|(68) in YS |on|(69) x.Key |equals|(70) y
-             |let|(71) |t|(72) = 1
-             |select|(73) y + t;
+             join |y|(66) in YS on x.Key equals y
+             let |t|(67) = 1
+             select y + t;
   }
 
-  public void M15(int |arg|(74))
+  public void M15(int |arg|(68))
   {
-    var y = F(() |=>|(75) X + arg);
-    F(z |=>|(76) y);
+    var y = F(() |=>|(69) X + arg);
+    F(z |=>|(70) y);
   }
 
   public Action M16
   {
     get
     {
-      return () |=>|(77) {
+      return () |=>|(71) {
         var x = X;
       };
     }
@@ -314,7 +314,7 @@ class Closures
 (11): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
 (12): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
 (13): ReSharper HeapView Allocation: Delegate allocation: capture of 't1' variable
-(14): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
+(14): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (15): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
 (16): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
 (17): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable

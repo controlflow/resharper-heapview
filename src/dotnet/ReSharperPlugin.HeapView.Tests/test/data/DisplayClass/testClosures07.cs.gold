@@ -1,0 +1,49 @@
+﻿Owner: top-level code
+Closures:
+> lambda expression 'int () => boo'
+    Captures:
+    > local variable 'boo'
+> lambda expression 'int () => zzz + bar'
+    Captures:
+    > local variable 'zzz'
+    > local variable 'bar'
+> lambda expression 'int () => foo + 111'
+    Captures:
+    > local variable 'foo'
+> lambda expression 'int () => foo + blah'
+    Captures:
+    > local variable 'foo'
+    > local variable 'blah'
+Display classes:
+  Display class #1
+    Scope: TopLevelCode 'int foo = 0; if (args.Length > 0) { // d...'
+    Members:
+    > local variable 'foo'
+    Closures:
+    > lambda expression 'int () => foo + 111'
+  Display class #2
+    Scope: Block '{ // display class {bar} int bar = 1; //...'
+    Members:
+    > local variable 'bar'
+  Display class #3
+    Scope: Block '{ int boo = 2; var g = () => boo; }'
+    Members:
+    > local variable 'boo'
+    Closures:
+    > lambda expression 'int () => boo'
+  Display class #4
+    Scope: Block '{ int zzz = 4; var gg = () => zzz + bar;...'
+    Members:
+    > local variable 'zzz'
+    > display class #2
+    Closures:
+    > lambda expression 'int () => zzz + bar'
+  Display class #5
+    Scope: Block '{ int blah = 3; var ff = () => foo + bla...'
+    Members:
+    > local variable 'blah'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => foo + blah'
+
+========
