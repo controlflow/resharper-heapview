@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
@@ -157,6 +158,19 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
+  [NotNull]
+  private string PresentScope([NotNull] ITreeNode treeNode)
+  {
+    var nodeText = treeNode.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(43);
+    return $"{treeNode.GetType().Name} '{nodeText}'";
+  }
+
+  [NotNull]
+  private string PresentCapture([NotNull] IDeclaredElement declaredElement)
+  {
+    return DeclaredElementPresenter.Format(myDeclaration.Language, CapturePresenterStyle, declaredElement).Text;
+  }
+
   [CanBeNull]
   public static DisplayClassStructure Build(ITreeNode declaration)
   {
@@ -249,8 +263,30 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
           foreach (var capturedEntity in captures.CapturedEntities)
           {
-            builder.AppendLine($"    > {DeclaredElementPresenter.Format(myDeclaration.Language, CapturePresenterStyle, capturedEntity).Text}");
+            builder.AppendLine($"    > {PresentCapture(capturedEntity)}");
           }
+        }
+      }
+    }
+
+    if (myScopeToDisplayClass.Count > 0)
+    {
+      var orderedDisplayClasses = myScopeToDisplayClass.OrderBy(x => x.Key.GetTreeStartOffset()).ToList();
+      var displayClassIndexes = orderedDisplayClasses.WithIndexes().ToDictionary(x => x.Item.Value, x => x.Index + 1);
+
+      builder.AppendLine("Display classes:");
+
+      foreach (var (scope, displayClass) in orderedDisplayClasses)
+      {
+        builder.AppendLine($"  Display class #{displayClassIndexes[displayClass]}");
+
+        builder.AppendLine($"   Scope: {PresentScope(scope)}");
+
+        builder.AppendLine("    Members:");
+
+        foreach (var capturedEntity in displayClass.CapturedEntities)
+        {
+          builder.AppendLine($"    > {PresentCapture(capturedEntity)}");
         }
       }
     }

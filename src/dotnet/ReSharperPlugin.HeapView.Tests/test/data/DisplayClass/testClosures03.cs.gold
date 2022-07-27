@@ -4,5 +4,14 @@ Closures:
     Captures:
     > local variable 'catchVariable'
     > local variable 'localVariable'
+Display classes:
+  Display class #1
+   Scope: SpecificCatchClause 'catch (System.Exception catchVariable) {...'
+    Members:
+    > local variable 'catchVariable'
+  Display class #2
+   Scope: Block '{ string localVariable = "aaa"; const st...'
+    Members:
+    > local variable 'localVariable'
 
 ========

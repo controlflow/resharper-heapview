@@ -25,6 +25,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClosures01() { DoNamedTest(); }
   [Test] public void TestClosures02() { DoNamedTest(); }
   [Test] public void TestClosures03() { DoNamedTest(); }
+  [Test] public void TestClosures04() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {
