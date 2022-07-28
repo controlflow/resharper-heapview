@@ -1,0 +1,30 @@
+﻿Owner: top-level code
+Closures:
+> local function 'bool F(Func<int> f)'
+> local function 'bool Local1(int parameter)'
+> lambda expression 'int () => parameter + local + 1'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+> local function 'bool Local2(int parameter)'
+> lambda expression 'int () => parameter + local + 2'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> parameter is var local && F(() => par...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 1'
+  Display class #2
+    Scope: IBlock '{ var local = parameter; return F(() => ...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 2'
+
+========

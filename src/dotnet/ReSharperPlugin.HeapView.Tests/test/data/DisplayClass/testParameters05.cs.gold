@@ -1,0 +1,47 @@
+﻿Owner: method 'bool C.M(object o)'
+
+========
+Owner: indexer 'bool C.this[int parameter]'
+Closures:
+> lambda expression 'int () => parameter + localVariable1'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'localVariable1'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> parameter is var localVariable1 && M(...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'localVariable1'
+    Closures:
+    > lambda expression 'int () => parameter + localVariable1'
+
+========
+Owner: property 'bool C.Property1'
+Closures:
+> lambda expression 'int () => localVariable2'
+    Captures:
+    > local variable 'localVariable2'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> 42 is var localVariable2 && M(() => l...'
+    Members:
+    > local variable 'localVariable2'
+    Closures:
+    > lambda expression 'int () => localVariable2'
+
+========
+Owner: accessor 'bool C.Property2.get'
+Closures:
+> lambda expression 'int () => localVariable3'
+    Captures:
+    > local variable 'localVariable3'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> 42 is var localVariable3 && M(() => l...'
+    Members:
+    > local variable 'localVariable3'
+    Closures:
+    > lambda expression 'int () => localVariable3'
+
+========

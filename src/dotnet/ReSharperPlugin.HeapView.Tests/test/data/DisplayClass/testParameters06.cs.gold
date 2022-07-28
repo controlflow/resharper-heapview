@@ -1,0 +1,81 @@
+﻿Owner: constructor 'C.C(int parameter)'
+Closures:
+> lambda expression 'int () => parameter + local1 + 0'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local1'
+> lambda expression 'int () => parameter + local2 + 1'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local2'
+Display classes:
+  Display class #1
+    Scope: IConstructorDeclaration 'public C(int parameter) : this(parameter...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local1'
+    Closures:
+    > lambda expression 'int () => parameter + local1 + 0'
+  Display class #2
+    Scope: IBlock '{ var local2 = parameter; F(() => parame...'
+    Members:
+    > local variable 'local2'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => parameter + local2 + 1'
+
+========
+Owner: constructor 'C.C(bool b)'
+
+========
+Owner: method 'object C.Method1(int parameter)'
+Closures:
+> lambda expression 'int () => parameter + local + 2'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> parameter is var local && F(() => par...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 2'
+
+========
+Owner: method 'void C.Method2(int parameter)'
+Closures:
+> lambda expression 'int () => parameter + local + 3'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var local = parameter; F(() => paramet...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 3'
+
+========
+Owner: operator 'bool C.-(C parameter)'
+Closures:
+> lambda expression 'string () => parameter + "4" + local'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var local = parameter.GetHashCode(); r...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'string () => parameter + "4" + local'
+
+========
+Owner: method 'bool C.F(object o)'
+
+========

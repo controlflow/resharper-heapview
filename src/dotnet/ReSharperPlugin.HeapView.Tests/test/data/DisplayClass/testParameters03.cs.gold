@@ -11,7 +11,7 @@ Closures:
     > parameter 'value'
 Display classes:
   Display class #1
-    Scope: IAccessorDeclaration 'init => F(() => value);'
+    Scope: IArrowExpressionClause '=> F(() => value)'
     Members:
     > parameter 'value'
     Closures:
@@ -25,7 +25,7 @@ Closures:
     > parameter 'value'
 Display classes:
   Display class #1
-    Scope: IAccessorDeclaration 'add => F(() => value);'
+    Scope: IArrowExpressionClause '=> F(() => value)'
     Members:
     > parameter 'value'
     Closures:
@@ -39,7 +39,7 @@ Closures:
     > parameter 'value'
 Display classes:
   Display class #1
-    Scope: IAccessorDeclaration 'remove => F(() => value);'
+    Scope: IArrowExpressionClause '=> F(() => value)'
     Members:
     > parameter 'value'
     Closures:

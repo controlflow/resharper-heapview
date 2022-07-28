@@ -1,0 +1,44 @@
+﻿Owner: top-level code
+Closures:
+> local function 'bool F(Func<int> f)'
+> lambda expression 'bool (int parameter) => parameter is var local && F...'
+> lambda expression 'int () => parameter + local + 1'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+> lambda expression 'bool (int parameter) => { var local = parameter; re...'
+> lambda expression 'int () => parameter + local + 2'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+> anonymous method 'bool (int parameter) => { var local = parameter; re...'
+> lambda expression 'int () => parameter + local + 3'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: ILambdaExpression '(int parameter) => parameter is var loca...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 1'
+  Display class #2
+    Scope: IBlock '{ var local = parameter; return F(() => ...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 2'
+  Display class #3
+    Scope: IBlock '{ var local = parameter; return F(() => ...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    Closures:
+    > lambda expression 'int () => parameter + local + 3'
+Delay use local functions:
+> local function 'bool F(Func<int> f)'
+
+========

@@ -9,7 +9,7 @@ Closures:
 > query lambda 'int (int x) => x + 1'
 Display classes:
   Display class #1
-    Scope: ILambdaExpression 'static int (bool x) => { var l = (ref bo...'
+    Scope: IBlock '{ var l = (ref bool b) => ref x; return ...'
     Members:
     > parameter 'x'
     Closures:

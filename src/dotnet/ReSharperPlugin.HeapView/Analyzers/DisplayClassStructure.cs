@@ -63,7 +63,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
     var structure = new DisplayClassStructure(declaration);
 
+    if (declaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
+      constructorInitializer.ProcessThisAndDescendants(structure);
+
     bodyToAnalyze.ProcessThisAndDescendants(structure);
+
     structure.PropagateLocalFunctionsDelayedUse();
 
     return structure;
@@ -214,10 +218,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         var variableDeclaration = localVariable.GetSingleDeclaration<ICSharpDeclaration>();
         if (variableDeclaration == null) return; // should never happen
 
-        var localScope = variableDeclaration.GetContainingScope<ILocalScope>();
-        if (localScope != null)
+        var localScopeNode = variableDeclaration.GetContainingScope<ILocalScope>();
+        if (localScopeNode != null)
         {
-          NoteCapture(localScope, localVariable);
+          NoteCapture(localScopeNode, localVariable);
         }
 
         break;
@@ -225,51 +229,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
       case IParameter { Kind: ParameterKind.VALUE } parameter:
       {
-        var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
-        if (parameterDeclaration is IQueryRangeVariableDeclaration rangeVariableDeclaration)
+        var parameterScopeNode = FindParameterScopeNode(parameter, referenceExpression);
+        if (parameterScopeNode != null)
         {
-          var queryParameterPlatform = FindParameterPlatformOfRangeVariableInContext(rangeVariableDeclaration, referenceExpression);
-          if (queryParameterPlatform != null)
-          {
-            NoteCapture(queryParameterPlatform, parameter);
-          }
-        }
-        else if (parameterDeclaration != null)
-        {
-          var localScope = parameterDeclaration.GetContainingScope<ILocalScope>();
-          if (localScope != null)
-          {
-            NoteCapture(localScope, parameter);
-          }
-        }
-        else
-        {
-          // implicit 'args' parameter
-          if (parameter.ContainingParametersOwner is ITopLevelEntryPoint topLevelEntryPoint)
-          {
-            var topLevelCode = topLevelEntryPoint.GetSingleDeclaration<ITopLevelCode>();
-            if (topLevelCode != null)
-            {
-              NoteCapture(topLevelCode, parameter);
-            }
-          }
-
-          if (parameter.IsValueVariable)
-          {
-            if (parameter.ContainingParametersOwner is IAccessor accessor)
-            {
-              var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>();
-              if (accessorDeclaration != null)
-              {
-                NoteCapture(accessorDeclaration, parameter);
-              }
-            }
-          }
-
-          // args parameter
-          // value parameter in setters/adders/removers
-
-          // get scope?
+          NoteCapture(parameterScopeNode, parameter);
         }
 
         break;
@@ -288,6 +251,110 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         captures.CapturedEntities.Add(capturedEntity);
         captures.CapturedDisplayClasses.Add(displayClass);
       }
+    }
+
+    [CanBeNull, Pure]
+    static ITreeNode FindParameterScopeNode([NotNull] IParameter parameter, [NotNull] IReferenceExpression referenceExpression)
+    {
+      var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
+      if (parameterDeclaration != null)
+      {
+        // query range variables are "visible" as a parameters for multiple closure nodes
+        if (parameterDeclaration is IQueryRangeVariableDeclaration rangeVariableDeclaration)
+        {
+          return FindParameterPlatformOfRangeVariableInContext(rangeVariableDeclaration, referenceExpression);
+        }
+
+        // indexer parameters are outside of accessor declaration nodes
+        var indexerDeclaration = IndexerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration as ICSharpParameterDeclaration);
+        if (indexerDeclaration != null)
+        {
+          foreach (var accessorDeclaration in indexerDeclaration.AccessorDeclarationsEnumerable)
+          {
+            if (accessorDeclaration.Contains(referenceExpression))
+            {
+              return FromFunctionDeclaration(accessorDeclaration);
+            }
+          }
+
+          // int this[int index] => F(() => index);
+          return indexerDeclaration.ArrowClause;
+        }
+
+        var parametersOwnerDeclaration = CSharpParametersOwnerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration as ICSharpParameterDeclaration);
+        if (parametersOwnerDeclaration != null)
+        {
+          // constructors introduce additional scope to support constructor initializers
+          if (parametersOwnerDeclaration is IConstructorDeclaration constructorDeclaration)
+          {
+            return constructorDeclaration;
+          }
+
+          // use body nodes for other members
+          switch (parametersOwnerDeclaration)
+          {
+            case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+              return arrowClause;
+            case ICSharpFunctionDeclaration functionDeclaration:
+              return functionDeclaration.Body;
+            case ILocalFunctionDeclaration localFunctionDeclaration:
+              return localFunctionDeclaration.Body;
+
+            // todo: primary constructors
+            default:
+              return null;
+          }
+        }
+
+        var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILambdaParameterDeclaration);
+        if (lambdaExpression != null)
+        {
+          var blockBody = lambdaExpression.BodyBlock;
+          if (blockBody != null) return blockBody;
+
+          return lambdaExpression;
+        }
+
+        var anonymousMethodExpression = AnonymousMethodExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as IAnonymousMethodParameterDeclaration);
+        if (anonymousMethodExpression != null)
+        {
+          return anonymousMethodExpression.Body;
+        }
+      }
+      else
+      {
+        // implicit 'args' parameter
+        if (parameter.ContainingParametersOwner is ITopLevelEntryPoint topLevelEntryPoint)
+        {
+          return topLevelEntryPoint.GetSingleDeclaration<ITopLevelCode>();
+        }
+
+        // implicit 'value' parameter in accessors
+        if (parameter.IsValueVariable)
+        {
+          if (parameter.ContainingParametersOwner is IAccessor accessor)
+          {
+            var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>();
+            if (accessorDeclaration != null)
+            {
+              return FromFunctionDeclaration(accessorDeclaration);
+            }
+          }
+
+          return null;
+        }
+      }
+
+      return null;
+    }
+
+    [CanBeNull, Pure]
+    static ITreeNode FromFunctionDeclaration([NotNull] ICSharpFunctionDeclaration functionDeclaration)
+    {
+      var blockBody = functionDeclaration.Body;
+      if (blockBody != null) return blockBody;
+
+      return functionDeclaration.ArrowClause;
     }
 
     [CanBeNull, Pure]
@@ -361,8 +428,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         // captureless closure
       }
     }
-
-    // todo: handle exit from scope?
   }
 
   private readonly struct ClosureInfo
@@ -384,7 +449,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       ScopeNode = scopeNode;
     }
 
+    // note: can be IConstructorDeclaration
+    // note: can be IBlock/IArrowExpressionClause
+    // note: can be lambda expr?
+    // note: can be query parameter platform?
     [NotNull] public ITreeNode ScopeNode { get; }
+
     [NotNull] public HashSet<IDeclaredElement> Members { get; } = new();
     [NotNull] public List<ICSharpClosure> Closures { get; } = new();
 

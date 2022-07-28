@@ -1,0 +1,44 @@
+﻿Owner: accessor 'object C.this[string parameter].get'
+Closures:
+> lambda expression 'string () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'string () => parameter'
+
+========
+Owner: accessor 'object C.this[string parameter].set'
+Closures:
+> lambda expression 'string () => value + parameter'
+    Captures:
+    > parameter 'value'
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var f = () => value + parameter; }'
+    Members:
+    > parameter 'value'
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'string () => value + parameter'
+
+========
+Owner: indexer 'object C.this[int parameter]'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========

@@ -7,14 +7,10 @@ Closures:
     > local variable 'localVariable'
 Display classes:
   Display class #1
-    Scope: ILocalFunctionDeclaration 'object LocalFunction(int parameter) { in...'
-    Members:
-    > parameter 'parameter'
-  Display class #2
     Scope: IBlock '{ int localVariable = 0; return () => pa...'
     Members:
+    > parameter 'parameter'
     > local variable 'localVariable'
-    > display class #1
     Closures:
     > lambda expression 'int () => parameter + localVariable'
 
@@ -26,7 +22,7 @@ Closures:
     > parameter 'parameter'
 Display classes:
   Display class #1
-    Scope: ISignOperatorDeclaration 'public static object operator+(C paramet...'
+    Scope: IArrowExpressionClause '=> () => parameter'
     Members:
     > parameter 'parameter'
     Closures:
