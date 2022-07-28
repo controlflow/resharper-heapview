@@ -1,0 +1,30 @@
+﻿Owner: top-level code
+Closures:
+> local function 'bool F(Func<int> f)'
+> local function 'void Local()'
+    Captures:
+    > local variable 'a'
+> lambda expression 'int () => x + y'
+    Captures:
+    > local variable 'x'
+    > local variable 'y'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'static bool F(Func<int> f) => true; // d...'
+    Members:
+    > local variable 'x'
+  Display class #2
+    Scope: IBlock '{ // display class #2 int a = 0; void Lo...'
+    Members:
+    > local variable 'a'
+    Closures:
+    > local function 'void Local()'
+  Display class #3
+    Scope: IBlock '{ // display class #3 int y = x; F(() =>...'
+    Members:
+    > local variable 'y'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => x + y'
+
+========

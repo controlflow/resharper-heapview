@@ -309,10 +309,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILambdaParameterDeclaration);
         if (lambdaExpression != null)
         {
-          var blockBody = lambdaExpression.BodyBlock;
-          if (blockBody != null) return blockBody;
-
-          return lambdaExpression;
+          return lambdaExpression.BodyBlock ?? (ITreeNode) lambdaExpression;
         }
 
         var anonymousMethodExpression = AnonymousMethodExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as IAnonymousMethodParameterDeclaration);
@@ -401,6 +398,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
           displayClasses[0].AttachClosure(closure);
 
+          // join closures together
           for (var index = 1; index < displayClasses.Count; index++)
           {
             var inner = displayClasses[index - 1];
@@ -408,9 +406,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
             inner.AddContainingDisplayClassReference(containing);
           }
-
-          // join them togeter
-
         }
         else
         {
@@ -442,6 +437,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     public readonly bool HasDelayedBody;
   }
 
+  // todo: ability to find the first capture range
+  // note: if there are any members w/o declarations - use special logic (first top level token for 'args', accessor name for 'value' parameter)
+  // note: for indexers w/ explicit accessors highlight corresponding accessor name when parameter is captured
+  // note: for expression-bodied indexer highlight the parameter itself?
   private sealed class DisplayClass : IComparable<DisplayClass>
   {
     public DisplayClass([NotNull] ITreeNode scopeNode)
