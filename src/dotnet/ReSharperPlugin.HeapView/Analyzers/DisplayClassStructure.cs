@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,49 +25,23 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor
 {
-  [NotNull] private readonly ITreeNode myDeclaration;
+  private readonly ITreeNode myDeclaration;
 
-  private static readonly DeclaredElementPresenterStyle OwnerPresenterStyle = new()
-  {
-    ShowEntityKind = EntityKindForm.NORMAL,
-    ShowNameInQuotes = true,
-    ShowName = NameStyle.QUALIFIED,
-    ShowType = TypeStyle.DEFAULT,
-    TypePresentationStyle = new TypePresentationStyle
-    {
-      Options = TypePresentationOptions.UseKeywordsForPredefinedTypes
-                | TypePresentationOptions.IncludeNullableAnnotations
-                | TypePresentationOptions.UseTupleSyntax
-    },
-    ShowParameterNames = true,
-    ShowParameterTypes = true,
-    ShowTypeParameters = TypeParameterStyle.FULL
-  };
-
-  private static readonly DeclaredElementPresenterStyle CapturePresenterStyle = new()
-  {
-    ShowEntityKind = EntityKindForm.NORMAL,
-    ShowNameInQuotes = true,
-    ShowName = NameStyle.QUALIFIED,
-    ShowType = TypeStyle.NONE
-  };
-
-  public DisplayClassStructure([NotNull] ITreeNode declaration)
+  public DisplayClassStructure(ITreeNode declaration)
   {
     myDeclaration = declaration;
   }
 
-  [CanBeNull]
-  public static DisplayClassStructure Build(ITreeNode declaration)
+  public static DisplayClassStructure? Build(ITreeNode declaration)
   {
-    DisplayClassStructure structure = null;
+    DisplayClassStructure? structure = null;
 
     switch (declaration)
     {
       // record R(int X) : B(...) { int Member = ...; }
       case IClassLikeDeclaration classLikeDeclaration:
       {
-        TryBuildFromInitializerScope(classLikeDeclaration, ref structure);
+        structure = TryBuildFromInitializerScope(classLikeDeclaration);
         break;
       }
 
@@ -107,35 +82,50 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     return structure;
   }
 
-  private static void TryBuildFromInitializerScope([NotNull] IClassLikeDeclaration classLikeDeclaration, ref DisplayClassStructure structure)
+  private static DisplayClassStructure? TryBuildFromInitializerScope(IClassLikeDeclaration classLikeDeclaration)
   {
+    DisplayClassStructure? structure = null;
+    var seenBodies = false;
+
     // if type declaration is partial and has primary parameters in some part
     // we need to scan the other parts to find possible captures of such parameters
     if (classLikeDeclaration.IsPartial
-        && classLikeDeclaration.DeclaredElement is IRecord { PrimaryConstructor.Parameters.Count: > 0 } record)
+        && classLikeDeclaration.DeclaredElement is IRecord { PrimaryConstructor.Parameters: { Count: > 0 } parameters } record)
     {
       var allDeclarations = record.GetDeclarations();
       if (allDeclarations.Count > 1)
       {
-        foreach (var otherDeclaration in allDeclarations)
+        var parameterNames = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var parameter in parameters)
+          parameterNames.Add(parameter.ShortName);
+
+        structure = new DisplayClassStructure(classLikeDeclaration);
+        structure.myCaptureNamesToLookInOtherParts = parameterNames;
+
+        foreach (var partDeclaration in allDeclarations)
         {
-          if (otherDeclaration is IClassLikeDeclaration classPartDeclaration)
+          if (partDeclaration is IClassLikeDeclaration thisPartDeclaration)
           {
-            ScanInitializerScope(classPartDeclaration, classLikeDeclaration, ref structure);
+            structure.myIsScanningNonMainPart = thisPartDeclaration != classLikeDeclaration;
+
+            ScanInitializerScope(thisPartDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
           }
         }
 
-        return;
+        return seenBodies ? structure : null;
       }
     }
 
-    ScanInitializerScope(classLikeDeclaration, classLikeDeclaration, ref structure);
+    ScanInitializerScope(classLikeDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
+    return structure;
 
     static void ScanInitializerScope(
-      [NotNull] IClassLikeDeclaration classLikeDeclaration,
-      [NotNull] IClassLikeDeclaration originalDeclaration,
-      ref DisplayClassStructure structure)
+      IClassLikeDeclaration classLikeDeclaration,
+      IClassLikeDeclaration originalDeclaration,
+      ref DisplayClassStructure structure,
+      ref bool seenBodies)
     {
+      // looks for closures in 'record R() : B(...)'
       var extendsList = classLikeDeclaration.ExtendsList;
       if (extendsList != null)
       {
@@ -146,17 +136,23 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           {
             structure ??= new DisplayClassStructure(originalDeclaration);
             argumentList.ProcessThisAndDescendants(structure);
+            seenBodies = true;
             break;
           }
         }
       }
 
+      // check closures in 'class C { int Field = ...; }'
       foreach (var memberDeclaration in classLikeDeclaration.MemberDeclarations)
       {
-        if (memberDeclaration is IInitializerOwnerDeclaration { Initializer: IVariableInitializer variableInitializer })
+        if (memberDeclaration is IInitializerOwnerDeclaration { Initializer: IVariableInitializer initializer })
         {
+          // optimization: there can be no references to primary parameters from static member initializers
+          if (structure is { myIsScanningNonMainPart: true } && memberDeclaration.IsStatic) continue;
+
           structure ??= new DisplayClassStructure(originalDeclaration);
-          variableInitializer.ProcessThisAndDescendants(structure);
+          initializer.ProcessThisAndDescendants(structure);
+          seenBodies = true;
         }
       }
     }
@@ -196,36 +192,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
-  [CanBeNull, Pure]
-  private static ITreeNode TryGetCodeBodyToAnalyze(ITreeNode declaration)
-  {
-    return declaration switch
-    {
-      // void Method() { }
-      // int Property { get { } }
-      ICSharpFunctionDeclaration { Body: { } bodyBlock } => bodyBlock,
-      // int ExpressionBodiedProperty => expr;
-      IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } => arrowClause,
-      // int FieldInitializer = expr;
-      IFieldDeclaration { Initial: { } initializer } => initializer,
-      // int AutoPropertyInitializer { get; } = expr;
-      IPropertyDeclaration { Initial: { } initializer } => initializer,
-      // event EventHandler FieldLikeEvent = expr;
-      IEventDeclaration { Initial: { } initializer } => initializer,
-      // TopLevelCode();
-      ITopLevelCode topLevelCode => topLevelCode,
-      // record R() : B(expr);
-      IExtendedType { ArgumentList: { } argumentList } => argumentList,
-      _ => null
-    };
-  }
+  private readonly Stack<ClosureInfo> myCurrentClosures = new();
 
-  [NotNull] private readonly List<ICSharpClosure> myClosuresList = new();
-  [NotNull] private readonly Stack<ClosureInfo> myCurrentClosures = new();
-  [NotNull] private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
-  [NotNull] private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
-  [CanBeNull] private HashSet<ILocalFunctionDeclaration> myDelayedUseLocalFunctions;
-  [CanBeNull] private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration> myDirectInvocationsBetweenLocalFunctions;
+  private readonly List<ICSharpClosure> myClosuresList = new();
+  private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
+  private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
+  private HashSet<ILocalFunctionDeclaration>? myDelayedUseLocalFunctions;
+  private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>? myDirectInvocationsBetweenLocalFunctions;
+
+  private bool myIsScanningNonMainPart;
+  private HashSet<string>? myCaptureNamesToLookInOtherParts = null;
 
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
   {
@@ -248,57 +224,87 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     if (element is ICSharpClosure closure)
     {
       myCurrentClosures.Push(new ClosureInfo(closure));
-      myClosuresList.Add(closure);
+
+      if (!myIsScanningNonMainPart)
+      {
+        myClosuresList.Add(closure);
+      }
     }
 
-    if (element is IReferenceExpression referenceExpression)
+    if (element is IReferenceExpression { QualifierExpression: null } referenceExpression)
     {
-      var resolveResult = referenceExpression.Reference.Resolve();
+      ProcessReferenceExpression(referenceExpression);
+    }
+  }
 
-      switch (resolveResult.DeclaredElement)
+  private void ProcessReferenceExpression(IReferenceExpression referenceExpression)
+  {
+    if (myIsScanningNonMainPart)
+    {
+      if (myCurrentClosures.Count > 0)
       {
-        case ILocalFunction localFunction:
+        if (myCaptureNamesToLookInOtherParts != null
+            && !myCaptureNamesToLookInOtherParts.Contains(referenceExpression.Reference.GetName()))
         {
-          var targetDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
+          return; // not interesting
+        }
 
-          if (!IsDirectInvocation(referenceExpression))
-          {
-            myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
-            myDelayedUseLocalFunctions.Add(targetDeclaration);
-          }
-          else
-          {
-            // direct invocation
-
-            if (myCurrentClosures.Count > 0)
-            {
-              var currentClosure = myCurrentClosures.Peek();
-              if (currentClosure.HasDelayedBody)
-              {
-                myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
-                myDelayedUseLocalFunctions.Add(targetDeclaration);
-              }
-              else if (currentClosure.Closure is ILocalFunctionDeclaration fromDeclaration)
-              {
-                myDirectInvocationsBetweenLocalFunctions ??= new OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>();
-                myDirectInvocationsBetweenLocalFunctions.Add(fromDeclaration, targetDeclaration);
-              }
-            }
-          }
-
-          break;
+        var resolveResult1 = referenceExpression.Reference.Resolve();
+        if (resolveResult1.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter)
+        {
+          var displayClass = myScopeToDisplayClass.GetOrCreateValue(myDeclaration, static key => new DisplayClass(key));
+          displayClass.AddMember(primaryParameter);
         }
       }
 
-      if (myCurrentClosures.Count > 0)
+      return;
+    }
+
+    var resolveResult = referenceExpression.Reference.Resolve();
+
+    switch (resolveResult.DeclaredElement)
+    {
+      case ILocalFunction localFunction:
       {
-        ProcessReferenceExpressionInsideClosure(referenceExpression, resolveResult);
+        var targetDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
+
+        if (!IsDirectInvocation(referenceExpression))
+        {
+          myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
+          myDelayedUseLocalFunctions.Add(targetDeclaration);
+        }
+        else
+        {
+          // direct invocation
+
+          if (myCurrentClosures.Count > 0)
+          {
+            var currentClosure = myCurrentClosures.Peek();
+            if (currentClosure.HasDelayedBody)
+            {
+              myDelayedUseLocalFunctions ??= new HashSet<ILocalFunctionDeclaration>();
+              myDelayedUseLocalFunctions.Add(targetDeclaration);
+            }
+            else if (currentClosure.Closure is ILocalFunctionDeclaration fromDeclaration)
+            {
+              myDirectInvocationsBetweenLocalFunctions ??= new OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>();
+              myDirectInvocationsBetweenLocalFunctions.Add(fromDeclaration, targetDeclaration);
+            }
+          }
+        }
+
+        break;
       }
+    }
+
+    if (myCurrentClosures.Count > 0)
+    {
+      ProcessReferenceExpressionInsideClosure(referenceExpression, resolveResult);
     }
   }
 
   private void ProcessReferenceExpressionInsideClosure(
-    [NotNull] IReferenceExpression referenceExpression, [NotNull] ResolveResultWithInfo resolveResult)
+    IReferenceExpression referenceExpression, ResolveResultWithInfo resolveResult)
   {
     switch (resolveResult.DeclaredElement)
     {
@@ -328,7 +334,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       }
     }
 
-    void NoteCapture([NotNull] ITreeNode localScope, [NotNull] IDeclaredElement capturedEntity)
+    void NoteCapture(ITreeNode localScope, IDeclaredElement capturedEntity)
     {
       var currentClosure = myCurrentClosures.Peek().Closure;
       if (currentClosure != null && !currentClosure.Contains(localScope))
@@ -342,8 +348,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       }
     }
 
-    [CanBeNull, Pure]
-    static ITreeNode FindParameterScopeNode([NotNull] IParameter parameter, [NotNull] IReferenceExpression referenceExpression)
+    [Pure]
+    static ITreeNode? FindParameterScopeNode(IParameter parameter, IReferenceExpression referenceExpression)
     {
       // primary constructor can be declared in other type part
       if (parameter.ContainingParametersOwner is IPrimaryConstructor)
@@ -439,8 +445,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       return null;
     }
 
-    [CanBeNull, Pure]
-    static ITreeNode FromFunctionDeclaration([NotNull] ICSharpFunctionDeclaration functionDeclaration)
+    [Pure]
+    static ITreeNode? FromFunctionDeclaration(ICSharpFunctionDeclaration functionDeclaration)
     {
       var blockBody = functionDeclaration.Body;
       if (blockBody != null) return blockBody;
@@ -448,8 +454,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       return functionDeclaration.ArrowClause;
     }
 
-    [CanBeNull, Pure]
-    static IQueryParameterPlatform FindParameterPlatformOfRangeVariableInContext([NotNull] IQueryRangeVariableDeclaration rangeVariableDeclaration, [NotNull] ITreeNode context)
+    [Pure]
+    static IQueryParameterPlatform? FindParameterPlatformOfRangeVariableInContext(IQueryRangeVariableDeclaration rangeVariableDeclaration, ITreeNode context)
     {
       // note: multiple query parameter platforms can have the same range variable as a parameter
 
@@ -464,14 +470,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
-  [Pure]
-  private static bool IsDirectInvocation([NotNull] IReferenceExpression referenceExpression)
-  {
-    var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(
-      referenceExpression.GetContainingParenthesizedExpression());
-    return invocationExpression != null;
-  }
-
   void IRecursiveElementProcessor.ProcessAfterInterior(ITreeNode element)
   {
     if (element is ICSharpClosure closure)
@@ -479,55 +477,72 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       var poppedClosure = myCurrentClosures.Pop();
       Assertion.Assert(closure == poppedClosure.Closure);
 
-      if (myClosureToCaptures.TryGetValue(closure, out var captures))
+      if (!myIsScanningNonMainPart)
       {
-        Assertion.Assert(captures.CapturedEntities.Count > 0);
-        Assertion.Assert(captures.CapturedDisplayClasses.Count > 0);
-
-        if (captures.CapturedDisplayClasses.Count > 1)
-        {
-          using var displayClasses = PooledList<DisplayClass>.GetInstance();
-          displayClasses.AddRange(captures.CapturedDisplayClasses);
-          displayClasses.Sort();
-
-          displayClasses[0].AttachClosure(closure);
-
-          // join closures together
-          for (var index = 1; index < displayClasses.Count; index++)
-          {
-            var inner = displayClasses[index - 1];
-            var containing = displayClasses[index];
-
-            inner.AddContainingDisplayClassReference(containing);
-          }
-        }
-        else
-        {
-          foreach (var single in captures.CapturedDisplayClasses)
-          {
-            single.AttachClosure(closure);
-            break;
-          }
-        }
-
-        //
-      }
-      else
-      {
-        // captureless closure
+        ProcessClosureAfterInterior(closure);
       }
     }
   }
 
+  private void ProcessClosureAfterInterior(ICSharpClosure closure)
+  {
+    if (myClosureToCaptures.TryGetValue(closure, out var captures))
+    {
+      Assertion.Assert(captures.CapturedEntities.Count > 0);
+      Assertion.Assert(captures.CapturedDisplayClasses.Count > 0);
+
+      if (captures.CapturedDisplayClasses.Count == 1)
+      {
+        foreach (var single in captures.CapturedDisplayClasses)
+        {
+          single.AttachClosure(closure);
+          captures.DisplayClass = single;
+          break;
+        }
+      }
+      else
+      {
+        using var displayClasses = PooledList<DisplayClass>.GetInstance();
+
+        displayClasses.AddRange(captures.CapturedDisplayClasses);
+        displayClasses.Sort();
+
+        displayClasses[0].AttachClosure(closure);
+        captures.DisplayClass = displayClasses[0];
+
+        // join display classes together
+        for (var index = 1; index < displayClasses.Count; index++)
+        {
+          var inner = displayClasses[index - 1];
+          var containing = displayClasses[index];
+
+          inner.AddContainingDisplayClassReference(containing);
+        }
+      }
+    }
+    else
+    {
+      // captureless closure
+    }
+  }
+
+  [Pure]
+  private static bool IsDirectInvocation(IReferenceExpression referenceExpression)
+  {
+    var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(
+      referenceExpression.GetContainingParenthesizedExpression());
+    return invocationExpression != null;
+  }
+
   private readonly struct ClosureInfo
   {
-    public ClosureInfo([NotNull] ICSharpClosure closure)
+    public ClosureInfo(ICSharpClosure closure)
     {
       Closure = closure;
       HasDelayedBody = closure is not ILocalFunctionDeclaration { IsAsync: false, IsIterator: false };
     }
 
-    [CanBeNull] public readonly ICSharpClosure Closure;
+    public readonly ICSharpClosure? Closure;
     public readonly bool HasDelayedBody;
   }
 
@@ -537,28 +552,29 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   // note: for expression-bodied indexer highlight the parameter itself?
   private sealed class DisplayClass : IComparable<DisplayClass>
   {
-    public DisplayClass([NotNull] ITreeNode scopeNode)
+    public DisplayClass(ITreeNode scopeNode)
     {
       ScopeNode = scopeNode;
     }
 
     // note: can be IConstructorDeclaration
-    // note: can be IBlock/IArrowExpressionClause
-    // note: can be lambda expr?
-    // note: can be query parameter platform?
-    [NotNull] public ITreeNode ScopeNode { get; }
+    // note: can be IBlock bodt of member declarations or oridinary IBlock
+    // note: can be IArrowExpressionClause of expression-bodied members
+    // note: can be ILambdaExpression if it's expression-bodied
+    // note: can be IQueryParameterPlatform
+    public ITreeNode ScopeNode { get; }
 
-    [NotNull] public HashSet<IDeclaredElement> Members { get; } = new();
-    [NotNull] public List<ICSharpClosure> Closures { get; } = new();
+    public HashSet<IDeclaredElement> Members { get; } = new();
+    public List<ICSharpClosure> Closures { get; } = new();
 
-    [CanBeNull] public DisplayClass ContainingDisplayClass { get; private set; }
+    public DisplayClass? ContainingDisplayClass { get; private set; }
 
-    public void AddMember([NotNull] IDeclaredElement localEntity)
+    public void AddMember(IDeclaredElement localEntity)
     {
       Members.Add(localEntity);
     }
 
-    public void AddContainingDisplayClassReference([NotNull] DisplayClass other)
+    public void AddContainingDisplayClassReference(DisplayClass other)
     {
       Assertion.Assert(other != this);
 
@@ -568,7 +584,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       }
     }
 
-    public void AttachClosure([NotNull] ICSharpClosure closure)
+    public void AttachClosure(ICSharpClosure closure)
     {
       Closures.Add(closure);
     }
@@ -590,20 +606,13 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
   private class Captures
   {
-    [NotNull] public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
-    [NotNull] public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
-
-    [CanBeNull] public DisplayClass ContainingDisplayClass { get; private set; }
-
-    public void AddDisplayClassCapture()
-    {
-
-    }
+    public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
+    public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+    public DisplayClass? DisplayClass { get; set; }
   }
 
   #region Dump
 
-  [NotNull]
   public string Dump()
   {
     var builder = new StringBuilder();
@@ -675,8 +684,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     return builder.ToString();
   }
 
-  [NotNull]
-  private static string GetOwnerPresentation([NotNull] ITreeNode treeNode)
+  private static string GetOwnerPresentation(ITreeNode treeNode)
   {
     return treeNode switch
     {
@@ -700,8 +708,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         => throw new ArgumentOutOfRangeException()
     };
 
-    [NotNull]
-    static string PresentLambdaExpression([NotNull] ILambdaExpression lambdaExpression)
+    static string PresentLambdaExpression(ILambdaExpression lambdaExpression)
     {
       var anonymousMethod = (IAnonymousMethod)lambdaExpression.DeclaredElement.NotNull();
       var builder = new StringBuilder("lambda expression '");
@@ -721,8 +728,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       return builder.ToString();
     }
 
-    [NotNull]
-    static string PresentAnonymousMethodExpression([NotNull] IAnonymousMethodExpression anonymousMethodExpression)
+    static string PresentAnonymousMethodExpression(IAnonymousMethodExpression anonymousMethodExpression)
     {
       var anonymousMethod = (IAnonymousMethod)anonymousMethodExpression.DeclaredElement.NotNull();
       var builder = new StringBuilder("anonymous method '");
@@ -742,8 +748,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       return builder.ToString();
     }
 
-    [NotNull]
-    static string PresentQueryParameterPlatform([NotNull] IQueryParameterPlatform parameterPlatform)
+    static string PresentQueryParameterPlatform(IQueryParameterPlatform parameterPlatform)
     {
       var anonymousMethod = (IAnonymousMethod)parameterPlatform.DeclaredElement.NotNull();
       var builder = new StringBuilder("query lambda '");
@@ -764,7 +769,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
 
     static void PresentAnonymousMethodSignature(
-      [NotNull] StringBuilder builder, [NotNull] IAnonymousMethod anonymousMethod, [NotNull] PsiLanguageType language)
+      StringBuilder builder, IAnonymousMethod anonymousMethod, PsiLanguageType language)
     {
       builder.Append(CSharpDeclaredElementPresenter.ReturnKindText(anonymousMethod.ReturnKind, appendSpaceIfByRef: true));
       builder.Append(anonymousMethod.ReturnType.GetPresentableName(language, OwnerPresenterStyle.TypePresentationStyle));
@@ -788,8 +793,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
-  [NotNull]
-  private static string PresentScope([NotNull] ITreeNode treeNode)
+  private static string PresentScope(ITreeNode treeNode)
   {
     var nodeText = treeNode.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(43);
 
@@ -804,11 +808,35 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     return $"{typeName} '{nodeText}'";
   }
 
-  [NotNull]
-  private string PresentCapture([NotNull] IDeclaredElement declaredElement)
+  private string PresentCapture(IDeclaredElement declaredElement)
   {
     return DeclaredElementPresenter.Format(myDeclaration.Language, CapturePresenterStyle, declaredElement).Text;
   }
+
+  private static readonly DeclaredElementPresenterStyle OwnerPresenterStyle = new()
+  {
+    ShowEntityKind = EntityKindForm.NORMAL,
+    ShowNameInQuotes = true,
+    ShowName = NameStyle.QUALIFIED,
+    ShowType = TypeStyle.DEFAULT,
+    TypePresentationStyle = new TypePresentationStyle
+    {
+      Options = TypePresentationOptions.UseKeywordsForPredefinedTypes
+                | TypePresentationOptions.IncludeNullableAnnotations
+                | TypePresentationOptions.UseTupleSyntax
+    },
+    ShowParameterNames = true,
+    ShowParameterTypes = true,
+    ShowTypeParameters = TypeParameterStyle.FULL
+  };
+
+  private static readonly DeclaredElementPresenterStyle CapturePresenterStyle = new()
+  {
+    ShowEntityKind = EntityKindForm.NORMAL,
+    ShowNameInQuotes = true,
+    ShowName = NameStyle.QUALIFIED,
+    ShowType = TypeStyle.NONE
+  };
 
   #endregion
 }

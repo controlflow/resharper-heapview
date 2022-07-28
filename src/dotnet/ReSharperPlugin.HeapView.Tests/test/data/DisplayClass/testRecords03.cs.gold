@@ -3,14 +3,6 @@
 ========
 Owner: record 'R'
 Closures:
-> lambda expression 'int () => X + Y + 2'
-    Captures:
-    > parameter 'X'
-    > parameter 'Y'
-> lambda expression 'int () => x + X'
-    Captures:
-    > local variable 'x'
-    > parameter 'X'
 > lambda expression 'int () => X + Y + 1'
     Captures:
     > parameter 'X'
@@ -23,20 +15,6 @@ Display classes:
     > parameter 'Y'
     Closures:
     > lambda expression 'int () => X + Y + 1'
-  Display class #2
-    Scope: IRecordDeclaration 'partial record R { public bool Member = ...'
-    Members:
-    > parameter 'X'
-    > parameter 'Y'
-    Closures:
-    > lambda expression 'int () => X + Y + 2'
-  Display class #3
-    Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
-    Members:
-    > local variable 'x'
-    > display class #2
-    Closures:
-    > lambda expression 'int () => x + X'
 
 ========
 Owner: method 'bool R.F(Func<int> f)'
@@ -52,30 +30,19 @@ Closures:
     Captures:
     > local variable 'x'
     > parameter 'X'
-> lambda expression 'int () => X + Y + 1'
-    Captures:
-    > parameter 'X'
-    > parameter 'Y'
 Display classes:
   Display class #1
-    Scope: IRecordDeclaration 'partial record R(int X, int Y) : Base(()...'
-    Members:
-    > parameter 'X'
-    > parameter 'Y'
-    Closures:
-    > lambda expression 'int () => X + Y + 1'
-  Display class #2
     Scope: IRecordDeclaration 'partial record R { public bool Member = ...'
     Members:
     > parameter 'X'
     > parameter 'Y'
     Closures:
     > lambda expression 'int () => X + Y + 2'
-  Display class #3
+  Display class #2
     Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
     Members:
     > local variable 'x'
-    > display class #2
+    > display class #1
     Closures:
     > lambda expression 'int () => x + X'
 
