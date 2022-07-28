@@ -1,0 +1,30 @@
+﻿Owner: record 'R'
+Closures:
+> lambda expression 'int () => X + Y + 2'
+    Captures:
+    > parameter 'X'
+    > parameter 'Y'
+> lambda expression 'int () => x + X'
+    Captures:
+    > local variable 'x'
+    > parameter 'X'
+Display classes:
+  Display class #1
+    Scope: IRecordDeclaration 'record R(int X, int Y) { public bool Mem...'
+    Members:
+    > parameter 'X'
+    > parameter 'Y'
+    Closures:
+    > lambda expression 'int () => X + Y + 2'
+  Display class #2
+    Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
+    Members:
+    > local variable 'x'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => x + X'
+
+========
+Owner: method 'bool R.F(Func<int> f)'
+
+========

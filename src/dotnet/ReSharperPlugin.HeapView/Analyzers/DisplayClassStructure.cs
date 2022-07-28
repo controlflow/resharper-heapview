@@ -58,17 +58,72 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   [CanBeNull]
   public static DisplayClassStructure Build(ITreeNode declaration)
   {
-    var bodyToAnalyze = TryGetCodeBodyToAnalyze(declaration);
-    if (bodyToAnalyze == null) return null;
+    DisplayClassStructure structure = null;
 
-    var structure = new DisplayClassStructure(declaration);
+    switch (declaration)
+    {
+      // record R(int X) : B(...) { int Member = ...; }
+      case IClassLikeDeclaration classLikeDeclaration:
+      {
+        var extendsList = classLikeDeclaration.ExtendsList;
+        if (extendsList != null)
+        {
+          foreach (var extendedType in extendsList.ExtendedTypesEnumerable)
+          {
+            var argumentList = extendedType.ArgumentList;
+            if (argumentList != null)
+            {
+              structure ??= new DisplayClassStructure(declaration);
+              argumentList.ProcessThisAndDescendants(structure);
+            }
+          }
+        }
 
-    if (declaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
-      constructorInitializer.ProcessThisAndDescendants(structure);
+        foreach (var memberDeclaration in classLikeDeclaration.MemberDeclarations)
+        {
+          if (memberDeclaration is IInitializerOwnerDeclaration { Initializer: IVariableInitializer variableInitializer })
+          {
+            structure ??= new DisplayClassStructure(declaration);
+            variableInitializer.ProcessThisAndDescendants(structure);
+          }
+        }
 
-    bodyToAnalyze.ProcessThisAndDescendants(structure);
+        break;
+      }
 
-    structure.PropagateLocalFunctionsDelayedUse();
+      // void Method() { }
+      // int Property { get { } }
+      case ICSharpFunctionDeclaration { Body: { } bodyBlock } functionDeclaration:
+      {
+        structure = new DisplayClassStructure(declaration);
+
+        if (functionDeclaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
+        {
+          constructorInitializer.ProcessThisAndDescendants(structure);
+        }
+
+        bodyBlock.ProcessThisAndDescendants(structure);
+        break;
+      }
+
+      // int ExpressionBodiedProperty => expr;
+      case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+      {
+        structure = new DisplayClassStructure(declaration);
+        arrowClause.ProcessThisAndDescendants(structure);
+        break;
+      }
+
+      // TopLevelCode();
+      case ITopLevelCode topLevelCode:
+      {
+        structure = new DisplayClassStructure(declaration);
+        topLevelCode.ProcessThisAndDescendants(structure);
+        break;
+      }
+    }
+
+    structure?.PropagateLocalFunctionsDelayedUse();
 
     return structure;
   }
@@ -299,8 +354,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
               return functionDeclaration.Body;
             case ILocalFunctionDeclaration localFunctionDeclaration:
               return localFunctionDeclaration.Body;
-
-            // todo: primary constructors
+            case IPrimaryConstructorDeclaration primaryConstructorDeclaration:
+              return ClassLikeDeclarationNavigator.GetByPrimaryConstructorDeclaration(primaryConstructorDeclaration);
             default:
               return null;
           }

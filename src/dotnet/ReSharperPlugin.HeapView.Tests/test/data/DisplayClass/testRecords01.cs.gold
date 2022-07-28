@@ -1,0 +1,48 @@
+﻿Owner: constructor 'Base.Base(Func<int> func)'
+
+========
+Owner: record 'R'
+Closures:
+> lambda expression 'int () => X + Y + 1'
+    Captures:
+    > parameter 'X'
+    > parameter 'Y'
+> lambda expression 'int () => X + Y + 2'
+    Captures:
+    > parameter 'X'
+    > parameter 'Y'
+> lambda expression 'int () => x + X'
+    Captures:
+    > local variable 'x'
+    > parameter 'X'
+> lambda expression 'int () => 3'
+> lambda expression 'int () => StaticMember1 + x'
+    Captures:
+    > local variable 'x'
+Display classes:
+  Display class #1
+    Scope: IRecordDeclaration 'record R(int X, int Y) : Base(() => X + ...'
+    Members:
+    > parameter 'X'
+    > parameter 'Y'
+    Closures:
+    > lambda expression 'int () => X + Y + 1'
+    > lambda expression 'int () => X + Y + 2'
+  Display class #2
+    Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
+    Members:
+    > local variable 'x'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => x + X'
+  Display class #3
+    Scope: IFieldDeclaration 'StaticMember2 = StaticMember1 is var x &...'
+    Members:
+    > local variable 'x'
+    Closures:
+    > lambda expression 'int () => StaticMember1 + x'
+
+========
+Owner: method 'bool R.F(Func<int> f)'
+
+========

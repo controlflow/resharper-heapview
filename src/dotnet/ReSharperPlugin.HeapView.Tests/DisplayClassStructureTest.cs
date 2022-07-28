@@ -39,6 +39,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestParameters07() { DoNamedTest(); }
   [Test] public void TestParameters08() { DoNamedTest(); }
 
+  [Test] public void TestRecords01() { DoNamedTest(); }
+  [Test] public void TestRecords02() { DoNamedTest(); }
+
   [Test] public void TestQuery01() { DoNamedTest(); }
 
   [Test] public void TestLocalFunctions01() { DoNamedTest(); }
@@ -62,11 +65,10 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
 
           switch (current)
           {
+            case IClassLikeDeclaration:
             case ICSharpFunctionDeclaration:
             case IExpressionBodyOwnerDeclaration:
-            case IInitializerOwnerDeclaration:
             case ITopLevelCode:
-            case IExtendedType:
             {
               var displayClassStructure = DisplayClassStructure.Build(current);
               if (displayClassStructure != null)

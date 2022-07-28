@@ -1,6 +1,9 @@
 ﻿Owner: top-level code
 
 ========
+Owner: class 'Class'
+
+========
 Owner: constructor 'Class.Class(int constructorParameter)'
 
 ========
@@ -11,9 +14,6 @@ Owner: method 'void Class.Method(string methodParameter)'
 
 ========
 Owner: property 'int Class.ExpressionBodiedProperty'
-
-========
-Owner: property 'int Class.Property'
 
 ========
 Owner: accessor 'int Class.Property.get'
@@ -34,12 +34,6 @@ Owner: accessor 'string Class.this[int parameter1, bool parameter2].init'
 Owner: operator 'Class.implicit bool(Class c)'
 
 ========
-Owner: field 'int Class.Field'
-
-========
-Owner: event 'EventHandler Class.E'
-
-========
-Owner: extended type of constructor 'Derived.Derived()'
+Owner: record 'Derived'
 
 ========
