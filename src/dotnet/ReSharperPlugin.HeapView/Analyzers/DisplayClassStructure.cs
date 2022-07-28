@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -65,29 +66,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       // record R(int X) : B(...) { int Member = ...; }
       case IClassLikeDeclaration classLikeDeclaration:
       {
-        var extendsList = classLikeDeclaration.ExtendsList;
-        if (extendsList != null)
-        {
-          foreach (var extendedType in extendsList.ExtendedTypesEnumerable)
-          {
-            var argumentList = extendedType.ArgumentList;
-            if (argumentList != null)
-            {
-              structure ??= new DisplayClassStructure(declaration);
-              argumentList.ProcessThisAndDescendants(structure);
-            }
-          }
-        }
-
-        foreach (var memberDeclaration in classLikeDeclaration.MemberDeclarations)
-        {
-          if (memberDeclaration is IInitializerOwnerDeclaration { Initializer: IVariableInitializer variableInitializer })
-          {
-            structure ??= new DisplayClassStructure(declaration);
-            variableInitializer.ProcessThisAndDescendants(structure);
-          }
-        }
-
+        TryBuildFromInitializerScope(classLikeDeclaration, ref structure);
         break;
       }
 
@@ -126,6 +105,61 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     structure?.PropagateLocalFunctionsDelayedUse();
 
     return structure;
+  }
+
+  private static void TryBuildFromInitializerScope([NotNull] IClassLikeDeclaration classLikeDeclaration, ref DisplayClassStructure structure)
+  {
+    // if type declaration is partial and has primary parameters in some part
+    // we need to scan the other parts to find possible captures of such parameters
+    if (classLikeDeclaration.IsPartial
+        && classLikeDeclaration.DeclaredElement is IRecord { PrimaryConstructor.Parameters.Count: > 0 } record)
+    {
+      var allDeclarations = record.GetDeclarations();
+      if (allDeclarations.Count > 1)
+      {
+        foreach (var otherDeclaration in allDeclarations)
+        {
+          if (otherDeclaration is IClassLikeDeclaration classPartDeclaration)
+          {
+            ScanInitializerScope(classPartDeclaration, classLikeDeclaration, ref structure);
+          }
+        }
+
+        return;
+      }
+    }
+
+    ScanInitializerScope(classLikeDeclaration, classLikeDeclaration, ref structure);
+
+    static void ScanInitializerScope(
+      [NotNull] IClassLikeDeclaration classLikeDeclaration,
+      [NotNull] IClassLikeDeclaration originalDeclaration,
+      ref DisplayClassStructure structure)
+    {
+      var extendsList = classLikeDeclaration.ExtendsList;
+      if (extendsList != null)
+      {
+        foreach (var extendedType in extendsList.ExtendedTypesEnumerable)
+        {
+          var argumentList = extendedType.ArgumentList;
+          if (argumentList != null)
+          {
+            structure ??= new DisplayClassStructure(originalDeclaration);
+            argumentList.ProcessThisAndDescendants(structure);
+            break;
+          }
+        }
+      }
+
+      foreach (var memberDeclaration in classLikeDeclaration.MemberDeclarations)
+      {
+        if (memberDeclaration is IInitializerOwnerDeclaration { Initializer: IVariableInitializer variableInitializer })
+        {
+          structure ??= new DisplayClassStructure(originalDeclaration);
+          variableInitializer.ProcessThisAndDescendants(structure);
+        }
+      }
+    }
   }
 
   // todo: is this is even needed? probably not
@@ -311,6 +345,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     [CanBeNull, Pure]
     static ITreeNode FindParameterScopeNode([NotNull] IParameter parameter, [NotNull] IReferenceExpression referenceExpression)
     {
+      // primary constructor can be declared in other type part
+      if (parameter.ContainingParametersOwner is IPrimaryConstructor)
+      {
+        return referenceExpression.GetContainingNode<IClassLikeDeclaration>();
+      }
+
       var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
       if (parameterDeclaration != null)
       {
@@ -354,13 +394,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
               return functionDeclaration.Body;
             case ILocalFunctionDeclaration localFunctionDeclaration:
               return localFunctionDeclaration.Body;
-            case IPrimaryConstructorDeclaration primaryConstructorDeclaration:
-              return ClassLikeDeclarationNavigator.GetByPrimaryConstructorDeclaration(primaryConstructorDeclaration);
             default:
               return null;
           }
         }
 
+        // use block for block-bodied lambdas, otherwise lambda node itself is a scope
         var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILambdaParameterDeclaration);
         if (lambdaExpression != null)
         {
@@ -750,7 +789,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   }
 
   [NotNull]
-  private string PresentScope([NotNull] ITreeNode treeNode)
+  private static string PresentScope([NotNull] ITreeNode treeNode)
   {
     var nodeText = treeNode.GetText().ReplaceNewLines().FullReplace("  ", " ").TrimToSingleLineWithMaxLength(43);
 
@@ -773,5 +812,3 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
   #endregion
 }
-
-

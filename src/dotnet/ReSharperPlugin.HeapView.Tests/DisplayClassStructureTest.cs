@@ -41,6 +41,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
 
   [Test] public void TestRecords01() { DoNamedTest(); }
   [Test] public void TestRecords02() { DoNamedTest(); }
+  [Test] public void TestRecords03() { DoNamedTest(); }
 
   [Test] public void TestQuery01() { DoNamedTest(); }
 
