@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -106,7 +107,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         {
           if (partDeclaration is IClassLikeDeclaration thisPartDeclaration)
           {
-            structure.myIsScanningNonMainPart = thisPartDeclaration != classLikeDeclaration;
+            structure!.myIsScanningNonMainPart = thisPartDeclaration != classLikeDeclaration;
 
             ScanInitializerScope(thisPartDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
           }
@@ -122,7 +123,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     static void ScanInitializerScope(
       IClassLikeDeclaration classLikeDeclaration,
       IClassLikeDeclaration originalDeclaration,
-      ref DisplayClassStructure structure,
+      ref DisplayClassStructure? structure,
       ref bool seenBodies)
     {
       // looks for closures in 'record R() : B(...)'
@@ -194,14 +195,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
   private readonly Stack<ClosureInfo> myCurrentClosures = new();
 
-  private readonly List<ICSharpClosure> myClosuresList = new();
+  private readonly List<ICSharpClosure> myAllFoundClosures = new();
   private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
   private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
   private HashSet<ILocalFunctionDeclaration>? myDelayedUseLocalFunctions;
   private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>? myDirectInvocationsBetweenLocalFunctions;
 
   private bool myIsScanningNonMainPart;
-  private HashSet<string>? myCaptureNamesToLookInOtherParts = null;
+  private HashSet<string>? myCaptureNamesToLookInOtherParts;
 
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
   {
@@ -221,45 +222,34 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
   void IRecursiveElementProcessor.ProcessBeforeInterior(ITreeNode element)
   {
-    if (element is ICSharpClosure closure)
+    switch (element)
     {
-      myCurrentClosures.Push(new ClosureInfo(closure));
-
-      if (!myIsScanningNonMainPart)
+      case ICSharpClosure closure:
       {
-        myClosuresList.Add(closure);
-      }
-    }
+        myCurrentClosures.Push(new ClosureInfo(closure));
 
-    if (element is IReferenceExpression { QualifierExpression: null } referenceExpression)
-    {
-      ProcessReferenceExpression(referenceExpression);
+        if (!myIsScanningNonMainPart)
+        {
+          myAllFoundClosures.Add(closure);
+        }
+
+        break;
+      }
+
+      case IReferenceExpression { IsQualified: false } referenceExpression:
+      {
+        if (myIsScanningNonMainPart)
+          ProcessReferenceExpressionInOtherTypePart(referenceExpression);
+        else
+          ProcessReferenceExpression(referenceExpression);
+
+        break;
+      }
     }
   }
 
   private void ProcessReferenceExpression(IReferenceExpression referenceExpression)
   {
-    if (myIsScanningNonMainPart)
-    {
-      if (myCurrentClosures.Count > 0)
-      {
-        if (myCaptureNamesToLookInOtherParts != null
-            && !myCaptureNamesToLookInOtherParts.Contains(referenceExpression.Reference.GetName()))
-        {
-          return; // not interesting
-        }
-
-        var resolveResult1 = referenceExpression.Reference.Resolve();
-        if (resolveResult1.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter)
-        {
-          var displayClass = myScopeToDisplayClass.GetOrCreateValue(myDeclaration, static key => new DisplayClass(key));
-          displayClass.AddMember(primaryParameter);
-        }
-      }
-
-      return;
-    }
-
     var resolveResult = referenceExpression.Reference.Resolve();
 
     switch (resolveResult.DeclaredElement)
@@ -300,6 +290,30 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     if (myCurrentClosures.Count > 0)
     {
       ProcessReferenceExpressionInsideClosure(referenceExpression, resolveResult);
+    }
+  }
+
+  private void ProcessReferenceExpressionInOtherTypePart(IReferenceExpression referenceExpression)
+  {
+    Assertion.Assert(myIsScanningNonMainPart);
+
+    if (myCurrentClosures.Count > 0)
+    {
+      var reference = referenceExpression.Reference;
+
+      if (myCaptureNamesToLookInOtherParts != null
+          && myCaptureNamesToLookInOtherParts.Contains(reference.GetName()))
+      {
+        var resolveResult = reference.Resolve();
+        if (resolveResult.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter)
+        {
+          // note: use current type as a scope for primary parameter captures in other type parts
+          Assertion.Assert(myDeclaration is IClassLikeDeclaration);
+
+          var displayClass = myScopeToDisplayClass.GetOrCreateValue(myDeclaration, static key => new DisplayClass(key));
+          displayClass.AddMember(primaryParameter);
+        }
+      }
     }
   }
 
@@ -618,10 +632,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     var builder = new StringBuilder();
     builder.AppendLine($"Owner: {GetOwnerPresentation(myDeclaration)}");
 
-    if (myClosuresList.Count > 0)
+    if (myAllFoundClosures.Count > 0)
     {
       builder.AppendLine("Closures:");
-      foreach (var closure in myClosuresList)
+      foreach (var closure in myAllFoundClosures)
       {
         builder.AppendLine($"> {GetOwnerPresentation(closure)}");
 
