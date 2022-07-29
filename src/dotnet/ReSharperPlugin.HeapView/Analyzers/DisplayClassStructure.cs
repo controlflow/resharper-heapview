@@ -28,7 +28,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 {
   private readonly ITreeNode myDeclaration;
 
-  public DisplayClassStructure(ITreeNode declaration)
+  private DisplayClassStructure(ITreeNode declaration)
   {
     myDeclaration = declaration;
   }
@@ -576,7 +576,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     // note: can be IArrowExpressionClause of expression-bodied members
     // note: can be ILambdaExpression if it's expression-bodied
     // note: can be IQueryParameterPlatform
-    public ITreeNode ScopeNode { get; }
+    private ITreeNode ScopeNode { get; }
 
     public HashSet<IDeclaredElement> Members { get; } = new();
     public List<ICSharpClosure> Closures { get; } = new();

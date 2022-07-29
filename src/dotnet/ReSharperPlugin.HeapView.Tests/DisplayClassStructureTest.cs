@@ -46,6 +46,8 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestQuery01() { DoNamedTest(); }
 
   [Test] public void TestLocalFunctions01() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions02() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions03() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {
