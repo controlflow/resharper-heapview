@@ -1,0 +1,70 @@
+﻿Owner: constructor 'ThisCapture.ThisCapture(int parameter)'
+Closures:
+> lambda expression 'int () => parameter + local'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+> lambda expression 'int () => OtherMethod() + local'
+    Captures:
+    > 'this' reference
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IConstructorDeclaration 'public ThisCapture(int parameter) { int ...'
+    Members:
+    > parameter 'parameter'
+    > 'this' reference
+  Display class #2
+    Scope: IBlock '{ int local = 0; // separate display cla...'
+    Members:
+    > local variable 'local'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => parameter + local'
+    > lambda expression 'int () => OtherMethod() + local'
+
+========
+Owner: constructor 'ThisCapture.ThisCapture(int parameter, bool overload)'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+> lambda expression 'int () => OtherMethod()'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IConstructorDeclaration 'public ThisCapture(int parameter, bool o...'
+    Members:
+    > parameter 'parameter'
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter'
+    > lambda expression 'int () => OtherMethod()'
+
+========
+Owner: method 'void ThisCapture.SharedDisplayClass(int parameter)'
+Closures:
+> lambda expression 'int () => parameter + local'
+    Captures:
+    > parameter 'parameter'
+    > local variable 'local'
+> lambda expression 'int () => OtherMethod() + local'
+    Captures:
+    > 'this' reference
+    > local variable 'local'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ int local = 0; if (parameter > 0) { Fu...'
+    Members:
+    > parameter 'parameter'
+    > local variable 'local'
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter + local'
+    > lambda expression 'int () => OtherMethod() + local'
+
+========
+Owner: method 'int ThisCapture.OtherMethod()'
+
+========

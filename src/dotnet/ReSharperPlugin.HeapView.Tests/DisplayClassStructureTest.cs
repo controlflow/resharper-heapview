@@ -49,6 +49,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestLocalFunctions02() { DoNamedTest(); }
   [Test] public void TestLocalFunctions03() { DoNamedTest(); }
 
+  [Test] public void TestThisCapture01() { DoNamedTest(); }
+  [Test] public void TestThisCapture02() { DoNamedTest(); }
+
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {
     var psiFiles = Solution.GetPsiServices().Files;

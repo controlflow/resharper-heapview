@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,14 +22,30 @@ using JetBrains.Util.DataStructures.Collections;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: args can be captured - allocation on the first statement
+// todo: prettify data structures use code, probably pool some things
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor
 {
   private readonly ITreeNode myDeclaration;
+  private readonly ITreeNode? myThisReferenceCaptureScopeNode;
+
+  private readonly Stack<ClosureInfo> myCurrentClosures = new();
+
+  private readonly List<ICSharpClosure> myAllFoundClosures = new();
+  private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
+  private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
+
+
+  private HashSet<ILocalFunctionDeclaration>? myDelayedUseLocalFunctions;
+  private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>? myDirectInvocationsBetweenLocalFunctions;
+
+  private bool myIsScanningNonMainPart;
+  private HashSet<string>? myCaptureNamesToLookInOtherParts;
 
   private DisplayClassStructure(ITreeNode declaration)
   {
     myDeclaration = declaration;
+    myThisReferenceCaptureScopeNode = FindThisCaptureScope(declaration);
   }
 
   public static DisplayClassStructure? Build(ITreeNode declaration)
@@ -193,17 +208,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
-  private readonly Stack<ClosureInfo> myCurrentClosures = new();
-
-  private readonly List<ICSharpClosure> myAllFoundClosures = new();
-  private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
-  private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
-  private HashSet<ILocalFunctionDeclaration>? myDelayedUseLocalFunctions;
-  private OneToSetMap<ILocalFunctionDeclaration, ILocalFunctionDeclaration>? myDirectInvocationsBetweenLocalFunctions;
-
-  private bool myIsScanningNonMainPart;
-  private HashSet<string>? myCaptureNamesToLookInOtherParts;
-
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
   {
     switch (element)
@@ -242,6 +246,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           ProcessReferenceExpressionInOtherTypePart(referenceExpression);
         else
           ProcessReferenceExpression(referenceExpression);
+
+        break;
+      }
+
+      case IThisExpression or IBaseExpression:
+      {
+        if (myThisReferenceCaptureScopeNode != null)
+        {
+          ProcessThisReferenceCapture((ICSharpExpression)element);
+        }
 
         break;
       }
@@ -344,6 +358,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
           NoteCapture(parameterScopeNode, parameter);
         }
 
+        break;
+      }
+
+      case ITypeMember { IsStatic: false }:
+      {
+        ProcessThisReferenceCaptureInsideClosure(referenceExpression);
         break;
       }
     }
@@ -484,6 +504,76 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     }
   }
 
+  private void ProcessThisReferenceCapture(ICSharpExpression thisOrBaseExpression)
+  {
+    if (myCurrentClosures.Count > 0)
+    {
+      ProcessThisReferenceCaptureInsideClosure(thisOrBaseExpression);
+    }
+  }
+
+  private void ProcessThisReferenceCaptureInsideClosure(ICSharpExpression thisReferenceExpression)
+  {
+    Assertion.Assert(myCurrentClosures.Count > 0);
+    Assertion.AssertNotNull(myThisReferenceCaptureScopeNode);
+
+    var typeMemberDeclaration = thisReferenceExpression.GetContainingTypeMemberDeclarationIgnoringClosures();
+    if (typeMemberDeclaration != null)
+    {
+      if (typeMemberDeclaration.GetContainingTypeDeclaration() is { DeclaredElement: { } thisTypeElement })
+      {
+        var currentClosure = myCurrentClosures.Peek().Closure;
+        if (currentClosure != null)
+        {
+          var displayClass = myScopeToDisplayClass.GetOrCreateValue(myThisReferenceCaptureScopeNode, static key => new DisplayClass(key));
+          displayClass.AddMember(thisTypeElement);
+
+          var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => new Captures());
+          captures.CapturedEntities.Add(thisTypeElement);
+          captures.CapturedDisplayClasses.Add(displayClass);
+        }
+      }
+    }
+  }
+
+  [Pure]
+  private static ITreeNode? FindThisCaptureScope(ITreeNode declaration)
+  {
+    switch (declaration)
+    {
+      case ICSharpTypeMemberDeclaration { DeclaredElement.ContainingType: IClass } typeMemberDeclaration:
+      {
+        if (typeMemberDeclaration.IsStatic) return null;
+
+        // constructors introduce additional scope to support constructor initializers
+        if (typeMemberDeclaration is IConstructorDeclaration constructorDeclaration)
+        {
+          return constructorDeclaration;
+        }
+
+        // use body nodes for other members
+        switch (typeMemberDeclaration)
+        {
+          case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+            return arrowClause;
+          case ICSharpFunctionDeclaration functionDeclaration:
+            return functionDeclaration.Body;
+          default:
+            return null;
+        }
+      }
+
+      case IAccessorDeclaration { DeclaredElement.ContainingType: IClass } accessorDeclaration:
+      {
+        if (accessorDeclaration.IsStatic) return null;
+
+        return accessorDeclaration.Body ?? (ITreeNode) accessorDeclaration.ArrowClause;
+      }
+
+      default: return null;
+    }
+  }
+
   void IRecursiveElementProcessor.ProcessAfterInterior(ITreeNode element)
   {
     if (element is ICSharpClosure closure)
@@ -564,6 +654,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
   // note: if there are any members w/o declarations - use special logic (first top level token for 'args', accessor name for 'value' parameter)
   // note: for indexers w/ explicit accessors highlight corresponding accessor name when parameter is captured
   // note: for expression-bodied indexer highlight the parameter itself?
+
+  // todo: display class containing only 'this' reference optimized away into instance members
   private sealed class DisplayClass : IComparable<DisplayClass>
   {
     public DisplayClass(ITreeNode scopeNode)
@@ -824,6 +916,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
 
   private string PresentCapture(IDeclaredElement declaredElement)
   {
+    if (declaredElement is ITypeElement)
+    {
+      return "'this' reference";
+    }
+
     return DeclaredElementPresenter.Format(myDeclaration.Language, CapturePresenterStyle, declaredElement).Text;
   }
 

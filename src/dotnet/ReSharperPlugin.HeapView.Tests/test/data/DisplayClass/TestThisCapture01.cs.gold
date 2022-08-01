@@ -1,0 +1,41 @@
+﻿Owner: method 'void ThisCapture.HasDisplayClass(int parameter)'
+Closures:
+> lambda expression 'int () => OtherMethod() + parameter'
+    Captures:
+    > 'this' reference
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ Func<int> func = () => OtherMethod() +...'
+    Members:
+    > 'this' reference
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => OtherMethod() + parameter'
+
+========
+Owner: method 'void ThisCapture.NoDisplayClass()'
+Closures:
+> lambda expression 'int () => OtherMethod()'
+    Captures:
+    > 'this' reference
+> lambda expression 'void () => HasDisplayClass(42)'
+    Captures:
+    > 'this' reference
+> lambda expression 'object () => this'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IBlock '{ Func<int> func = () => OtherMethod(); ...'
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => OtherMethod()'
+    > lambda expression 'void () => HasDisplayClass(42)'
+    > lambda expression 'object () => this'
+
+========
+Owner: method 'int ThisCapture.OtherMethod()'
+
+========
