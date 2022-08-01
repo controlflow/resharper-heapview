@@ -517,21 +517,17 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
     Assertion.Assert(myCurrentClosures.Count > 0);
     Assertion.AssertNotNull(myThisReferenceCaptureScopeNode);
 
-    var typeMemberDeclaration = thisReferenceExpression.GetContainingTypeMemberDeclarationIgnoringClosures();
-    if (typeMemberDeclaration != null)
+    if (thisReferenceExpression.GetContainingTypeDeclaration() is { DeclaredElement: { } thisTypeElement })
     {
-      if (typeMemberDeclaration.GetContainingTypeDeclaration() is { DeclaredElement: { } thisTypeElement })
+      var currentClosure = myCurrentClosures.Peek().Closure;
+      if (currentClosure != null)
       {
-        var currentClosure = myCurrentClosures.Peek().Closure;
-        if (currentClosure != null)
-        {
-          var displayClass = myScopeToDisplayClass.GetOrCreateValue(myThisReferenceCaptureScopeNode, static key => new DisplayClass(key));
-          displayClass.AddMember(thisTypeElement);
+        var displayClass = myScopeToDisplayClass.GetOrCreateValue(myThisReferenceCaptureScopeNode, static key => new DisplayClass(key));
+        displayClass.AddMember(thisTypeElement);
 
-          var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => new Captures());
-          captures.CapturedEntities.Add(thisTypeElement);
-          captures.CapturedDisplayClasses.Add(displayClass);
-        }
+        var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => new Captures());
+        captures.CapturedEntities.Add(thisTypeElement);
+        captures.CapturedDisplayClasses.Add(displayClass);
       }
     }
   }
@@ -690,6 +686,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
       }
     }
 
+    public bool IsOptimizedIntoInstanceMethod()
+    {
+      // todo: what if has local functions attached?
+
+      return ContainingDisplayClass == null
+             && Members.SingleItem() is ITypeElement;
+    }
+
     public void AttachClosure(ICSharpClosure closure)
     {
       Closures.Add(closure);
@@ -753,6 +757,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor
         builder.AppendLine($"  Display class #{displayClassIndexes[displayClass]}");
 
         builder.AppendLine($"    Scope: {PresentScope(scopeNode)}");
+
+        if (displayClass.IsOptimizedIntoInstanceMethod())
+        {
+          builder.AppendLine("    OPTIMIZED: Lowered to instance members");
+        }
 
         builder.AppendLine("    Members:");
         foreach (var capturedEntity in displayClass.Members)

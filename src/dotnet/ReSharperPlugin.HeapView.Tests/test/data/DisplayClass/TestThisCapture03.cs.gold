@@ -1,0 +1,81 @@
+﻿Owner: method 'Func<int> ThisCapture.Method1()'
+Closures:
+> lambda expression 'int () => Property'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => Property'
+    OPTIMIZED: Lowered to instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => Property'
+
+========
+Owner: method 'Func<int> ThisCapture.Method2()'
+Closures:
+> lambda expression 'int () => Property'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IBlock '{ return () => Property; }'
+    OPTIMIZED: Lowered to instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => Property'
+
+========
+Owner: property 'Func<int> ThisCapture.Property1'
+Closures:
+> lambda expression 'int () => Property'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => Property'
+    OPTIMIZED: Lowered to instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => Property'
+
+========
+Owner: property 'Func<int> ThisCapture.Property2'
+Closures:
+> lambda expression 'int () => this[1]'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => this[1]'
+    OPTIMIZED: Lowered to instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => this[1]'
+
+========
+Owner: accessor 'Func<int> ThisCapture.Property3.get'
+Closures:
+> lambda expression 'int () => Property'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => Property'
+    OPTIMIZED: Lowered to instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => Property'
+
+========
+Owner: property 'int ThisCapture.Property'
+
+========
+Owner: indexer 'int ThisCapture.this[int index]'
+
+========

@@ -51,6 +51,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
 
   [Test] public void TestThisCapture01() { DoNamedTest(); }
   [Test] public void TestThisCapture02() { DoNamedTest(); }
+  [Test] public void TestThisCapture03() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {
