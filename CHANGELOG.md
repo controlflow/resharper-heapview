@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## vNext
+## 2022.2.0
 - Boxing allocations analysis was rewritten to match the recent compiler/runtime
 - Boxing is now detected in implicit extension method invocations (in deconstruction, foreach statement, await expression, collection initializers)
 - Boxing detection inside tuple conversions was completely rewritten (fix a few unrecognized allocations, better allocation reports, better highlighting placements when possible)
@@ -115,4 +115,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 0.9
 - Initial version, support for ReSharper >8.1.
-
