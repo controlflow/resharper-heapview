@@ -38,7 +38,5 @@ Display classes:
     > local variable 'local'
     Closures:
     > lambda expression 'int () => parameter + local + 3'
-Delay use local functions:
-> local function 'bool F(Func<int> f)'
 
 ========

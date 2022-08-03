@@ -2,12 +2,23 @@
 Closures:
 > local function 'void Local1()'
 > local function 'void Local2()'
+    Captures:
+    > local function 'Local1'
+    > local variable 'i'
 > local function 'void Local3()'
+    Captures:
+    > local function 'Local2'
 > local function 'void Local4()'
-Delay use local functions:
-> local function 'void Local1()'
-> local function 'void Local2()'
-> local function 'void Local3()'
-> local function 'void Local4()'
+    Captures:
+    > local function 'Local3'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'int i = 0; void Local1() { } void Local2...'
+    Members:
+    > local variable 'i'
+    Closures:
+    > local function 'void Local2()'
+    > local function 'void Local3()'
+    > local function 'void Local4()'
 
 ========

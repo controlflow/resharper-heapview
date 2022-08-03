@@ -28,7 +28,7 @@ Closures:
 Display classes:
   Display class #1
     Scope: IBlock '{ Func<int> func = () => OtherMethod(); ...'
-    OPTIMIZED: Lowered to instance members
+    OPTIMIZED: Closures lowered into instance members
     Members:
     > 'this' reference
     Closures:

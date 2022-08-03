@@ -63,6 +63,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestStructVirtualMethodInvocation05() { DoNamedTest2(); }
   [Test] public void TestStructVirtualMethodInvocation06() { DoNamedTest2(); }
 
+  // todo: only in non-optimized code
   [Test] public void TestStructGetTypeInvocation01() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation03() { DoNamedTest2(); }

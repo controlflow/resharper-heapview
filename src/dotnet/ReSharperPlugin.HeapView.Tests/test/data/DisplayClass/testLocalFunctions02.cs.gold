@@ -1,0 +1,16 @@
+﻿Owner: top-level code
+Closures:
+> local function 'void Local()'
+> lambda expression 'void () => { Local(); x++; }'
+    Captures:
+    > local function 'Local'
+    > local variable 'x'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'int x = 0; void Local() { } if (args.Len...'
+    Members:
+    > local variable 'x'
+    Closures:
+    > lambda expression 'void () => { Local(); x++; }'
+
+========

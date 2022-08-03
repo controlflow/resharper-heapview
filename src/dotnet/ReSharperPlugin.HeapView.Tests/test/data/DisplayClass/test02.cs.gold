@@ -3,7 +3,5 @@ Closures:
 > local function 'void Local()'
 > local function 'void Local2()'
 > local function 'void Local3()'
-Delay use local functions:
-> local function 'void Local3()'
 
 ========

@@ -1,10 +1,12 @@
+using System;
+
 static bool F(Func<int> f) => true;
 
 // display class #1
 int x = 0;
 
 {
-  // display class #2
+  // display class #2, optimized
   int a = 0;
   void Local() => a++;
   Local();

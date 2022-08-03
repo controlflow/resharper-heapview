@@ -48,10 +48,15 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestLocalFunctions01() { DoNamedTest(); }
   [Test] public void TestLocalFunctions02() { DoNamedTest(); }
   [Test] public void TestLocalFunctions03() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions04() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions05() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions06() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions07() { DoNamedTest(); }
 
   [Test] public void TestThisCapture01() { DoNamedTest(); }
   [Test] public void TestThisCapture02() { DoNamedTest(); }
   [Test] public void TestThisCapture03() { DoNamedTest(); }
+  [Test] public void TestThisCapture04() { DoNamedTest(); }
 
   protected override void DoTest(Lifetime lifetime, IProject testProject)
   {

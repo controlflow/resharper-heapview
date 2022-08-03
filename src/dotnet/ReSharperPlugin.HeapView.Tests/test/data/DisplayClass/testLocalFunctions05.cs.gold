@@ -1,0 +1,27 @@
+﻿Owner: top-level code
+Closures:
+> local function 'void Outer()'
+    Captures:
+    > local variable 'y'
+> local function 'void Local()'
+    Captures:
+    > local variable 'x'
+    > local function 'Outer'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'int y = 0; if (args.Length > 0) { void O...'
+    OPTIMIZED: Lowered into struct type
+    Members:
+    > local variable 'y'
+    Closures:
+    > local function 'void Outer()'
+  Display class #2
+    Scope: IBlock '{ void Outer() => y++; // display class ...'
+    OPTIMIZED: Lowered into struct type
+    Members:
+    > local variable 'x'
+    > display class #1
+    Closures:
+    > local function 'void Local()'
+
+========

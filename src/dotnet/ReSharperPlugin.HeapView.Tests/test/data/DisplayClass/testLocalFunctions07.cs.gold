@@ -1,0 +1,26 @@
+﻿Owner: top-level code
+Closures:
+> lambda expression 'int () => x'
+    Captures:
+    > local variable 'x'
+> local function 'void Local()'
+    Captures:
+    > local variable 'x'
+    > local variable 'y'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'int x = 0; Func<int> func = () => x; if ...'
+    Members:
+    > local variable 'x'
+    Closures:
+    > lambda expression 'int () => x'
+  Display class #2
+    Scope: IBlock '{ // display class #2, optimized into st...'
+    OPTIMIZED: Lowered into struct type
+    Members:
+    > local variable 'y'
+    > display class #1
+    Closures:
+    > local function 'void Local()'
+
+========
