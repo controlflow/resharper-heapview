@@ -52,6 +52,8 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestLocalFunctions05() { DoNamedTest(); }
   [Test] public void TestLocalFunctions06() { DoNamedTest(); }
   [Test] public void TestLocalFunctions07() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions08() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions09() { DoNamedTest(); }
 
   [Test] public void TestThisCapture01() { DoNamedTest(); }
   [Test] public void TestThisCapture02() { DoNamedTest(); }

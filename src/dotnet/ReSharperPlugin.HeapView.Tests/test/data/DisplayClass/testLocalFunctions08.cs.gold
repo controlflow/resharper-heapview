@@ -1,0 +1,33 @@
+﻿Owner: top-level code
+Closures:
+> local function 'void Local()'
+    Captures:
+    > local variable 'i'
+> local function 'void Local()'
+    Captures:
+    > local variable 'i'
+> local function 'IEnumerable<int> Local()'
+    Captures:
+    > local variable 'i'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ // display class #1, optimized int i =...'
+    OPTIMIZED: Lowered into struct type
+    Members:
+    > local variable 'i'
+    Closures:
+    > local function 'void Local()'
+  Display class #2
+    Scope: IBlock '{ // display class #2 int i = 0; async v...'
+    Members:
+    > local variable 'i'
+    Closures:
+    > local function 'void Local()'
+  Display class #3
+    Scope: IBlock '{ // display class #3 int i = 0; IEnumer...'
+    Members:
+    > local variable 'i'
+    Closures:
+    > local function 'IEnumerable<int> Local()'
+
+========

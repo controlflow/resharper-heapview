@@ -1,0 +1,34 @@
+﻿Owner: top-level code
+Closures:
+> local function 'void Local1()'
+    Captures:
+    > local variable 'i'
+> local function 'void Local2()'
+    Captures:
+    > local function 'Local1'
+> local function 'void Local1()'
+    Captures:
+    > local variable 'a'
+    > local function 'Local2'
+> local function 'void Local2()'
+    Captures:
+    > local variable 'a'
+    > local function 'Local1'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ // display class #1 int i = 0; void Lo...'
+    Members:
+    > local variable 'i'
+    Closures:
+    > local function 'void Local1()'
+    > local function 'void Local2()'
+  Display class #2
+    Scope: IBlock '{ // display class #2, optimized int a =...'
+    OPTIMIZED: Lowered into struct type
+    Members:
+    > local variable 'a'
+    Closures:
+    > local function 'void Local1()'
+    > local function 'void Local2()'
+
+========
