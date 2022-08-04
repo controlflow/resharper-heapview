@@ -1,0 +1,15 @@
+﻿Owner: method 'void Closures.M14<T>()'
+Closures:
+> lambda expression 'void () => { }'
+> query lambda 'bool (int x) => x > 0'
+> query lambda 'int (int x) => x + 1'
+> query lambda 'int (int x) => x + 2'
+> query lambda 'int (IGrouping<int,int> x) => x.Key'
+> query lambda 'int (int y) => y'
+> query lambda '{{IGrouping<int,int> x, int y} Transparent Variable, int t} ({IGrouping<int,int> x, int y} transparent_variable) => 1'
+> query lambda 'int ({{IGrouping<int,int> x, int y} Transparent Variable, int t} transparent_variable) => y + t'
+
+========
+Owner: method 'void Closures.F(Action f)'
+
+========

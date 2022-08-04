@@ -1,0 +1,30 @@
+﻿Owner: method 'void Closures.M15(int arg)'
+Closures:
+> lambda expression 'int () => X + arg'
+    Captures:
+    > 'this' reference
+    > parameter 'arg'
+> lambda expression 'int (int z) => y'
+    Captures:
+    > local variable 'y'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var y = F(() => X + arg); F(z => y); }'
+    Members:
+    > 'this' reference
+    > parameter 'arg'
+    > local variable 'y'
+    Closures:
+    > lambda expression 'int () => X + arg'
+    > lambda expression 'int (int z) => y'
+
+========
+Owner: method 'void Closures.F(Action f)'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========
+Owner: method 'void Closures.F(Func<int,int> f)'
+
+========

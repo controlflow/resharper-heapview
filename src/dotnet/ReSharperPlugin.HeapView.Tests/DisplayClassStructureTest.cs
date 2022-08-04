@@ -42,6 +42,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClosures17() { DoNamedTest(); }
   [Test] public void TestClosures18() { DoNamedTest(); }
   [Test] public void TestClosures19() { DoNamedTest(); }
+  [Test] public void TestClosures20() { DoNamedTest(); }
+  [Test] public void TestClosures21() { DoNamedTest(); }
+  [Test] public void TestClosures22() { DoNamedTest(); }
 
   [Test] public void TestParameters01() { DoNamedTest(); }
   [Test] public void TestParameters02() { DoNamedTest(); }
@@ -60,6 +63,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestQuery02() { DoNamedTest(); }
   [Test] public void TestQuery03() { DoNamedTest(); }
   [Test] public void TestQuery04() { DoNamedTest(); } // note: that's fine
+  [Test] public void TestQuery05() { DoNamedTest(); }
 
   [Test] public void TestLocalFunctions01() { DoNamedTest(); }
   [Test] public void TestLocalFunctions02() { DoNamedTest(); }

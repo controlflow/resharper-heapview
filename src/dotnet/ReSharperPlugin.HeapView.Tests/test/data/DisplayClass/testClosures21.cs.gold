@@ -1,0 +1,32 @@
+﻿Owner: accessor 'Action Closures.M16.get'
+Closures:
+> lambda expression 'void () => { var x = X; }'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IBlock '{ return () => { var x = X; }; }'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'void () => { var x = X; }'
+
+========
+Owner: accessor 'Action Closures.M16.set'
+Closures:
+> lambda expression 'Action () => value'
+    Captures:
+    > parameter 'value'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ F(() => value); }'
+    Members:
+    > parameter 'value'
+    Closures:
+    > lambda expression 'Action () => value'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========

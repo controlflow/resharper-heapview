@@ -1,0 +1,79 @@
+﻿Owner: class 'Closures'
+Closures:
+> lambda expression 'void (int x) => { F(() => x); }'
+> lambda expression 'int () => x'
+    Captures:
+    > parameter 'x'
+> lambda expression 'void (int x) => { F(() => x); }'
+> lambda expression 'int () => x'
+    Captures:
+    > parameter 'x'
+> lambda expression 'void (int x, int y, int z) => { F(() => y); }'
+> lambda expression 'int () => y'
+    Captures:
+    > parameter 'y'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ F(() => x); }'
+    Members:
+    > parameter 'x'
+    Closures:
+    > lambda expression 'int () => x'
+  Display class #2
+    Scope: IBlock '{ F(() => x); }'
+    Members:
+    > parameter 'x'
+    Closures:
+    > lambda expression 'int () => x'
+  Display class #3
+    Scope: IBlock '{ F(() => y); }'
+    Members:
+    > parameter 'y'
+    Closures:
+    > lambda expression 'int () => y'
+
+========
+Owner: accessor 'Action Closures.this[int i].get'
+Closures:
+> lambda expression 'void () => F(() => X + i)'
+> lambda expression 'int () => X + i'
+    Captures:
+    > 'this' reference
+    > parameter 'i'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ return () => F(() => X + i); }'
+    Members:
+    > 'this' reference
+    > parameter 'i'
+    Closures:
+    > lambda expression 'int () => X + i'
+
+========
+Owner: accessor 'Action Closures.this[int i].set'
+Closures:
+> lambda expression 'int () => X + i'
+    Captures:
+    > 'this' reference
+    > parameter 'i'
+> lambda expression 'int (int z) => y'
+    Captures:
+    > local variable 'y'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var y = F(() => X + i); F(z => y); }'
+    Members:
+    > 'this' reference
+    > parameter 'i'
+    > local variable 'y'
+    Closures:
+    > lambda expression 'int () => X + i'
+    > lambda expression 'int (int z) => y'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========
+Owner: method 'void Closures.F(Func<int,int> f)'
+
+========

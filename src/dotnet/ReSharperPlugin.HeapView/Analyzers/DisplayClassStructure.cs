@@ -23,6 +23,7 @@ using JetBrains.Util.DataStructures.Collections;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: args can be captured - allocation on the first statement
+// todo: func lambda creation inside expression<func> lambda
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposable
 {
