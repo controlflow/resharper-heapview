@@ -1,0 +1,29 @@
+﻿Owner: method 'void Closures.M5()'
+Closures:
+> lambda expression 'int () => i'
+    Captures:
+    > local variable 'i'
+> lambda expression 'int () => j'
+    Captures:
+    > local variable 'j'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var i = I; F(() => i); { var j = I; F(...'
+    Members:
+    > local variable 'i'
+    Closures:
+    > lambda expression 'int () => i'
+  Display class #2
+    Scope: IBlock '{ var j = I; F(() => j); }'
+    Members:
+    > local variable 'j'
+    Closures:
+    > lambda expression 'int () => j'
+
+========
+Owner: method 'int Closures.M()'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========

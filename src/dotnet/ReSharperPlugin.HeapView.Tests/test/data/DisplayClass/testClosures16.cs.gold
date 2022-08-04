@@ -1,0 +1,14 @@
+﻿Owner: top-level code
+Closures:
+> lambda expression 'void () => { _ = args; }'
+    Captures:
+    > parameter 'args'
+Display classes:
+  Display class #1
+    Scope: ITopLevelCode 'foreach (var x in args) { // note: Actio...'
+    Members:
+    > parameter 'args'
+    Closures:
+    > lambda expression 'void () => { _ = args; }'
+
+========

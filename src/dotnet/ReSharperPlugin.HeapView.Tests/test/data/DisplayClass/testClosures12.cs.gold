@@ -1,0 +1,21 @@
+﻿Owner: method 'void Closures.M8(bool b)'
+Closures:
+> lambda expression 'int () => a + 1'
+    Captures:
+    > local variable 'a'
+> lambda expression 'int () => a + 2'
+    Captures:
+    > local variable 'a'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ int a; Console.WriteLine(); if (b) { a...'
+    Members:
+    > local variable 'a'
+    Closures:
+    > lambda expression 'int () => a + 1'
+    > lambda expression 'int () => a + 2'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========

@@ -1,0 +1,47 @@
+﻿Owner: method 'void Closures.M10(bool t)'
+Closures:
+> lambda expression 'int () => a'
+    Captures:
+    > local variable 'a'
+> lambda expression 'int () => a + c'
+    Captures:
+    > local variable 'a'
+    > local variable 'c'
+> lambda expression 'int () => a + d'
+    Captures:
+    > local variable 'a'
+    > local variable 'd'
+> lambda expression 'int () => b + 1'
+    Captures:
+    > local variable 'b'
+> lambda expression 'int () => b + 2'
+    Captures:
+    > local variable 'b'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var a = I; F(() => a); { var c = I; F(...'
+    Members:
+    > local variable 'a'
+    Closures:
+    > lambda expression 'int () => a'
+  Display class #2
+    Scope: IBlock '{ var c = I; F(() => a + c); var d = I; ...'
+    Members:
+    > local variable 'c'
+    > local variable 'd'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => a + c'
+    > lambda expression 'int () => a + d'
+  Display class #3
+    Scope: IBlock '{ var b = I; F(() => b + 1); F(() => b +...'
+    Members:
+    > local variable 'b'
+    Closures:
+    > lambda expression 'int () => b + 1'
+    > lambda expression 'int () => b + 2'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========

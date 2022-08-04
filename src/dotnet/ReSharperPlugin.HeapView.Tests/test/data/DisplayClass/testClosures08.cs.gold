@@ -1,0 +1,32 @@
+﻿Owner: method 'void Closures.M4()'
+Closures:
+> lambda expression 'int () => M() + X'
+    Captures:
+    > 'this' reference
+> lambda expression 'int () => M() + X + i'
+    Captures:
+    > 'this' reference
+    > local variable 'i'
+> lambda expression 'int () => X + j'
+    Captures:
+    > 'this' reference
+    > local variable 'j'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ int i = I, j = I; F(() => M() + X); F(...'
+    Members:
+    > 'this' reference
+    > local variable 'i'
+    > local variable 'j'
+    Closures:
+    > lambda expression 'int () => M() + X'
+    > lambda expression 'int () => M() + X + i'
+    > lambda expression 'int () => X + j'
+
+========
+Owner: method 'int Closures.M()'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========

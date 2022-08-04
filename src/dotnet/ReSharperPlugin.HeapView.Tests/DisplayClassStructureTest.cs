@@ -21,6 +21,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void Test01() { DoNamedTest(); }
   [Test] public void Test02() { DoNamedTest(); }
   [Test] public void Test03() { DoNamedTest(); }
+  [Test] public void Test04() { DoNamedTest(); }
 
   [Test] public void TestClosures01() { DoNamedTest(); }
   [Test] public void TestClosures02() { DoNamedTest(); }
@@ -29,6 +30,18 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClosures05() { DoNamedTest(); }
   [Test] public void TestClosures06() { DoNamedTest(); }
   [Test] public void TestClosures07() { DoNamedTest(); }
+  [Test] public void TestClosures08() { DoNamedTest(); }
+  [Test] public void TestClosures09() { DoNamedTest(); }
+  [Test] public void TestClosures10() { DoNamedTest(); }
+  [Test] public void TestClosures11() { DoNamedTest(); }
+  [Test] public void TestClosures12() { DoNamedTest(); }
+  [Test] public void TestClosures13() { DoNamedTest(); }
+  [Test] public void TestClosures14() { DoNamedTest(); }
+  [Test] public void TestClosures15() { DoNamedTest(); }
+  [Test] public void TestClosures16() { DoNamedTest(); }
+  [Test] public void TestClosures17() { DoNamedTest(); }
+  [Test] public void TestClosures18() { DoNamedTest(); }
+  [Test] public void TestClosures19() { DoNamedTest(); }
 
   [Test] public void TestParameters01() { DoNamedTest(); }
   [Test] public void TestParameters02() { DoNamedTest(); }
@@ -44,6 +57,9 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestRecords03() { DoNamedTest(); }
 
   [Test] public void TestQuery01() { DoNamedTest(); }
+  [Test] public void TestQuery02() { DoNamedTest(); }
+  [Test] public void TestQuery03() { DoNamedTest(); }
+  [Test] public void TestQuery04() { DoNamedTest(); } // note: that's fine
 
   [Test] public void TestLocalFunctions01() { DoNamedTest(); }
   [Test] public void TestLocalFunctions02() { DoNamedTest(); }

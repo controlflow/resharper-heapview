@@ -1,0 +1,74 @@
+﻿Owner: method 'void Closures.M()'
+Closures:
+> query lambda 'IEnumerable<int> (int x1) => XS'
+> query lambda 'IEnumerable<int> ({int x1, int y1} transparent_variable) => XS'
+> query lambda 'bool ({{int x1, int y1} Transparent Variable, int z1} transparent_variable) => x1 > 0'
+> query lambda 'int ({{int x1, int y1} Transparent Variable, int z1} transparent_variable) => x1 + z1'
+> query lambda 'IEnumerable<int> (int x2) => YS.Concat(t1)'
+    Captures:
+    > local variable 't1'
+> query lambda 'int (int x2, int y2) => x2'
+> query lambda 'int (int y22) => y22 + i'
+    Captures:
+    > local variable 'i'
+> query lambda '??? (??? x3) => x3'
+> query lambda 'int (int x3) => x3 / 10 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x4) => x4 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x4) => x4 / 10'
+> query lambda '??? (??? x5) => x5'
+> query lambda 'int (int x5) => x5 / 10'
+> query lambda 'int (IGrouping<int,int> g) => g.Key + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x6) => x6 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int y6) => y6 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x6, int y6) => x6 + y6 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x7) => x7 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int y7) => y7'
+> query lambda 'int (int x7, IEnumerable<int> z7) => x7'
+> query lambda 'IEnumerable<int> (int x8) => ( from y8 in YS select y8)'
+> query lambda 'int (int y8) => y8'
+> query lambda 'IEnumerable<int> (int x9) => ( // closure from y9 in YS....'
+    Captures:
+    > local variable 't7'
+> query lambda 'int (int y9) => y9 + x9 + 123'
+    Captures:
+    > range variable 'x9'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var i = I; var t1 = from x1 in XS from...'
+    Members:
+    > local variable 't1'
+    > local variable 'i'
+    > local variable 't7'
+    Closures:
+    > query lambda 'IEnumerable<int> (int x2) => YS.Concat(t1)'
+    > query lambda 'int (int y22) => y22 + i'
+    > query lambda 'int (int x3) => x3 / 10 + i'
+    > query lambda 'int (int x4) => x4 + i'
+    > query lambda 'int (IGrouping<int,int> g) => g.Key + i'
+    > query lambda 'int (int x6) => x6 + i'
+    > query lambda 'int (int y6) => y6 + i'
+    > query lambda 'int (int x6, int y6) => x6 + y6 + i'
+    > query lambda 'int (int x7) => x7 + i'
+    > query lambda 'IEnumerable<int> (int x9) => ( // closure from y9 in YS....'
+  Display class #2
+    Scope: IQueryParameterPlatform '( // closure from y9 in YS.Concat(t7) se...'
+    Members:
+    > range variable 'x9'
+    Closures:
+    > query lambda 'int (int y9) => y9 + x9 + 123'
+
+========

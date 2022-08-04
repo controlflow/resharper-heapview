@@ -1,0 +1,33 @@
+﻿Owner: class 'ConsoleApplication2.B'
+
+========
+Owner: method 'void ConsoleApplication2.B.S()'
+
+========
+Owner: method 'void ConsoleApplication2.A.Foo(int bbb)'
+Closures:
+> lambda expression 'void () => { S(); Console.WriteLine(aa...'
+    Captures:
+    > local variable 'cc'
+    > parameter 'bbb'
+    > 'this' reference
+> anonymous method 'void () => { Console.WriteLine(s); Con...'
+    Captures:
+    > local variable 's'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ const int aaa = 0; int cc = 2 + 2; Act...'
+    Members:
+    > local variable 'cc'
+    > parameter 'bbb'
+    > 'this' reference
+    Closures:
+    > lambda expression 'void () => { S(); Console.WriteLine(aa...'
+  Display class #2
+    Scope: IBlock '{ S(); Console.WriteLine(aaa); Console.W...'
+    Members:
+    > local variable 's'
+    Closures:
+    > anonymous method 'void () => { Console.WriteLine(s); Con...'
+
+========

@@ -1,0 +1,33 @@
+﻿Owner: method 'void Closures.M7()'
+Closures:
+> lambda expression 'void () => { M(); var i = I; F(() => i...'
+    Captures:
+    > 'this' reference
+> lambda expression 'int () => i'
+    Captures:
+    > local variable 'i'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ F(() => { M(); var i = I; F(() => i); ...'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'void () => { M(); var i = I; F(() => i...'
+  Display class #2
+    Scope: IBlock '{ M(); var i = I; F(() => i); }'
+    Members:
+    > local variable 'i'
+    Closures:
+    > lambda expression 'int () => i'
+
+========
+Owner: method 'int Closures.M()'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========
+Owner: method 'void Closures.F(Action f)'
+
+========

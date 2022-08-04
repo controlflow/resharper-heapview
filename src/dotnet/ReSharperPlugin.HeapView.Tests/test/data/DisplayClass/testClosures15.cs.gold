@@ -1,0 +1,34 @@
+﻿Owner: method 'void Closures.M11(int arg)'
+Closures:
+> lambda expression 'void () => { // note: Action<int> dele...'
+> anonymous method 'void (int u) => { F(t => arg + t + u); }'
+> lambda expression 'int (int t) => arg + t + u'
+    Captures:
+    > parameter 'arg'
+    > parameter 'u'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ F(() => { // note: Action<int> delegat...'
+    Members:
+    > parameter 'arg'
+  Display class #2
+    Scope: IBlock '{ F(t => arg + t + u); }'
+    Members:
+    > parameter 'u'
+    > display class #1
+    Closures:
+    > lambda expression 'int (int t) => arg + t + u'
+
+========
+Owner: method 'void Closures.F(Action f)'
+
+========
+Owner: method 'int Closures.F<T>(Func<T> f)'
+
+========
+Owner: method 'void Closures.F(Action<int> f)'
+
+========
+Owner: method 'void Closures.F(Func<int,int> f)'
+
+========

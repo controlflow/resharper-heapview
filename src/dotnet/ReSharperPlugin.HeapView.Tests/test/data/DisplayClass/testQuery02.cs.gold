@@ -1,0 +1,42 @@
+﻿Owner: method 'void Closures.M()'
+Closures:
+> query lambda 'int (int x1) => i + 123'
+    Captures:
+    > local variable 'i'
+> query lambda 'int (int x2) => x2 + 124'
+> query lambda 'IEnumerable<int> (int x3) => xs'
+    Captures:
+    > local variable 'xs'
+> query lambda 'int (int x3, int y3) => i'
+    Captures:
+    > local variable 'i'
+> query lambda 'IEnumerable<int> (int x4) => XS'
+> query lambda 'int (int x4, int y4) => y4 + x4'
+> query lambda 'IEnumerable<int> (int x5) => XS'
+> query lambda 'IEnumerable<int> ({int x5, int y5} transparent_variable) => YS'
+> query lambda 'int ({int x5, int y5} transparent_variable, int z5) => x5 + y5 + z5'
+> query lambda '{int x6, int y6} (int x6) => 123 + i'
+    Captures:
+    > local variable 'i'
+> query lambda 'IEnumerable<int> ({int x6, int y6} transparent_variable) => XS'
+> query lambda 'int ({int x6, int y6} transparent_variable, int z6) => x6 + y6 + z6'
+> query lambda 'IEnumerable<int> (int x7) => XS'
+> query lambda 'bool ({int x7, int y7} transparent_variable) => x7 > 0'
+> query lambda 'int ({int x7, int y7} transparent_variable) => x7 + y7'
+> query lambda 'IEnumerable<int> (int x8) => XS'
+> query lambda 'IEnumerable<int> ({int x8, int y8} transparent_variable) => YS'
+> query lambda 'IEnumerable<int> ({{int x8, int y8} Transparent Variable, int z8} transparent_variable) => YS'
+> query lambda 'int ({{int x8, int y8} Transparent Variable, int z8} transparent_variable, int w8) => x8 + y8 + z8'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var i = I; var xs = XS; var t1 = from ...'
+    Members:
+    > local variable 'i'
+    > local variable 'xs'
+    Closures:
+    > query lambda 'int (int x1) => i + 123'
+    > query lambda 'IEnumerable<int> (int x3) => xs'
+    > query lambda 'int (int x3, int y3) => i'
+    > query lambda '{int x6, int y6} (int x6) => 123 + i'
+
+========
