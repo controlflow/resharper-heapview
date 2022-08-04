@@ -84,7 +84,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
             case IExpressionBodyOwnerDeclaration:
             case ITopLevelCode:
             {
-              var displayClassStructure = DisplayClassStructure.Build(current);
+              using var displayClassStructure = DisplayClassStructure.Build(current);
               if (displayClassStructure != null)
               {
                 writer.WriteLine(displayClassStructure.Dump());

@@ -23,24 +23,20 @@ using JetBrains.Util.DataStructures.Collections;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: args can be captured - allocation on the first statement
-// todo: prettify data structures use code, probably pool some things
-// todo:
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposable
 {
   private readonly ITreeNode myDeclaration;
   private readonly ITreeNode? myThisReferenceCaptureScopeNode;
 
-  private readonly Stack<ICSharpClosure> myCurrentClosures = new();
-
-  private readonly List<ICSharpClosure> myAllFoundClosures = new();
-  private readonly Dictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = new();
-  private readonly Dictionary<ICSharpClosure, Captures> myClosureToCaptures = new();
-
-  private HashSet<ILocalFunction>? myLocalFunctionsConvertedToDelegates;
+  private readonly PooledStack<ICSharpClosure> myCurrentClosures = PooledStack<ICSharpClosure>.GetInstance();
+  private readonly PooledList<ICSharpClosure> myAllFoundClosures = PooledList<ICSharpClosure>.GetInstance();
+  private readonly PooledDictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = PooledDictionary<ITreeNode, DisplayClass>.GetInstance();
+  private readonly PooledDictionary<ICSharpClosure, Captures> myClosureToCaptures = PooledDictionary<ICSharpClosure, Captures>.GetInstance();
+  private readonly PooledHashSet<ILocalFunction> myLocalFunctionsConvertedToDelegates = PooledHashSet<ILocalFunction>.GetInstance();
 
   private bool myIsScanningNonMainPart;
-  private HashSet<string>? myCaptureNamesToLookInOtherParts;
+  private PooledHashSet<string>? myCaptureNamesToLookInOtherParts;
 
   private DisplayClassStructure(ITreeNode declaration)
   {
@@ -111,7 +107,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       var allDeclarations = record.GetDeclarations();
       if (allDeclarations.Count > 1)
       {
-        var parameterNames = new HashSet<string>(StringComparer.Ordinal);
+        var parameterNames = PooledHashSet<string>.GetInstance();
         foreach (var parameter in parameters)
           parameterNames.Add(parameter.ShortName);
 
@@ -291,11 +287,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         if (localFunctionDeclaration.IsAsync) return false;
         if (localFunctionDeclaration.IsIterator) return false;
 
-        if (myLocalFunctionsConvertedToDelegates != null
-            && myLocalFunctionsConvertedToDelegates.Contains(localFunctionDeclaration.DeclaredElement))
-        {
+        if (myLocalFunctionsConvertedToDelegates.Contains(localFunctionDeclaration.DeclaredElement))
           return false;
-        }
 
         return true; // only directly invoked
       }
@@ -316,6 +309,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       captures.Free();
     }
+
+    myCurrentClosures.Dispose();
+    myAllFoundClosures.Dispose();
+    myScopeToDisplayClass.Dispose();
+    myClosureToCaptures.Dispose();
+    myLocalFunctionsConvertedToDelegates.Dispose();
+
+    myCaptureNamesToLookInOtherParts?.Dispose();
   }
 
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
@@ -380,7 +381,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       if (!IsDirectInvocation(referenceExpression))
       {
-        myLocalFunctionsConvertedToDelegates ??= new HashSet<ILocalFunction>();
         myLocalFunctionsConvertedToDelegates.Add(localFunction);
       }
     }
@@ -445,8 +445,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         break;
       }
 
-      // todo: should we just ignore all the static closures?
-      // todo: should we include recursive calls?
       case ILocalFunction { IsStatic: false } localFunction:
       {
         var localFunctionDeclaration = localFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
@@ -716,8 +714,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private sealed class DisplayClass : IComparable<DisplayClass>
   {
     private DisplayClass() { }
-
-    private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new DisplayClass());
+    private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new());
 
     [Pure]
     public static DisplayClass Create(ITreeNode scopeNode)
@@ -794,8 +791,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private sealed class Captures
   {
     private Captures() { }
-
-    private static readonly ObjectPool<Captures> Pool = new(static _ => new Captures());
+    private static readonly ObjectPool<Captures> Pool = new(static _ => new());
 
     [Pure]
     public static Captures Create()
