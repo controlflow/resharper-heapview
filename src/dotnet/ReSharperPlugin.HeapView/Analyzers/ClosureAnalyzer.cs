@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -20,7 +19,6 @@ using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable ConvertClosureToMethodGroup
-// ReSharper disable RedundantExplicitParamsArrayCreation
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: generics can be introduces by local functions - not a problem in Roslyn
@@ -28,7 +26,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // todo: implement "Implicitly captured closure"
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] {
+  ElementTypes: new[]
+  {
     // constructors, methods, operators, accessors
     typeof(ICSharpFunctionDeclaration),
     // expression-bodied properties/indexers
@@ -38,7 +37,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(IEventDeclaration),
     typeof(IPropertyDeclaration),
   },
-  HighlightingTypes = new[] {
+  HighlightingTypes = new[]
+  {
     typeof(ObjectAllocationHighlighting),
     typeof(ObjectAllocationEvidentHighlighting),
     typeof(ObjectAllocationPossibleHighlighting),
@@ -97,8 +97,10 @@ public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
   }
 
   private static void ReportClosureAllocations(
-    [NotNull] ITreeNode topDeclaration, [CanBeNull] IParametersOwner thisElement,
-    [NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
+    [NotNull] ITreeNode topDeclaration,
+    [CanBeNull] IParametersOwner thisElement,
+    [NotNull] ClosuresInspector inspector,
+    [NotNull] IHighlightingConsumer consumer)
   {
     // report allocations of delegate instances and expression trees
     foreach (var (closure, captures) in inspector.Captures)
@@ -226,9 +228,18 @@ public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
 
     foreach (var element in declaredElements)
     {
-      if (IsParameter(element)) parameters++;
-      else if (element is ILocalVariable) vars++;
-      else if (element is IParametersOwner) hasThis = true;
+      if (IsParameter(element))
+      {
+        parameters++;
+      }
+      else if (element is ILocalVariable)
+      {
+        vars++;
+      }
+      else if (element is IParametersOwner)
+      {
+        hasThis = true;
+      }
 
       // todo: local functions
     }
