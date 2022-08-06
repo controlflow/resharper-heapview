@@ -15,7 +15,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 [SettingsKey(typeof(CodeInspectionSettings), "HeapView Plugin settings")]
 public class HeapViewAnalysisSettings
 {
-  [SettingsEntry(OptimizationsHandling.ShowWithoutOptimizations, "Optimizations handling")]
+  [SettingsEntry(OptimizationsHandling.WithOptimizationsEnabled, "Optimizations handling")]
   public OptimizationsHandling OptimizationsHandling;
 }
 
@@ -29,12 +29,12 @@ internal static class SettingsExtensions
     return settingsStore.GetValue(OptimizationSettingKey);
   }
 
-  private static readonly Key<object> AnalyzeIfOptimizationsAreEnabledKey = new(nameof(AnalyzeIfOptimizationsAreEnabledKey));
+  private static readonly Key<object> IsOptimizationsEnabledForAnalysisResultsKey = new(nameof(IsOptimizationsEnabledForAnalysisResultsKey));
 
   [Pure]
-  public static bool AnalyzeIfOptimizationsAreEnabled(this ElementProblemAnalyzerData data)
+  public static bool IsOptimizationsEnabledForAnalysisResults(this ElementProblemAnalyzerData data)
   {
-    return (bool) data.GetOrCreateDataUnderLock(AnalyzeIfOptimizationsAreEnabledKey, data, static data =>
+    return (bool) data.GetOrCreateDataUnderLock(IsOptimizationsEnabledForAnalysisResultsKey, data, static data =>
     {
       switch (data.SettingsStore.GetValue(OptimizationSettingKey))
       {
@@ -45,7 +45,7 @@ internal static class SettingsExtensions
 
         case OptimizationsHandling.WithOptimizationsEnabled:
         {
-          return BooleanBoxes.False;
+          return BooleanBoxes.True;
         }
 
         case OptimizationsHandling.UseProjectSettings:

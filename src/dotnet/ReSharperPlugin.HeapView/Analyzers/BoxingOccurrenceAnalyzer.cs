@@ -183,23 +183,24 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       if (!qualifierType.IsTypeBoxable())
         return; // errorneous invocation
 
-      if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
+      if (data.IsOptimizationsEnabledForAnalysisResults())
         return;
 
-      // todo: DEBUG-only allocations setting
+      if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
+        return;
 
       if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(new BoxingAllocationHighlighting(
           invokedReferenceExpression.NameIdentifier,
-          "special 'Object.GetType()' method invocation over the value type instance"));
+          "special 'Object.GetType()' method invocation over the value type instance (in DEBUG builds)"));
       }
       else if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
       {
         consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
           invokedReferenceExpression.NameIdentifier,
           "special 'Object.GetType()' method may be invoked over the value type instance "
-          + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
+          + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type (in DEBUG builds)"));
       }
     }
 
