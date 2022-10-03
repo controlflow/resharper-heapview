@@ -12,10 +12,12 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.VisualStudio;
 
-[ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
- Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),
- Export(typeof(EditorFormatDefinition)), Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
- DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), UserVisible(true)]
+[ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+[Export(typeof(EditorFormatDefinition))]
+[Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[UserVisible(true)]
 internal class ReSharperBoxingOccurrenceClassificationDefinition : ClassificationFormatDefinition
 {
   public ReSharperBoxingOccurrenceClassificationDefinition()

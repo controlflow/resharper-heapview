@@ -9,10 +9,12 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Highlightings;
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Boxing allocation",
-  "Highlights language construct or expression where boxing happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Boxing allocation",
+  Description: "Highlights language construct or expression where boxing happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
@@ -28,10 +30,12 @@ public class BoxingAllocationHighlighting : PerformanceHighlightingBase
 }
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Possible boxing allocation",
-  "Highlights language construct or expression where boxing possibly happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Boxing allocation (possible)",
+  Description: "Highlights language construct or expression where boxing possibly happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,

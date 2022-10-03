@@ -9,10 +9,12 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Highlightings;
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Delegate allocation",
-  "Highlights places where delegate instance creation happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Delegate allocation",
+  Description: "Highlights places where delegate instance creation happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,

@@ -9,10 +9,12 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Highlightings;
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation",
-  "Highlights language construct or expression where object allocation happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Object allocation",
+  Description: "Highlights language construct or expression where object allocation happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
@@ -28,10 +30,12 @@ public class ObjectAllocationHighlighting : PerformanceHighlightingBase
 }
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation (evident)",
-  "Highlights object creation expressions where explicit allocation happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Object allocation (evident)",
+  Description: "Highlights object creation expressions where explicit allocation happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
@@ -47,10 +51,12 @@ public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
 }
 
 [RegisterConfigurableSeverity(
-  SEVERITY_ID, null,
-  HeapViewHighlightingsGroupIds.ID, "Object allocation (possible)",
-  "Highlights language construct where object allocation can possibly happens",
-  Severity.HINT)]
+  ID: SEVERITY_ID,
+  CompoundItemName: null,
+  Group: HeapViewHighlightingsGroupIds.ID,
+  Title: "Object allocation (possible)",
+  Description: "Highlights language construct where object allocation can possibly happens",
+  DefaultSeverity: Severity.HINT)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,

@@ -10,40 +10,34 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Settings;
 using JetBrains.Util;
 
-namespace ReSharperPlugin.HeapView.Analyzers;
+namespace ReSharperPlugin.HeapView.Settings;
 
 [SettingsKey(typeof(CodeInspectionSettings), "HeapView Plugin settings")]
 public class HeapViewAnalysisSettings
 {
-  [SettingsEntry(OptimizationsHandling.ShowWithoutOptimizations, "Optimizations handling")]
+  [SettingsEntry(OptimizationsHandling.AnalyzeAssumingOptimizationsAreEnabled, "Optimizations handling")]
   public OptimizationsHandling OptimizationsHandling;
 }
 
-internal static class SettingsExtensions
+internal static class HeapViewAnalysisSettingsExtensions
 {
-  private static readonly Expression<Func<HeapViewAnalysisSettings, OptimizationsHandling>> OptimizationSettingKey = settings => settings.OptimizationsHandling;
-
-  [Pure]
-  public static OptimizationsHandling GetOptimizationsHandling(this IContextBoundSettingsStore settingsStore)
-  {
-    return settingsStore.GetValue(OptimizationSettingKey);
-  }
+  private static readonly Expression<Func<HeapViewAnalysisSettings, OptimizationsHandling>> OptimizationSettingKey = s => s.OptimizationsHandling;
 
   private static readonly Key<object> AnalyzeIfOptimizationsAreEnabledKey = new(nameof(AnalyzeIfOptimizationsAreEnabledKey));
 
   [Pure]
-  public static bool AnalyzeIfOptimizationsAreEnabled(this ElementProblemAnalyzerData data)
+  public static bool AnalyzeCodeLikeIfOptimizationsAreEnabled(this ElementProblemAnalyzerData data)
   {
     return (bool) data.GetOrCreateDataUnderLock(AnalyzeIfOptimizationsAreEnabledKey, data, static data =>
     {
       switch (data.SettingsStore.GetValue(OptimizationSettingKey))
       {
-        case OptimizationsHandling.ShowWithoutOptimizations:
+        case OptimizationsHandling.AnalyzeAssumingOptimizationsAreEnabled:
         {
-          return BooleanBoxes.False;
+          return BooleanBoxes.True;
         }
 
-        case OptimizationsHandling.WithOptimizationsEnabled:
+        case OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled:
         {
           return BooleanBoxes.False;
         }

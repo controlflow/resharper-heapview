@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
+using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
@@ -186,7 +187,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
         return;
 
-      // todo: DEBUG-only allocations setting
+      if (data.AnalyzeCodeLikeIfOptimizationsAreEnabled())
+        return; // only allocates in DEBUG builds
 
       if (qualifierType.IsValueType())
       {

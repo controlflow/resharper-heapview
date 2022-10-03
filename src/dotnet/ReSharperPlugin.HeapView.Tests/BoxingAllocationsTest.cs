@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Highlightings;
+using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Tests;
 
@@ -63,10 +64,12 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestStructVirtualMethodInvocation05() { DoNamedTest2(); }
   [Test] public void TestStructVirtualMethodInvocation06() { DoNamedTest2(); }
 
-  // todo: only in non-optimized code
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestStructGetTypeInvocation01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation03() { DoNamedTest2(); }
+  [Test] public void TestStructGetTypeInvocation04() { DoNamedTest2(); }
 
   [Test] public void TestStructMethodGroup01() { DoNamedTest2(); }
   [Test] public void TestStructMethodGroup02() { DoNamedTest2(); }
