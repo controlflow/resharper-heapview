@@ -910,7 +910,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var castExpression = CastExpressionNavigator.GetByOp(unwrappedExpression);
     if (castExpression != null)
     {
-      return false; // filter out explicit casts
+      return false; // filter out expressions under explicit casts
     }
 
     var tupleComponent = TupleComponentNavigator.GetByValue(unwrappedExpression);
@@ -939,6 +939,14 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         return false;
     }
 
+    // obj is 42
+    // obj is > 42
+    if (ConstantOrTypePatternNavigator.GetByExpression(unwrappedExpression) != null
+        || RelationalPatternNavigator.GetByOperand(unwrappedExpression) != null)
+    {
+      return false;
+    }
+
     return true;
   }
 
@@ -961,6 +969,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     var dispatchType = typeCheckPattern.GetDispatchType();
     var targetType = CSharpTypeFactory.CreateType(typeCheckTypeUsage);
+
+
+
+    //Boxing.TryFind(, )
 
     var classification = CanTypeCheckIntroduceBoxing(dispatchType, targetType, data);
     if (classification == BoxingClassification.Not)
@@ -988,6 +1000,23 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       {
         return recursivePattern.HasSubpatterns();
       }
+
+      // structValue is I and { P: 42 }
+      var containingParenthesizedPattern = typeCheckPattern.GetContainingParenthesizedPattern();
+
+      while (BinaryPatternNavigator.GetByRightPattern(containingParenthesizedPattern) is { } unwrappedRight)
+      {
+        containingParenthesizedPattern = unwrappedRight.GetContainingParenthesizedPattern();
+      }
+
+      var binaryPattern = BinaryPatternNavigator.GetByLeftPattern(containingParenthesizedPattern);
+      if (binaryPattern != null)
+      {
+        return binaryPattern.RightPattern != null;
+      }
+
+      // _ part of and pattern
+      // _ part of or pattern?
 
       return false;
     }
@@ -1021,20 +1050,24 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     [NotNull] IType dispatchType, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)
   {
     // only in generic code, statically known type checks are optimized by C# compiler
+    // todo: JIT emits the specialization at runtime, source type is unknown for us?
     if (!dispatchType.IsTypeParameterType()) return BoxingClassification.Not;
 
     // .NET Framework only
     var runtime = data.GetTargetRuntime();
     if (runtime != TargetRuntime.NetFramework) return BoxingClassification.Not;
 
-    if (targetType.IsValueType()
+    if (targetType.IsValueType() // todo: int
         || targetType.IsInterfaceType()
         // unconstrainedT is System.ValueType
         || (targetType.IsSystemValueType() && dispatchType.Classify == TypeClassification.UNKNOWN))
     {
-      return dispatchType.Classify == TypeClassification.VALUE_TYPE
-        ? BoxingClassification.Definitely
-        : BoxingClassification.Possibly;
+      if (dispatchType.Classify == TypeClassification.VALUE_TYPE)
+        return BoxingClassification.Definitely;
+
+
+
+      return BoxingClassification.Possibly;
     }
 
     return BoxingClassification.Not;
