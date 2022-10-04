@@ -43,6 +43,14 @@ public class PatternMatchingBoxingTests
     Allocations.AssertAllocates(() => e is object o ? o : null);
   }
 
+  [Test]
+  public void BinaryPatterns()
+  {
+    var e = SomeEnum.A;
+    Allocations.AssertAllocates(() => e is object and var o ? o : null);
+    Allocations.AssertAllocates(() => e is _ and object and var o ? o : null);
+  }
+
   private struct SomeStruct { }
   private enum SomeEnum { A }
 }

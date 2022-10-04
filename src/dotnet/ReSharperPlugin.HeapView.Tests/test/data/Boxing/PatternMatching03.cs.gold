@@ -1,0 +1,22 @@
+﻿using System;
+// ReSharper disable PatternAlwaysMatches
+// ReSharper disable UnusedVariable
+// ReSharper disable MergeAndPattern
+// ReSharper disable RedundantDiscardDesignation
+#pragma warning disable CS8794
+
+struct Patterns : I, I2
+{
+  public int Property => 0;
+
+  public bool Pattern0() => this is I _;
+  public bool Pattern1() => this is |I|(0) _ and var o; // yes
+  public bool Pattern2() => this is { } and |I|(1) and var o; // yes
+  public bool Pattern3() => this is I or I2;
+}
+
+interface I { int Property { get; } }
+interface I2 { }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type

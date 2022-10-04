@@ -34,6 +34,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   {
     typeof(ICSharpExpression),
     typeof(IPatternWithTypeUsage),
+    typeof(IConstantOrTypePattern),
     typeof(IForeachStatement),
     typeof(IDeconstructionPatternClause),
     typeof(IVarDeconstructionPattern),
@@ -116,9 +117,15 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckLinqQueryCastConversion(queryCastReferenceProvider, data, consumer);
         break;
 
-      //
+      // structValue is I iface
+      // structValue is I { Property: 42 }
       case IPatternWithTypeUsage typeCheckPattern:
-        CheckPatternMatchingConversion(typeCheckPattern, data, consumer);
+        CheckPatternMatchingConversion(typeCheckPattern, typeCheckPattern.TypeUsage, data, consumer);
+        break;
+
+      // structValue is I and { Property: 42 }
+      case IConstantOrTypePattern typePattern when typePattern.GetKind() == ConstantOrTypePatternKind.TypeCheck:
+        CheckPatternMatchingConversion(typePattern, typePattern.Expression, data, consumer);
         break;
 
       case IIsExpression isExpression:
@@ -960,24 +967,24 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckPatternMatchingConversion(
-    [NotNull] IPatternWithTypeUsage typeCheckPattern,
+    [NotNull] IPattern typeCheckPattern,
+    [CanBeNull] ITreeNode typeCheckTypeUsage,
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
-    var typeCheckTypeUsage = typeCheckPattern.TypeUsage;
     if (typeCheckTypeUsage == null) return;
 
     var dispatchType = typeCheckPattern.GetDispatchType();
-    var targetType = CSharpTypeFactory.CreateType(typeCheckTypeUsage);
-
-
+    var targetType = typeCheckPattern.GetPatternType();
 
     //Boxing.TryFind(, )
 
     var classification = CanTypeCheckIntroduceBoxing(dispatchType, targetType, data);
-    if (classification == BoxingClassification.Not)
+    if (classification == BoxingClassification.Not) // todo: what this means?
     {
-      if (IsVariableOrTemporaryForBoxedValueRequired())
+      // x is T t
+      // x is T { ... }
+      if (IsVariableOrTemporaryForBoxedValueRequired(typeCheckPattern))
       {
         classification = ClassifyBoxingInTypeCheckPattern(dispatchType, targetType);
       }
@@ -986,40 +993,37 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     ReportBoxingAllocation(
       dispatchType, targetType, typeCheckTypeUsage, classification, consumer,
       action: "type testing '{0}' value for '{1}' type");
+  }
 
-    bool IsVariableOrTemporaryForBoxedValueRequired()
+  private static bool IsVariableOrTemporaryForBoxedValueRequired([NotNull] IPattern typeCheckPattern)
+  {
+    // structValue is I i
+    if (typeCheckPattern is IPatternWithDesignation { Designation: ISingleVariableDesignation or IParenthesizedVariableDesignation })
     {
-      switch (typeCheckPattern.Designation)
-      {
-        case ISingleVariableDesignation:
-        case IParenthesizedVariableDesignation:
-          return true;
-      }
-
-      if (typeCheckPattern is IRecursivePattern recursivePattern)
-      {
-        return recursivePattern.HasSubpatterns();
-      }
-
-      // structValue is I and { P: 42 }
-      var containingParenthesizedPattern = typeCheckPattern.GetContainingParenthesizedPattern();
-
-      while (BinaryPatternNavigator.GetByRightPattern(containingParenthesizedPattern) is { } unwrappedRight)
-      {
-        containingParenthesizedPattern = unwrappedRight.GetContainingParenthesizedPattern();
-      }
-
-      var binaryPattern = BinaryPatternNavigator.GetByLeftPattern(containingParenthesizedPattern);
-      if (binaryPattern != null)
-      {
-        return binaryPattern.RightPattern != null;
-      }
-
-      // _ part of and pattern
-      // _ part of or pattern?
-
-      return false;
+      return true;
     }
+
+    // structValue is I { P: 42 }
+    if (typeCheckPattern is IRecursivePattern recursivePattern)
+    {
+      return recursivePattern.HasSubpatterns();
+    }
+
+    // structValue is I and { P: 42 }
+    var containingParenthesizedPattern = typeCheckPattern.GetContainingParenthesizedPattern();
+
+    while (AndPatternNavigator.GetByRightPattern(containingParenthesizedPattern) is { } unwrappedByRight)
+    {
+      containingParenthesizedPattern = unwrappedByRight.GetContainingParenthesizedPattern();
+    }
+
+    var andPatternByRight = AndPatternNavigator.GetByLeftPattern(containingParenthesizedPattern);
+    if (andPatternByRight != null)
+    {
+      return andPatternByRight.RightPattern != null;
+    }
+
+    return false;
   }
 
   private static void CheckTypeCheckBoxing(

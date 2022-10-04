@@ -1,0 +1,29 @@
+﻿#pragma warning disable 183
+using System;
+// ReSharper disable PatternAlwaysMatches
+// ReSharper disable BuiltInTypeReferenceStyle
+// ReSharper disable UnusedVariable
+// ReSharper disable RedundantPropertyPatternClause
+
+struct Patterns : I
+{
+  public int Property => 0;
+
+  public bool Pattern1() => this is I;
+  public bool Pattern2() => this is |I|(0) i; // yes
+  public bool Pattern3() => this is object;
+  public bool Pattern4() => this is Object;
+  public bool Pattern5() => this is |object|(1) o; // yes
+  public bool Pattern6() => this is |Object|(2) o; // yes
+  public bool Pattern7() => this is I { } _;
+  public bool Pattern8() => this is |I|(3) { } i; // yes
+  public bool Pattern9() => this is |I|(4) { Property: 42 }; // yes
+}
+
+interface I { int Property { get; } }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'object' type requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'object' type requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
