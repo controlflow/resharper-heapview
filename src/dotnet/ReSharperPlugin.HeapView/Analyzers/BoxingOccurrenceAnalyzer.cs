@@ -6,7 +6,6 @@ using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Types;
@@ -23,6 +22,7 @@ using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+// todo: completely missed the boxing in `s as I` expression
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 
@@ -838,11 +838,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-  #region Pattern-matching conversions
-
-  // ..
-
-  #endregion
   #region Implicit conversions in expressions
 
   private static void CheckExpressionImplicitConversion(
@@ -850,7 +845,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
-    if (!IsImplicitConversionActuallyHappens(expression)) return;
+    if (!IsImplicitValueConversionActuallyHappens(expression)) return;
 
     var sourceExpressionType = expression.GetExpressionType();
     if (sourceExpressionType.IsUnknown) return;
@@ -895,7 +890,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsImplicitConversionActuallyHappens([NotNull] ICSharpExpression expression)
+  private static bool IsImplicitValueConversionActuallyHappens([NotNull] ICSharpExpression expression)
   {
     switch (expression)
     {
@@ -955,13 +950,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-
-  private enum BoxingClassification
-  {
-    Definitely,
-    Possibly,
-    Not
-  }
+  #region Type check conversions
 
   private static void CheckPatternMatchingConversion(
     [NotNull] IPattern typeCheckPattern,
@@ -987,18 +976,20 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     // x is T t
     // x is T { ... }
-    if (IsVariableOrTemporaryForBoxedValueRequired(typeCheckPattern))
+    if (IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(typeCheckPattern)
+        && IsBoxingInTypeCheckPattern(sourceType, targetType, out isPossible))
     {
+      if (typeCheckPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
+      var boxing = Boxing.Create(
+        sourceType, targetType, typeCheckTypeUsage, isPossible,
+        messageFormat: "type testing '{0}' value for '{1}' type and using the result");
 
-      var classification = ClassifyBoxingInTypeCheckPattern(sourceType, targetType);
-      ReportBoxingAllocation(
-        sourceType, targetType, typeCheckTypeUsage, classification, consumer,
-        action: "type testing '{0}' value for '{1}' type and using the result");
+      boxing.Report(consumer);
     }
   }
 
-  private static bool IsVariableOrTemporaryForBoxedValueRequired([NotNull] IPattern typeCheckPattern)
+  private static bool IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable([NotNull] IPattern typeCheckPattern)
   {
     // structValue is I i
     if (typeCheckPattern is IPatternWithDesignation { Designation: ISingleVariableDesignation or IParenthesizedVariableDesignation })
@@ -1053,73 +1044,37 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static BoxingClassification ClassifyBoxingInTypeCheckPattern(
-    [NotNull] IType dispatchType, [NotNull] IType targetType)
+  private static bool IsBoxingInTypeCheckPattern(
+    [NotNull] IType sourceType, [NotNull] IType targetType, out bool isPossible)
   {
-    var sourceClassification = dispatchType.Classify;
-    if (sourceClassification == TypeClassification.REFERENCE_TYPE) return BoxingClassification.Not;
+    isPossible = false;
 
-    if (!targetType.IsReferenceType()) return BoxingClassification.Not;
+    var sourceClassification = sourceType.Classify;
+    if (sourceClassification == TypeClassification.REFERENCE_TYPE)
+      return false;
+
+    if (!targetType.IsReferenceType())
+      return false;
 
     if (targetType.IsObject()
         || targetType.IsSystemValueType()
         || targetType.IsSystemEnum()
         || targetType.IsInterfaceType())
     {
-      return sourceClassification == TypeClassification.VALUE_TYPE
-        ? BoxingClassification.Definitely
-        : BoxingClassification.Possibly;
+      // tStruct is object o
+      // tStruct is System.ValueType vt
+      // tStruct is System.Enum e
+      // tStruct is I i
+      isPossible = sourceClassification != TypeClassification.VALUE_TYPE;
+      return true;
     }
 
-    return BoxingClassification.Not;
+    // tUnconstrained is int x
+    // tStruct is int x
+    return false;
   }
 
-  private static void ReportBoxingAllocation(
-    [NotNull] IExpressionType sourceExpressionType,
-    [NotNull] IType targetType,
-    [NotNull] ITreeNode nodeToHighlight,
-    BoxingClassification boxingClassification,
-    [NotNull] IHighlightingConsumer consumer,
-    string action = "conversion from '{0}' to '{1}'")
-  {
-    if (boxingClassification == BoxingClassification.Not) return;
-
-    if (nodeToHighlight.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-    var range = nodeToHighlight is ICSharpExpression expression
-      ? expression.GetExpressionRange()
-      : nodeToHighlight.GetDocumentRange();
-
-    if (boxingClassification == BoxingClassification.Definitely)
-    {
-      var description = BakeDescriptionWithTypes(
-        action + " requires boxing of the value type", sourceExpressionType, targetType);
-
-      consumer.AddHighlighting(new BoxingAllocationHighlighting(nodeToHighlight, description), range);
-    }
-    else
-    {
-      var description = BakeDescriptionWithTypes(
-        action + " possibly requires boxing of the value type", sourceExpressionType, targetType);
-
-      consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(nodeToHighlight, description), range);
-    }
-  }
-
-  [NotNull, StringFormatMethod("format")]
-  private static string BakeDescriptionWithTypes([NotNull] string format, [NotNull] params IExpressionType[] types)
-  {
-    var args = Array.ConvertAll(types, expressionType =>
-    {
-      if (expressionType is IType type)
-        return (object) type.GetPresentableName(CSharpLanguage.Instance.NotNull());
-
-      return expressionType.GetLongPresentableName(CSharpLanguage.Instance.NotNull());
-    });
-
-    return string.Format(format, args);
-  }
-
+  #endregion
   #region Compiler optimizations
 
   [Pure]
