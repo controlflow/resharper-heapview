@@ -102,6 +102,7 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
   [Test] public void TestPatternMatchingFramework04() { DoNamedTest2(); }
   [Test] public void TestPatternMatchingFramework05() { DoNamedTest2(); }
   [Test] public void TestPatternMatchingFramework06() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework07() { DoNamedTest2(); }
 }
 
 [TestNet60]

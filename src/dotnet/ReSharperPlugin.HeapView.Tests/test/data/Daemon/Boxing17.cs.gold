@@ -17,10 +17,11 @@ class C {
 
   public bool P4<T>(T t) => t is |I|(2) i; // possible
   public bool P5<T>(T t) where T : struct => t is |I|(3) i; // boxing
-  public bool P6<T, U>(T t) where U : T => t is U u; // very unlikely
+  public bool P6<T, U>(T t) where U : T => t is |U|(4) u; // very unlikely
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of the value type
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
-(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type possibly requires boxing of the value type
-(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'U' type in .NET Framework projects possibly requires boxing of the value type

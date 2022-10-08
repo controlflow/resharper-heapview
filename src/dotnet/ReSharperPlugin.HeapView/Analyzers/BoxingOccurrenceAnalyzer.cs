@@ -975,6 +975,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     // in .NET Framework type test alone can produce boxing allocations
     if (CheckTypeTestIntroducesBoxing(sourceType, data, out var isPossible))
     {
+      if (typeCheckPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
+
       var boxing = Boxing.Create(
         sourceType, targetType, typeCheckTypeUsage, isPossible,
         messageFormat: "type testing '{0}' value for '{1}' type in .NET Framework projects");
@@ -987,6 +989,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     // x is T { ... }
     if (IsVariableOrTemporaryForBoxedValueRequired(typeCheckPattern))
     {
+
+
       var classification = ClassifyBoxingInTypeCheckPattern(sourceType, targetType);
       ReportBoxingAllocation(
         sourceType, targetType, typeCheckTypeUsage, classification, consumer,
