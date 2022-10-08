@@ -1,0 +1,33 @@
+﻿using System;
+using System.Text;
+
+class TypeTests
+{
+  public bool Test01<T>(T t)
+  {
+    switch (t)
+    {
+      case int: // possible
+      case Enum: // possible
+      case IConvertible: // possible
+      case ValueType: // possible
+      case StringBuilder: // possible
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public bool Test02<T>(T t) where T : struct 
+  {
+    switch (t)
+    {
+      case int: // yes
+      case Enum: // yes
+      case IConvertible: // yes
+        return true;
+      default:
+        return false;
+    }
+  }
+}

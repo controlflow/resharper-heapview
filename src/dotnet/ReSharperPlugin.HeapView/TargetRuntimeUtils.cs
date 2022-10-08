@@ -12,20 +12,19 @@ public static class TargetRuntimeUtils
   [Pure]
   public static TargetRuntime GetTargetRuntime([NotNull] this ElementProblemAnalyzerData data)
   {
-    return (TargetRuntime)
-      data.GetOrCreateDataNoLock(RuntimeKey, data.File, static file =>
-      {
-        var psiModule = file.GetPsiModule();
-        var frameworkId = psiModule.TargetFrameworkId;
+    return (TargetRuntime) data.GetOrCreateDataNoLock(RuntimeKey, data.File, static file =>
+    {
+      var psiModule = file.GetPsiModule();
+      var frameworkId = psiModule.TargetFrameworkId;
 
-        if (frameworkId.IsNetCoreApp || frameworkId.IsNetCore)
-          return Boxed.From(TargetRuntime.NetCore);
+      if (frameworkId.IsNetCoreApp || frameworkId.IsNetCore)
+        return Boxed.From(TargetRuntime.NetCore);
 
-        if (frameworkId.IsNetFramework)
-          return Boxed.From(TargetRuntime.NetFramework);
+      if (frameworkId.IsNetFramework)
+        return Boxed.From(TargetRuntime.NetFramework);
 
-        return Boxed.From(TargetRuntime.Unknown);
-      });
+      return Boxed.From(TargetRuntime.Unknown);
+    });
   }
 }
 

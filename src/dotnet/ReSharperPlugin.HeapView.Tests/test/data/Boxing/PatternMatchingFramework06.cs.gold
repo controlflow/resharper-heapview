@@ -1,0 +1,23 @@
+﻿class TypeTests
+{
+  public bool Test01<TSource, TTarget>(TSource t) => t is |TTarget|(0); // possible
+  public bool Test02<TSource, TTarget>(TSource t) where TSource : struct => t is |TTarget|(1); // yes
+  public bool Test03<TSource, TTarget>(TSource t) where TSource : class => t is TTarget;
+
+  // where TTarget : struct
+  public bool Test04<TSource, TTarget>(TSource t) where TTarget : struct => t is |TTarget|(2); // possible
+  public bool Test05<TSource, TTarget>(TSource t) where TSource : struct where TTarget : struct => t is |TTarget|(3); // yes
+  public bool Test06<TSource, TTarget>(TSource t) where TSource : class where TTarget : struct => t is TTarget;
+
+  // where TTarget : class
+  public bool Test07<TSource, TTarget>(TSource t) where TTarget : class => t is |TTarget|(4); // possible
+  public bool Test08<TSource, TTarget>(TSource t) where TSource : struct where TTarget : class => t is |TTarget|(5); // yes
+  public bool Test09<TSource, TTarget>(TSource t) where TSource : class where TTarget : class => t is TTarget;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects possibly requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: type testing 'TSource' value for 'TTarget' type in .NET Framework projects requires boxing of the value type

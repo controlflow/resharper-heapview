@@ -119,17 +119,14 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
       // structValue is I iface
       // structValue is I { Property: 42 }
-      case IPatternWithTypeUsage typeCheckPattern:
-        CheckPatternMatchingConversion(typeCheckPattern, typeCheckPattern.TypeUsage, data, consumer);
+      case IPatternWithTypeUsage { TypeUsage: { } typeUsage } typeCheckPattern:
+        CheckPatternMatchingConversion(typeCheckPattern, typeUsage, data, consumer);
         break;
 
-      // structValue is I and { Property: 42 }
+      // tUnconstrained is int
+      // tUnconstrained is I iface
       case IConstantOrTypePattern typePattern when typePattern.GetKind() == ConstantOrTypePatternKind.TypeCheck:
         CheckPatternMatchingConversion(typePattern, typePattern.Expression, data, consumer);
-        break;
-
-      case IIsExpression isExpression:
-        CheckTypeCheckBoxing(isExpression, data, consumer);
         break;
 
       case IParenthesizedExpression:
@@ -968,31 +965,33 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
   private static void CheckPatternMatchingConversion(
     [NotNull] IPattern typeCheckPattern,
-    [CanBeNull] ITreeNode typeCheckTypeUsage,
+    [NotNull] ITreeNode typeCheckTypeUsage,
     [NotNull] ElementProblemAnalyzerData data,
     [NotNull] IHighlightingConsumer consumer)
   {
-    if (typeCheckTypeUsage == null) return;
-
-    var dispatchType = typeCheckPattern.GetDispatchType();
+    var sourceType = typeCheckPattern.GetDispatchType();
     var targetType = typeCheckPattern.GetPatternType();
 
-    //Boxing.TryFind(, )
-
-    var classification = CanTypeCheckIntroduceBoxing(dispatchType, targetType, data);
-    if (classification == BoxingClassification.Not) // todo: what this means?
+    // in .NET Framework type test alone can produce boxing allocations
+    if (CheckTypeTestIntroducesBoxing(sourceType, data, out var isPossible))
     {
-      // x is T t
-      // x is T { ... }
-      if (IsVariableOrTemporaryForBoxedValueRequired(typeCheckPattern))
-      {
-        classification = ClassifyBoxingInTypeCheckPattern(dispatchType, targetType);
-      }
+      var boxing = Boxing.Create(
+        sourceType, targetType, typeCheckTypeUsage, isPossible,
+        messageFormat: "type testing '{0}' value for '{1}' type in .NET Framework projects");
+
+      boxing.Report(consumer);
+      return;
     }
 
-    ReportBoxingAllocation(
-      dispatchType, targetType, typeCheckTypeUsage, classification, consumer,
-      action: "type testing '{0}' value for '{1}' type");
+    // x is T t
+    // x is T { ... }
+    if (IsVariableOrTemporaryForBoxedValueRequired(typeCheckPattern))
+    {
+      var classification = ClassifyBoxingInTypeCheckPattern(sourceType, targetType);
+      ReportBoxingAllocation(
+        sourceType, targetType, typeCheckTypeUsage, classification, consumer,
+        action: "type testing '{0}' value for '{1}' type and using the result");
+    }
   }
 
   private static bool IsVariableOrTemporaryForBoxedValueRequired([NotNull] IPattern typeCheckPattern)
@@ -1026,55 +1025,27 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return false;
   }
 
-  private static void CheckTypeCheckBoxing(
-    [NotNull] IIsExpression isExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
-  {
-    var isExpressionKind = isExpression.GetKind(unresolvedIsTypeCheck: false);
-    if (isExpressionKind != IsExpressionKind.TypeCheck) return;
-
-    var dispatchType = isExpression.Operand?.GetExpressionType().ToIType();
-    if (dispatchType == null) return;
-
-    var targetType = isExpression.IsType;
-
-    var typeCheckTypeUsageNode = isExpression.GetTypeCheckTypeUsageNode();
-    if (typeCheckTypeUsageNode == null) return;
-
-    var classification = CanTypeCheckIntroduceBoxing(dispatchType, targetType, data);
-
-    ReportBoxingAllocation(
-      dispatchType, targetType, typeCheckTypeUsageNode, classification, consumer,
-      action: "type testing '{0}' value for '{1}' type");
-  }
-
   [Pure]
-  private static BoxingClassification CanTypeCheckIntroduceBoxing(
-    [NotNull] IType dispatchType, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)
+  private static bool CheckTypeTestIntroducesBoxing(
+    [NotNull] IType sourceType, [NotNull] ElementProblemAnalyzerData data, out bool isPossible)
   {
-    // only in generic code, statically known type checks are optimized by C# compiler
-    // todo: JIT emits the specialization at runtime, source type is unknown for us?
-    if (!dispatchType.IsTypeParameterType()) return BoxingClassification.Not;
+    isPossible = false;
 
-    // .NET Framework only
+    // .NET Framework x86/x64 JITs do not optimize the 'box !T + isinst' pattern in IL code
+    // so type checks of unconstained type parameter types can produce boxings in runtime
+    if (!sourceType.IsTypeParameterType()) return false;
+
+    // it can't be boxing if source type parameter type is a reference type
+    var sourceClassification = sourceType.Classify;
+    if (sourceClassification == TypeClassification.REFERENCE_TYPE) return false;
+
+    // .NET Core JIT optimizes all isinst type checks
     var runtime = data.GetTargetRuntime();
-    if (runtime != TargetRuntime.NetFramework) return BoxingClassification.Not;
+    if (runtime != TargetRuntime.NetFramework) return false;
 
-    if (targetType.IsValueType() // todo: int
-        || targetType.IsInterfaceType()
-        // unconstrainedT is System.ValueType
-        || (targetType.IsSystemValueType() && dispatchType.Classify == TypeClassification.UNKNOWN))
-    {
-      if (dispatchType.Classify == TypeClassification.VALUE_TYPE)
-        return BoxingClassification.Definitely;
-
-
-
-      return BoxingClassification.Possibly;
-    }
-
-    return BoxingClassification.Not;
+    // note: this boxing detection is actually not dependent on the target type! all type checks really perform 'box !T'
+    isPossible = sourceClassification != TypeClassification.VALUE_TYPE;
+    return true;
   }
 
   [Pure]
@@ -1176,7 +1147,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #endregion
   #region Runtime optimizations
 
-  // todo: not tested
   [Pure]
   private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression)
   {
@@ -1199,7 +1169,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return false;
   }
 
-  // todo: not tested
+  // todo: not tested - boxing and immediate use
   [Pure]
   private static bool IsBoxingEliminatedAtRuntimeForCast(
     [NotNull] ICastExpression castExpression, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)

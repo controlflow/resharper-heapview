@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -181,6 +180,17 @@ public abstract class Boxing
     }
   }
 
+  [NotNull, Pure]
+  public static Boxing Create(
+    [NotNull] IType sourceType,
+    [NotNull] IType targetType,
+    [NotNull] ITreeNode correspondingNode,
+    bool isPossible = false,
+    [NotNull] string messageFormat = "conversion from '{0}' to '{1}'")
+  {
+    return new Ordinary(sourceType, targetType, correspondingNode, isPossible, messageFormat);
+  }
+
   [CanBeNull] private static HashSet<ITypeParameter> TypeParametersInProgress;
 
   [CanBeNull]
@@ -251,14 +261,19 @@ public abstract class Boxing
 
   private sealed class Ordinary : Boxing
   {
-    public Ordinary(IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode, bool isPossible = false)
+    public Ordinary(
+      [NotNull] IExpressionType sourceExpressionType,
+      [NotNull] IType targetType,
+      [NotNull] ITreeNode correspondingNode,
+      bool isPossible = false,
+      [NotNull] string messageFormat = "conversion from '{0}' to '{1}'")
       : base(correspondingNode)
     {
       IsPossible = isPossible;
 
       var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
       var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
-      Reason = $"conversion from '{sourceTypeText}' to '{targetTypeText}'";
+      Reason = string.Format(messageFormat, sourceTypeText, targetTypeText);
     }
 
     public string Reason { get; }

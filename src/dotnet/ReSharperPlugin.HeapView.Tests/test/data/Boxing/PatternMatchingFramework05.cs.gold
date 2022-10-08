@@ -1,0 +1,42 @@
+﻿using System;
+using System.Text;
+
+class TypeTests
+{
+  public bool Test01<T>(T t)
+  {
+    switch (t)
+    {
+      case |int|(0): // possible
+      case |Enum|(1): // possible
+      case |IConvertible|(2): // possible
+      case |ValueType|(3): // possible
+      case |StringBuilder|(4): // possible
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public bool Test02<T>(T t) where T : struct 
+  {
+    switch (t)
+    {
+      case |int|(5): // yes
+      case |Enum|(6): // yes
+      case |IConvertible|(7): // yes
+        return true;
+      default:
+        return false;
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects possibly requires boxing of the value type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'Enum' type in .NET Framework projects possibly requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IConvertible' type in .NET Framework projects possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects possibly requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'StringBuilder' type in .NET Framework projects possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'Enum' type in .NET Framework projects requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IConvertible' type in .NET Framework projects requires boxing of the value type

@@ -25,8 +25,8 @@ struct S : I {
   }
 
   public void G<T>(T t) {
-    if (t is object) { }
     // possible boxing in .net fw
+    if (t is object) { }
     if (t is ValueType _) { }
     if (t is ValueType) { }
     if (t is I { }) { }
@@ -45,10 +45,10 @@ struct S : I {
   }
 
   public void V<T>(T t) where T : struct {
+    // definite boxing in .net fw
     if (t is object) { }
     if (t is ValueType) { }
     if (t is ValueType _) { }
-    // possible boxing in .net fw
     if (t is I) { }
     if (t is I { } _) { }
     if (t is I2 { }) { }
@@ -56,7 +56,7 @@ struct S : I {
 
     var ss = t switch { I _ => 1, I2 _ => 2, _ => -1 };
 
-    // possible boxing
+    // definite boxing
     if (t is object o) { }
     if (t is ValueType v) { }
     if (t is Enum e) { }

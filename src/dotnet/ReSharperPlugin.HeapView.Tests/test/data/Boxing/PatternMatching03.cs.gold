@@ -18,5 +18,5 @@ struct Patterns : I, I2
 interface I { int Property { get; } }
 interface I2 { }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
-(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type requires boxing of the value type
+(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type and using the result requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'Patterns' value for 'I' type and using the result requires boxing of the value type

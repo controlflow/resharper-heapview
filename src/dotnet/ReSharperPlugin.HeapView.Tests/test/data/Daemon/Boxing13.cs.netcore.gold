@@ -11,9 +11,9 @@ class C {
     if (t is { }) { }
     if (ReferenceEquals(t, null)) { }
     t?.|ToString|(0)(); // optimized ?, possible callvirt
-    if (t is object) { } // optimized
 
     // type checks are boxings in .net fw
+    if (t is object) { }
     if (t is IComparable) { }
     if (t is IEquatable<T> _) { }
     if (t is ValueType { }) { }
@@ -31,4 +31,4 @@ class C {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
+(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method

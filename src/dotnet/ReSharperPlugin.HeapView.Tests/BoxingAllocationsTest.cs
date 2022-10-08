@@ -98,6 +98,10 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
 
   [Test] public void TestStructMethodGroupFramework01() { DoNamedTest2(); }
   [Test] public void TestStructMethodGroupFramework02() { DoNamedTest2(); }
+
+  [Test] public void TestPatternMatchingFramework04() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework05() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework06() { DoNamedTest2(); }
 }
 
 [TestNet60]
@@ -111,4 +115,7 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 
   [Test] public void TestStructMethodGroupCore01() { DoNamedTest2(); }
   [Test] public void TestStructMethodGroupCore02() { DoNamedTest2(); }
+
+  [Test] public void TestPatternMatchingCore04() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingCore05() { DoNamedTest2(); }
 }

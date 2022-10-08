@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Highlightings;
+using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Tests
 {
@@ -24,9 +25,11 @@ namespace ReSharperPlugin.HeapView.Tests
     }
 
     [Test] public void TestBoxing01() { DoNamedTest2(); }
+    [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
     [Test] public void TestBoxing02() { DoNamedTest2(); }
     [Test] public void TestBoxing03() { DoNamedTest2(); }
     [Test] public void TestBoxing04() { DoNamedTest2(); }
+    [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
     [Test] public void TestBoxing05() { DoNamedTest2(); }
     [Test] public void TestBoxing06() { DoNamedTest2(); }
     [Test] public void TestBoxing07() { DoNamedTest2(); }

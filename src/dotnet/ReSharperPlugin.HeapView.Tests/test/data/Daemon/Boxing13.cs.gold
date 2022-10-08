@@ -11,33 +11,35 @@ class C {
     if (t is { }) { }
     if (ReferenceEquals(t, null)) { }
     t?.|ToString|(0)(); // optimized ?, possible callvirt
-    if (t is object) { } // optimized
 
     // type checks are boxings in .net fw
-    if (t is |IComparable|(1)) { }
-    if (t is |IEquatable<T>|(2) _) { }
-    if (t is |ValueType|(3) { }) { }
-    if (t is |int|(4)) { }
-    if (t is |byte|(5) b) { }
+    if (t is |object|(1)) { }
+    if (t is |IComparable|(2)) { }
+    if (t is |IEquatable<T>|(3) _) { }
+    if (t is |ValueType|(4) { }) { }
+    if (t is |int|(5)) { }
+    if (t is |byte|(6) b) { }
   }
 
   public void M2<T>(T t) where T : struct {
     // type checks are boxings in .net fw
-    if (t is |IComparable|(6)) { }
-    if (t is |IEquatable<T>|(7)) { }
-    if (t is ValueType _) { } // except me
-    if (t is |int|(8)) { }
-    if (t is |byte|(9) b) { }
+    if (t is |IComparable|(7)) { }
+    if (t is |IEquatable<T>|(8)) { }
+    if (t is |ValueType|(9) _) { } // except me
+    if (t is |int|(10)) { }
+    if (t is |byte|(11) b) { }
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'System.Object' virtual method call on value type instance
-(1): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IComparable' type possibly requires boxing of value type
-(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IEquatable<T>' type possibly requires boxing of value type
-(3): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type possibly requires boxing of value type
-(4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type possibly requires boxing of value type
-(5): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'byte' type possibly requires boxing of value type
-(6): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IComparable' type requires boxing of value type
-(7): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IEquatable<T>' type requires boxing of value type
-(8): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type requires boxing of value type
-(9): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'byte' type requires boxing of value type
+(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
+(1): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IComparable' type in .NET Framework projects possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IEquatable<T>' type in .NET Framework projects possibly requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects possibly requires boxing of the value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'byte' type in .NET Framework projects possibly requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IComparable' type in .NET Framework projects requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IEquatable<T>' type in .NET Framework projects requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
+(10): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects requires boxing of the value type
+(11): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'byte' type in .NET Framework projects requires boxing of the value type
