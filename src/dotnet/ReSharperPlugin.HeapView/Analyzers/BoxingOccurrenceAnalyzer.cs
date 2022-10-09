@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -145,9 +146,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Struct inherited instance method invocation
 
   private static void CheckInheritedMethodInvocationOverValueType(
-    [NotNull] IInvocationExpression invocationExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var invokedReferenceExpression = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
     if (invokedReferenceExpression == null) return;
@@ -270,7 +269,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       }
 
       [Pure]
-      bool CheckHasVirtualMethodOverride([CanBeNull] ITypeElement typeElement)
+      bool CheckHasVirtualMethodOverride(ITypeElement? typeElement)
       {
         switch (typeElement)
         {
@@ -291,7 +290,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
   [Pure]
   private static bool IsStructVirtualMethodInvocationOptimizedAtRuntime(
-    [NotNull] IMethod method, [NotNull] IType qualifierType, [NotNull] ElementProblemAnalyzerData data)
+    IMethod method, IType qualifierType, ElementProblemAnalyzerData data)
   {
     if (method.ShortName == nameof(GetHashCode)
         && qualifierType.IsEnumType()
@@ -308,8 +307,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Struct method group delegate creation
 
   private static void CheckStructMethodConversionToDelegateInstance(
-    [NotNull] IReferenceExpression referenceExpression,
-    [NotNull] IHighlightingConsumer consumer)
+    IReferenceExpression referenceExpression, IHighlightingConsumer consumer)
   {
     var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression.GetContainingParenthesizedExpression());
     if (invocationExpression != null) return;
@@ -355,8 +353,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
           $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"));
     }
 
-    [CanBeNull, Pure]
-    static IType TryFindTargetDelegateType([NotNull] IReferenceExpression methodGroupExpression)
+    [Pure]
+    static IType? TryFindTargetDelegateType(IReferenceExpression methodGroupExpression)
     {
       var targetType = methodGroupExpression.GetImplicitlyConvertedTo();
       if (targetType.IsDelegateType())
@@ -374,8 +372,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
   }
 
-  [CanBeNull, Pure]
-  private static IType TryGetQualifierExpressionType([NotNull] IReferenceExpression referenceExpression)
+  [Pure]
+  private static IType? TryGetQualifierExpressionType(IReferenceExpression referenceExpression)
   {
     var qualifierExpression = referenceExpression.QualifierExpression.GetOperandThroughParenthesis();
     if (qualifierExpression.IsThisOrBaseOrNull())
@@ -397,9 +395,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Explicit casts
 
   private static void CheckExpressionExplicitConversion(
-    [NotNull] ICastExpression castExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    ICastExpression castExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var castOperand = castExpression.Op;
     if (castOperand == null) return;
@@ -427,9 +423,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Extension method invocations
 
   private static void CheckExtensionDeconstructionInvocation(
-    [NotNull] IDeconstructionPatternClause deconstructionPatternClause,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IDeconstructionPatternClause deconstructionPatternClause, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var recursivePattern = RecursivePatternNavigator.GetByDeconstructionPatternClause(deconstructionPatternClause);
     if (recursivePattern == null) return;
@@ -446,9 +440,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionDeconstructionInvocation(
-    [NotNull] IVarDeconstructionPattern varDeconstructionPattern,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IVarDeconstructionPattern varDeconstructionPattern, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var designation = varDeconstructionPattern.Designation;
     if (designation == null) return;
@@ -465,9 +457,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionDeconstructionInvocation(
-    [NotNull] IDeclarationExpression declarationExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IDeclarationExpression declarationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var designation = declarationExpression.Designation as IParenthesizedVariableDesignation;
     if (designation == null) return;
@@ -484,9 +474,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionDeconstructionInvocation(
-    [NotNull] ITupleExpression tupleExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    ITupleExpression tupleExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     if (!tupleExpression.IsLValueTupleExpression()) return;
 
@@ -502,9 +490,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionCollectionAddInvocation(
-    [NotNull] ICollectionElementInitializer collectionElementInitializer,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    ICollectionElementInitializer collectionElementInitializer, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var collectionInitializer = CollectionInitializerNavigator.GetByElementInitializer(collectionElementInitializer);
     if (collectionInitializer == null) return;
@@ -524,9 +510,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionGetEnumeratorInvocation(
-    [NotNull] IForeachStatement foreachStatement,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var foreachHeader = foreachStatement.ForeachHeader;
     if (foreachHeader == null) return;
@@ -546,9 +530,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckExtensionGetAwaiterInvocation(
-    [NotNull] IAwaitExpression awaitExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IAwaitExpression awaitExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var taskExpression = awaitExpression.Task;
     if (taskExpression == null) return;
@@ -567,8 +549,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       data, consumer);
   }
 
-  [CanBeNull, Pure]
-  private static IType FindExtensionMethodWithReferenceTypeThisParameter([NotNull] IReference deconstructionReference)
+  [Pure]
+  private static IType? FindExtensionMethodWithReferenceTypeThisParameter(IReference deconstructionReference)
   {
     var resolveResult = deconstructionReference.Resolve();
     if (resolveResult.ResolveErrorType.IsAcceptable
@@ -588,9 +570,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Implicit conversions in deconstructions
 
   private static void CheckDeconstructingAssignmentImplicitConversions(
-    [NotNull] IAssignmentExpression assignmentExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IAssignmentExpression assignmentExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     switch (assignmentExpression.GetAssignmentKind())
     {
@@ -610,14 +590,12 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var targetTupleExpression = assignmentExpression.Dest as ITupleExpression;
     if (targetTupleExpression == null) return;
 
-    UniversalContext resolveContext = null;
+    UniversalContext? resolveContext = null;
     CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
   }
 
   private static void CheckForeachImplicitConversions(
-    [NotNull] IForeachStatement foreachStatement,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var foreachHeader = foreachStatement.ForeachHeader;
     if (foreachHeader == null) return;
@@ -647,7 +625,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // foreach ((object o, _) in xs) { }
       case { DeconstructionTuple: { } targetTupleExpression }:
       {
-        UniversalContext resolveContext = null;
+        UniversalContext? resolveContext = null;
         CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
         break;
       }
@@ -655,10 +633,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckImplicitConversionsInDeconstruction(
-    [NotNull] ITupleExpression targetTupleExpression,
-    [CanBeNull] ref UniversalContext universalContext,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    ITupleExpression targetTupleExpression, ref UniversalContext? universalContext, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     foreach (var tupleComponent in targetTupleExpression.ComponentsEnumerable)
     {
@@ -711,9 +686,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Casts in LINQ queries
 
   private static void CheckLinqQueryCastConversion(
-    [NotNull] IQueryCastReferenceProvider queryCastReferenceProvider,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IQueryCastReferenceProvider queryCastReferenceProvider, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var castReference = queryCastReferenceProvider.CastReference;
     if (castReference == null) return;
@@ -742,8 +715,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
 
-    [CanBeNull]
-    static ITypeUsage GetCastNode(IQueryCastReferenceProvider queryCastReferenceProvider)
+    static ITypeUsage? GetCastNode(IQueryCastReferenceProvider queryCastReferenceProvider)
     {
       return queryCastReferenceProvider switch
       {
@@ -755,12 +727,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
   }
 
-  [NotNull] private static readonly ClrTypeName SystemEnumerableClassTypeName = new("System.Linq.Enumerable");
+  private static readonly ClrTypeName SystemEnumerableClassTypeName = new("System.Linq.Enumerable");
 
   private static void CheckLinqEnumerableCastConversion(
-    [NotNull] IInvocationExpression invocationExpression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     if (invocationExpression.InvokedExpression is not IReferenceExpression invokedReferenceExpression) return;
 
@@ -806,8 +776,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       data, consumer);
   }
 
-  [CanBeNull, Pure]
-  private static IType TryGetEnumerableCollectionType([NotNull] IType sourceType)
+  [Pure]
+  private static IType? TryGetEnumerableCollectionType(IType sourceType)
   {
     switch (sourceType)
     {
@@ -841,9 +811,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Implicit conversions in expressions
 
   private static void CheckExpressionImplicitConversion(
-    [NotNull] ICSharpExpression expression,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     if (!IsImplicitValueConversionActuallyHappens(expression)) return;
 
@@ -863,12 +831,9 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   private static void CheckConversionRequiresBoxing(
-    [NotNull] IExpressionType sourceExpressionType,
-    [NotNull] IType targetType,
-    [NotNull] ITreeNode correspondingNode,
-    [NotNull, RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode,
+    [RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
+    ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
 
@@ -890,7 +855,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsImplicitValueConversionActuallyHappens([NotNull] ICSharpExpression expression)
+  private static bool IsImplicitValueConversionActuallyHappens(ICSharpExpression expression)
   {
     switch (expression)
     {
@@ -953,10 +918,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Type check conversions
 
   private static void CheckPatternMatchingConversion(
-    [NotNull] IPattern typeCheckPattern,
-    [NotNull] ITreeNode typeCheckTypeUsage,
-    [NotNull] ElementProblemAnalyzerData data,
-    [NotNull] IHighlightingConsumer consumer)
+    IPattern typeCheckPattern, ITreeNode typeCheckTypeUsage, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var sourceType = typeCheckPattern.GetDispatchType();
     var targetType = typeCheckPattern.GetPatternType();
@@ -989,7 +951,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
   }
 
-  private static bool IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable([NotNull] IPattern typeCheckPattern)
+  private static bool IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(IPattern typeCheckPattern)
   {
     // structValue is I i
     if (typeCheckPattern is IPatternWithDesignation { Designation: ISingleVariableDesignation or IParenthesizedVariableDesignation })
@@ -1021,8 +983,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool CheckTypeTestIntroducesBoxing(
-    [NotNull] IType sourceType, [NotNull] ElementProblemAnalyzerData data, out bool isPossible)
+  private static bool CheckTypeTestIntroducesBoxing(IType sourceType, ElementProblemAnalyzerData data, out bool isPossible)
   {
     isPossible = false;
 
@@ -1044,8 +1005,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsBoxingInTypeCheckPattern(
-    [NotNull] IType sourceType, [NotNull] IType targetType, out bool isPossible)
+  private static bool IsBoxingInTypeCheckPattern(IType sourceType, IType targetType, out bool isPossible)
   {
     isPossible = false;
 
@@ -1078,7 +1038,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Compiler optimizations
 
   [Pure]
-  private static bool IsBoxingEliminatedByTheCompiler([NotNull] ICSharpExpression boxedExpression, [NotNull] ElementProblemAnalyzerData data)
+  private static bool IsBoxingEliminatedByTheCompiler(ICSharpExpression boxedExpression, ElementProblemAnalyzerData data)
   {
     var containingParenthesized = boxedExpression.GetContainingParenthesizedExpression();
 
@@ -1107,7 +1067,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Runtime optimizations
 
   [Pure]
-  private static bool IsBoxingEliminatedAtRuntime([NotNull] ICSharpExpression expression)
+  private static bool IsBoxingEliminatedAtRuntime(ICSharpExpression expression)
   {
     var containingParenthesized = expression.GetContainingParenthesizedExpression();
 
@@ -1131,7 +1091,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   // todo: not tested - boxing and immediate use
   [Pure]
   private static bool IsBoxingEliminatedAtRuntimeForCast(
-    [NotNull] ICastExpression castExpression, [NotNull] IType targetType, [NotNull] ElementProblemAnalyzerData data)
+    ICastExpression castExpression, IType targetType, ElementProblemAnalyzerData data)
   {
     var containingParenthesized = castExpression.GetContainingParenthesizedExpression();
 
