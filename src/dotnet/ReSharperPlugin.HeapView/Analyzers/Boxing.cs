@@ -164,14 +164,11 @@ public abstract class Boxing
       // yep, some "unboxing" conversions do actually cause boxing at runtime
       if (sourceType != null && targetType.Classify == TypeClassification.REFERENCE_TYPE)
       {
-        // value type to reference type
-        if (sourceType.Classify == TypeClassification.VALUE_TYPE)
-        {
-          return new Ordinary(sourceExpressionType, targetType, correspondingNode);
-        }
-
-        // unconstrained generic to reference type
-        return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
+        // value type parameter type to some random reference type
+        // unconstrained type parameter type to some random reference type
+        return new Ordinary(
+          sourceExpressionType, targetType, correspondingNode,
+          isPossible: sourceType.Classify != TypeClassification.VALUE_TYPE);
       }
 
       return null;

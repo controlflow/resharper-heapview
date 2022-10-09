@@ -1,0 +1,29 @@
+﻿// ReSharper disable ReplaceConditionalExpressionWithNullCoalescing
+
+class Unboxing1<T> where T : struct
+{
+  public I Cast(T t) => (|I|(0)) t; // yes
+  public I TryCast(T t) => t as |I|(1); // yes
+  public bool TypeTest(T t) => t is |I|(2); // yes
+  public I Pattern(T t) => t is |I|(3) i ? i : null; // yes
+}
+
+class Unboxing2<T>
+{
+  public I Cast(T t) => (|I|(4)) t; // possible
+  public I TryCast(T t) => t as |I|(5); // possible
+  public bool TypeTest(T t) => t is |I|(6); // possible
+  public I Pattern(T t) => t is |I|(7) i ? i : null; // possible
+}
+
+interface I { }
+struct S : I { }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type and using the result requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type and using the result possibly requires boxing of the value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
+(7): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type

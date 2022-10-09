@@ -75,6 +75,31 @@ public class PatternMatchingBoxingTests
     bool TestForRandomReferenceType<TUnconstrained>(TUnconstrained t) => t is StringBuilder;
   }
 
-  private struct SomeStruct { }
+  [Test]
+  public void Unboxing()
+  {
+    var foo = new UnboxingCases<SomeStruct>();
+    var s = new SomeStruct();
+
+    Allocations.AssertAllocates(() => foo.Cast(s));
+    Allocations.AssertAllocates(() => foo.TryCast(s));
+#if NETFRAMEWORK
+    Allocations.AssertAllocates(() => foo.TypeTest(s));
+#else
+    Allocations.AssertNoAllocations(() => foo.TypeTest(s));
+#endif
+    Allocations.AssertAllocates(() => foo.Pattern(s));
+  }
+
+  private class UnboxingCases<T>
+  {
+    public ISomeInterface? Cast(T t) => (ISomeInterface?) t;
+    public ISomeInterface? TryCast(T t) => t as ISomeInterface;
+    public bool TypeTest(T t) => t is ISomeInterface;
+    public ISomeInterface? Pattern(T t) => t is ISomeInterface i ? i : null;
+  }
+
+  private struct SomeStruct : ISomeInterface { }
+  private interface ISomeInterface { }
   private enum SomeEnum { A }
 }

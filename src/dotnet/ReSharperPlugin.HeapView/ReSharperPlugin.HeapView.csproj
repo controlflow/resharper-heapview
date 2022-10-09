@@ -12,7 +12,6 @@
     <IsPackable>True</IsPackable>
     <DefineConstants>$(DefineConstants);RESHARPER</DefineConstants>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <HostFullIdentifier></HostFullIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

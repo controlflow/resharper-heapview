@@ -23,7 +23,6 @@ using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: completely missed the boxing in `s as I` expression
 // todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 
@@ -121,13 +120,19 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // structValue is I iface
       // structValue is I { Property: 42 }
       case IPatternWithTypeUsage { TypeUsage: { } typeUsage } typeCheckPattern:
-        CheckPatternMatchingConversion(typeCheckPattern, typeUsage, data, consumer);
+        CheckRuntimeTypeTestConversion(typeCheckPattern, typeUsage, data, consumer);
         break;
 
       // tUnconstrained is int
       // tUnconstrained is I iface
       case IConstantOrTypePattern typePattern when typePattern.GetKind() == ConstantOrTypePatternKind.TypeCheck:
-        CheckPatternMatchingConversion(typePattern, typePattern.Expression, data, consumer);
+        CheckRuntimeTypeTestConversion(typePattern, typePattern.Expression, data, consumer);
+        break;
+
+      // structValue as I
+      // tUnconstrained as I
+      case IAsExpression asExpression:
+        CheckRuntimeTypeTestConversion(asExpression, consumer);
         break;
 
       case IParenthesizedExpression:
@@ -813,7 +818,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   private static void CheckExpressionImplicitConversion(
     ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    if (!IsImplicitValueConversionActuallyHappens(expression)) return;
+    if (!IsImplicitValueConversionActuallyHappensInRuntime(expression)) return;
 
     var sourceExpressionType = expression.GetExpressionType();
     if (sourceExpressionType.IsUnknown) return;
@@ -855,7 +860,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsImplicitValueConversionActuallyHappens(ICSharpExpression expression)
+  private static bool IsImplicitValueConversionActuallyHappensInRuntime(ICSharpExpression expression)
   {
     switch (expression)
     {
@@ -917,19 +922,19 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #endregion
   #region Type check conversions
 
-  private static void CheckPatternMatchingConversion(
-    IPattern typeCheckPattern, ITreeNode typeCheckTypeUsage, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  private static void CheckRuntimeTypeTestConversion(
+    IPattern typeTestPattern, ITreeNode typeTestTypeUsage, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    var sourceType = typeCheckPattern.GetDispatchType();
-    var targetType = typeCheckPattern.GetPatternType();
+    var sourceType = typeTestPattern.GetDispatchType();
+    var targetType = typeTestPattern.GetPatternType();
 
     // in .NET Framework type test alone can produce boxing allocations
     if (CheckTypeTestIntroducesBoxing(sourceType, data, out var isPossible))
     {
-      if (typeCheckPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
+      if (typeTestPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var boxing = Boxing.Create(
-        sourceType, targetType, typeCheckTypeUsage, isPossible,
+        sourceType, targetType, typeTestTypeUsage, isPossible,
         messageFormat: "type testing '{0}' value for '{1}' type in .NET Framework projects");
 
       boxing.Report(consumer);
@@ -938,13 +943,13 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
     // x is T t
     // x is T { ... }
-    if (IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(typeCheckPattern)
-        && IsBoxingInTypeCheckPattern(sourceType, targetType, out isPossible))
+    if (IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(typeTestPattern)
+        && IsBoxingConversionInRuntimeTypeTest(sourceType, targetType, out isPossible))
     {
-      if (typeCheckPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
+      if (typeTestPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var boxing = Boxing.Create(
-        sourceType, targetType, typeCheckTypeUsage, isPossible,
+        sourceType, targetType, typeTestTypeUsage, isPossible,
         messageFormat: "type testing '{0}' value for '{1}' type and using the result");
 
       boxing.Report(consumer);
@@ -982,6 +987,29 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     return false;
   }
 
+  private static void CheckRuntimeTypeTestConversion(IAsExpression asExpression, IHighlightingConsumer consumer)
+  {
+    var targetTypeUsage = asExpression.TypeOperand;
+    if (targetTypeUsage == null) return;
+
+    var sourceType = asExpression.Operand.GetExpressionType().ToIType();
+    if (sourceType == null) return;
+
+    var targetType = asExpression.GetExpressionType().ToIType();
+    if (targetType == null) return;
+
+    if (IsBoxingConversionInRuntimeTypeTest(sourceType, targetType, out var isPossible))
+    {
+      if (asExpression.IsInTheContextWhereAllocationsAreNotImportant()) return;
+
+      var boxing = Boxing.Create(
+        sourceType, targetType, targetTypeUsage, isPossible,
+        messageFormat: "type testing '{0}' value for '{1}' type and using the result");
+
+      boxing.Report(consumer);
+    }
+  }
+
   [Pure]
   private static bool CheckTypeTestIntroducesBoxing(IType sourceType, ElementProblemAnalyzerData data, out bool isPossible)
   {
@@ -1005,7 +1033,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   [Pure]
-  private static bool IsBoxingInTypeCheckPattern(IType sourceType, IType targetType, out bool isPossible)
+  private static bool IsBoxingConversionInRuntimeTypeTest(IType sourceType, IType targetType, out bool isPossible)
   {
     isPossible = false;
 
