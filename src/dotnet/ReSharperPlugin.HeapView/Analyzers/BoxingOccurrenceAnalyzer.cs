@@ -23,7 +23,6 @@ using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: if designation exists, but not used - C# eliminates boxing in Release mode
 // todo: do string interpolation optimized? in C# 10 only?
 
 // todo: [ReSharper] disable method group natural types under nameof() expression
@@ -961,6 +960,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     // structValue is I i
     if (typeCheckPattern is IPatternWithDesignation { Designation: ISingleVariableDesignation or IParenthesizedVariableDesignation })
     {
+      // note: if designation exists but never used - C# eliminates boxing in Release builds. We ignore this
       return true;
     }
 

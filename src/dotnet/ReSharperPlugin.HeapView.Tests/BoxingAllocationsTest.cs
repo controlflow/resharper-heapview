@@ -106,6 +106,7 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
   [Test] public void TestPatternMatchingFramework06() { DoNamedTest2(); }
   [Test] public void TestPatternMatchingFramework07() { DoNamedTest2(); }
 
+  [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 }
 
 [TestNet60]
@@ -124,4 +125,7 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 
   [Test] public void TestPatternMatchingCore04() { DoNamedTest2(); }
   [Test] public void TestPatternMatchingCore05() { DoNamedTest2(); }
+
+  [Test] public void TestStringInterpolationCore01() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore02() { DoNamedTest2(); }
 }
