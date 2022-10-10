@@ -1,0 +1,11 @@
+﻿class Tuples
+{
+  void M((int, int) tuple)
+  {
+    (|object|(0) o, int x) = tuple;
+    var casted = ((|object|(1), int)) tuple;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

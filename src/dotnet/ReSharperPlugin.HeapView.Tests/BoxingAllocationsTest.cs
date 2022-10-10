@@ -54,6 +54,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestTuplesIndividualLeft01() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualLeft02() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualLeft03() { DoNamedTest2(); }
+  [Test] public void TestTuplesIndividualLeft04() { DoNamedTest2(); }
 
   [Test] public void TestTuplesForeach01() { DoNamedTest2(); }
   [Test] public void TestTuplesForeach02() { DoNamedTest2(); }

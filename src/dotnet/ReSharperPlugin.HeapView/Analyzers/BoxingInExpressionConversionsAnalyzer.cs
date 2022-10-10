@@ -16,6 +16,8 @@ using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+// todo: default implementation boxing
+
 // todo: [ReSharper] disable method group natural types under nameof() expression
 // todo: [ReSharper] no implictly converted to 'object' under __arglist() expression
 
