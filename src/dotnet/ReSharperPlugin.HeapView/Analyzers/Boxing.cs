@@ -265,10 +265,15 @@ public abstract class Boxing
     {
       IsPossible = isPossible;
 
-      var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
-      var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
+      var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, Style).Text;
+      var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, Style).Text;
       Reason = string.Format(messageFormat, sourceTypeText, targetTypeText);
     }
+
+    private static readonly TypePresentationStyle Style = TypePresentationStyle.Default with
+    {
+      Options = TypePresentationStyle.Default.Options & ~TypePresentationOptions.IncludeNullableAnnotations
+    };
 
     public string Reason { get; }
 

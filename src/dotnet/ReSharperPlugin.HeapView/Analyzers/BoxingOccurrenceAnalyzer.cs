@@ -23,8 +23,6 @@ using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: do string interpolation optimized? in C# 10 only?
-
 // todo: [ReSharper] disable method group natural types under nameof() expression
 // todo: [ReSharper] no implictly converted to 'object' under __arglist() expression
 
@@ -124,9 +122,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
       // tUnconstrained is int
       // tUnconstrained is I iface
-      case IConstantOrTypePattern typePattern when typePattern.GetKind() == ConstantOrTypePatternKind.TypeCheck:
+      case IConstantOrTypePattern (ConstantOrTypePatternKind.TypeCheck) typePattern:
         CheckRuntimeTypeTestConversion(typePattern, typePattern.Expression, data, consumer);
         break;
+
 
       // structValue as I
       // tUnconstrained as I
@@ -286,7 +285,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
           case ITypeParameter:
             return false; // in generic code we are not assuming any overrides
           default:
-            return true; // corresponding method is overriden, no boxing inside Nullable<T>
+            return true; // somewthing weird is found under Nullable<T>
         }
       }
     }
@@ -410,7 +409,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     if (targetType == null) return;
 
     // todo: test this
-    if (IsBoxingEliminatedAtRuntime(castExpression)) return;
+    if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
 
     if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
 
@@ -825,7 +824,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     var targetType = expression.GetImplicitlyConvertedTo();
     if (targetType.IsUnknown) return;
 
-    if (IsBoxingEliminatedAtRuntime(expression)) return;
+    if (IsBoxingEliminatedAtRuntime(expression, data)) return;
     if (IsBoxingEliminatedByTheCompiler(expression, data)) return;
 
     CheckConversionRequiresBoxing(
@@ -1095,21 +1094,26 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   #region Runtime optimizations
 
   [Pure]
-  private static bool IsBoxingEliminatedAtRuntime(ICSharpExpression expression)
+  private static bool IsBoxingEliminatedAtRuntime(ICSharpExpression expression, ElementProblemAnalyzerData data)
   {
     var containingParenthesized = expression.GetContainingParenthesizedExpression();
 
-    // t != null, ReferenceEquals(t, null)
     var nullCheckData = NullCheckUtil.GetNullCheckByCheckedExpression(
       containingParenthesized, out _, allowUserDefinedAndUnresolvedChecks: false);
     if (nullCheckData != null)
     {
       switch (nullCheckData.Kind)
       {
-        case NullCheckKind.EqualityExpression:
-        case NullCheckKind.StaticReferenceEqualsNull:
-        case NullCheckKind.NullPattern:
-          return true; // optimized in all modern runtimes
+        case NullCheckKind.EqualityExpression: // t != null
+        case NullCheckKind.StaticReferenceEqualsNull: // ReferenceEquals(t, null)
+        case NullCheckKind.NullPattern: // t is null
+        {
+          // T! boxing + null check is optimized in all runtimes
+          if (data.AnalyzeCodeLikeIfOptimizationsAreEnabled())
+            return true;
+
+          break;
+        }
       }
     }
 

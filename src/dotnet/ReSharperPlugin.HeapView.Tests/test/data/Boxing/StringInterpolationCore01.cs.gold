@@ -5,8 +5,8 @@
   public string TwoArgs(int id) => $"id: {id} id2: {id}";
   public string ThreeArgs(int id) => $"id: {id} id2: {id} id3: {id}";
   public string FourArgs(int id) => $"id: {id} id2: {id} id3: {id} id4: {id}";
-  public string Broken(int id) => $"id: {|id|(0)} id2: {|id|(1)} id3: {}";
+  public string Broken(int id) => $"id: {|id|(0)} id2: {|id|(1)} id3: {}"; // todo: fix in R# PSI
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object?' requires boxing of the value type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object?' requires boxing of the value type
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
