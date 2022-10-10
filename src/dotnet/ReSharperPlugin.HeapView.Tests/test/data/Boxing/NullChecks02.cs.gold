@@ -1,0 +1,30 @@
+﻿struct NullChecks
+{
+  public void Method<TStruct, TUnconstrained>(TStruct tStruct, TUnconstrained tUnconstrained)
+    where TStruct : struct
+  {
+    _ = object.Equals(|this|(0), null); // yes
+
+    // yes in DEBUG
+    _ = object.ReferenceEquals(|this|(1), null);
+    _ = object.ReferenceEquals(|tStruct|(2), null);
+    _ = object.ReferenceEquals(|tStruct|(3), null);
+    _ = |tUnconstrained|(4) == null;
+    _ = |tUnconstrained|(5) != null;
+    _ = tUnconstrained is |null|(6);
+    _ = tUnconstrained is not |null|(7);
+
+    TStruct? tn = tStruct;
+    _ = tn == null;
+    _ = tn != null;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NullChecks' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NullChecks' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of the value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(7): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type

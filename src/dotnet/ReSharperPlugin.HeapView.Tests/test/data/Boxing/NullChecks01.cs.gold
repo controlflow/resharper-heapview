@@ -1,0 +1,23 @@
+﻿struct NullChecks
+{
+  public void Method<TStruct, TUnconstrained>(TStruct tStruct, TUnconstrained tUnconstrained)
+    where TStruct : struct
+  {
+    _ = object.Equals(|this|(0), null); // yes
+
+    // yes in DEBUG
+    _ = object.ReferenceEquals(this, null);
+    _ = object.ReferenceEquals(tStruct, null);
+    _ = object.ReferenceEquals(tStruct, null);
+    _ = tUnconstrained == null;
+    _ = tUnconstrained != null;
+    _ = tUnconstrained is null;
+    _ = tUnconstrained is not null;
+
+    TStruct? tn = tStruct;
+    _ = tn == null;
+    _ = tn != null;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'NullChecks' to 'object' requires boxing of the value type

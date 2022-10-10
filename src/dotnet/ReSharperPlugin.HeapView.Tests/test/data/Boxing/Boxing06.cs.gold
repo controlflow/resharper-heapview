@@ -1,0 +1,13 @@
+﻿struct Foo : IFoo
+{
+  void Method<TFoo>(TFoo tFoo)
+  {
+    var foo1 = this as |IFoo|(0);
+    var foo2 = tFoo as |IFoo|(1);
+  }
+}
+
+interface IFoo { }
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: type testing 'Foo' value for 'IFoo' type and using the result requires boxing of the value type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'TFoo' value for 'IFoo' type and using the result possibly requires boxing of the value type
