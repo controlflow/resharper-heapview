@@ -39,6 +39,8 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestNullChecks06() { DoNamedTest2(); }
 
+  [Test] public void TestConstrainedBoxing01() { DoNamedTest2(); }
+
   [Test] public void TestGenericBoxing01() { DoNamedTest2(); }
   [Test] public void TestGenericBoxing02() { DoNamedTest2(); }
   [Test] public void TestGenericBoxing03() { DoNamedTest2(); }
@@ -119,6 +121,8 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
   [Test] public void TestPatternMatchingFramework07() { DoNamedTest2(); }
 
   [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestConstrainedBoxingFramework01() { DoNamedTest2(); }
 }
 
 [TestNet60]
@@ -140,4 +144,8 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 
   [Test] public void TestStringInterpolationCore01() { DoNamedTest2(); }
   [Test] public void TestStringInterpolationCore02() { DoNamedTest2(); }
+
+  [Test] public void TestConstrainedBoxingCore01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestConstrainedBoxingCore02() { DoNamedTest2(); }
 }

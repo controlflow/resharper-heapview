@@ -1,0 +1,7 @@
+﻿class Constrained<T>
+{
+  public int Test01(T t) => typeof(T) == typeof(int) ? (int) (object?) t! : -1;
+  public int Test02(T t) => typeof(T) == typeof(string) ? (string) (|object?|(0)) t! : "-1";
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of the value type

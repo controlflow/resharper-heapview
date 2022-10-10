@@ -50,8 +50,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
     CheckExpressionImplicitConversion(expression, data, consumer);
   }
 
-  #region Explicit casts
-
   private static void CheckExpressionExplicitConversion(
     ICastExpression castExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
@@ -75,9 +73,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
   }
-
-  #endregion
-  #region Implicit conversions in expressions
 
   private static void CheckExpressionImplicitConversion(
     ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -188,9 +183,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
     return true;
   }
 
-  #endregion
-  #region Compiler optimizations
-
   [Pure]
   private static bool IsBoxingEliminatedByTheCompiler(ICSharpExpression boxedExpression, ElementProblemAnalyzerData data)
   {
@@ -216,9 +208,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
 
     return false;
   }
-
-  #endregion
-  #region Runtime optimizations
 
   [Pure]
   private static bool IsBoxingEliminatedAtRuntime(ICSharpExpression expression, ElementProblemAnalyzerData data)
@@ -247,39 +236,41 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
     return false;
   }
 
-  // todo: not tested - boxing and immediate use
   [Pure]
   private static bool IsBoxingEliminatedAtRuntimeForConstrainedOperationOverCast(
     ICastExpression castExpression, IType targetType, ElementProblemAnalyzerData data)
   {
     var containingParenthesized = castExpression.GetContainingParenthesizedExpression();
 
-    // if (typeof(T) == typeof(int) { var i = (int) (object) t; }
+    // if (typeof(T) == typeof(int)) { var i = (int) (object) t; }
     var containingCastExpression = CastExpressionNavigator.GetByOp(containingParenthesized);
     if (containingCastExpression != null)
     {
       if (targetType.IsObject())
       {
         var unBoxingType = containingCastExpression.Type();
-        switch (unBoxingType.Classify)
+        if (!unBoxingType.IsReferenceType())
         {
-          case TypeClassification.UNKNOWN:
-          case TypeClassification.VALUE_TYPE:
-            return true; // optimized in all modern runtimes
+          return true; // optimized in all runtimes, even in Debug builds
         }
       }
     }
 
-    // ((I) s).P, ((I) s).M();
+    // ((IFoo) s).Property
+    // ((IFoo) s).Method();
     var conditionalAccessExpression = ConditionalAccessExpressionNavigator.GetByQualifier(containingParenthesized);
     if (conditionalAccessExpression != null && targetType.IsInterfaceType())
     {
       var targetRuntime = data.GetTargetRuntime();
-      if (targetRuntime == TargetRuntime.NetCore) return true;
+      if (targetRuntime == TargetRuntime.NetCore)
+      {
+        if (data.AnalyzeCodeLikeIfOptimizationsAreEnabled())
+        {
+          return true; // optimized in .NET Core
+        }
+      }
     }
 
     return false;
   }
-
-  #endregion
 }
