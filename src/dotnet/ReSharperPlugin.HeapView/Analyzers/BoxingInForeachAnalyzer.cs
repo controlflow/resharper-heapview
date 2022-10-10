@@ -32,7 +32,7 @@ public class BoxingInForeachAnalyzer : ElementProblemAnalyzer<IForeachStatement>
       var elementType = CollectionTypeUtil.ElementTypeByCollectionType(collectionType, foreachStatement, foreachStatement.IsAwait);
       if (elementType != null)
       {
-        BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+        BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
           sourceExpressionType: elementType, targetType: declarationExpression.Type(), explicitTypeUsage,
           static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
           data, consumer);

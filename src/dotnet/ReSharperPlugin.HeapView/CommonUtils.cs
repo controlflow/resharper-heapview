@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -70,6 +71,7 @@ public static class CommonUtils
      */
     return false;
 
+    [SuppressMessage("ReSharper", "TailRecursiveCall")]
     static bool HasControlFlowJumps([CanBeNull] ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
     {
       switch (statement)

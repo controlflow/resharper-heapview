@@ -67,7 +67,7 @@ public class BoxingInLinqCastsAnalyzer : IElementProblemAnalyzer
     var sourceType = TryGetEnumerableCollectionType(collection.Type());
     if (sourceType == null) return;
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceType, castTargetType, targetTypeUsage,
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
@@ -127,7 +127,7 @@ public class BoxingInLinqCastsAnalyzer : IElementProblemAnalyzer
     var sourceType = TryGetEnumerableCollectionType(collectionExpression.Type());
     if (sourceType == null) return;
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceType, castTargetType, targetTypeUsage,
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);

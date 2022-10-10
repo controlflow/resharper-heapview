@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -82,7 +81,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var sourceExpressionType = recursivePattern.GetSourceExpressionType(new UniversalContext(recursivePattern));
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, deconstructionPatternClause,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -99,7 +98,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var dispatchType = varDeconstructionPattern.GetDispatchType();
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       dispatchType, targetType, varDeconstructionPattern.VarKeyword,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -116,7 +115,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var sourceExpressionType = declarationExpression.GetSourceExpressionType(new UniversalContext(declarationExpression));
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, declarationExpression.TypeDesignator,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -132,7 +131,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var dispatchType = tupleExpression.GetSourceExpressionType(new UniversalContext(tupleExpression));
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       dispatchType, targetType, tupleExpression,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -152,7 +151,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var sourceExpressionType = collectionInitializer.GetConstructedType();
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, collectionElementInitializer,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -172,7 +171,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var sourceExpressionType = collection.Type();
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, foreachHeader.InKeyword,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);
@@ -192,7 +191,7 @@ public class BoxingInImplicitInvocationsAnalyzer : IElementProblemAnalyzer
 
     var sourceExpressionType = taskExpression.Type();
 
-    BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+    BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, awaitExpression.AwaitKeyword,
       static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
       data, consumer);

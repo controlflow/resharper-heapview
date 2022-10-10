@@ -275,8 +275,7 @@ public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
 
     static bool IsParameter(IDeclaredElement declaredElement)
     {
-      return declaredElement is IParameter
-             || declaredElement is IQueryAnonymousTypeProperty;
+      return declaredElement is IParameter or IQueryAnonymousTypeProperty;
     }
   }
 

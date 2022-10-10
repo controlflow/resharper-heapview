@@ -113,7 +113,7 @@ public class BoxingInDeconstructionAnalyzer : IElementProblemAnalyzer
             ? declarationExpression.TypeUsage.NotNull()
             : lValueExpression;
 
-          BoxingOccurrenceAnalyzer.CheckConversionRequiresBoxing(
+          BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
             sourceExpressionType, targetComponentType, correspondingNode,
             static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
             data, consumer);

@@ -1,13 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Impl;
-using JetBrains.ReSharper.Psi.CSharp.Parsing;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Daemon.CSharp.Stages;
+﻿
 
 /*
 namespace JetBrains.ReSharper.HeapView.Analyzers
