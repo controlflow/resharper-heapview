@@ -63,13 +63,12 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
     var targetType = castExpression.GetExpressionType().ToIType();
     if (targetType == null) return;
 
-    // todo: test this
     if (IsBoxingEliminatedAtRuntime(castExpression, data)) return;
 
     if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
 
     // todo: test this
-    if (IsBoxingEliminatedAtRuntimeForCast(castExpression, targetType, data)) return;
+    if (IsBoxingEliminatedAtRuntimeForConstrainedOperationOverCast(castExpression, targetType, data)) return;
 
     CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, castExpression.TargetType,
@@ -250,7 +249,7 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
 
   // todo: not tested - boxing and immediate use
   [Pure]
-  private static bool IsBoxingEliminatedAtRuntimeForCast(
+  private static bool IsBoxingEliminatedAtRuntimeForConstrainedOperationOverCast(
     ICastExpression castExpression, IType targetType, ElementProblemAnalyzerData data)
   {
     var containingParenthesized = castExpression.GetContainingParenthesizedExpression();

@@ -85,5 +85,18 @@ public class NullChecksBoxingTests
     static bool Generic<T>(T unconstrained) => unconstrained is not null;
   }
 
+  [Test]
+  [SuppressMessage("ReSharper", "RedundantCast")]
+  public void CastAndNullCheck()
+  {
+    var st = new SomeStruct();
+#if DEBUG
+    Allocations.AssertAllocates(() => Generic(st));
+#else
+    Allocations.AssertNoAllocations(() => Generic(st));
+#endif
+    static bool Generic<T>(T unconstrained) => (object?) unconstrained == null;
+  }
+
   private struct SomeStruct { }
 }

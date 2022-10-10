@@ -1,0 +1,11 @@
+﻿// ReSharper disable RedundantCast
+
+class Constrained<T>
+{
+  public void M(T t)
+  {
+    _ = (|object?|(0)) t != null;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'object' possibly requires boxing of the value type
