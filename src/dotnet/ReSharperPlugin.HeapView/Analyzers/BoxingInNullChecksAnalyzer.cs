@@ -21,7 +21,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   {
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public class BoxingInNullChecksAnalyzers : IConditionalElementProblemAnalyzer
+public class BoxingInNullChecksAnalyzer : IConditionalElementProblemAnalyzer
 {
   public bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
   {

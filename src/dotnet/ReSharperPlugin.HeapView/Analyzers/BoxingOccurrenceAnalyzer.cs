@@ -66,42 +66,10 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckExpressionExplicitConversion(castExpression, data, consumer);
         break;
 
-      // is StructType (_, _) + extension Deconstruct() this parameter boxing
-      case IDeconstructionPatternClause deconstructionPatternClause:
-        CheckExtensionDeconstructionInvocation(deconstructionPatternClause, data, consumer);
-        break;
-
-      // is var (_, _) + extension Deconstruct() this parameter boxing
-      case IVarDeconstructionPattern varDeconstructionPattern:
-        CheckExtensionDeconstructionInvocation(varDeconstructionPattern, data, consumer);
-        break;
-
-      // var (_, _) = e; + extension Deconstruct() this parameter boxing
-      case IDeclarationExpression declarationExpression:
-        CheckExtensionDeconstructionInvocation(declarationExpression, data, consumer);
-        break;
-
-      // (_, _) = e; + extension Deconstruct() this parameter boxing
-      case ITupleExpression tupleExpression:
-        CheckExtensionDeconstructionInvocation(tupleExpression, data, consumer);
-        break;
-
-      // new T { e } + extension Add() this parameter boxing
-      case ICollectionElementInitializer collectionElementInitializer:
-        CheckExtensionCollectionAddInvocation(collectionElementInitializer, data, consumer);
-        break;
-
       // foreach (object o in arrayOfInts) { }
       // foreach ((object o, _) in arrayOfIntIntTuples) { }
-      // foreach (var x in structTypeWithExtensionGetEnumerator) { }
       case IForeachStatement foreachStatement:
         CheckForeachImplicitConversions(foreachStatement, data, consumer);
-        CheckExtensionGetEnumeratorInvocation(foreachStatement, data, consumer);
-        break;
-
-      // await e + extension GetAwaiter() method
-      case IAwaitExpression awaitExpression:
-        CheckExtensionGetAwaiterInvocation(awaitExpression, data, consumer);
         break;
 
       // (object o, objVariable) = intIntTuple;
@@ -112,25 +80,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       // from object o in intArray
       case IQueryCastReferenceProvider queryCastReferenceProvider:
         CheckLinqQueryCastConversion(queryCastReferenceProvider, data, consumer);
-        break;
-
-      // structValue is I iface
-      // structValue is I { Property: 42 }
-      case IPatternWithTypeUsage { TypeUsage: { } typeUsage } typeCheckPattern:
-        CheckRuntimeTypeTestConversion(typeCheckPattern, typeUsage, data, consumer);
-        break;
-
-      // tUnconstrained is int
-      // tUnconstrained is I iface
-      case IConstantOrTypePattern (ConstantOrTypePatternKind.TypeCheck) typePattern:
-        CheckRuntimeTypeTestConversion(typePattern, typePattern.Expression, data, consumer);
-        break;
-
-
-      // structValue as I
-      // tUnconstrained as I
-      case IAsExpression asExpression:
-        CheckRuntimeTypeTestConversion(asExpression, consumer);
         break;
 
       case IParenthesizedExpression:
@@ -423,153 +372,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-  #region Extension method invocations
-
-  private static void CheckExtensionDeconstructionInvocation(
-    IDeconstructionPatternClause deconstructionPatternClause, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var recursivePattern = RecursivePatternNavigator.GetByDeconstructionPatternClause(deconstructionPatternClause);
-    if (recursivePattern == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(deconstructionPatternClause.DeconstructionReference);
-    if (targetType == null) return;
-
-    var sourceExpressionType = recursivePattern.GetSourceExpressionType(new UniversalContext(recursivePattern));
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, deconstructionPatternClause,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionDeconstructionInvocation(
-    IVarDeconstructionPattern varDeconstructionPattern, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var designation = varDeconstructionPattern.Designation;
-    if (designation == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(designation.DeconstructionReference);
-    if (targetType == null) return;
-
-    var dispatchType = varDeconstructionPattern.GetDispatchType();
-
-    CheckConversionRequiresBoxing(
-      dispatchType, targetType, varDeconstructionPattern.VarKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionDeconstructionInvocation(
-    IDeclarationExpression declarationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var designation = declarationExpression.Designation as IParenthesizedVariableDesignation;
-    if (designation == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(designation.DeconstructionReference);
-    if (targetType == null) return;
-
-    var sourceExpressionType = declarationExpression.GetSourceExpressionType(new UniversalContext(declarationExpression));
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, declarationExpression.TypeDesignator,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionDeconstructionInvocation(
-    ITupleExpression tupleExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    if (!tupleExpression.IsLValueTupleExpression()) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(tupleExpression.DeconstructionReference);
-    if (targetType == null) return;
-
-    var dispatchType = tupleExpression.GetSourceExpressionType(new UniversalContext(tupleExpression));
-
-    CheckConversionRequiresBoxing(
-      dispatchType, targetType, tupleExpression,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionCollectionAddInvocation(
-    ICollectionElementInitializer collectionElementInitializer, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var collectionInitializer = CollectionInitializerNavigator.GetByElementInitializer(collectionElementInitializer);
-    if (collectionInitializer == null) return;
-
-    var invocationReference = collectionElementInitializer.Reference;
-    if (invocationReference == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(invocationReference);
-    if (targetType == null) return;
-
-    var sourceExpressionType = collectionInitializer.GetConstructedType();
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, collectionElementInitializer,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionGetEnumeratorInvocation(
-    IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var foreachHeader = foreachStatement.ForeachHeader;
-    if (foreachHeader == null) return;
-
-    var collection = foreachHeader.Collection;
-    if (collection == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(foreachStatement.GetEnumeratorReference);
-    if (targetType == null) return;
-
-    var sourceExpressionType = collection.Type();
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, foreachHeader.InKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  private static void CheckExtensionGetAwaiterInvocation(
-    IAwaitExpression awaitExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var taskExpression = awaitExpression.Task;
-    if (taskExpression == null) return;
-
-    var getAwaiterReference = awaitExpression.GetAwaiterReference;
-    if (getAwaiterReference == null) return;
-
-    var targetType = FindExtensionMethodWithReferenceTypeThisParameter(getAwaiterReference);
-    if (targetType == null) return;
-
-    var sourceExpressionType = taskExpression.Type();
-
-    CheckConversionRequiresBoxing(
-      sourceExpressionType, targetType, awaitExpression.AwaitKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
-      data, consumer);
-  }
-
-  [Pure]
-  private static IType? FindExtensionMethodWithReferenceTypeThisParameter(IReference deconstructionReference)
-  {
-    var resolveResult = deconstructionReference.Resolve();
-    if (resolveResult.ResolveErrorType.IsAcceptable
-        && resolveResult.Result.IsExtensionMethodInvocation()
-        && resolveResult.DeclaredElement is IMethod { IsExtensionMethod: true } extensionsMethod)
-    {
-      foreach (var parameter in extensionsMethod.Parameters)
-      {
-        return resolveResult.Substitution[parameter.Type];
-      }
-    }
-
-    return null;
-  }
-
-  #endregion
   #region Implicit conversions in deconstructions
 
   private static void CheckDeconstructingAssignmentImplicitConversions(
@@ -833,7 +635,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       data, consumer);
   }
 
-  private static void CheckConversionRequiresBoxing(
+  public static void CheckConversionRequiresBoxing(
     IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode,
     [RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
     ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -915,150 +717,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     }
 
     return true;
-  }
-
-  #endregion
-  #region Type check conversions
-
-  private static void CheckRuntimeTypeTestConversion(
-    IPattern typeTestPattern, ITreeNode typeTestTypeUsage, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var sourceType = typeTestPattern.GetDispatchType();
-    var targetType = typeTestPattern.GetPatternType();
-
-    // in .NET Framework type test alone can produce boxing allocations
-    if (CheckTypeTestIntroducesBoxing(sourceType, data, out var isPossible))
-    {
-      if (typeTestPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-      var boxing = Boxing.Create(
-        sourceType, targetType, typeTestTypeUsage, isPossible,
-        messageFormat: "type testing '{0}' value for '{1}' type in .NET Framework projects");
-
-      boxing.Report(consumer);
-      return;
-    }
-
-    // x is T t
-    // x is T { ... }
-    if (IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(typeTestPattern)
-        && IsBoxingConversionInRuntimeTypeTest(sourceType, targetType, out isPossible))
-    {
-      if (typeTestPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-      var boxing = Boxing.Create(
-        sourceType, targetType, typeTestTypeUsage, isPossible,
-        messageFormat: "type testing '{0}' value for '{1}' type and using the result");
-
-      boxing.Report(consumer);
-    }
-  }
-
-  private static bool IsTypeTestedAndBoxedValueAssignedToDesignationOrTemporaryVariable(IPattern typeCheckPattern)
-  {
-    // structValue is I i
-    if (typeCheckPattern is IPatternWithDesignation { Designation: ISingleVariableDesignation or IParenthesizedVariableDesignation })
-    {
-      // note: if designation exists but never used - C# eliminates boxing in Release builds. We ignore this
-      return true;
-    }
-
-    // structValue is I { P: 42 }
-    if (typeCheckPattern is IRecursivePattern recursivePattern)
-    {
-      return recursivePattern.HasSubpatterns();
-    }
-
-    // structValue is I and { P: 42 }
-    var containingParenthesizedPattern = typeCheckPattern.GetContainingParenthesizedPattern();
-
-    while (AndPatternNavigator.GetByRightPattern(containingParenthesizedPattern) is { } unwrappedByRight)
-    {
-      containingParenthesizedPattern = unwrappedByRight.GetContainingParenthesizedPattern();
-    }
-
-    var andPatternByRight = AndPatternNavigator.GetByLeftPattern(containingParenthesizedPattern);
-    if (andPatternByRight != null)
-    {
-      return andPatternByRight.RightPattern != null;
-    }
-
-    return false;
-  }
-
-  private static void CheckRuntimeTypeTestConversion(IAsExpression asExpression, IHighlightingConsumer consumer)
-  {
-    var targetTypeUsage = asExpression.TypeOperand;
-    if (targetTypeUsage == null) return;
-
-    var sourceType = asExpression.Operand.GetExpressionType().ToIType();
-    if (sourceType == null) return;
-
-    var targetType = asExpression.GetExpressionType().ToIType();
-    if (targetType == null) return;
-
-    if (IsBoxingConversionInRuntimeTypeTest(sourceType, targetType, out var isPossible))
-    {
-      if (asExpression.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-      var boxing = Boxing.Create(
-        sourceType, targetType, targetTypeUsage, isPossible,
-        messageFormat: "type testing '{0}' value for '{1}' type and using the result");
-
-      boxing.Report(consumer);
-    }
-  }
-
-  [Pure]
-  private static bool CheckTypeTestIntroducesBoxing(IType sourceType, ElementProblemAnalyzerData data, out bool isPossible)
-  {
-    isPossible = false;
-
-    // .NET Framework x86/x64 JITs do not optimize the 'box !T + isinst' pattern in IL code
-    // so type checks of unconstained type parameter types can produce boxings in runtime
-    if (!sourceType.IsTypeParameterType()) return false;
-
-    // it can't be boxing if source type parameter type is a reference type
-    var sourceClassification = sourceType.Classify;
-    if (sourceClassification == TypeClassification.REFERENCE_TYPE) return false;
-
-    // .NET Core JIT optimizes all isinst type checks
-    var runtime = data.GetTargetRuntime();
-    if (runtime != TargetRuntime.NetFramework) return false;
-
-    // note: this boxing detection is actually not dependent on the target type! all type checks really perform 'box !T'
-    isPossible = sourceClassification != TypeClassification.VALUE_TYPE;
-    return true;
-  }
-
-  [Pure]
-  private static bool IsBoxingConversionInRuntimeTypeTest(IType sourceType, IType targetType, out bool isPossible)
-  {
-    isPossible = false;
-
-    var sourceClassification = sourceType.Classify;
-    if (sourceClassification == TypeClassification.REFERENCE_TYPE)
-      return false;
-
-    if (!targetType.IsReferenceType())
-      return false;
-
-    if (targetType.IsObject()
-        || targetType.IsSystemValueType()
-        || targetType.IsSystemEnum()
-        || targetType.IsInterfaceType())
-    {
-      // tStruct is object o
-      // tStruct is System.ValueType vt
-      // tStruct is System.Enum e
-      // tStruct is I i
-      isPossible = sourceClassification != TypeClassification.VALUE_TYPE;
-      return true;
-    }
-
-    // tUnconstrained is int x
-    // tStruct is int x
-    return false;
   }
 
   #endregion
