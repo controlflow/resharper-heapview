@@ -105,10 +105,15 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
     [RequireStaticDelegate] Func<ICSharpTypeConversionRule, IExpressionType, IType, Conversion> getConversion,
     ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    // note: unfortunately, because of tuple conversions, we can't cut-off some types before full classification
+    // shortcut: do not check for boxing when source is a pointer already
+    // note: boxing may be hidden in user-defined + tuple conversions
+    if (sourceExpressionType is IType { Classify: TypeClassification.REFERENCE_TYPE } && targetType is not ITupleType)
+      return;
 
-    // todo: if source is reference type - can't be boxing?
-    // todo: if target is value type and not ValueTuple - can't be boxing, right?
+    // shortcut: if target type is a value type other than ValueTuple - it can't be boxing
+    // note: boxing may be hidden in user-defined + tuple conversions
+    if (targetType.Classify == TypeClassification.VALUE_TYPE && targetType is not ITupleType && sourceExpressionType is not ITupleType)
+      return;
 
     if (sourceExpressionType is IAnonymousFunctionType)
       return; // nothing to box and classifying a conversion might be expensive
