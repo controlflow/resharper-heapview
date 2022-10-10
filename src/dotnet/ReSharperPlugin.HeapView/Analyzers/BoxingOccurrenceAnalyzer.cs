@@ -1,9 +1,7 @@
 ﻿#nullable enable
 using System;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -13,11 +11,8 @@ using JetBrains.ReSharper.Psi.CSharp.Types;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.CSharp.Util.NullChecks;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Managed;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resolve.ExtensionMethods;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 using ReSharperPlugin.HeapView.Settings;
 
@@ -30,13 +25,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   ElementTypes: new[]
   {
     typeof(ICSharpExpression),
-    typeof(IPatternWithTypeUsage),
-    typeof(IConstantOrTypePattern),
-    typeof(IForeachStatement),
-    typeof(IDeconstructionPatternClause),
-    typeof(IVarDeconstructionPattern),
-    typeof(ICollectionElementInitializer),
-    typeof(IQueryCastReferenceProvider)
+    typeof(IForeachStatement)
   },
   HighlightingTypes = new[]
   {
@@ -50,10 +39,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
     switch (element)
     {
       // structWithNoToString.ToString()
-      // intArray.Cast<object>();
       case IInvocationExpression invocationExpression:
         CheckInheritedMethodInvocationOverValueType(invocationExpression, data, consumer);
-        CheckLinqEnumerableCastConversion(invocationExpression, data, consumer);
         break;
 
       // Action a = structValue.InstanceMethod;
@@ -67,19 +54,8 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         break;
 
       // foreach (object o in arrayOfInts) { }
-      // foreach ((object o, _) in arrayOfIntIntTuples) { }
       case IForeachStatement foreachStatement:
         CheckForeachImplicitConversions(foreachStatement, data, consumer);
-        break;
-
-      // (object o, objVariable) = intIntTuple;
-      case IAssignmentExpression assignmentExpression:
-        CheckDeconstructingAssignmentImplicitConversions(assignmentExpression, data, consumer);
-        break;
-
-      // from object o in intArray
-      case IQueryCastReferenceProvider queryCastReferenceProvider:
-        CheckLinqQueryCastConversion(queryCastReferenceProvider, data, consumer);
         break;
 
       case IParenthesizedExpression:
@@ -372,39 +348,11 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
   }
 
   #endregion
-  #region Implicit conversions in deconstructions
-
-  private static void CheckDeconstructingAssignmentImplicitConversions(
-    IAssignmentExpression assignmentExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    switch (assignmentExpression.GetAssignmentKind())
-    {
-      case AssignmentKind.OrdinaryAssignment:
-        return;
-
-      // all kinds of deconstructions
-      case AssignmentKind.DeconstructingAssignment:
-      case AssignmentKind.DeconstructingDeclaration:
-      case AssignmentKind.DeconstructionMixed:
-        break;
-
-      default:
-        throw new ArgumentOutOfRangeException();
-    }
-
-    var targetTupleExpression = assignmentExpression.Dest as ITupleExpression;
-    if (targetTupleExpression == null) return;
-
-    UniversalContext? resolveContext = null;
-    CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
-  }
+  #region Implicit conversions in foreach
 
   private static void CheckForeachImplicitConversions(
     IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    var foreachHeader = foreachStatement.ForeachHeader;
-    if (foreachHeader == null) return;
-
     switch (foreachStatement.ForeachHeader)
     {
       // foreach (object o in xs) { }
@@ -426,190 +374,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
 
         break;
       }
-
-      // foreach ((object o, _) in xs) { }
-      case { DeconstructionTuple: { } targetTupleExpression }:
-      {
-        UniversalContext? resolveContext = null;
-        CheckImplicitConversionsInDeconstruction(targetTupleExpression, ref resolveContext, data, consumer);
-        break;
-      }
     }
-  }
-
-  private static void CheckImplicitConversionsInDeconstruction(
-    ITupleExpression targetTupleExpression, ref UniversalContext? universalContext, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    foreach (var tupleComponent in targetTupleExpression.ComponentsEnumerable)
-    {
-      switch (tupleComponent.Value)
-      {
-        // ((a, b), _) = e;
-        case ITupleExpression innerTupleExpression:
-        {
-          CheckImplicitConversionsInDeconstruction(innerTupleExpression, ref universalContext, data, consumer);
-          break;
-        }
-
-        // (_, _) = e;           - discards elimiate access to component
-        // (object _, _) = e;    - discard designations elimiate access as well
-        // (var a, _) = e;       - source type captured, no conversion
-        // (var (a, b), _) = e;  - source type deconstructed, no conversion
-        case IReferenceExpression discardReferenceExpression when discardReferenceExpression.IsDiscardReferenceExpression():
-        case IDeclarationExpression { Designation: IDiscardDesignation }:
-        case IDeclarationExpression { TypeUsage: null }:
-        {
-          break;
-        }
-
-        // (a, _) = e;
-        // (object o, _) = e;
-        case { IsLValue: true } lValueExpression:
-        {
-          var targetComponentType = lValueExpression.GetExpressionType().ToIType();
-          if (targetComponentType == null) continue;
-
-          universalContext ??= new UniversalContext(targetTupleExpression);
-
-          var sourceExpressionType = targetTupleExpression.GetComponentSourceExpressionType(tupleComponent, universalContext);
-
-          ITreeNode correspondingNode = lValueExpression is IDeclarationExpression declarationExpression
-            ? declarationExpression.TypeUsage.NotNull()
-            : lValueExpression;
-
-          CheckConversionRequiresBoxing(
-            sourceExpressionType, targetComponentType, correspondingNode,
-            static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
-            data, consumer);
-          break;
-        }
-      }
-    }
-  }
-
-  #endregion
-  #region Casts in LINQ queries
-
-  private static void CheckLinqQueryCastConversion(
-    IQueryCastReferenceProvider queryCastReferenceProvider, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var castReference = queryCastReferenceProvider.CastReference;
-    if (castReference == null) return;
-
-    var collection = queryCastReferenceProvider.Expression;
-    if (collection == null) return;
-
-    var targetTypeUsage = GetCastNode(queryCastReferenceProvider);
-    if (targetTypeUsage == null) return;
-
-    var resolveResult = castReference.Resolve();
-    if (!resolveResult.ResolveErrorType.IsAcceptable) return;
-
-    if (resolveResult.DeclaredElement is not IMethod { ShortName: nameof(Enumerable.Cast) } castMethod) return;
-
-    var targetTypeParameter = castMethod.TypeParameters.SingleItem();
-    if (targetTypeParameter == null) return;
-
-    var castTargetType = resolveResult.Substitution[targetTypeParameter];
-
-    var sourceType = TryGetEnumerableCollectionType(collection.Type());
-    if (sourceType == null) return;
-
-    CheckConversionRequiresBoxing(
-      sourceType, castTargetType, targetTypeUsage,
-      static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
-      data, consumer);
-
-    static ITypeUsage? GetCastNode(IQueryCastReferenceProvider queryCastReferenceProvider)
-    {
-      return queryCastReferenceProvider switch
-      {
-        IQueryFirstFrom queryFirstFrom => queryFirstFrom.TypeUsage,
-        IQueryFromClause queryFromClause => queryFromClause.TypeUsage,
-        IQueryJoinClause queryJoinClause => queryJoinClause.TypeUsage,
-        _ => throw new ArgumentOutOfRangeException(nameof(queryCastReferenceProvider))
-      };
-    }
-  }
-
-  private static readonly ClrTypeName SystemEnumerableClassTypeName = new("System.Linq.Enumerable");
-
-  private static void CheckLinqEnumerableCastConversion(
-    IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    if (invocationExpression.InvokedExpression is not IReferenceExpression invokedReferenceExpression) return;
-
-    var typeArgumentList = invokedReferenceExpression.TypeArgumentList;
-    if (typeArgumentList == null) return;
-
-    if (!typeArgumentList.CommasEnumerable.IsEmpty()) return; // single type argument expected
-
-    var resolveResult = invocationExpression.Reference.Resolve();
-    if (!resolveResult.ResolveErrorType.IsAcceptable) return;
-
-    if (resolveResult.DeclaredElement is not IMethod
-        {
-          ShortName: nameof(Enumerable.Cast),
-          ContainingType: { ShortName: nameof(Enumerable) } containingType
-        } castMethod)
-    {
-      return;
-    }
-
-    if (!containingType.GetClrName().Equals(SystemEnumerableClassTypeName)) return;
-
-    var collectionExpression = resolveResult.Result.IsExtensionMethodInvocation()
-      ? invokedReferenceExpression.QualifierExpression
-      : invocationExpression.ArgumentsEnumerable.SingleItem?.Value;
-
-    if (collectionExpression == null) return;
-
-    var targetTypeUsage = typeArgumentList.TypeArgumentNodes.SingleItem();
-    if (targetTypeUsage == null) return;
-
-    var targetTypeParameter = castMethod.TypeParameters.SingleItem();
-    if (targetTypeParameter == null) return;
-
-    var castTargetType = resolveResult.Substitution[targetTypeParameter];
-
-    var sourceType = TryGetEnumerableCollectionType(collectionExpression.Type());
-    if (sourceType == null) return;
-
-    CheckConversionRequiresBoxing(
-      sourceType, castTargetType, targetTypeUsage,
-      static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
-      data, consumer);
-  }
-
-  [Pure]
-  private static IType? TryGetEnumerableCollectionType(IType sourceType)
-  {
-    switch (sourceType)
-    {
-      case IArrayType arrayType:
-      {
-        return arrayType.ElementType;
-      }
-
-      case IDeclaredType ({ } typeElement, var substitution):
-      {
-        var predefinedType = sourceType.Module.GetPredefinedType();
-
-        var iEnumerable = predefinedType.GenericIEnumerable.GetTypeElement();
-        if (iEnumerable is { TypeParameters: { Count: 1 } typeParameters })
-        {
-          var singleImplementation = typeElement.GetAncestorSubstitution(iEnumerable).SingleItem;
-          if (singleImplementation != null)
-          {
-            return substitution.Apply(singleImplementation).Apply(typeParameters[0]);
-          }
-        }
-
-        break;
-      }
-    }
-
-    return null;
   }
 
   #endregion
