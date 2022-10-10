@@ -24,19 +24,18 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 [ElementProblemAnalyzer(
   ElementTypes: new[]
   {
-    typeof(ICSharpExpression),
-    typeof(IForeachStatement)
+    typeof(ICSharpExpression)
   },
   HighlightingTypes = new[]
   {
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
+public sealed class BoxingOccurrenceAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
 {
-  public void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    switch (element)
+    switch (expression)
     {
       // structWithNoToString.ToString()
       case IInvocationExpression invocationExpression:
@@ -53,11 +52,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         CheckExpressionExplicitConversion(castExpression, data, consumer);
         break;
 
-      // foreach (object o in arrayOfInts) { }
-      case IForeachStatement foreachStatement:
-        CheckForeachImplicitConversions(foreachStatement, data, consumer);
-        break;
-
       case IParenthesizedExpression:
       case ICheckedExpression:
       case IUncheckedExpression:
@@ -65,10 +59,7 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
         return; // do not analyze implicit conversion
     }
 
-    if (element is ICSharpExpression expression)
-    {
-      CheckExpressionImplicitConversion(expression, data, consumer);
-    }
+    CheckExpressionImplicitConversion(expression, data, consumer);
   }
 
   #region Struct inherited instance method invocation
@@ -345,36 +336,6 @@ public sealed class BoxingOccurrenceAnalyzer : IElementProblemAnalyzer
       sourceExpressionType, targetType, castExpression.TargetType,
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
-  }
-
-  #endregion
-  #region Implicit conversions in foreach
-
-  private static void CheckForeachImplicitConversions(
-    IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    switch (foreachStatement.ForeachHeader)
-    {
-      // foreach (object o in xs) { }
-      case {
-             DeclarationExpression: { TypeUsage: { } explicitTypeUsage, Designation: ISingleVariableDesignation } declarationExpression,
-             Collection: { } collection
-           }:
-      {
-        var collectionType = collection.Type();
-
-        var elementType = CollectionTypeUtil.ElementTypeByCollectionType(collectionType, foreachStatement, foreachStatement.IsAwait);
-        if (elementType != null)
-        {
-          CheckConversionRequiresBoxing(
-            sourceExpressionType: elementType, targetType: declarationExpression.Type(), explicitTypeUsage,
-            static (conversionRule, source, target) => conversionRule.ClassifyImplicitConversionFromExpression(source, target),
-            data, consumer);
-        }
-
-        break;
-      }
-    }
   }
 
   #endregion
