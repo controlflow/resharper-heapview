@@ -104,6 +104,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestPatternMatching01() { DoNamedTest2(); }
   [Test] public void TestPatternMatching02() { DoNamedTest2(); }
   [Test] public void TestPatternMatching03() { DoNamedTest2(); }
+  [Test] public void TestPatternMatching04() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

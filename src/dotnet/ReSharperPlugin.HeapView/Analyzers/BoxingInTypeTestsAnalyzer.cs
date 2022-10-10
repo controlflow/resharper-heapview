@@ -51,7 +51,10 @@ public class BoxingInTypeTestsAnalyzer : IElementProblemAnalyzer
     IPattern typeTestPattern, ITreeNode typeTestTypeUsage, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var sourceType = typeTestPattern.GetDispatchType();
+    if (sourceType.IsUnknownOrUnresolvedTypeElementType()) return;
+
     var targetType = typeTestPattern.GetPatternType();
+    if (targetType.IsUnknownOrUnresolvedTypeElementType()) return;
 
     // in .NET Framework type test alone can produce boxing allocations
     if (CheckTypeTestIntroducesBoxing(sourceType, data, out var isPossible))
@@ -121,8 +124,12 @@ public class BoxingInTypeTestsAnalyzer : IElementProblemAnalyzer
     var sourceType = asExpression.Operand.GetExpressionType().ToIType();
     if (sourceType == null) return;
 
+    if (sourceType.IsUnknownOrUnresolvedTypeElementType()) return;
+
     var targetType = asExpression.GetExpressionType().ToIType();
     if (targetType == null) return;
+
+    if (targetType.IsUnknownOrUnresolvedTypeElementType()) return;
 
     if (IsBoxingConversionInRuntimeTypeTest(sourceType, targetType, out var isPossible))
     {
