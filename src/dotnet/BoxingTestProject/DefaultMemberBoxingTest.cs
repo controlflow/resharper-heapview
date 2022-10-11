@@ -37,6 +37,29 @@ public class DefaultMemberBoxingTest
   {
     public int BaseCall() => ((IWithDefault)this).Other();
   }
+
+  [Test]
+  public void Simple()
+  {
+    var foo = new Foo();
+#if DEBUG
+    Allocations.AssertAllocates(() => VirtualEmpty(foo));
+#else
+    Allocations.AssertNoAllocations(() => VirtualEmpty(foo));
+#endif
+    Allocations.AssertAllocates(() => SealedVirtualEmpty(foo));
+
+    int VirtualEmpty<T>(T t) where T : IFoo => t.VirtualMethod();
+    int SealedVirtualEmpty<T>(T t) where T : IFoo => t.SealedVirtualMethod();
+  }
+
+  private interface IFoo
+  {
+    public int VirtualMethod() => 1;
+    public sealed int SealedVirtualMethod() => 2;
+  }
+
+  private struct Foo : IFoo { }
 }
 
 #endif
