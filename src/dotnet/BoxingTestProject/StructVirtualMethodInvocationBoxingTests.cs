@@ -63,37 +63,4 @@ public class StructVirtualMethodInvocationBoxingTests
   }
 
   private record struct RecordStruct;
-
-  [Test]
-  public void EnumGetHashCodeInvocation()
-  {
-    var e = GetHashCode() % 2 == 0 ? ConsoleKey.Clear : ConsoleKey.Add;
-#if NETFRAMEWORK
-    Allocations.AssertAllocates(() => e.GetHashCode());
-    Allocations.AssertAllocates(() => e.ToString());
-    Allocations.AssertAllocates(() => e.Equals(null));
-#else
-    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
-    Allocations.AssertAllocates(() => e.ToString());
-    Allocations.AssertAllocates(() => e.Equals(null));
-#endif
-  }
-
-  [Test]
-  public void NullableEnumGetHashCodeInvocation()
-  {
-    ConsoleKey? e = GetHashCode() % 2 == 0 ? ConsoleKey.Clear : ConsoleKey.Add;
-    object boxedComparand = ConsoleKey.Clear;
-#if NETFRAMEWORK
-    Allocations.AssertAllocates(() => e.GetHashCode());
-    Allocations.AssertAllocates(() => e.ToString());
-    Allocations.AssertNoAllocations(() => e.Equals(null)); // shortcut
-    Allocations.AssertAllocates(() => e.Equals(boxedComparand));
-#else
-    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
-    Allocations.AssertAllocates(() => e.ToString());
-    Allocations.AssertNoAllocations(() => e.Equals(null)); // shortcut
-    Allocations.AssertAllocates(() => e.Equals(boxedComparand));
-#endif
-  }
 }

@@ -54,14 +54,14 @@ public class RuntimeBoxingOptimizationsTests
   public void EnumGetHashCodeInvocation()
   {
     var e = GetHashCode() % 2 == 0 ? ConsoleKey.Clear : ConsoleKey.Add;
-#if NETFRAMEWORK
-    Allocations.AssertAllocates(() => e.GetHashCode());
-    Allocations.AssertAllocates(() => Generic(e));
+#if NETCOREAPP
+    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
+    Allocations.AssertNoAllocations(() => Generic(e)); // optimized by runtime
     Allocations.AssertAllocates(() => e.ToString());
     Allocations.AssertAllocates(() => e.Equals(null));
 #else
-    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
-    Allocations.AssertNoAllocations(() => Generic(e)); // optimized by runtime
+    Allocations.AssertAllocates(() => e.GetHashCode());
+    Allocations.AssertAllocates(() => Generic(e));
     Allocations.AssertAllocates(() => e.ToString());
     Allocations.AssertAllocates(() => e.Equals(null));
 #endif
@@ -74,13 +74,13 @@ public class RuntimeBoxingOptimizationsTests
   {
     ConsoleKey? e = GetHashCode() % 2 == 0 ? ConsoleKey.Clear : ConsoleKey.Add;
     object boxedComparand = ConsoleKey.Clear;
-#if NETFRAMEWORK
-    Allocations.AssertAllocates(() => e.GetHashCode());
+#if NETCOREAPP
+    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
     Allocations.AssertAllocates(() => e.ToString());
     Allocations.AssertNoAllocations(() => e.Equals(null)); // shortcut
     Allocations.AssertAllocates(() => e.Equals(boxedComparand));
 #else
-    Allocations.AssertNoAllocations(() => e.GetHashCode()); // optimized by runtime
+    Allocations.AssertAllocates(() => e.GetHashCode());
     Allocations.AssertAllocates(() => e.ToString());
     Allocations.AssertNoAllocations(() => e.Equals(null)); // shortcut
     Allocations.AssertAllocates(() => e.Equals(boxedComparand));

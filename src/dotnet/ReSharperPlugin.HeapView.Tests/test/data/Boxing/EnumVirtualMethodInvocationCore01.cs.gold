@@ -16,9 +16,9 @@ _ = ne?.|Equals|(4)(null);
 _ = ne?.|ToString|(5)();
 _ = ne?.GetTypeCode();
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
-(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance
-(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
-(3): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance
-(4): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
-(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.Equals()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.ToString()' virtual method invocation over the value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.Equals()' virtual method invocation over the value type instance
+(3): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.ToString()' virtual method invocation over the value type instance
+(4): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.Equals()' virtual method invocation over the value type instance
+(5): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.ToString()' virtual method invocation over the value type instance
