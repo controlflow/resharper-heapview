@@ -25,5 +25,5 @@ struct WithGetHashCodeOverride
 record struct RecordStruct1;
 record struct RecordStruct2(int X);
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
-(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.Equals()' virtual method invocation over the value type instance
