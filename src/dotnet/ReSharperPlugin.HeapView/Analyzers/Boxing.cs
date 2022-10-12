@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Text;
 using JetBrains.Annotations;
@@ -186,6 +187,7 @@ public abstract class Boxing
     return new Ordinary(sourceType, targetType, correspondingNode, isPossible, messageFormat);
   }
 
+  [ThreadStatic]
   private static HashSet<ITypeParameter>? TypeParametersInProgress;
 
   private static ITreeNode? TryGetComponentNode(ITreeNode nodeToHighlight, int componentIndex)

@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -60,6 +61,7 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
       case nameof(GetHashCode):
       case nameof(Equals):
       case nameof(ToString):
+      case nameof(Enum.HasFlag) when containingType.IsSystemEnumClass():
       {
         CheckValueTypeVirtualMethodInvocation();
         return;
@@ -139,7 +141,7 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
       if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
         return;
 
-      if (IsStructVirtualMethodInvocationOptimizedAtRuntime(method, qualifierType, data))
+      if (IsStructVirtualMethodInvocationOptimizedAtRuntime(invocationExpression, method, qualifierType, data))
         return;
 
       if (qualifierType.IsTypeParameterType(out var typeParameter))
@@ -149,7 +151,7 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
           consumer.AddHighlighting(
             new PossibleBoxingAllocationHighlighting(
               invokedReferenceExpression.NameIdentifier,
-              $"inherited 'Object.{method.ShortName}()' virtual method invocation over the value type instance "
+              $"inherited '{PresentMethod()}' virtual method invocation over the value type instance "
               + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type "
               + $"that do not overrides '{method.ShortName}' virtual method"));
         }
@@ -159,7 +161,7 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
         consumer.AddHighlighting(
           new BoxingAllocationHighlighting(
             invokedReferenceExpression.NameIdentifier,
-            $"inherited 'Object.{method.ShortName}()' virtual method invocation over the value type instance"));
+            $"inherited '{PresentMethod()}' virtual method invocation over the value type instance"));
       }
 
       [Pure]
@@ -178,6 +180,28 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
           default:
             return true; // somewthing weird is found under Nullable<T>
         }
+      }
+
+      string PresentMethod()
+      {
+        // present the actual cause of the boxing inside Nullable<T>.GetHashCode/Equals/ToString
+        if (containingType.IsNullableOfT())
+        {
+          var unliftedTypeElement = qualifierType.GetTypeElement();
+          if (unliftedTypeElement != null)
+          {
+            foreach (var superTypeElement in unliftedTypeElement.GetSuperTypeElements())
+            {
+              if (superTypeElement is IClass)
+              {
+                containingType = superTypeElement;
+                break;
+              }
+            }
+          }
+        }
+
+        return $"{containingType.ShortName}.{method.ShortName}()";
       }
     }
   }
@@ -269,16 +293,40 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
 
   [Pure]
   private static bool IsStructVirtualMethodInvocationOptimizedAtRuntime(
-    IMethod method, IType qualifierType, ElementProblemAnalyzerData data)
+    IInvocationExpression invocationExpression, IMethod method, IType qualifierType, ElementProblemAnalyzerData data)
   {
-    if (method.ShortName == nameof(GetHashCode)
-        && qualifierType.IsEnumType()
-        && data.GetTargetRuntime() == TargetRuntime.NetCore)
+    switch (method.ShortName)
     {
-      // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
-      return true;
+      case nameof(GetHashCode):
+        // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
+        return qualifierType.IsEnumType() // todo: generics
+               && data.GetTargetRuntime() == TargetRuntime.NetCore;
+
+      case nameof(Enum.HasFlag):
+        return IsOptimizedEnumHasFlagsInvocation(invocationExpression, qualifierType, data);
     }
 
     return false;
+  }
+
+  [Pure]
+  public static bool IsOptimizedEnumHasFlagsInvocation(
+    IInvocationExpression invocationExpression, IType qualifierType, ElementProblemAnalyzerData data)
+  {
+    // .NET Core optimizes whole 'someEnum.HasFlag(someOtherEnum)' at runtime in Release builds
+
+    var singleArgument = invocationExpression.ArgumentsEnumerable.SingleItem;
+    if (singleArgument == null) return false;
+
+    var argumentValue = singleArgument.Value;
+    if (argumentValue == null) return false;
+
+    var argumentType = argumentValue.GetExpressionType().ToIType();
+    if (argumentType == null) return false;
+
+    if (!TypeEqualityComparer.Default.Equals(argumentType, qualifierType)) return false;
+
+    return data.GetTargetRuntime() == TargetRuntime.NetCore
+           && data.AnalyzeCodeLikeIfOptimizationsAreEnabled();
   }
 }

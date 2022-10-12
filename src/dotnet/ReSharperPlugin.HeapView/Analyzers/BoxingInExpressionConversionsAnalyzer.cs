@@ -235,6 +235,38 @@ public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyz
       }
     }
 
+    // enumValue.HasFlag(enumValue2) is optimized in .NET Core in Release builds
+    var argument = CSharpArgumentNavigator.GetByValue(containingParenthesized);
+    if (argument != null)
+    {
+      var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
+      if (invocationExpression != null)
+      {
+        if (invocationExpression.InvokedExpression.GetOperandThroughParenthesis()
+              is IReferenceExpression { NameIdentifier.Name: { } methodName } invokedReferenceExpression)
+        {
+          switch (methodName)
+          {
+            case nameof(Enum.HasFlag) when IsOptimizedEnumHasFlagsInvocation():
+              return true;
+          }
+
+          bool IsOptimizedEnumHasFlagsInvocation()
+          {
+            var invocationResolveResult = invocationExpression.Reference.Resolve();
+            return invocationResolveResult.ResolveErrorType.IsAcceptable
+                   && invocationResolveResult.DeclaredElement is IMethod method
+                   && method.ContainingType.IsSystemEnumClass()
+                   && invokedReferenceExpression.QualifierExpression is { } qualifierExpression
+                   && BoxingInStructInvocationsAnalyzer.IsOptimizedEnumHasFlagsInvocation(
+                        invocationExpression, qualifierExpression.Type(), data);
+          }
+        }
+      }
+    }
+
+
+
     return false;
   }
 

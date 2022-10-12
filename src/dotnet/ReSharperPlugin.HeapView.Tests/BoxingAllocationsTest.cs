@@ -126,6 +126,8 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
   [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 
   [Test] public void TestConstrainedBoxingFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestEnumHasFlagFramework01() { DoNamedTest2(); }
 }
 
 [TestNet60]
@@ -151,4 +153,8 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
   [Test] public void TestConstrainedBoxingCore01() { DoNamedTest2(); }
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestConstrainedBoxingCore02() { DoNamedTest2(); }
+
+  [Test] public void TestEnumHasFlagCore01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestEnumHasFlagCore02() { DoNamedTest2(); }
 }

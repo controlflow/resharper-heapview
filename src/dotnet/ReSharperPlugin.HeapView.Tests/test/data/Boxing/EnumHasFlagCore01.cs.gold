@@ -1,0 +1,36 @@
+﻿using System;
+
+class EnumHasFlags
+{
+  private bool Test01(Flags value, Flags flag) => value.HasFlag(flag);
+  private bool Test02(Flags value, Flags? flag) => value.|HasFlag|(0)(|flag|(1)!); // yes, 2 boxes
+  private bool Test03(Flags value, Enum flag) => value.|HasFlag|(2)(flag); // yes, this invocation
+  private bool Test04(Enum value, Flags flag) => value.HasFlag(|flag|(3)); // yes, arg boxing
+  private bool Test05(Enum value, Enum flag) => value.HasFlag(flag);
+
+  private bool Generic01<TEnum>(TEnum value, TEnum flag) where TEnum : Enum => value.HasFlag(flag);
+  private bool Generic02<TEnum>(TEnum value, TEnum? flag) where TEnum : Enum => value.HasFlag(flag!);
+  private bool Generic03<TEnum>(TEnum value, Enum flag) where TEnum : Enum => value.|HasFlag|(4)(flag); // possible, this invocation
+  private bool Generic03<TEnum>(Enum value, TEnum flag) where TEnum : Enum => value.HasFlag(|flag|(5)); // possible, arg boxing
+
+  private bool Generic04<TEnum>(TEnum value, TEnum flag) where TEnum : struct, Enum => value.HasFlag(flag);
+  private bool Generic05<TEnum>(TEnum value, TEnum? flag) where TEnum : struct, Enum => value.|HasFlag|(6)(|flag|(7)!); // yes, 2 boxes
+  private bool Generic06<TEnum>(TEnum value, Enum flag) where TEnum : struct, Enum => value.|HasFlag|(8)(flag); // yes, this invocation
+  private bool Generic07<TEnum>(Enum value, TEnum flag) where TEnum : struct, Enum => value.HasFlag(|flag|(9)); // yes, arg boxing
+
+  private bool? Generic08<TEnum>(TEnum? value, TEnum flag) where TEnum : Enum => value?.HasFlag(flag);
+
+  [Flags]
+  private enum Flags { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.HasFlag()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Flags?' to 'Enum' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.HasFlag()' virtual method invocation over the value type instance
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Flags' to 'Enum' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.HasFlag()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'HasFlag' virtual method
+(5): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TEnum' to 'Enum' possibly requires boxing of the value type
+(6): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.HasFlag()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'HasFlag' virtual method
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TEnum?' to 'Enum' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.HasFlag()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'HasFlag' virtual method
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TEnum' to 'Enum' requires boxing of the value type
