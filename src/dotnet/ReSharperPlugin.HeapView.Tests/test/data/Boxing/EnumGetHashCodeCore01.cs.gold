@@ -1,0 +1,14 @@
+﻿using System;
+
+class EnumGetHashCode
+{
+  private int Test01(Flags value) => value.GetHashCode();
+  private int Test02(Flags? value) => value.GetHashCode();
+  private int Test03<TEnum>(TEnum value) where TEnum : Enum => value.GetHashCode();
+  private int Test04<TEnum>(TEnum value) where TEnum : struct, Enum => value.GetHashCode();
+  private int Test05<TEnum>(TEnum? value) where TEnum : Enum => value!.GetHashCode();
+  private int Test06<TEnum>(TEnum? value) where TEnum : struct, Enum => value.GetHashCode();
+
+  [Flags] private enum Flags { }
+}
+---------------------------------------------------------

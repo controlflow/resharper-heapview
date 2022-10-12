@@ -1,0 +1,20 @@
+﻿using System;
+
+class EnumGetHashCode
+{
+  private int Test01(Flags value) => value.|GetHashCode|(0)(); // yes
+  private int Test02(Flags? value) => value.|GetHashCode|(1)(); // yes
+  private int Test03<TEnum>(TEnum value) where TEnum : Enum => value.|GetHashCode|(2)(); // possible
+  private int Test04<TEnum>(TEnum value) where TEnum : struct, Enum => value.|GetHashCode|(3)(); // possible
+  private int Test05<TEnum>(TEnum? value) where TEnum : Enum => value!.|GetHashCode|(4)(); // possible
+  private int Test06<TEnum>(TEnum? value) where TEnum : struct, Enum => value.|GetHashCode|(5)(); // possible
+
+  [Flags] private enum Flags { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance
+(2): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(3): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(4): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
+(5): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Enum.GetHashCode()' virtual method invocation over the value type instance if 'TEnum' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method

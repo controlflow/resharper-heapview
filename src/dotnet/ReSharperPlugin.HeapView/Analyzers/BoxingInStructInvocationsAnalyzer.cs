@@ -298,15 +298,21 @@ public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpE
     switch (method.ShortName)
     {
       case nameof(GetHashCode):
-        // .NET Core optimizes 'someEnum.GetHashCode()' at runtime
-        return qualifierType.IsEnumType() // todo: generics
-               && data.GetTargetRuntime() == TargetRuntime.NetCore;
+        return IsOptimizedEnumGetHashCode(qualifierType, data);
 
       case nameof(Enum.HasFlag):
         return IsOptimizedEnumHasFlagsInvocation(invocationExpression, qualifierType, data);
     }
 
     return false;
+  }
+
+  [Pure]
+  private static bool IsOptimizedEnumGetHashCode(IType qualifierType, ElementProblemAnalyzerData data)
+  {
+    // .NET Core optimizes 'someEnum.GetHashCode()' at runtime, even in Debug mode
+    return (qualifierType.IsEnumType() || qualifierType.IsTypeParameterTypeWithEnumConstraint())
+           && data.GetTargetRuntime() == TargetRuntime.NetCore;
   }
 
   [Pure]
