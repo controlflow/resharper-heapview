@@ -16,7 +16,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public class BoxingInForeachAnalyzer : ElementProblemAnalyzer<IForeachStatement>
+public class BoxingInForeachAnalyzer : HeapAllocationAnalyzerBase<IForeachStatement>
 {
   protected override void Run(IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {

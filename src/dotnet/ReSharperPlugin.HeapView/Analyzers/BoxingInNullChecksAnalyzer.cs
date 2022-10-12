@@ -21,15 +21,15 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   {
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public class BoxingInNullChecksAnalyzer : IConditionalElementProblemAnalyzer
+public class BoxingInNullChecksAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
-  public bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
+  protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
   {
     // note: unconstrained value null checks only produce allocations in DEBUG builds
     return !data.AnalyzeCodeLikeIfOptimizationsAreEnabled();
   }
 
-  public void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     switch (element)
     {

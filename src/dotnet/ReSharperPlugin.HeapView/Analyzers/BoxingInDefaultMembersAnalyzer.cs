@@ -20,9 +20,9 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 //     typeof(BoxingAllocationHighlighting),
 //     typeof(PossibleBoxingAllocationHighlighting)
 //   })]
-public class BoxingInDefaultMembersAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>, IConditionalElementProblemAnalyzer
+public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
 {
-  public bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
+  protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
   {
     return file.IsDefaultInterfaceImplementationSupported();
   }

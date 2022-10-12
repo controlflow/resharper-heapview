@@ -46,7 +46,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(DelegateAllocationHighlighting),
     typeof(CanEliminateClosureCreationHighlighting)
   })]
-public class ClosureAnalyzer : ElementProblemAnalyzer<ICSharpDeclaration>
+public class ClosureAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
 {
   protected override void Run(ICSharpDeclaration declaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {

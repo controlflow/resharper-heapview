@@ -23,6 +23,10 @@ public class HeapViewSettingsPage : BeSimpleOptionsPage
     bool wrapInScrollablePanel = false)
     : base(lifetime, optionsPageContext, optionsSettingsSmartContext, wrapInScrollablePanel)
   {
+    AddBoolOption((HeapViewAnalysisSettings x) => x.AnalysisIsEnabled, "Enable allocation analysis");
+
+    AddSpacer();
+
     AddText("Some heap allocations are eliminated by the .NET JIT compiler, " +
             "but only for 'Release' build configurations with \"Optimize code\" setting enabled. " +
             "Heap Allocations Viewer can analyze your code assuming different optimization settings.");

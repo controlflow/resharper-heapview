@@ -24,9 +24,9 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public class BoxingInLinqCastsAnalyzer : IElementProblemAnalyzer
+public class BoxingInLinqCastsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
-  public void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     switch (element)
     {

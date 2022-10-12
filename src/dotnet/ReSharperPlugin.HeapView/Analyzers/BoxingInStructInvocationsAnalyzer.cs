@@ -22,7 +22,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public class BoxingInStructInvocationsAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
+public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSharpExpression>
 {
   protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {

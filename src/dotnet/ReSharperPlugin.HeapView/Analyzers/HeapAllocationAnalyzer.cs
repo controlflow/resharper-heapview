@@ -48,7 +48,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(ObjectAllocationPossibleHighlighting),
     typeof(DelegateAllocationHighlighting)
   })]
-public sealed class HeapAllocationAnalyzer : ElementProblemAnalyzer<ITreeNode>
+public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {

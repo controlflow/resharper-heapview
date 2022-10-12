@@ -31,7 +31,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
   })]
-public sealed class BoxingInExpressionConversionsAnalyzer : ElementProblemAnalyzer<ICSharpExpression>
+public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyzerBase<ICSharpExpression>
 {
   protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
