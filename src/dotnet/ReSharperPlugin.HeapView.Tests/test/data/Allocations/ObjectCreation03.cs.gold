@@ -1,0 +1,14 @@
+﻿class Errors
+{
+  void Cases()
+  {
+    Unresolved u = new();
+    u = new Unresolved();
+    int[] array = new();
+    dynamic d = new();
+    d = new dynamic();
+    object o = |new|(0)();
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation

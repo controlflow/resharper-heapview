@@ -1,0 +1,37 @@
+using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.TestFramework;
+using NUnit.Framework;
+using ReSharperPlugin.HeapView.Highlightings;
+
+namespace ReSharperPlugin.HeapView.Tests;
+
+public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
+{
+  protected override string RelativeTestDataPath => "Allocations";
+
+  protected override bool HighlightingPredicate(
+    IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
+  {
+    return highlighting
+      is ObjectAllocationHighlighting
+      or ObjectAllocationEvidentHighlighting
+      or ObjectAllocationPossibleHighlighting;
+  }
+
+  [Test] public void TestObjectCreation01() { DoNamedTest2(); }
+  [Test] public void TestObjectCreation02() { DoNamedTest2(); }
+  [Test] public void TestObjectCreation03() { DoNamedTest2(); }
+}
+
+[TestNetFramework46]
+public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
+{
+}
+
+[TestNet60]
+public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
+{
+}

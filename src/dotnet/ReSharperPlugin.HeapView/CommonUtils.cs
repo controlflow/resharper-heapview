@@ -10,6 +10,11 @@ namespace ReSharperPlugin.HeapView;
 
 public static class CommonUtils
 {
+  public static readonly TypePresentationStyle DefaultTypePresentationStyle = TypePresentationStyle.Default with
+  {
+    Options = TypePresentationStyle.Default.Options & ~TypePresentationOptions.IncludeNullableAnnotations
+  };
+
   [Pure]
   public static bool IsStringConcatOperatorReference([CanBeNull] this IReference reference)
   {

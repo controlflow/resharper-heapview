@@ -1,0 +1,12 @@
+﻿class Generics
+{
+  public T Test01<T>() where T : new() => |new|(0) T(); // possible
+  public T Test02<T>() where T : new() => |new|(1)(); // possible
+  public T Test04<T>() where T : class, new() => |new|(2)(); // yes
+  public T Test05<T>() where T : struct => new();
+  public T Test06<T>() where T : unmanaged => new();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: new instance creation if 'T' type parameter will be substituted with the reference type
+(1): ReSharper HeapView Allocation: Possible object allocation: new instance creation if 'T' type parameter will be substituted with the reference type
+(2): ReSharper HeapView Allocation: Object allocation: new 'T' instance creation

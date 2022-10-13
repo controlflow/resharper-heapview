@@ -56,7 +56,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     {
       // var t = new object();
       case IObjectCreationExpression objectCreation:
-        CheckObjectCreation(objectCreation, consumer);
         CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
         return;
 
@@ -119,32 +118,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
       case ICollectionElementInitializer collectionElementInitializer:
         CheckInvocationInfo(collectionElementInitializer, null, consumer);
         return;
-    }
-  }
-
-  private static void CheckObjectCreation([NotNull] IObjectCreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
-  {
-    var typeReference = objectCreation.TypeReference;
-    if (typeReference == null) return;
-
-    if (objectCreation.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-    var newKeyword = objectCreation.NewKeyword.NotNull();
-
-    var typeElement = typeReference.Resolve().DeclaredElement as ITypeElement;
-    var typeParameter = typeElement as ITypeParameter;
-
-    if (typeElement is IClass || typeParameter is { IsReferenceType: true })
-    {
-      consumer.AddHighlighting(
-        new ObjectAllocationEvidentHighlighting(newKeyword, "reference type creation"),
-        newKeyword.GetDocumentRange());
-    }
-    else if (typeParameter is { IsValueType: false })
-    {
-      consumer.AddHighlighting(
-        new ObjectAllocationPossibleHighlighting(newKeyword, "reference type creation"),
-        newKeyword.GetDocumentRange());
     }
   }
 
