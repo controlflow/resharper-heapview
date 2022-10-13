@@ -31,8 +31,8 @@ class C {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
-(1): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
+(0):<overlapped> ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
+(1):<overlapped> ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
 (2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IComparable' type in .NET Framework projects possibly requires boxing of the value type
 (3): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IEquatable<T>' type in .NET Framework projects possibly requires boxing of the value type
 (4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects possibly requires boxing of the value type
@@ -40,6 +40,6 @@ class C {
 (6): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'byte' type in .NET Framework projects possibly requires boxing of the value type
 (7): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IComparable' type in .NET Framework projects requires boxing of the value type
 (8): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'IEquatable<T>' type in .NET Framework projects requires boxing of the value type
-(9): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
+(9):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
 (10): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects requires boxing of the value type
 (11): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'byte' type in .NET Framework projects requires boxing of the value type

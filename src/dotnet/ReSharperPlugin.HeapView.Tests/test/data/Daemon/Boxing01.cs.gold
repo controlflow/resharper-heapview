@@ -102,8 +102,8 @@ namespace ConsoleApplication2
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Allocation: Object allocation: reference type creation
-(6): ReSharper HeapView Allocation: Object allocation: reference type creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'Foo' instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'Bar' instance creation
 (7): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
 (8): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
 (9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of the value type

@@ -15,9 +15,9 @@
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from '(int, (byte, int))' to 'object' requires boxing of the value type
+(0):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from '(int, (byte, int))' to 'object' requires boxing of the value type
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from '(byte, int)' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'byte' to 'object' requires boxing of the value type
-(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(4):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (5): ReSharper HeapView Allocation: Object allocation: array creation

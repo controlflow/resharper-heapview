@@ -23,5 +23,5 @@ class C {
 (0): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'T' to 'I' possibly requires boxing of the value type
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'I' requires boxing of the value type
 (2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
-(3): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
+(3):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
 (4): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'U' type in .NET Framework projects possibly requires boxing of the value type

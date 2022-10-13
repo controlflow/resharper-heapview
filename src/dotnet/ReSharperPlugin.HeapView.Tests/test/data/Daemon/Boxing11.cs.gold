@@ -72,7 +72,7 @@ struct S : I {
 (2): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type and using the result requires boxing of the value type
 (3): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type and using the result requires boxing of the value type
 (4): ReSharper HeapView Boxing: Boxing allocation: type testing 'S' value for 'I' type and using the result requires boxing of the value type
-(5): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
+(5):<overlapped> ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
 (6): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects possibly requires boxing of the value type
 (7): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects possibly requires boxing of the value type
 (8): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
@@ -87,15 +87,15 @@ struct S : I {
 (17): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
 (18): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects possibly requires boxing of the value type
 (19): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects possibly requires boxing of the value type
-(20): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects requires boxing of the value type
-(21): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
-(22): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
+(20):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects requires boxing of the value type
+(21):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
+(22):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
 (23): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
 (24): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
-(25): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type in .NET Framework projects requires boxing of the value type
+(25):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type in .NET Framework projects requires boxing of the value type
 (26): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'int' type in .NET Framework projects requires boxing of the value type
 (27): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I' type in .NET Framework projects requires boxing of the value type
-(28): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type in .NET Framework projects requires boxing of the value type
+(28):<overlapped> ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'I2' type in .NET Framework projects requires boxing of the value type
 (29): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects requires boxing of the value type
 (30): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'ValueType' type in .NET Framework projects requires boxing of the value type
 (31): ReSharper HeapView Boxing: Boxing allocation: type testing 'T' value for 'Enum' type in .NET Framework projects requires boxing of the value type
