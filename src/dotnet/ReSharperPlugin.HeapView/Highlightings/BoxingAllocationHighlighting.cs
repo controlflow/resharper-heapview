@@ -18,6 +18,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class BoxingAllocationHighlighting : PerformanceHighlightingBase
@@ -39,6 +40,7 @@ public class BoxingAllocationHighlighting : PerformanceHighlightingBase
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class PossibleBoxingAllocationHighlighting : PerformanceHighlightingBase

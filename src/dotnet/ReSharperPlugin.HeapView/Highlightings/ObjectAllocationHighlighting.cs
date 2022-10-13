@@ -18,6 +18,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class ObjectAllocationHighlighting : PerformanceHighlightingBase
@@ -39,6 +40,7 @@ public class ObjectAllocationHighlighting : PerformanceHighlightingBase
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
@@ -60,6 +62,7 @@ public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class ObjectAllocationPossibleHighlighting : PerformanceHighlightingBase

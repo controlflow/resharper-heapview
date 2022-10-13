@@ -18,6 +18,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
+  OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
 public class DelegateAllocationHighlighting : PerformanceHighlightingBase

@@ -1,5 +1,4 @@
 using JetBrains.Application.Settings;
-using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -133,7 +132,6 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
 }
 
 [TestNet60]
-[NullableContext(NullableContextKind.Disable)]
 public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 {
   [Test] public void TestTuplesAwaitForeach01() { DoNamedTest2(); }
