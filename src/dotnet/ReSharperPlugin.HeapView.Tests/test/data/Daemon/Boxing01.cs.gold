@@ -112,6 +112,6 @@ namespace ConsoleApplication2
 (12): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (13): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (14): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(15): ReSharper HeapView Allocation: Object allocation: array creation
+(15): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
 (16): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

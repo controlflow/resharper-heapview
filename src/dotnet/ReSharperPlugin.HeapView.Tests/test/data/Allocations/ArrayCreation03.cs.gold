@@ -1,0 +1,34 @@
+﻿using System;
+// ReSharper disable UseArrayEmptyMethod
+// ReSharper disable RedundantExplicitArraySize
+// ReSharper disable RedundantOverflowCheckingContext
+
+public class C
+{
+  public ReadOnlySpan<byte> Test01() => |new|(0) byte[0] { };
+  public ReadOnlySpan<byte> Test02() => |new|(1) byte[0]; // yes, no initializer
+  public ReadOnlySpan<bool> Test03() => checked(|new|(2)[] { true, false });
+  public Span<bool> Test04() => |new|(3)[] { true, false }; // yes, mutable
+  public ReadOnlySpan<int> Test05() => |new|(4)[] { 1, 2, 3 }; // yes, not bytes
+  public ReadOnlySpan<byte> Test06(byte b) => |new|(5) byte[] { 1, b, 3 }; // yes, not constant
+  public ReadOnlySpan<sbyte> Test07() => |new|(6) sbyte[] { 1, 0, 3 };
+  public ReadOnlySpan<sbyte> Test08() => |new|(7) sbyte[13]; // yes, no initializer
+  public ReadOnlySpan<sbyte> Test09() => |new|(8) sbyte[13]; // yes, no initializer
+  public ReadOnlySpan<IntE> Test10() => |new|(9)[] { IntE.A, IntE.A }; // yes, not bytes
+  public ReadOnlySpan<ByteE> Test11() => |new|(10)[] { ByteE.A, ByteE.A };
+}
+
+public enum ByteE : byte { A }
+public enum IntE { A }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'bool[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'bool[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'sbyte[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'sbyte[]' array instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'sbyte[]' array instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'IntE[]' array instance creation
+(10): ReSharper HeapView Allocation: Object allocation: new 'ByteE[]' array instance creation

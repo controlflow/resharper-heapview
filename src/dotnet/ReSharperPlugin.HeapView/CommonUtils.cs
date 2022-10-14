@@ -218,6 +218,4 @@ public static class CommonUtils
     typeParameter = null;
     return false;
   }
-
-
 }
