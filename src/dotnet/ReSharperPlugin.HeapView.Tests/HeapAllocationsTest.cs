@@ -45,4 +45,6 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
 public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
 {
   [Test] public void TestArrayCreationCore01() { DoNamedTest2(); }
+
+  [Test] public void TestSliceCore01() { DoNamedTest2(); }
 }

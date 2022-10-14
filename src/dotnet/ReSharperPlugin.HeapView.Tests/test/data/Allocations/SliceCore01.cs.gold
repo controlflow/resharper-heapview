@@ -1,0 +1,28 @@
+﻿using System;
+// ReSharper disable ConstantConditionalAccessQualifier
+// ReSharper disable ConvertToConstant.Local
+
+var slice01 = args[|..|(0)]; // yes
+var slice02 = args[1|..|(1)]; // yes
+var slice03 = args?[123|..|(2)^11]; // yes
+
+var str = args![0];
+var slice04 = str[|..|(3)]; // yes
+var slice05 = str?[42|..|(4)]; // yes
+
+var start = 42;
+var slice06 = str?[start|..|(5)]; // yes
+
+var range = 42..;
+var slice07 = str?[|range|(6)]; // yes
+
+var span01 = args.AsSpan()[..];
+var span02 = args[0].AsSpan()[..];
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: slicing of the array creates new array instance
+(1): ReSharper HeapView Allocation: Object allocation: slicing of the array creates new array instance
+(2): ReSharper HeapView Allocation: Object allocation: slicing of the array creates new array instance
+(3): ReSharper HeapView Allocation: Object allocation: slicing of the string creates new string instance
+(4): ReSharper HeapView Allocation: Object allocation: slicing of the string creates new string instance
+(5): ReSharper HeapView Allocation: Object allocation: slicing of the string creates new string instance
+(6): ReSharper HeapView Allocation: Object allocation: slicing of the string creates new string instance

@@ -67,7 +67,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
 
     if (IsBoxingEliminatedByTheCompiler(castExpression, data)) return;
 
-    // todo: test this
     if (IsBoxingEliminatedAtRuntimeForConstrainedOperationOverCast(castExpression, targetType, data)) return;
 
     CheckConversionRequiresBoxing(

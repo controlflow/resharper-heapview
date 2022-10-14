@@ -3,7 +3,6 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -48,16 +47,13 @@ public class AllocationOfObjectCreationAnalyzer : HeapAllocationAnalyzerBase<IOb
     if (createdType.Classify == TypeClassification.REFERENCE_TYPE)
     {
       consumer.AddHighlighting(
-        new ObjectAllocationEvidentHighlighting(
-          newKeyword, $"new '{typeName}' instance creation"),
-        newKeyword.GetDocumentRange());
+        new ObjectAllocationEvidentHighlighting(newKeyword, $"new '{typeName}' instance creation"));
     }
     else
     {
       consumer.AddHighlighting(
         new ObjectAllocationPossibleHighlighting(
-          newKeyword, $"new instance creation if '{typeName}' type parameter will be substituted with the reference type"),
-        newKeyword.GetDocumentRange());
+          newKeyword, $"new instance creation if '{typeName}' type parameter will be substituted with the reference type"));
     }
   }
 }

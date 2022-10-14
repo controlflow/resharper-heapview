@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -28,7 +27,6 @@ public class AllocationOfWithCloningAnalyzer : HeapAllocationAnalyzerBase<IWithE
     var typeKind = clonedType is IAnonymousType ? "anonymous object instance" : "'record class' type instance";
 
     consumer.AddHighlighting(
-      new ObjectAllocationHighlighting(withKeyword, "'with' expression cloning of " + typeKind),
-      withKeyword.GetDocumentRange());
+      new ObjectAllocationHighlighting(withKeyword, "'with' expression cloning of " + typeKind));
   }
 }

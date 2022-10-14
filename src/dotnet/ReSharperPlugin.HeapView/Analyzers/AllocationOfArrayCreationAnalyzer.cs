@@ -3,7 +3,6 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -29,8 +28,7 @@ public class AllocationOfArrayCreationAnalyzer : HeapAllocationAnalyzerBase<IArr
 
     var newKeyword = arrayCreationExpression.NewKeyword.NotNull();
     consumer.AddHighlighting(
-      new ObjectAllocationEvidentHighlighting(newKeyword, $"new '{typeName}' array instance creation"),
-      newKeyword.GetDocumentRange());
+      new ObjectAllocationEvidentHighlighting(newKeyword, $"new '{typeName}' array instance creation"));
   }
 
   private static bool IsOptimizedArrayOfBytesConvertedReadonlySpan(
