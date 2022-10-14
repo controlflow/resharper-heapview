@@ -1,3 +1,4 @@
+#nullable enable
 // ReSharper disable RedundantCast
 
 class Constrained<T>

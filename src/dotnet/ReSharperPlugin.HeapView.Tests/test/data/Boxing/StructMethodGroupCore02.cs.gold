@@ -1,10 +1,10 @@
 ﻿using System;
 
 var e = ConsoleKey.Clear;
-var compareToFunc = e.|CompareTo|(0);
-var equalsFunc = e.|Equals|(1);
-Func<string> toStringFunc = e.|ToString|(2);
-var getTypeCodeFunc = e.|GetTypeCode|(3);
+var compareToFunc = |e|(0).CompareTo;
+var equalsFunc = |e|(1).Equals;
+Func<string> toStringFunc = |e|(2).ToString;
+var getTypeCodeFunc = |e|(3).GetTypeCode;
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object?,int>' delegate type
 (1): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object?,bool>' delegate type

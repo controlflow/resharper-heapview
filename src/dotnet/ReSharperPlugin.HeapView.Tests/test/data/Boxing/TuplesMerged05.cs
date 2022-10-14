@@ -1,4 +1,9 @@
+#nullable disable
 using System;
+// ReSharper disable RedundantAssignment
+// ReSharper disable NotAccessedVariable
+// ReSharper disable JoinDeclarationAndInitializer
+// ReSharper disable SuggestVarOrType_BuiltInTypes
 
 void Complex<T>(T u)
 {

@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 using ReSharperPlugin.HeapView.Settings;
@@ -237,11 +238,13 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
     var sourceTypeText = qualifierType.GetPresentableName(language);
     var delegateTypeText = delegateType.GetPresentableName(language);
 
+    var nodeToHighlight = referenceExpression.QualifierExpression ?? (ITreeNode) referenceExpression.NameIdentifier;
+
     if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
     {
       consumer.AddHighlighting(
         new PossibleBoxingAllocationHighlighting(
-          referenceExpression.NameIdentifier,
+          nodeToHighlight,
           $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"
           + $" if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
     }
@@ -249,7 +252,7 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
     {
       consumer.AddHighlighting(
         new BoxingAllocationHighlighting(
-          referenceExpression.NameIdentifier,
+          nodeToHighlight,
           $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"));
     }
 

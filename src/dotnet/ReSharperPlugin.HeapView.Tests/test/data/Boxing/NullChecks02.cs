@@ -1,3 +1,6 @@
+// ReSharper disable ReferenceEqualsWithValueType
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+
 struct NullChecks
 {
   public void Method<TStruct, TUnconstrained>(TStruct tStruct, TUnconstrained tUnconstrained)

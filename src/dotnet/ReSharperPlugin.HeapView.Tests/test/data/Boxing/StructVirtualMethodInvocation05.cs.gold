@@ -1,4 +1,6 @@
-﻿void Method<TClass, TValue, TUnconstrained>(
+﻿// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+
+void Method<TClass, TValue, TUnconstrained>(
   TClass tc, TValue tv, TUnconstrained tu, TValue? tn)
   where TClass : class
   where TValue : struct

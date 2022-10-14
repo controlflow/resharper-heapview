@@ -1,4 +1,6 @@
-﻿class TypeTests
+﻿// ReSharper disable IsExpressionAlwaysFalse
+
+class TypeTests
 {
   public bool Test01<TSource, TTarget>(TSource t) => t is TTarget; // possible
   public bool Test02<TSource, TTarget>(TSource t) where TSource : struct => t is TTarget; // yes
