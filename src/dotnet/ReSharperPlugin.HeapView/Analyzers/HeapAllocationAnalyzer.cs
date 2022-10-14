@@ -31,10 +31,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   new[] {
     typeof(IReferenceExpression),
     typeof(IObjectCreationExpression),
-    typeof(IAnonymousObjectCreationExpression),
     typeof(IArrayCreationExpression),
     typeof(IInvocationExpression),
-    typeof(IArrayInitializer),
     typeof(IForeachStatement),
     typeof(IAdditiveExpression),
     typeof(IAssignmentExpression),
@@ -57,11 +55,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
       // var t = new object();
       case IObjectCreationExpression objectCreation:
         CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
-        return;
-
-      // int[] xs = {1, 2, 3};
-      case IArrayInitializer arrayInitializer:
-        CheckArrayInitializer(arrayInitializer, consumer);
         return;
 
       // F(); when F(params T[] xs);

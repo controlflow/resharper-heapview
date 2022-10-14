@@ -9,10 +9,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IAnonymousObjectCreationExpression) },
-  HighlightingTypes = new[]
-  {
-    typeof(ObjectAllocationEvidentHighlighting)
-  })]
+  HighlightingTypes = new[] { typeof(ObjectAllocationEvidentHighlighting) })]
 public class AllocationOfAnonymousObjectAnalyzer : HeapAllocationAnalyzerBase<IAnonymousObjectCreationExpression>
 {
   protected override void Run(

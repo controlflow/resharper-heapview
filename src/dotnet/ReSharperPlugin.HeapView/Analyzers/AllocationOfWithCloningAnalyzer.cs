@@ -10,10 +10,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IWithExpression) },
-  HighlightingTypes = new[]
-  {
-    typeof(ObjectAllocationHighlighting)
-  })]
+  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
 public class AllocationOfWithCloningAnalyzer : HeapAllocationAnalyzerBase<IWithExpression>
 {
   protected override void Run(
