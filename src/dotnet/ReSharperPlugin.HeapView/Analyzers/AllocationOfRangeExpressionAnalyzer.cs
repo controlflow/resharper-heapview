@@ -1,8 +1,10 @@
 #nullable enable
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl.DeclaredElement;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -21,21 +23,31 @@ public class AllocationOfRangeExpressionAnalyzer : HeapAllocationAnalyzerBase<IE
     var singleArgument = elementAccessExpression.ArgumentsEnumerable.SingleItem?.Value;
     if (singleArgument == null) return;
 
-    var resolveResult = elementAccessExpression.Reference.Resolve();
-    if (!resolveResult.ResolveErrorType.IsAcceptable) return;
+    var slicedType = TryGetPatternBasedSlicedType(elementAccessExpression.Reference);
+    if (slicedType == null) return;
+
+    if (slicedType.IsString() || slicedType is IArrayType)
+    {
+      if (elementAccessExpression.IsInTheContextWhereAllocationsAreNotImportant()) return;
+
+      var typeKind = slicedType.IsString() ? "string" : "array";
+      ITreeNode nodeToHighlight = singleArgument is IRangeExpression rangeExpression ? rangeExpression.OperatorSign : singleArgument;
+      consumer.AddHighlighting(
+        new ObjectAllocationHighlighting(nodeToHighlight,  $"slicing of the {typeKind} creates new {typeKind} instance"));
+    }
+  }
+
+  [Pure]
+  public static IType? TryGetPatternBasedSlicedType(IReference rangeIndexerReference)
+  {
+    var resolveResult = rangeIndexerReference.Resolve();
+    if (!resolveResult.ResolveErrorType.IsAcceptable) return null;
 
     if (resolveResult.DeclaredElement is CSharpByRangeIndexer { SliceMethod: null } byRangeIndexer)
     {
-      var isString = byRangeIndexer.ReturnType.IsString();
-      if (isString || byRangeIndexer.ReturnType is IArrayType)
-      {
-        if (elementAccessExpression.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-        var typeKind = isString ? "string" : "array";
-        ITreeNode nodeToHighlight = singleArgument is IRangeExpression rangeExpression ? rangeExpression.OperatorSign : singleArgument;
-        consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(nodeToHighlight,  $"slicing of the {typeKind} creates new {typeKind} instance"));
-      }
+      return byRangeIndexer.ReturnType;
     }
+
+    return null;
   }
 }
