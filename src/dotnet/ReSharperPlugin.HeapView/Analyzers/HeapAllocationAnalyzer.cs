@@ -59,11 +59,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
         return;
 
-      // var xs = new[] {1, 2, 3};
-      case IArrayCreationExpression arrayCreation:
-        CheckArrayCreation(arrayCreation, consumer);
-        return;
-
       // int[] xs = {1, 2, 3};
       case IArrayInitializer arrayInitializer:
         CheckArrayInitializer(arrayInitializer, consumer);
@@ -114,17 +109,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         CheckInvocationInfo(collectionElementInitializer, null, consumer);
         return;
     }
-  }
-
-  private static void CheckArrayCreation([NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)
-  {
-    if (arrayCreation.IsInTheContextWhereAllocationsAreNotImportant()) return;
-
-    var newKeyword = arrayCreation.NewKeyword.NotNull();
-
-    consumer.AddHighlighting(
-      new ObjectAllocationEvidentHighlighting(newKeyword, "array creation"),
-      newKeyword.GetDocumentRange());
   }
 
   private static void CheckArrayInitializer([NotNull] IArrayInitializer arrayInitializer, [NotNull] IHighlightingConsumer consumer)

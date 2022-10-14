@@ -43,20 +43,20 @@ public class AllocationOfObjectCreationAnalyzer : HeapAllocationAnalyzerBase<IOb
 
     var newKeyword = objectCreationExpression.NewKeyword.NotNull();
 
-    var typeParameterName = createdType.GetPresentableName(objectCreationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
+    var typeName = createdType.GetPresentableName(objectCreationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
     if (createdType.Classify == TypeClassification.REFERENCE_TYPE)
     {
       consumer.AddHighlighting(
         new ObjectAllocationEvidentHighlighting(
-          newKeyword, $"new '{typeParameterName}' instance creation"),
+          newKeyword, $"new '{typeName}' instance creation"),
         newKeyword.GetDocumentRange());
     }
     else
     {
       consumer.AddHighlighting(
         new ObjectAllocationPossibleHighlighting(
-          newKeyword, $"new instance creation if '{typeParameterName}' type parameter will be substituted with the reference type"),
+          newKeyword, $"new instance creation if '{typeName}' type parameter will be substituted with the reference type"),
         newKeyword.GetDocumentRange());
     }
   }

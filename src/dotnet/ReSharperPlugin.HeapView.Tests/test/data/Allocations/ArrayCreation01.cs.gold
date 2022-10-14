@@ -1,0 +1,35 @@
+﻿// ReSharper disable UnusedVariable
+// ReSharper disable UseArrayEmptyMethod
+// ReSharper disable RedundantExplicitArrayCreation
+// ReSharper disable RedundantExplicitArraySize
+// ReSharper disable SuggestVarOrType_BuiltInTypes
+
+var array01 = |new|(0) byte[0];
+var array02 = |new|(1) byte[4];
+var array03 = |new|(2) byte[4] { 1, 2, 3, 4 };
+var array04 = |new|(3) sbyte[] { 1, 2, 3, 4 };
+var array05 = |new|(4)[] { 1, 2, 3, 4 };
+var array06 = |new|(5) string[] { "aa", "bb", "cc" };
+var array07 = |new|(6) Unresolved[42];
+Unresolved array08 = |new|(7) Unresolved[42];
+var array09 = |new|(8) int[10, 10];
+
+_ = Generic<int>();
+T[] Generic<T>() => |new|(9) T[42];
+
+unsafe
+{
+  int*[] pointers = |new|(10) int*[44];
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'byte[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'sbyte[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'Unresolved[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'Unresolved[]' array instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'int[,]' array instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'T[]' array instance creation
+(10): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation
