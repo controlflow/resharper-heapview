@@ -1,0 +1,32 @@
+﻿var rc = |new|(0) RecordClass(42, true);
+var rcClone1 = rc |with|(1) { Property = 1 }; // yes
+var rcClone2 = rc |with|(2) { }; // yes
+
+var rs = new RecordStruct(42, true);
+var rsClone1 = rs with { Property = 1 };
+var rsClone2 = rs with { };
+
+var s = new Struct { Property = 1 };
+var sClone1 = s with { Property = 1 };
+var sClone2 = s with { };
+
+var ao = |new|(3) { Name = "Alex", Age = 42 };
+var aoClone1 = ao |with|(4) { }; // yes
+var aoClone2 = ao |with|(5) { Age = 1 }; // yes
+
+if (args.Length > 0)
+{
+  var aoClone3 = ao with { Age = 2 };
+  throw new System.Exception();
+}
+
+public record RecordClass(int Property, bool Flag);
+public record struct RecordStruct(int Property, bool Flag);
+public struct Struct { public int Property; public bool Flag; }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'RecordClass' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: 'with' expression cloning of 'record class' type instance
+(2): ReSharper HeapView Allocation: Object allocation: 'with' expression cloning of 'record class' type instance
+(3): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(4): ReSharper HeapView Allocation: Object allocation: 'with' expression cloning of anonymous object instance
+(5): ReSharper HeapView Allocation: Object allocation: 'with' expression cloning of anonymous object instance
