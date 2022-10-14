@@ -97,8 +97,8 @@ namespace ConsoleApplication2
 }
 
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Object allocation: reference type instantiation
-(1): ReSharper HeapView Allocation: Object allocation: reference type instantiation
+(0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation

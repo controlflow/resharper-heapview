@@ -24,6 +24,9 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestObjectCreation01() { DoNamedTest2(); }
   [Test] public void TestObjectCreation02() { DoNamedTest2(); }
   [Test] public void TestObjectCreation03() { DoNamedTest2(); }
+  [Test] public void TestObjectCreation04() { DoNamedTest2(); } // fix: after PSI fix
+
+  [Test] public void TestAnonymousObject01() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

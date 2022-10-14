@@ -1,0 +1,13 @@
+﻿var foo1 = |new|(0) { }; // yes
+var foo2 = |new|(1) { A = 42 }; // yes
+var foo3 = |new|(2) { A = 42, B = true }; // yes
+
+if (args.Length == 1)
+{
+  var box = new { Message = "aaa" };
+  throw new System.InvalidOperationException();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation

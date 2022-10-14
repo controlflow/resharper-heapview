@@ -59,11 +59,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
         return;
 
-      // var t = new { Foo = 123 };
-      case IAnonymousObjectCreationExpression anonymousObjectCreation:
-        CheckAnonymousObjectCreation(anonymousObjectCreation, consumer);
-        return;
-
       // var xs = new[] {1, 2, 3};
       case IArrayCreationExpression arrayCreation:
         CheckArrayCreation(arrayCreation, consumer);
@@ -119,15 +114,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         CheckInvocationInfo(collectionElementInitializer, null, consumer);
         return;
     }
-  }
-
-  private static void CheckAnonymousObjectCreation([NotNull] ICreationExpression objectCreation, [NotNull] IHighlightingConsumer consumer)
-  {
-    var newKeyword = objectCreation.NewKeyword.NotNull();
-
-    consumer.AddHighlighting(
-      new ObjectAllocationEvidentHighlighting(newKeyword, "reference type instantiation"),
-      newKeyword.GetDocumentRange());
   }
 
   private static void CheckArrayCreation([NotNull] IArrayCreationExpression arrayCreation, [NotNull] IHighlightingConsumer consumer)

@@ -1,0 +1,17 @@
+﻿using System;
+using System.Linq.Expressions;
+
+class NotImportantContexts
+{
+  public void Throw01() => throw checked(new Exception());
+  public void Throw02() { throw new Exception("aa", new Exception()); }
+  public string Throw03(object o) => o as string ?? throw new();
+
+  public Func<object> Func => () => |new|(0)(); // yes
+
+  public Expression Expr01 => () => |new|(1) object(); // TODO: fix this
+  public Expression<Func<object>> Expr02 => () => new();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation
