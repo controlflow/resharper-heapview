@@ -10,6 +10,11 @@ void Generic<TUnconstrained>()
   |CreateInstance|(3)(typeof(string)); // yes
   |CreateInstance|(4)(typeof(TUnconstrained)); // yes
 }
+
+if (args.Length == 42)
+{
+  throw CreateInstance<System.Exception>();
+}
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new 'string' instance creation
 (1): ReSharper HeapView Allocation: Possible object allocation: new instance creation if 'TUnconstrained' type parameter will be substituted with the reference type
