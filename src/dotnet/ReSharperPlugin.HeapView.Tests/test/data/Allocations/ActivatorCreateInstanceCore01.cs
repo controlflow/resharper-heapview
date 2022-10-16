@@ -10,3 +10,8 @@ void Generic<TUnconstrained>()
   CreateInstance(typeof(string)); // yes
   CreateInstance(typeof(TUnconstrained)); // yes
 }
+
+if (args.Length == 42)
+{
+  throw CreateInstance<System.Exception>();
+}
