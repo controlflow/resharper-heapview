@@ -1,0 +1,18 @@
+﻿using System.Linq;
+
+var ys1 =
+  from xxx in args
+  from |yyy|(0) in args // yes
+  from zzz in args
+  select xxx |+|(1) yyy + zzz;
+
+var ys2 = args
+  .|SelectMany|(2)(_ => args, (xxx, yyy) => |new|(3) { xxx, yyy })
+  .|SelectMany|(4)(_ => args, (t, zzz) => t.xxx |+|(5) t.yyy + zzz);
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {xxx, yyy}
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
+(2): ReSharper HeapView Allocation: Object allocation: LINQ method call
+(3): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(4): ReSharper HeapView Allocation: Object allocation: LINQ method call
+(5): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
