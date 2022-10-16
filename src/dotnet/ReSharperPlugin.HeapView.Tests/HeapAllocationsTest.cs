@@ -39,6 +39,7 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
 [TestNetFramework46]
 public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
 {
+  [Test] public void TestActivatorCreateInstanceFramework01() { DoNamedTest2(); }
 }
 
 [TestNet60]
@@ -48,4 +49,6 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
 
   [Test] public void TestSliceCore01() { DoNamedTest2(); }
   [Test] public void TestSliceCore02() { DoNamedTest2(); }
+
+  [Test] public void TestActivatorCreateInstanceCore01() { DoNamedTest2(); }
 }
