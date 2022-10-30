@@ -29,6 +29,7 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestAnonymousObject01() { DoNamedTest2(); }
   [Test] public void TestAnonymousObject02() { DoNamedTest2(); }
   [Test] public void TestAnonymousObject03() { DoNamedTest2(); }
+  [Test] public void TestAnonymousObject04() { DoNamedTest2(); }
 
   [Test] public void TestArrayCreation01() { DoNamedTest2(); }
   [Test] public void TestArrayCreation02() { DoNamedTest2(); }
