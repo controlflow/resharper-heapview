@@ -16,7 +16,7 @@ class Closures
 {
   public void M2()
   {
-    |var i|(0) = I;
+    var |i|(0) = I;
     var xs = XS;
     var t1 = from x in xs
              |select|(1) i + 123; // closure
@@ -49,7 +49,7 @@ class Closures
   
   public void M3()
   {
-    |var i|(10) = I;
+    var |i|(10) = I;
     var t1 = from x in XS
              from |y|(11) in XS // anonymous type
              from |z|(12) in XS // anonymous type

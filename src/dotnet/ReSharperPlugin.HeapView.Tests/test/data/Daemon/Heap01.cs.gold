@@ -24,8 +24,8 @@ class HeapAllocations
     var t6 = |new|(4) {Foo = 123};
   }
 
-  private static readonly int[] |xs0 =|(5) {1, 2, 3};
-  private int[] |xs1 =|(6) {1, 2, 3};
+  private static readonly int[] xs0 |= {|(5)1, 2, 3};
+  private int[] xs1 |= {|(6)1, 2, 3};
   private static readonly int[] xs2 = |new|(7)[] {1, 2, 3};
   private int[] xs3 = |new|(8)[] {1, 2, 3};
 
@@ -37,8 +37,8 @@ class HeapAllocations
     var ts3 = |new|(12) string[] { };
     var ts4 = |new|(13)[] {1, 2, 3};
     var ts5 = |new|(14) int[2, 2];
-    int[] |ts6 =|(15) {},
-          |ts7 =|(16) {1,2,3};
+    int[] ts6 |= {|(15)},
+          ts7 |= {|(16)1,2,3};
   }
 
   public void M3()

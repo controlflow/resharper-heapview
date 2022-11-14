@@ -395,12 +395,12 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     {
       switch (closure)
       {
-        case ILambdaExpression lambdaExpression:
+        case IAnonymousFunctionExpression anonymousFunctionExpression:
         {
-          var targetType = lambdaExpression.GetImplicitlyConvertedTo();
+          var targetType = anonymousFunctionExpression.GetImplicitlyConvertedTo();
           if (!targetType.IsDelegateType())
           {
-            return lambdaExpression.GetExpressionType().ToIType();
+            return anonymousFunctionExpression.GetExpressionType().ToIType();
           }
 
           return targetType;

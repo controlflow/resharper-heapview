@@ -9,7 +9,7 @@ public class Initializers {
 
 public class BlockBodies {
   static BlockBodies() {
-    |var x|(6) = 0;
+    var |x|(6) = 0;
     F(() |=>|(7) x);
   }
 
