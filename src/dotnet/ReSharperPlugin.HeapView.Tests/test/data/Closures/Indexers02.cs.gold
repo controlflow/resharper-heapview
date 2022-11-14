@@ -1,0 +1,8 @@
+﻿public class Indexers {
+  public object this[int x] {
+    |get|(0) => () => x;
+    set { } // no capture
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter

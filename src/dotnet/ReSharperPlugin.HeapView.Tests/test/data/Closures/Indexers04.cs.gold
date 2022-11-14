@@ -1,0 +1,20 @@
+﻿public class Indexers {
+  public int this[int x] {
+    get => 1;
+    |set|(0) {
+      var f = () => value;
+      f();
+    }
+  }
+    
+  public int Property {
+    get => 2;
+    |set|(1) {
+      var f = () => value;
+      f();
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
+(1): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter

@@ -1,0 +1,9 @@
+﻿public class Indexers {
+  public object this[int |x|(0)] => () => x;
+  public object this[long x] { |get|(1) => () => x; }
+  public object this[ulong x] { |get|(2) { return () => x; } }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(1):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(2): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter

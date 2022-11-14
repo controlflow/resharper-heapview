@@ -817,13 +817,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
     }
 
-    private static string CreateDescription(List<IDeclaredElement> sortedMembers)
+    private string CreateDescription(List<IDeclaredElement> sortedMembers)
     {
       var hasThisReference = false;
       var parameters = 0;
       var variables = 0;
 
-      using var builder = PooledStringBuilder.GetInstance();
+      using var pooledBuilder = PooledStringBuilder.GetInstance();
+      var builder = pooledBuilder.Builder;
       builder.Append("capture of");
 
       foreach (var declaredElement in sortedMembers)
@@ -842,56 +843,95 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
       }
 
+      var lastMemberIndex = sortedMembers.Count - (ContainingDisplayClass != null ? 0 : 1);
+
       // capture of 'a' parameter
       // capture of 'a' parameter and 'b' variable
       // capture of 'a' parameter, 'b' variable and 'this' reference
-      if (parameters <= 1 && variables <= 1)
+      if ((parameters <= 1 && variables <= 1) || lastMemberIndex < 4)
       {
         builder.Append(' ');
 
         for (var index = 0; index < sortedMembers.Count; index++)
         {
           if (index > 0)
-          {
-            var lastOne = index == sortedMembers.Count - 1;
-            builder.Append(lastOne ? " and " : ", ");
-          }
+            builder.Append(index == lastMemberIndex ? " and " : ", ");
 
-          var declaredElement = sortedMembers[index];
-          if (declaredElement is ITypeElement)
-          {
-            builder.Append("'this' reference");
-          }
-          else
-          {
-            builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
-            builder.Append(declaredElement is IParameter ? "parameter" : "variable");
-          }
+          AppendMember(sortedMembers[index]);
+        }
+
+        if (ContainingDisplayClass != null)
+        {
+          builder.Append(" and containing closure (");
+          ContainingDisplayClass.PresentContainingClosureReference(builder);
+          builder.Append(")");
         }
       }
       else
       {
-        builder.Append(':');
-
         for (var index = 0; index < sortedMembers.Count; index++)
         {
-          builder.Append(Environment.NewLine).Append("  ");
+          builder.Append(Environment.NewLine).Append("    ");
 
-          var declaredElement = sortedMembers[index];
-          if (declaredElement is ITypeElement)
-          {
-            builder.Append("'this' reference");
-          }
-          else
-          {
-            builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
-            builder.Append(declaredElement is IParameter ? "parameter" : "variable");
-          }
+          AppendMember(sortedMembers[index]);
         }
 
+        if (ContainingDisplayClass != null)
+        {
+          builder.Append(Environment.NewLine).Append("    ");
+
+          builder.Append("containing closure (");
+          ContainingDisplayClass.PresentContainingClosureReference(builder);
+          builder.Append(")");
+        }
       }
 
       return builder.ToString();
+
+      void AppendMember(IDeclaredElement declaredElement)
+      {
+        if (declaredElement is ITypeElement)
+        {
+          builder.Append("'this' reference");
+        }
+        else
+        {
+          builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
+          builder.Append(declaredElement is IParameter ? "parameter" : "variable");
+        }
+      }
+    }
+
+    private void PresentContainingClosureReference(StringBuilder builder)
+    {
+      var first = true;
+
+      for (var displayClass = this; displayClass != null; displayClass = displayClass.ContainingDisplayClass)
+      {
+        if (displayClass.IsReplacedWithInstanceMethods)
+          continue;
+
+        var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
+
+        sortedMembers.AddRange(Members);
+        sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
+
+        foreach (var member in sortedMembers)
+        {
+          if (first)
+          {
+            first = false;
+          }
+          else
+          {
+            builder.Append(", ");
+          }
+
+          builder.Append('\'');
+          builder.Append(member is ITypeElement ? "this" : member.ShortName);
+          builder.Append('\'');
+        }
+      }
     }
 
     private static ICSharpDeclaration? TryGetMemberDeclaration(IDeclaredElement displayClassMember)
@@ -902,19 +942,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     }
 
     [Pure]
-    private static ITreeNode? GetAllocationNodeFromMemberDeclaration(ICSharpDeclaration displayClassMemberDeclaration)
+    private ITreeNode? GetAllocationNodeFromMemberDeclaration(ICSharpDeclaration displayClassMemberDeclaration)
     {
       switch (displayClassMemberDeclaration)
       {
-        // var foo = 42;
-        // ^^
-        case ILocalVariableDeclaration localVariableDeclaration
-          when MultipleLocalVariableDeclarationNavigator.GetByDeclarator(localVariableDeclaration) is { } multiDeclaration
-               && multiDeclaration.DeclaratorsEnumerable.SingleItem == localVariableDeclaration:
-        {
-          return multiDeclaration.TypeDesignator;
-        }
-
         // int foo, bar;
         //     ^^^
         case ILocalVariableDeclaration localVariableDeclaration:
@@ -926,6 +957,17 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         //            ^^^
         case ICSharpParameterDeclaration parameterDeclaration:
         {
+          // if indexer contains explicit accessors - use accessor name instead
+          // (usually to avoid ambiguity between closures in getter and setter)
+          if (IndexerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration) is { } indexerDeclaration)
+          {
+            foreach (var accessorDeclaration in indexerDeclaration.AccessorDeclarationsEnumerable)
+            {
+              if (accessorDeclaration.Contains(ScopeNode))
+                return accessorDeclaration.NameIdentifier;
+            }
+          }
+
           return parameterDeclaration.NameIdentifier;
         }
       }
@@ -936,7 +978,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     [Pure]
     private ITreeNode? GetAllocationLocationNodeFromScope()
     {
-      // todo: 'value' parameter in accessors
+      var accessorDeclaration = AccessorDeclarationNavigator.GetByBody(ScopeNode as IBlock)
+                                ?? AccessorDeclarationNavigator.GetByArrowClause(ScopeNode as IArrowExpressionClause);
+      if (accessorDeclaration != null)
+      {
+        return accessorDeclaration.NameIdentifier;
+      }
 
       var firstMeaningfulChild = ScopeNode.GetNextMeaningfulChild(child: null);
       if (firstMeaningfulChild != null)
@@ -946,28 +993,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
 
       return null;
-    }
-
-    private void PresentDisplayClassMember(IDeclaredElement declaredElement, StringBuilder builder)
-    {
-      if (declaredElement is ITypeElement)
-      {
-        builder.Append("'this' reference");
-      }
-      else
-      {
-
-        //"Closure class creation: capture of 'a' variable, 'this' reference"
-        //"Closure class creation: capture of 'a', 'b' and 'c' parameters & variables, 'this' reference"
-        //"Closure class creation: capture of 'this' reference"
-        //"Closure class creation: capture of 'a' and 'b' variables"
-        //"Closure class creation: capture of 'a', 'b' and 'c' parameters & variables"
-        //"Closure class creation: capture of 'a', 'b' and 'c' parameters & variables, 'this' reference"
-
-        //"Closure class creation: capture of 'aaaaa', 'bbbbbb', 'cccccc' variables & 'xxxx', 'yyyyyy' and 'zzzzz' parameters & 'this' reference"
-
-        //builder.Append("");
-      }
     }
 
     private class DisplayClassMembersDeclarationOrderComparer : IComparer<IDeclaredElement>
@@ -988,8 +1013,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
         int ToOffset(IDeclaredElement displayClassMember)
         {
+          if (displayClassMember is ITypeElement) return int.MaxValue;
+
           var memberDeclaration = TryGetMemberDeclaration(displayClassMember);
-          if (memberDeclaration == null) return int.MaxValue;
+          if (memberDeclaration == null) return int.MaxValue - 1;
 
           return memberDeclaration.GetNameRange().StartOffset.Offset;
         }

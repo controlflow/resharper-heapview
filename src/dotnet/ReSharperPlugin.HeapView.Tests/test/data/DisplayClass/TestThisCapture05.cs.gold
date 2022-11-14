@@ -1,0 +1,27 @@
+﻿Owner: method 'int Foo.ThisCapture(int param)'
+Closures:
+> lambda expression 'int () => param'
+    Captures:
+    > parameter 'param'
+> lambda expression 'int () => ThisCapture(param) + t'
+    Captures:
+    > 'this' reference
+    > parameter 'param'
+    > local variable 't'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var g = () => param; { var t = 0; var ...'
+    Members:
+    > parameter 'param'
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => param'
+  Display class #2
+    Scope: IBlock '{ var t = 0; var f = () => ThisCapture(p...'
+    Members:
+    > local variable 't'
+    > display class #1
+    Closures:
+    > lambda expression 'int () => ThisCapture(param) + t'
+
+========

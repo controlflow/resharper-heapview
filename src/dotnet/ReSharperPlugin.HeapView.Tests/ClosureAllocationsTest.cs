@@ -24,6 +24,12 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestThisCapture01() { DoNamedTest2(); }
   [Test] public void TestThisCapture02() { DoNamedTest2(); }
   [Test] public void TestThisCapture03() { DoNamedTest2(); }
+  [Test] public void TestThisCapture04() { DoNamedTest2(); }
+
+  [Test] public void TestIndexers01() { DoNamedTest2(); }
+  [Test] public void TestIndexers02() { DoNamedTest2(); }
+  [Test] public void TestIndexers03() { DoNamedTest2(); }
+  [Test] public void TestIndexers04() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

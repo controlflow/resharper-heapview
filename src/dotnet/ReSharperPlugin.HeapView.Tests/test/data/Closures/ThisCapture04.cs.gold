@@ -1,0 +1,14 @@
+﻿class Foo {
+  int ThisCapture(int |param|(0)) {
+    var g = () => param;
+
+    {
+      var |t|(1) = 0;
+      var f = () => ThisCapture(param) + t;
+      return f();
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'param' parameter and 'this' reference
+(1):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 't' variable and containing closure ('param', 'this')
