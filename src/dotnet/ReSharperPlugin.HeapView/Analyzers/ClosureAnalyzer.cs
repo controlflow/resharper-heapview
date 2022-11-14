@@ -40,8 +40,6 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   HighlightingTypes = new[]
   {
     typeof(ObjectAllocationHighlighting),
-    typeof(ObjectAllocationEvidentHighlighting),
-    typeof(ObjectAllocationPossibleHighlighting),
     typeof(ClosureAllocationHighlighting),
     typeof(DelegateAllocationHighlighting),
     typeof(CanEliminateClosureCreationHighlighting)

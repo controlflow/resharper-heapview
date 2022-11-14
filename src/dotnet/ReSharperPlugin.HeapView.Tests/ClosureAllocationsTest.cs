@@ -15,7 +15,9 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
   protected override bool HighlightingPredicate(
     IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
   {
-    return highlighting is ClosureAllocationHighlighting;
+    return highlighting
+      is ClosureAllocationHighlighting
+      or DelegateAllocationHighlighting;
   }
 
   [Test] public void TestClosures01() { DoNamedTest2(); }
@@ -30,6 +32,8 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestIndexers02() { DoNamedTest2(); }
   [Test] public void TestIndexers03() { DoNamedTest2(); }
   [Test] public void TestIndexers04() { DoNamedTest2(); }
+
+  [Test] public void TestStructClosure01() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

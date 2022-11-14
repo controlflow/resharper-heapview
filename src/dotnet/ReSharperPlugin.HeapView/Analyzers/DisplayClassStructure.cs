@@ -22,7 +22,6 @@ using JetBrains.Util.DataStructures.Collections;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: args can be captured - allocation on the first statement
 // todo: func lambda creation inside expression<func> lambda
 
 public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposable
@@ -708,10 +707,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     return invocationExpression != null;
   }
 
-  // note: if there are any members w/o declarations - use special logic (first top level token for 'args', accessor name for 'value' parameter)
-  // note: for indexers w/ explicit accessors highlight corresponding accessor name when indexer parameter is captured
-  // note: for expression-bodied indexer highlight the parameter itself?
-  private sealed class DisplayClass : IComparable<DisplayClass>
+  public sealed class DisplayClass : IComparable<DisplayClass>
   {
     private DisplayClass() { }
     private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new());
@@ -742,7 +738,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     // note: can be IArrowExpressionClause of expression-bodied members
     // note: can be ILambdaExpression if it's expression-bodied
     // note: can be IQueryParameterPlatform
-    private ITreeNode ScopeNode { get; set; } = null!;
+    public ITreeNode ScopeNode { get; private set; } = null!;
 
     public HashSet<IDeclaredElement> Members { get; } = new();
     public List<ICSharpClosure> Closures { get; } = new();
@@ -787,241 +783,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       return -1;
     }
 
-    public void ReportDisplayClasses<TState>(TState state, Action<ITreeNode, string, TState> consumer)
-    {
-      if (Members.Count == 0) return;
 
-      using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
-
-      sortedMembers.AddRange(Members);
-      sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
-
-      var description = CreateDescription(sortedMembers);
-
-      var firstDisplayClassMemberDeclaration = TryGetMemberDeclaration(sortedMembers[0]);
-      if (firstDisplayClassMemberDeclaration != null)
-      {
-        var declarationNode = GetAllocationNodeFromMemberDeclaration(firstDisplayClassMemberDeclaration);
-        if (declarationNode != null)
-        {
-          consumer(declarationNode, description, state);
-        }
-      }
-      else
-      {
-        var declarationNode = GetAllocationLocationNodeFromScope();
-        if (declarationNode != null)
-        {
-          consumer(declarationNode, description, state);
-        }
-      }
-    }
-
-    private string CreateDescription(List<IDeclaredElement> sortedMembers)
-    {
-      var hasThisReference = false;
-      var parameters = 0;
-      var variables = 0;
-
-      using var pooledBuilder = PooledStringBuilder.GetInstance();
-      var builder = pooledBuilder.Builder;
-      builder.Append("capture of");
-
-      foreach (var declaredElement in sortedMembers)
-      {
-        if (declaredElement is ITypeElement)
-        {
-          hasThisReference = true;
-        }
-        else if (declaredElement is IParameter)
-        {
-          parameters++;
-        }
-        else
-        {
-          variables++;
-        }
-      }
-
-      var lastMemberIndex = sortedMembers.Count - (ContainingDisplayClass != null ? 0 : 1);
-
-      // capture of 'a' parameter
-      // capture of 'a' parameter and 'b' variable
-      // capture of 'a' parameter, 'b' variable and 'this' reference
-      if ((parameters <= 1 && variables <= 1) || lastMemberIndex < 4)
-      {
-        builder.Append(' ');
-
-        for (var index = 0; index < sortedMembers.Count; index++)
-        {
-          if (index > 0)
-            builder.Append(index == lastMemberIndex ? " and " : ", ");
-
-          AppendMember(sortedMembers[index]);
-        }
-
-        if (ContainingDisplayClass != null)
-        {
-          builder.Append(" and containing closure (");
-          ContainingDisplayClass.PresentContainingClosureReference(builder);
-          builder.Append(")");
-        }
-      }
-      else
-      {
-        for (var index = 0; index < sortedMembers.Count; index++)
-        {
-          builder.Append(Environment.NewLine).Append("    ");
-
-          AppendMember(sortedMembers[index]);
-        }
-
-        if (ContainingDisplayClass != null)
-        {
-          builder.Append(Environment.NewLine).Append("    ");
-
-          builder.Append("containing closure (");
-          ContainingDisplayClass.PresentContainingClosureReference(builder);
-          builder.Append(")");
-        }
-      }
-
-      return builder.ToString();
-
-      void AppendMember(IDeclaredElement declaredElement)
-      {
-        if (declaredElement is ITypeElement)
-        {
-          builder.Append("'this' reference");
-        }
-        else
-        {
-          builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
-          builder.Append(declaredElement is IParameter ? "parameter" : "variable");
-        }
-      }
-    }
-
-    private void PresentContainingClosureReference(StringBuilder builder)
-    {
-      var first = true;
-
-      for (var displayClass = this; displayClass != null; displayClass = displayClass.ContainingDisplayClass)
-      {
-        if (displayClass.IsReplacedWithInstanceMethods)
-          continue;
-
-        var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
-
-        sortedMembers.AddRange(Members);
-        sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
-
-        foreach (var member in sortedMembers)
-        {
-          if (first)
-          {
-            first = false;
-          }
-          else
-          {
-            builder.Append(", ");
-          }
-
-          builder.Append('\'');
-          builder.Append(member is ITypeElement ? "this" : member.ShortName);
-          builder.Append('\'');
-        }
-      }
-    }
-
-    private static ICSharpDeclaration? TryGetMemberDeclaration(IDeclaredElement displayClassMember)
-    {
-      if (displayClassMember is ITypeElement) return null;
-
-      return displayClassMember.GetSingleDeclaration<ICSharpDeclaration>();
-    }
-
-    [Pure]
-    private ITreeNode? GetAllocationNodeFromMemberDeclaration(ICSharpDeclaration displayClassMemberDeclaration)
-    {
-      switch (displayClassMemberDeclaration)
-      {
-        // int foo, bar;
-        //     ^^^
-        case ILocalVariableDeclaration localVariableDeclaration:
-        {
-          return localVariableDeclaration.NameIdentifier;
-        }
-
-        // void M(int foo)
-        //            ^^^
-        case ICSharpParameterDeclaration parameterDeclaration:
-        {
-          // if indexer contains explicit accessors - use accessor name instead
-          // (usually to avoid ambiguity between closures in getter and setter)
-          if (IndexerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration) is { } indexerDeclaration)
-          {
-            foreach (var accessorDeclaration in indexerDeclaration.AccessorDeclarationsEnumerable)
-            {
-              if (accessorDeclaration.Contains(ScopeNode))
-                return accessorDeclaration.NameIdentifier;
-            }
-          }
-
-          return parameterDeclaration.NameIdentifier;
-        }
-      }
-
-      return displayClassMemberDeclaration;
-    }
-
-    [Pure]
-    private ITreeNode? GetAllocationLocationNodeFromScope()
-    {
-      var accessorDeclaration = AccessorDeclarationNavigator.GetByBody(ScopeNode as IBlock)
-                                ?? AccessorDeclarationNavigator.GetByArrowClause(ScopeNode as IArrowExpressionClause);
-      if (accessorDeclaration != null)
-      {
-        return accessorDeclaration.NameIdentifier;
-      }
-
-      var firstMeaningfulChild = ScopeNode.GetNextMeaningfulChild(child: null);
-      if (firstMeaningfulChild != null)
-      {
-        var node = firstMeaningfulChild as ITokenNode ?? firstMeaningfulChild.GetFirstTokenIn();
-        return node;
-      }
-
-      return null;
-    }
-
-    private class DisplayClassMembersDeclarationOrderComparer : IComparer<IDeclaredElement>
-    {
-      private DisplayClassMembersDeclarationOrderComparer() { }
-      public static IComparer<IDeclaredElement> Instance { get; } = new DisplayClassMembersDeclarationOrderComparer();
-
-      public int Compare(IDeclaredElement x, IDeclaredElement y)
-      {
-        if (ReferenceEquals(x, y)) return 0;
-        if (ReferenceEquals(null, y)) return 1;
-        if (ReferenceEquals(null, x)) return -1;
-
-        var offsetComparison = ToOffset(x).CompareTo(ToOffset(y));
-        if (offsetComparison != 0) return offsetComparison;
-
-        return string.Compare(x.ShortName, y.ShortName, StringComparison.Ordinal);
-
-        int ToOffset(IDeclaredElement displayClassMember)
-        {
-          if (displayClassMember is ITypeElement) return int.MaxValue;
-
-          var memberDeclaration = TryGetMemberDeclaration(displayClassMember);
-          if (memberDeclaration == null) return int.MaxValue - 1;
-
-          return memberDeclaration.GetNameRange().StartOffset.Offset;
-        }
-      }
-    }
   }
 
   private sealed class Captures
@@ -1045,6 +807,22 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+  }
+
+  public IEnumerable<DisplayClass> NotOptimizedDisplayClasses
+  {
+    get
+    {
+      foreach (var (_, displayClass) in myScopeToDisplayClass)
+      {
+        if (displayClass.IsReplacedWithInstanceMethods || displayClass.IsStruct)
+        {
+          continue;
+        }
+
+        yield return displayClass;
+      }
+    }
   }
 
   #region Dump
@@ -1275,15 +1053,4 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   };
 
   #endregion
-
-  public void ReportDisplayClasses<TState>(TState state, Action<ITreeNode, string, TState> consumer)
-  {
-    foreach (var (_, displayClass) in myScopeToDisplayClass)
-    {
-      if (displayClass.IsReplacedWithInstanceMethods || displayClass.IsStruct)
-        continue; // optimized display class
-
-      displayClass.ReportDisplayClasses(state, consumer);
-    }
-  }
 }
