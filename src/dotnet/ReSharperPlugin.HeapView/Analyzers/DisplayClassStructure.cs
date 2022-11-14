@@ -32,7 +32,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private readonly PooledStack<ICSharpClosure> myCurrentClosures = PooledStack<ICSharpClosure>.GetInstance();
   private readonly PooledList<ICSharpClosure> myAllFoundClosures = PooledList<ICSharpClosure>.GetInstance();
   private readonly PooledDictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = PooledDictionary<ITreeNode, DisplayClass>.GetInstance();
-  private readonly PooledDictionary<ICSharpClosure, Captures> myClosureToCaptures = PooledDictionary<ICSharpClosure, Captures>.GetInstance();
+  private readonly PooledDictionary<ICSharpClosure, ClosureCaptures> myClosureToCaptures = PooledDictionary<ICSharpClosure, ClosureCaptures>.GetInstance();
   private readonly PooledHashSet<ILocalFunction> myLocalFunctionsConvertedToDelegates = PooledHashSet<ILocalFunction>.GetInstance();
 
   private bool myIsScanningNonMainPart;
@@ -48,55 +48,63 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   {
     DisplayClassStructure? structure = null;
 
-    switch (declaration)
+    try
     {
-      // record R(int X) : B(...) { int Member = ...; }
-      case IClassLikeDeclaration classLikeDeclaration:
+      switch (declaration)
       {
-        structure = TryBuildFromInitializerScope(classLikeDeclaration);
-        break;
-      }
-
-      // void Method() { }
-      // int Property { get { } }
-      case ICSharpFunctionDeclaration { Body: { } bodyBlock } functionDeclaration:
-      {
-        structure = new DisplayClassStructure(declaration);
-
-        if (functionDeclaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
+        // record R(int X) : B(...) { int Member = ...; }
+        case IClassLikeDeclaration classLikeDeclaration:
         {
-          constructorInitializer.ProcessThisAndDescendants(structure);
+          TryBuildFromInitializerScope(classLikeDeclaration, ref structure);
+          break;
         }
 
-        bodyBlock.ProcessThisAndDescendants(structure);
-        break;
+        // void Method() { }
+        // int Property { get { } }
+        // public Ctor() : base(...) { }
+        case ICSharpFunctionDeclaration { Body: { } bodyBlock } functionDeclaration:
+        {
+          structure = new DisplayClassStructure(declaration);
+
+          if (functionDeclaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
+          {
+            constructorInitializer.ProcessThisAndDescendants(structure);
+          }
+
+          bodyBlock.ProcessThisAndDescendants(structure);
+          break;
+        }
+
+        // int ExpressionBodiedProperty => expr;
+        case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+        {
+          structure = new DisplayClassStructure(declaration);
+          arrowClause.ProcessThisAndDescendants(structure);
+          break;
+        }
+
+        // TopLevelCode();
+        case ITopLevelCode topLevelCode:
+        {
+          structure = new DisplayClassStructure(declaration);
+          topLevelCode.ProcessThisAndDescendants(structure);
+          break;
+        }
       }
 
-      // int ExpressionBodiedProperty => expr;
-      case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
-      {
-        structure = new DisplayClassStructure(declaration);
-        arrowClause.ProcessThisAndDescendants(structure);
-        break;
-      }
+      structure?.FinalizeStructure();
 
-      // TopLevelCode();
-      case ITopLevelCode topLevelCode:
-      {
-        structure = new DisplayClassStructure(declaration);
-        topLevelCode.ProcessThisAndDescendants(structure);
-        break;
-      }
+      return structure;
     }
-
-    structure?.FinalizeStructure();
-
-    return structure;
+    catch
+    {
+      structure?.Dispose();
+      throw;
+    }
   }
 
-  private static DisplayClassStructure? TryBuildFromInitializerScope(IClassLikeDeclaration classLikeDeclaration)
+  private static void TryBuildFromInitializerScope(IClassLikeDeclaration classLikeDeclaration, ref DisplayClassStructure? structure)
   {
-    DisplayClassStructure? structure = null;
     var seenBodies = false;
 
     // if type declaration is partial and has primary parameters in some part
@@ -124,12 +132,18 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
           }
         }
 
-        return seenBodies ? structure : null;
+        if (!seenBodies)
+        {
+          structure!.Dispose();
+          structure = null;
+        }
+
+        return;
       }
     }
 
     ScanInitializerScope(classLikeDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
-    return structure;
+    return;
 
     static void ScanInitializerScope(
       IClassLikeDeclaration classLikeDeclaration,
@@ -315,7 +329,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     myScopeToDisplayClass.Dispose();
     myClosureToCaptures.Dispose();
     myLocalFunctionsConvertedToDelegates.Dispose();
-
     myCaptureNamesToLookInOtherParts?.Dispose();
   }
 
@@ -457,7 +470,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
           if (!ReferenceEquals(currentClosure, localFunctionDeclaration)
               && !currentClosure.Contains(localScopeNode))
           {
-            var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => Captures.Create());
+            var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
             captures.CapturedEntities.Add(localFunction);
           }
         }
@@ -477,7 +490,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       var currentClosure = myCurrentClosures.Peek();
       if (!currentClosure.Contains(localScope))
       {
-        var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => Captures.Create());
+        var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
         captures.CapturedEntities.Add(capturedEntity);
 
         var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static key => DisplayClass.Create(key));
@@ -629,7 +642,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       var displayClass = myScopeToDisplayClass.GetOrCreateValue(myThisReferenceCaptureScopeNode, static key => DisplayClass.Create(key));
       displayClass.AddMember(thisTypeElement);
 
-      var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static () => Captures.Create());
+      var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
       captures.CapturedEntities.Add(thisTypeElement);
       captures.CapturedDisplayClasses.Add(displayClass);
     }
@@ -787,27 +800,33 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     IDisplayClass? IDisplayClass.ContainingDisplayClass => ContainingDisplayClass;
   }
 
-  private sealed class Captures
+  private sealed class ClosureCaptures : IClosureCaptures
   {
-    private Captures() { }
-    private static readonly ObjectPool<Captures> Pool = new(static _ => new());
+    private ClosureCaptures() { }
+    private static readonly ObjectPool<ClosureCaptures> Pool = new(static _ => new());
 
     [Pure]
-    public static Captures Create()
+    public static ClosureCaptures Create(ICSharpClosure closure)
     {
-      return Pool.Allocate();
+      var captures = Pool.Allocate();
+      captures.Closure = closure;
+      return captures;
     }
 
     public void Free()
     {
       CapturedDisplayClasses.Clear();
       CapturedEntities.Clear();
+      Closure = null!;
 
       Pool.Return(this);
     }
 
+    public ICSharpClosure Closure { get; private set; } = null!;
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+
+    IEnumerable<IDisplayClass> IClosureCaptures.CapturedDisplayClasses => CapturedDisplayClasses;
   }
 
   public IEnumerable<IDisplayClass> NotOptimizedDisplayClasses
@@ -822,6 +841,15 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
       }
     }
+  }
+
+  public IEnumerable<ICSharpClosure> AllClosures => myAllFoundClosures;
+
+  [Pure]
+  public IClosureCaptures? TryGetCapturesOf(ICSharpClosure closure)
+  {
+    myClosureToCaptures.TryGetValue(closure, out var x);
+    return x;
   }
 
   #region Dump
@@ -1060,4 +1088,11 @@ public interface IDisplayClass
   HashSet<IDeclaredElement> Members { get; }
   IDisplayClass? ContainingDisplayClass { get; }
   bool IsAllocationOptimized { get; }
+}
+
+public interface IClosureCaptures
+{
+  ICSharpClosure Closure { get; }
+  IEnumerable<IDisplayClass> CapturedDisplayClasses { get; }
+  HashSet<IDeclaredElement> CapturedEntities { get; }
 }

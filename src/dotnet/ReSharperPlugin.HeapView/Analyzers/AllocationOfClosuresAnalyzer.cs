@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -26,7 +28,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   HighlightingTypes = new[]
   {
     typeof(ClosureAllocationHighlighting),
-    typeof(DelegateAllocationHighlighting)
+    typeof(DelegateAllocationHighlighting),
+    typeof(ObjectAllocationHighlighting)
   })]
 public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
@@ -40,6 +43,11 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     {
       ReportDisplayClassAllocation(displayClass, consumer);
     }
+
+    foreach (var closure in structure.AllClosures)
+    {
+      ReportClosureInvocation(closure, structure, consumer);
+    }
   }
 
   private static void ReportDisplayClassAllocation(IDisplayClass displayClass, IHighlightingConsumer consumer)
@@ -52,17 +60,16 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     sortedMembers.AddRange(displayClass.Members);
     sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
 
-    var description = CreateDisplayClassDescription();
-
     var firstDisplayClassMemberDeclaration = TryGetMemberDeclaration(sortedMembers[0]);
     var declarationNode = firstDisplayClassMemberDeclaration != null
       ? GetAllocationNodeFromMemberDeclaration(firstDisplayClassMemberDeclaration)
       : GetAllocationLocationNodeFromScope();
 
-    if (declarationNode != null)
-    {
-      consumer.AddHighlighting(new ClosureAllocationHighlighting(declarationNode, description));
-    }
+    if (declarationNode == null || declarationNode.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    var description = CreateDisplayClassDescription();
+    consumer.AddHighlighting(new ClosureAllocationHighlighting(declarationNode, description));
 
     [Pure]
     ITreeNode? GetAllocationNodeFromMemberDeclaration(ICSharpDeclaration displayClassMemberDeclaration)
@@ -121,28 +128,9 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
     string CreateDisplayClassDescription()
     {
-      var parameters = 0;
-      var variables = 0;
-
       using var pooledBuilder = PooledStringBuilder.GetInstance();
       var builder = pooledBuilder.Builder;
       builder.Append("capture of");
-
-      foreach (var declaredElement in sortedMembers)
-      {
-        if (declaredElement is ITypeElement)
-        {
-          // 'this' capture
-        }
-        else if (declaredElement is IParameter)
-        {
-          parameters++;
-        }
-        else
-        {
-          variables++;
-        }
-      }
 
       var containingClosure = displayClass.ContainingDisplayClass;
       var lastMemberIndex = sortedMembers.Count - (containingClosure != null ? 0 : 1);
@@ -271,5 +259,163 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
         return memberDeclaration.GetNameRange().StartOffset.Offset;
       }
     }
+  }
+
+  private static void ReportClosureInvocation(ICSharpClosure closure, DisplayClassStructure structure, IHighlightingConsumer consumer)
+  {
+    if (closure.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    if (IsExpressionTreeClosure())
+    {
+      consumer.AddHighlighting(
+        new ObjectAllocationHighlighting(closure, "expression tree construction"),
+        GetClosureAllocationRange());
+
+      return;
+    }
+
+    var captures = structure.TryGetCapturesOf(closure);
+    if (captures != null)
+    {
+      var delegateType = GetCreatedDelegateType();
+      if (delegateType != null && delegateType.IsDelegateType())
+      {
+        var delegateTypeText = delegateType.GetPresentableName(closure.Language, CommonUtils.DefaultTypePresentationStyle);
+
+        using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
+
+        sortedMembers.AddRange(captures.CapturedEntities);
+        sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
+
+        var description = CreateCapturesDescription();
+
+        consumer.AddHighlighting(
+          new DelegateAllocationHighlighting(closure, $"new '{delegateTypeText}' instance ({description})"),
+          GetClosureAllocationRange());
+
+        string CreateCapturesDescription()
+        {
+          using var pooledBuilder = PooledStringBuilder.GetInstance();
+          var builder = pooledBuilder.Builder;
+          builder.Append("capture of");
+
+          var lastMemberIndex = sortedMembers.Count - 1;
+
+          // capture of 'a' parameter
+          // capture of 'a' parameter and 'b' variable
+          // capture of 'a' parameter, 'b' variable and 'this' reference
+          if (lastMemberIndex < 4)
+          {
+            builder.Append(' ');
+
+            for (var index = 0; index < sortedMembers.Count; index++)
+            {
+              if (index > 0)
+                builder.Append(index == lastMemberIndex ? " and " : ", ");
+
+              AppendMember(sortedMembers[index]);
+            }
+          }
+          else
+          {
+            for (var index = 0; index < sortedMembers.Count; index++)
+            {
+              builder.Append(Environment.NewLine).Append("    ");
+
+              AppendMember(sortedMembers[index]);
+            }
+          }
+
+          return builder.ToString();
+
+          void AppendMember(IDeclaredElement declaredElement)
+          {
+            if (declaredElement is ITypeElement)
+            {
+              builder.Append("'this' reference");
+            }
+            else
+            {
+              builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
+              builder.Append(declaredElement is IParameter ? "parameter" : "variable");
+            }
+          }
+        }
+      }
+    }
+
+    [Pure]
+    bool IsExpressionTreeClosure()
+    {
+      switch (closure)
+      {
+        case ILambdaExpression lambdaExpression:
+          return lambdaExpression.IsLinqExpressionTreeLambda();
+        case IQueryParameterPlatform parameterPlatform:
+          return parameterPlatform.IsLinqExpressionTreeQuery();
+        default:
+          return false;
+      }
+    }
+
+    [Pure]
+    DocumentRange GetClosureAllocationRange()
+    {
+      switch (closure)
+      {
+        case ILambdaExpression lambdaExpression:
+          return lambdaExpression.LambdaArrow.GetDocumentRange();
+
+        case IAnonymousMethodExpression anonymousMethodExpression:
+          return anonymousMethodExpression.DelegateKeyword.GetDocumentRange();
+
+        case ILocalFunctionDeclaration localFunctionDeclaration:
+          return localFunctionDeclaration.GetNameDocumentRange();
+
+        case IQueryParameterPlatform queryParameterPlatform:
+        {
+          var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
+          if (previousToken != null && previousToken.GetTokenType().IsKeyword)
+            return previousToken.GetDocumentRange();
+
+          var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
+          if (queryClause != null)
+            return queryClause.FirstKeyword.GetDocumentRange();
+
+          return DocumentRange.InvalidRange;
+        }
+
+        default:
+          return DocumentRange.InvalidRange;
+      }
+    }
+
+    IType? GetCreatedDelegateType()
+    {
+      switch (closure)
+      {
+        case ILambdaExpression lambdaExpression:
+        {
+          var targetType = lambdaExpression.GetImplicitlyConvertedTo();
+          if (!targetType.IsDelegateType())
+          {
+            return lambdaExpression.GetExpressionType().ToIType();
+          }
+
+          return targetType;
+        }
+
+        case IQueryParameterPlatform parameterPlatform:
+        {
+          return parameterPlatform.GetImplicitlyConvertedTo();
+        }
+
+        default:
+          return null;
+      }
+    }
+
+
   }
 }

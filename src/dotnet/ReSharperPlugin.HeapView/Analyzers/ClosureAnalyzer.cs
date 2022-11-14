@@ -384,33 +384,7 @@ public class ClosureAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
   [Pure]
   private static DocumentRange GetClosureRange([CanBeNull] ICSharpClosure closure)
   {
-    switch (closure)
-    {
-      case ILambdaExpression lambdaExpression:
-        return lambdaExpression.LambdaArrow.GetDocumentRange();
-
-      case IAnonymousMethodExpression anonymousMethodExpression:
-        return anonymousMethodExpression.DelegateKeyword.GetDocumentRange();
-
-      case ILocalFunctionDeclaration localFunctionDeclaration:
-        return localFunctionDeclaration.GetNameDocumentRange();
-
-      case IQueryParameterPlatform queryParameterPlatform:
-      {
-        var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
-        if (previousToken != null && previousToken.GetTokenType().IsKeyword)
-          return previousToken.GetDocumentRange();
-
-        var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
-        if (queryClause != null)
-          return queryClause.FirstKeyword.GetDocumentRange();
-
-        goto default;
-      }
-
-      default:
-        return DocumentRange.InvalidRange;
-    }
+    return DocumentRange.InvalidRange;
   }
 
   private static void ReportAnonymousTypes([NotNull] ClosuresInspector inspector, [NotNull] IHighlightingConsumer consumer)
@@ -425,15 +399,7 @@ public class ClosureAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
   [Pure]
   private static bool IsExpressionTreeClosure([NotNull] ICSharpClosure closure)
   {
-    switch (closure)
-    {
-      case ILambdaExpression lambdaExpression:
-        return lambdaExpression.IsLinqExpressionTreeLambda();
-      case IQueryParameterPlatform parameterPlatform:
-        return parameterPlatform.IsLinqExpressionTreeQuery();
-      default:
-        return false;
-    }
+    return false;
   }
 
   private sealed class ClosuresInspector : IRecursiveElementProcessor

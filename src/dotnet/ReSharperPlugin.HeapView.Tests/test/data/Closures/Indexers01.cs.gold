@@ -1,9 +1,12 @@
 ﻿public class Indexers {
-  public object this[int |x|(0)] => () => x;
-  public object this[long x] { |get|(1) => () => x; }
-  public object this[ulong x] { |get|(2) { return () => x; } }
+  public object this[int |x|(0)] => () |=>|(1) x;
+  public object this[long x] { |get|(2) => () |=>|(3) x; }
+  public object this[ulong x] { |get|(4) { return () |=>|(5) x; } }
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
-(1):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
-(2): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'x' parameter)
+(2):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<long>' instance (capture of 'x' parameter)
+(4): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<ulong>' instance (capture of 'x' parameter)

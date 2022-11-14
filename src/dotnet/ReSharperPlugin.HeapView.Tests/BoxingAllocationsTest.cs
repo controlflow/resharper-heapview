@@ -17,7 +17,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   protected override bool HighlightingPredicate(
     IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
   {
-    //return true;
+    // todo: return highlighting is PerformanceHighlightingBase;
     return highlighting is BoxingAllocationHighlighting or PossibleBoxingAllocationHighlighting;
   }
 
