@@ -1,5 +1,5 @@
 ﻿class Foo {
-  int ThisCapture(|int|(0) param) {
+  int ThisCapture(int |param|(0)) {
     if (param < 0) {
       var f = () => ThisCapture(42);
       return f();

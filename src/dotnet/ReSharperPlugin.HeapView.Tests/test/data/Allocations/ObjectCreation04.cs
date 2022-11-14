@@ -9,6 +9,6 @@ class NotImportantContexts
 
   public Func<object> Func => () => new(); // yes
 
-  public Expression Expr01 => () => new object(); // TODO: fix this
+  public Expression Expr01 => () => new object();
   public Expression<Func<object>> Expr02 => () => new();
 }

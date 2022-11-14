@@ -9,9 +9,8 @@ class NotImportantContexts
 
   public Func<object> Func => () => |new|(0)(); // yes
 
-  public Expression Expr01 => () => |new|(1) object(); // TODO: fix this
+  public Expression Expr01 => () => new object();
   public Expression<Func<object>> Expr02 => () => new();
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation
-(1): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation
