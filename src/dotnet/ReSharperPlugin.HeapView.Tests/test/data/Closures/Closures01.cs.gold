@@ -1,0 +1,3 @@
+﻿|var|(0) f = () => args;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter

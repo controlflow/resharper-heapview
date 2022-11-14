@@ -50,6 +50,8 @@ public class ClosureAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
 {
   protected override void Run(ICSharpDeclaration declaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
+    return;
+
     var bodyToAnalyze = TryGetCodeBodyToAnalyze(declaration);
     if (bodyToAnalyze == null) return;
 

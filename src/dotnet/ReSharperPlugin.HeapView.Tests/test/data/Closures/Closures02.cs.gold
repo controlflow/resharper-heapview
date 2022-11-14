@@ -1,0 +1,4 @@
+﻿|var|(0) xs = args;
+var f = () => xs;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'xs' variable

@@ -294,6 +294,8 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
     var conditionalAccessExpression = ConditionalAccessExpressionNavigator.GetByQualifier(containingParenthesized);
     if (conditionalAccessExpression != null && targetType.IsInterfaceType())
     {
+      // todo: [BIG] will not be optimized for default members
+
       var targetRuntime = data.GetTargetRuntime();
       if (targetRuntime == TargetRuntime.NetCore)
       {

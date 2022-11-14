@@ -1,0 +1,13 @@
+﻿class Foo {
+  int ThisCapture(|int|(0) param) {
+    if (param < 0) {
+      var f = () => ThisCapture(42);
+      return f();
+    } else {
+      var f = () => ThisCapture(param);
+      return f();  
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'param' parameter and 'this' reference
