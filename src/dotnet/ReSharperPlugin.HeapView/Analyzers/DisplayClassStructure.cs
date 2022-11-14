@@ -707,7 +707,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     return invocationExpression != null;
   }
 
-  public sealed class DisplayClass : IComparable<DisplayClass>
+  private sealed class DisplayClass : IComparable<DisplayClass>, IDisplayClass
   {
     private DisplayClass() { }
     private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new());
@@ -747,6 +747,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     public bool IsStruct { get; set; } = true;
     public bool IsReplacedWithInstanceMethods { get; set; }
+    public bool IsAllocationOptimized => IsStruct || IsReplacedWithInstanceMethods;
 
     public void AddMember(IDeclaredElement localEntity)
     {
@@ -783,7 +784,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       return -1;
     }
 
-
+    IDisplayClass? IDisplayClass.ContainingDisplayClass => ContainingDisplayClass;
   }
 
   private sealed class Captures
@@ -809,18 +810,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
   }
 
-  public IEnumerable<DisplayClass> NotOptimizedDisplayClasses
+  public IEnumerable<IDisplayClass> NotOptimizedDisplayClasses
   {
     get
     {
       foreach (var (_, displayClass) in myScopeToDisplayClass)
       {
-        if (displayClass.IsReplacedWithInstanceMethods || displayClass.IsStruct)
+        if (!displayClass.IsAllocationOptimized)
         {
-          continue;
+          yield return displayClass;
         }
-
-        yield return displayClass;
       }
     }
   }
@@ -1053,4 +1052,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   };
 
   #endregion
+}
+
+public interface IDisplayClass
+{
+  ITreeNode ScopeNode { get; }
+  HashSet<IDeclaredElement> Members { get; }
+  IDisplayClass? ContainingDisplayClass { get; }
+  bool IsAllocationOptimized { get; }
 }

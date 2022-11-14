@@ -40,14 +40,9 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     {
       ReportDisplayClassAllocation(displayClass, consumer);
     }
-
-    // structure.ReportDelegates(consumer, static (node, description, consumer) =>
-    // {
-    //   consumer.AddHighlighting(new DelegateAllocationHighlighting(node, description));
-    // });
   }
 
-  private void ReportDisplayClassAllocation(DisplayClassStructure.DisplayClass displayClass, IHighlightingConsumer consumer)
+  private static void ReportDisplayClassAllocation(IDisplayClass displayClass, IHighlightingConsumer consumer)
   {
     if (displayClass.Members.Count == 0)
       return; // note: should not be possible
@@ -209,13 +204,13 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       }
     }
 
-    static void PresentContainingClosureReference(DisplayClassStructure.DisplayClass? displayClass, StringBuilder builder)
+    static void PresentContainingClosureReference(IDisplayClass? displayClass, StringBuilder builder)
     {
       var first = true;
 
       for (; displayClass != null; displayClass = displayClass.ContainingDisplayClass)
       {
-        if (displayClass.IsReplacedWithInstanceMethods)
+        if (displayClass.IsAllocationOptimized)
           continue;
 
         var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
