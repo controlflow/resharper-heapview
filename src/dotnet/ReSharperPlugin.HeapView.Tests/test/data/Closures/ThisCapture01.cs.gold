@@ -5,4 +5,5 @@
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance (capture of 'this' reference)
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of 'this' reference

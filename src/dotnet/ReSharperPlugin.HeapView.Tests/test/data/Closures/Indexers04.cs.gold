@@ -17,6 +17,8 @@
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'value' parameter)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'value'
 (2): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
-(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'value' parameter)
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'value'

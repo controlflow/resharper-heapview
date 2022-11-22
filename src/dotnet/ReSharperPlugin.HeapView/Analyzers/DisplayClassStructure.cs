@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
@@ -225,9 +226,9 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
       else if (capturedDisplayClasses.Count == 1)
       {
-        foreach (var single in capturedDisplayClasses)
+        foreach (var singleDisplayClass in capturedDisplayClasses)
         {
-          single.AttachClosure(closure, canTakeRefDisplayClass);
+          captures.AssignToDisplayClass(singleDisplayClass, canTakeRefDisplayClass);
           break;
         }
       }
@@ -238,7 +239,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         displayClasses.AddRange(capturedDisplayClasses);
         displayClasses.Sort();
 
-        displayClasses[0].AttachClosure(closure, canTakeRefDisplayClass);
+        captures.AssignToDisplayClass(displayClasses[0], canTakeRefDisplayClass);
 
         // join display classes together
         for (var index = 1; index < displayClasses.Count; index++)
@@ -466,13 +467,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         var localScopeNode = localFunctionDeclaration.GetContainingScope<ILocalScope>();
         if (localScopeNode != null)
         {
-          var currentClosure = myCurrentClosures.Peek();
-          if (!ReferenceEquals(currentClosure, localFunctionDeclaration)
-              && !currentClosure.Contains(localScopeNode))
-          {
-            var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
-            captures.CapturedEntities.Add(localFunction);
-          }
+          NoteLocalFunctionUsage(localFunctionDeclaration, localScopeNode);
         }
 
         break;
@@ -488,16 +483,26 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     void NoteCapture(ITreeNode localScope, ITypeOwner capturedEntity)
     {
       var currentClosure = myCurrentClosures.Peek();
-      if (!currentClosure.Contains(localScope))
-      {
-        var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
-        captures.CapturedEntities.Add(capturedEntity);
+      if (currentClosure.Contains(localScope)) return;
 
-        var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static key => DisplayClass.Create(key));
-        displayClass.AddMember(capturedEntity);
+      var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
+      captures.CapturedEntities.Add(capturedEntity);
 
-        captures.CapturedDisplayClasses.Add(displayClass);
-      }
+      var displayClass = myScopeToDisplayClass.GetOrCreateValue(localScope, static key => DisplayClass.Create(key));
+      displayClass.AddMember(capturedEntity);
+
+      captures.CapturedDisplayClasses.Add(displayClass);
+    }
+
+    void NoteLocalFunctionUsage(ILocalFunctionDeclaration localFunctionDeclaration, ILocalScope localScopeNode)
+    {
+      var currentClosure = myCurrentClosures.Peek();
+      if (ReferenceEquals(currentClosure, localFunctionDeclaration)) return;
+      if (currentClosure.Contains(localScopeNode)) return;
+
+      var captures = myClosureToCaptures.GetOrCreateValue(currentClosure, static key => ClosureCaptures.Create(key));
+
+      captures.CapturedEntities.Add(localFunctionDeclaration.DeclaredElement);
     }
 
     [Pure]
@@ -815,18 +820,29 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     public void Free()
     {
+      Closure = null!;
       CapturedDisplayClasses.Clear();
       CapturedEntities.Clear();
-      Closure = null!;
+      AttachedDisplayClass = null!;
 
       Pool.Return(this);
     }
 
     public ICSharpClosure Closure { get; private set; } = null!;
-    public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
-    public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
 
-    IEnumerable<IDisplayClass> IClosureCaptures.CapturedDisplayClasses => CapturedDisplayClasses;
+    // todo: probably replace with a single reference
+    public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
+
+    public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+    public DisplayClass? AttachedDisplayClass { get; private set; }
+
+    IDisplayClass IClosureCaptures.AttachedDisplayClass => AttachedDisplayClass.NotNull();
+
+    public void AssignToDisplayClass(DisplayClass displayClass, bool canTakeRefDisplayClass)
+    {
+      AttachedDisplayClass = displayClass;
+      displayClass.AttachClosure(Closure, canTakeRefDisplayClass);
+    }
   }
 
   public IEnumerable<IDisplayClass> NotOptimizedDisplayClasses
@@ -1093,6 +1109,6 @@ public interface IDisplayClass
 public interface IClosureCaptures
 {
   ICSharpClosure Closure { get; }
-  IEnumerable<IDisplayClass> CapturedDisplayClasses { get; }
   HashSet<IDeclaredElement> CapturedEntities { get; }
+  IDisplayClass AttachedDisplayClass { get; }
 }

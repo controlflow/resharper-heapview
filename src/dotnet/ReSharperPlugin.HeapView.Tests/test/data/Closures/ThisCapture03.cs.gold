@@ -11,5 +11,7 @@
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'param' parameter and 'this' reference
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'this' reference)
-(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'param' parameter and 'this' reference)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of 'this' reference
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'param' and 'this' reference

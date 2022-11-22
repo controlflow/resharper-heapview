@@ -4,7 +4,11 @@ object f3 = () |=>|(3) args.Length;
 System.Delegate f4 = (bool f) |=>|(4) f ? args.Length : throw null!;
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance (capture of 'args' parameter)
-(2): ReSharper HeapView Allocation: Delegate allocation: new 'anonymous long delegate(ref int)' instance (capture of 'args' parameter)
-(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'args' parameter)
-(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<bool,int>' instance (capture of 'args' parameter)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of parameter 'args'
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'anonymous long delegate(ref int)' instance creation
+Capture of parameter 'args'
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'args'
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<bool,int>' instance creation
+Capture of parameter 'args'

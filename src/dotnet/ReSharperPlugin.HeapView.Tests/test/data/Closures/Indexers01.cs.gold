@@ -5,8 +5,11 @@
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance (capture of 'x' parameter)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
 (2):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
-(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<long>' instance (capture of 'x' parameter)
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<long>' instance creation
+Capture of parameter 'x'
 (4): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
-(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<ulong>' instance (capture of 'x' parameter)
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<ulong>' instance creation
+Capture of parameter 'x'

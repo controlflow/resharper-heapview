@@ -1,18 +1,24 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
+using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
+
+// todo: custom pools to avoid interference
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -33,8 +39,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   })]
 public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
-  protected override void Run(
-    ITreeNode treeNode, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  protected override void Run(ITreeNode treeNode, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     using var structure = DisplayClassStructure.Build(treeNode);
     if (structure == null) return;
@@ -46,7 +51,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
     foreach (var closure in structure.AllClosures)
     {
-      ReportClosureInvocation(closure, structure, consumer);
+      ReportClosureInvocation(closure, structure, data, consumer);
     }
   }
 
@@ -261,7 +266,8 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
   }
 
-  private static void ReportClosureInvocation(ICSharpClosure closure, DisplayClassStructure structure, IHighlightingConsumer consumer)
+  private static void ReportClosureInvocation(
+    ICSharpClosure closure, DisplayClassStructure structure, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     if (closure.IsInTheContextWhereAllocationsAreNotImportant())
       return;
@@ -270,7 +276,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     {
       consumer.AddHighlighting(
         new ObjectAllocationHighlighting(closure, "expression tree construction"),
-        GetClosureAllocationRange());
+        GetClosureAllocationRange(closure));
 
       return;
     }
@@ -278,69 +284,34 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     var captures = structure.TryGetCapturesOf(closure);
     if (captures != null)
     {
-      var delegateType = GetCreatedDelegateType();
-      if (delegateType != null && delegateType.IsDelegateType())
+      var createdType = TryGetCreatedLambdaType();
+      if (createdType != null && createdType.IsDelegateType())
       {
-        var delegateTypeText = delegateType.GetPresentableName(closure.Language, CommonUtils.DefaultTypePresentationStyle);
+        ReportDelegateAllocation(closure, createdType, captures, consumer, data);
+      }
 
-        using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
-
-        sortedMembers.AddRange(captures.CapturedEntities);
-        sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
-
-        var description = CreateCapturesDescription();
-
-        consumer.AddHighlighting(
-          new DelegateAllocationHighlighting(closure, $"new '{delegateTypeText}' instance ({description})"),
-          GetClosureAllocationRange());
-
-        string CreateCapturesDescription()
+      IType? TryGetCreatedLambdaType()
+      {
+        switch (closure)
         {
-          using var pooledBuilder = PooledStringBuilder.GetInstance();
-          var builder = pooledBuilder.Builder;
-          builder.Append("capture of");
-
-          var lastMemberIndex = sortedMembers.Count - 1;
-
-          // capture of 'a' parameter
-          // capture of 'a' parameter and 'b' variable
-          // capture of 'a' parameter, 'b' variable and 'this' reference
-          if (lastMemberIndex < 4)
+          case IAnonymousFunctionExpression anonymousFunctionExpression:
           {
-            builder.Append(' ');
-
-            for (var index = 0; index < sortedMembers.Count; index++)
+            var targetType = anonymousFunctionExpression.GetImplicitlyConvertedTo();
+            if (!targetType.IsDelegateType())
             {
-              if (index > 0)
-                builder.Append(index == lastMemberIndex ? " and " : ", ");
-
-              AppendMember(sortedMembers[index]);
+              return anonymousFunctionExpression.GetExpressionType().ToIType();
             }
-          }
-          else
-          {
-            for (var index = 0; index < sortedMembers.Count; index++)
-            {
-              builder.Append(Environment.NewLine).Append("    ");
 
-              AppendMember(sortedMembers[index]);
-            }
+            return targetType;
           }
 
-          return builder.ToString();
-
-          void AppendMember(IDeclaredElement declaredElement)
+          case IQueryParameterPlatform parameterPlatform:
           {
-            if (declaredElement is ITypeElement)
-            {
-              builder.Append("'this' reference");
-            }
-            else
-            {
-              builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
-              builder.Append(declaredElement is IParameter ? "parameter" : "variable");
-            }
+            return parameterPlatform.GetImplicitlyConvertedTo();
           }
+
+          default:
+            return null;
         }
       }
     }
@@ -358,64 +329,167 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
           return false;
       }
     }
+  }
 
-    [Pure]
-    DocumentRange GetClosureAllocationRange()
+  private static void ReportDelegateAllocation(
+    ICSharpClosure closure, IType delegateType, IClosureCaptures captures, IHighlightingConsumer consumer, ElementProblemAnalyzerData data)
+  {
+    using var builder = PooledStringBuilder.GetInstance();
+    builder.Append("new '");
+    builder.Append(delegateType.GetPresentableName(closure.Language, CommonUtils.DefaultTypePresentationStyle));
+    builder.Append("' instance creation");
+
+    builder.AppendLine();
+    builder.Append("Capture of ");
+    AppendCapturesDescription(builder.Builder, captures.CapturedEntities);
+
+    using var implicitCaptures = PooledHashSet<IDeclaredElement>.GetInstance();
+    CollectImplicitCapturesThatCanContainReferences(implicitCaptures, captures, data);
+
+    if (implicitCaptures.Count > 0)
     {
-      switch (closure)
-      {
-        case ILambdaExpression lambdaExpression:
-          return lambdaExpression.LambdaArrow.GetDocumentRange();
+      builder.AppendLine();
+      builder.Append("Implicit capture of ");
+      AppendCapturesDescription(builder.Builder, implicitCaptures);
 
-        case IAnonymousMethodExpression anonymousMethodExpression:
-          return anonymousMethodExpression.DelegateKeyword.GetDocumentRange();
-
-        case ILocalFunctionDeclaration localFunctionDeclaration:
-          return localFunctionDeclaration.GetNameDocumentRange();
-
-        case IQueryParameterPlatform queryParameterPlatform:
-        {
-          var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
-          if (previousToken != null && previousToken.GetTokenType().IsKeyword)
-            return previousToken.GetDocumentRange();
-
-          var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
-          if (queryClause != null)
-            return queryClause.FirstKeyword.GetDocumentRange();
-
-          return DocumentRange.InvalidRange;
-        }
-
-        default:
-          return DocumentRange.InvalidRange;
-      }
+      // todo: separate warning highlighting
     }
 
-    IType? GetCreatedDelegateType()
+    consumer.AddHighlighting(
+      new DelegateAllocationHighlighting(closure, builder.ToString()),
+      GetClosureAllocationRange(closure));
+
+    static void CollectImplicitCapturesThatCanContainReferences(
+      HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
     {
-      switch (closure)
+      for (var displayClass = captures.AttachedDisplayClass; displayClass != null; displayClass = displayClass.ContainingDisplayClass)
       {
-        case IAnonymousFunctionExpression anonymousFunctionExpression:
+        consumer.AddRange(displayClass.Members);
+      }
+
+      consumer.ExceptWith(captures.CapturedEntities);
+
+      if (consumer.Count > 0)
+      {
+        using var toRemove = PooledHashSet<IDeclaredElement>.GetInstance();
+
+        foreach (var declaredElement in consumer)
         {
-          var targetType = anonymousFunctionExpression.GetImplicitlyConvertedTo();
-          if (!targetType.IsDelegateType())
+          if (declaredElement is ITypeOwner typeOwner && !data.CanContainManagedReferences(typeOwner.Type))
           {
-            return anonymousFunctionExpression.GetExpressionType().ToIType();
+            toRemove.Add(typeOwner);
           }
-
-          return targetType;
         }
 
-        case IQueryParameterPlatform parameterPlatform:
-        {
-          return parameterPlatform.GetImplicitlyConvertedTo();
-        }
-
-        default:
-          return null;
+        consumer.ExceptWith(toRemove);
       }
     }
 
+    static void AppendCapturesDescription(StringBuilder builder, HashSet<IDeclaredElement> members)
+    {
+      using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
 
+      sortedMembers.AddRange(members);
+      sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
+
+      var hasThisReference = false;
+      int parametersCount = 0, variablesCount = 0;
+
+      foreach (var declaredElement in sortedMembers)
+      {
+        if (declaredElement is ITypeElement)
+          hasThisReference = true;
+        else if (declaredElement is IParameter)
+          parametersCount++;
+        else
+          variablesCount++;
+      }
+
+      var kindsCount = (hasThisReference ? 1 : 0) + (parametersCount > 0 ? 1 : 0) + (variablesCount > 0 ? 1 : 0);
+      var kindsBefore = 0;
+
+      if (parametersCount > 0)
+      {
+        AppendMembersIfKind<IParameter>("parameter", parametersCount);
+        kindsBefore++;
+      }
+
+      if (variablesCount > 0)
+      {
+        if (kindsBefore > 0)
+          builder.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
+
+        AppendMembersIfKind<ILocalVariable>("variable", variablesCount);
+        kindsBefore++;
+      }
+
+      if (hasThisReference)
+      {
+        if (kindsBefore > 0)
+          builder.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
+
+        builder.Append("'this' reference");
+      }
+
+      void AppendMembersIfKind<TElement>(string kindName, int count) where TElement : IDeclaredElement
+      {
+        Assertion.Assert(count > 0);
+
+        builder.Append(kindName);
+        if (count > 1) builder.Append("s");
+        builder.Append(' ');
+
+        var hasManyOfDifferentKinds = count > 1 && kindsCount > 1;
+        if (hasManyOfDifferentKinds) builder.Append('(');
+
+        foreach (var element in sortedMembers)
+        {
+          if (element is TElement)
+          {
+            builder.Append('\'').Append(element.ShortName).Append('\'');
+
+            if (--count > 0)
+            {
+              var canUseAnd = !hasManyOfDifferentKinds && count <= 1;
+              builder.Append(canUseAnd ? " and " : ", ");
+            }
+          }
+        }
+
+        if (hasManyOfDifferentKinds) builder.Append(')');
+      }
+    }
+  }
+
+  [Pure]
+  private static DocumentRange GetClosureAllocationRange(ICSharpClosure closure)
+  {
+    switch (closure)
+    {
+      case ILambdaExpression lambdaExpression:
+        return lambdaExpression.LambdaArrow.GetDocumentRange();
+
+      case IAnonymousMethodExpression anonymousMethodExpression:
+        return anonymousMethodExpression.DelegateKeyword.GetDocumentRange();
+
+      case ILocalFunctionDeclaration localFunctionDeclaration:
+        return localFunctionDeclaration.GetNameDocumentRange();
+
+      case IQueryParameterPlatform queryParameterPlatform:
+      {
+        var previousToken = queryParameterPlatform.GetPreviousMeaningfulToken();
+        if (previousToken != null && previousToken.GetTokenType().IsKeyword)
+          return previousToken.GetDocumentRange();
+
+        var queryClause = queryParameterPlatform.GetContainingNode<IQueryClause>();
+        if (queryClause != null)
+          return queryClause.FirstKeyword.GetDocumentRange();
+
+        return DocumentRange.InvalidRange;
+      }
+
+      default:
+        return DocumentRange.InvalidRange;
+    }
   }
 }

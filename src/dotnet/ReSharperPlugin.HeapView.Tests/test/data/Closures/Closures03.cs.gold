@@ -6,7 +6,11 @@ Func<string[]> f3 = () |=>|(3) args;
 Func<string[]> f4 = new (() |=>|(4) args);
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance (capture of 'args' parameter)
-(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance (capture of 'args' parameter)
-(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance (capture of 'args' parameter)
-(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance (capture of 'args' parameter)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
