@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -11,7 +10,6 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -35,7 +33,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   {
     typeof(ClosureAllocationHighlighting),
     typeof(DelegateAllocationHighlighting),
-    typeof(ObjectAllocationHighlighting)
+    typeof(ObjectAllocationHighlighting),
+    typeof(ImplicitCaptureWarning)
   })]
 public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
@@ -346,18 +345,28 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     using var implicitCaptures = PooledHashSet<IDeclaredElement>.GetInstance();
     CollectImplicitCapturesThatCanContainReferences(implicitCaptures, captures, data);
 
+    var closureRange = GetClosureAllocationRange(closure);
+    var implicitCaptureLineOffset = -1;
+
     if (implicitCaptures.Count > 0)
     {
       builder.AppendLine();
+      implicitCaptureLineOffset = builder.Length;
+
       builder.Append("Implicit capture of ");
       AppendCapturesDescription(builder.Builder, implicitCaptures);
-
-      // todo: separate warning highlighting
     }
 
     consumer.AddHighlighting(
-      new DelegateAllocationHighlighting(closure, builder.ToString()),
-      GetClosureAllocationRange(closure));
+      new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
+
+    if (implicitCaptures.Count > 0)
+    {
+      Assertion.Assert(implicitCaptureLineOffset >= 0);
+      builder.Builder.Remove(0, implicitCaptureLineOffset);
+
+      consumer.AddHighlighting(new ImplicitCaptureWarning(closure, builder.ToString()), closureRange);
+    }
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
