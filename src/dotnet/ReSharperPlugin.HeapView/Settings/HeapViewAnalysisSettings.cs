@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Settings;
 using JetBrains.Util;
+using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Settings;
 
@@ -75,5 +76,14 @@ internal static class HeapViewAnalysisSettingsExtensions
         }
       }
     });
+  }
+
+  private static readonly Key<object> ImplicitCaptureWarningSeverityKey = new(nameof(ImplicitCaptureWarningSeverityKey));
+
+  [Pure]
+  public static Severity GetImplicitCaptureWarningSeverity(this ElementProblemAnalyzerData data)
+  {
+    return (Severity)data.GetOrCreateDataUnderLock(ImplicitCaptureWarningSeverityKey, data, factory: static data =>
+      data.SettingsStore.GetIndexedValue(HighlightingSettingsAccessor.InspectionSeverities, ImplicitCaptureWarning.SEVERITY_ID));
   }
 }

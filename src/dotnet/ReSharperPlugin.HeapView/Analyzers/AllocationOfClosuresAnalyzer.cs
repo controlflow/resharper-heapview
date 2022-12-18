@@ -11,12 +11,12 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
+using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
-
-// todo: custom pools to avoid interference
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]
@@ -54,12 +54,15 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
   }
 
+  private static readonly ObjectPool<PooledList<IDeclaredElement>> SortedMembersPool = PooledList<IDeclaredElement>.CreatePool();
+  private static readonly ObjectPool<PooledHashSet<IDeclaredElement>> CapturesPool = PooledHashSet<IDeclaredElement>.CreatePool();
+
   private static void ReportDisplayClassAllocation(IDisplayClass displayClass, IHighlightingConsumer consumer)
   {
     if (displayClass.Members.Count == 0)
       return; // note: should not be possible
 
-    using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
+    using var sortedMembers = SortedMembersPool.Allocate();
 
     sortedMembers.AddRange(displayClass.Members);
     sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
@@ -205,7 +208,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
         if (displayClass.IsAllocationOptimized)
           continue;
 
-        var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
+        using var sortedMembers = SortedMembersPool.Allocate();
 
         sortedMembers.AddRange(displayClass.Members);
         sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
@@ -342,31 +345,30 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     builder.Append("Capture of ");
     AppendCapturesDescription(builder.Builder, captures.CapturedEntities);
 
-    using var implicitCaptures = PooledHashSet<IDeclaredElement>.GetInstance();
+    using var implicitCaptures = CapturesPool.Allocate();
     CollectImplicitCapturesThatCanContainReferences(implicitCaptures, captures, data);
 
     var closureRange = GetClosureAllocationRange(closure);
-    var implicitCaptureLineOffset = -1;
 
     if (implicitCaptures.Count > 0)
     {
       builder.AppendLine();
-      implicitCaptureLineOffset = builder.Length;
-
       builder.Append("Implicit capture of ");
       AppendCapturesDescription(builder.Builder, implicitCaptures);
+      builder.Append(" (can cause memory leaks)");
+
+      var warningSeverity = data.GetImplicitCaptureWarningSeverity();
+      if (warningSeverity != Severity.DO_NOT_SHOW)
+      {
+        consumer.AddHighlightingWithOverrides(
+          new ImplicitCaptureWarning(closure, builder.ToString()), closureRange,
+          overriddenOverlapResolve: OverlapResolveKind.WARNING);
+        return;
+      }
     }
 
     consumer.AddHighlighting(
       new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
-
-    if (implicitCaptures.Count > 0)
-    {
-      Assertion.Assert(implicitCaptureLineOffset >= 0);
-      builder.Builder.Remove(0, implicitCaptureLineOffset);
-
-      consumer.AddHighlighting(new ImplicitCaptureWarning(closure, builder.ToString()), closureRange);
-    }
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
@@ -380,7 +382,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
       if (consumer.Count > 0)
       {
-        using var toRemove = PooledHashSet<IDeclaredElement>.GetInstance();
+        using var toRemove = CapturesPool.Allocate();
 
         foreach (var declaredElement in consumer)
         {
@@ -396,7 +398,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
     static void AppendCapturesDescription(StringBuilder builder, HashSet<IDeclaredElement> members)
     {
-      using var sortedMembers = PooledList<IDeclaredElement>.GetInstance();
+      using var sortedMembers = SortedMembersPool.Allocate();
 
       sortedMembers.AddRange(members);
       sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
