@@ -21,10 +21,10 @@ f1();
     'tup' variable
 (1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of variables 's', 'u', 'i' and 'tup'
-Implicit capture of variable 'x'
+Implicit capture of variable 'x' (can cause memory leaks)
 (2): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
 (3):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 't' variable and containing closure ('s', 'u', 'x', 'i', 'tup')
 (4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of variables 'x' and 't'
-Implicit capture of variables 's', 'u' and 'tup'
+Implicit capture of variables 's', 'u' and 'tup' (can cause memory leaks)
 (5): ReSharper HeapView Allocation: Object allocation: string concatenation

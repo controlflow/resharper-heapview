@@ -15,7 +15,7 @@ Display classes:
     > lambda expression 'int () => parameter + localVariable'
 
 ========
-Owner: operator 'object C.+(C parameter)'
+Owner: operator 'object C.operator +(C parameter)'
 Closures:
 > lambda expression 'C () => parameter'
     Captures:

@@ -53,10 +53,12 @@ namespace ConsoleApplication2
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Closure allocation: capture of 'bbb' parameter, 'cc' variable and 'this' reference
-(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance (capture of 'bbb' parameter, 'cc' variable and 'this' reference)
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of parameter 'bbb', variable 'cc' and 'this' reference
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Allocation: Closure allocation: capture of 's' variable
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance (capture of 's' variable)
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of variable 's'
 (6): ReSharper HeapView Allocation: Object allocation: string concatenation
 (7): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
