@@ -228,7 +228,7 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
 
     if (qualifierType.IsReferenceType()) return;
 
-    var delegateType = TryFindTargetDelegateType(referenceExpression);
+    var delegateType = referenceExpression.TryFindTargetDelegateType();
     if (delegateType == null) return;
 
     if (referenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
@@ -254,24 +254,6 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
         new BoxingAllocationHighlighting(
           nodeToHighlight,
           $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"));
-    }
-
-    [Pure]
-    static IType? TryFindTargetDelegateType(IReferenceExpression methodGroupExpression)
-    {
-      var targetType = methodGroupExpression.GetImplicitlyConvertedTo();
-      if (targetType.IsDelegateType())
-      {
-        return targetType;
-      }
-
-      var naturalType = methodGroupExpression.GetExpressionType().ToIType();
-      if (naturalType != null && naturalType.IsDelegateType())
-      {
-        return naturalType;
-      }
-
-      return null;
     }
   }
 

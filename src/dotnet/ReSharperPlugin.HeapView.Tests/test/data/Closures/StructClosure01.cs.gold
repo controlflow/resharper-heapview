@@ -8,9 +8,10 @@
   int Other() {
     int |x|(0) = 0;
     int Local() => x + Method();
-    var f = Local;
+    var f = |Local|(1);
     return f();
   }
 }
 ---------------------------------------------------------
 (0):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' variable and 'this' reference
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation

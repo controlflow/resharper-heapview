@@ -158,12 +158,12 @@ public static class A {
 ---------------------------------------------------------
 (0):<overlapped> ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance
 (1):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(2): ReSharper HeapView Allocation: Delegate allocation: from method group
-(3): ReSharper HeapView Allocation: Delegate allocation: from method group
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (4): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
-(5):<overlapped> ReSharper HeapView Allocation: Delegate allocation: from method group
+(5):<overlapped> ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
 (6):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
-(7): ReSharper HeapView Allocation: Delegate allocation: from method group
+(7): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
 (8): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
 (9): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.ToString()' virtual method invocation over the value type instance
 (10): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.ToString()' virtual method invocation over the value type instance
@@ -177,9 +177,9 @@ public static class A {
 (18): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type
 (19): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of the value type
 (20): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(21): ReSharper HeapView Allocation: Delegate allocation: from method group
+(21): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (22): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'E' instance method to 'Func<int>' delegate type
-(23): ReSharper HeapView Allocation: Delegate allocation: from method group
+(23): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
 (24): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type
 (25): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S?' to 'I' requires boxing of the value type
 (26): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.Equals()' virtual method invocation over the value type instance
@@ -196,7 +196,7 @@ public static class A {
 (37): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of the value type
 (38): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct?' to 'I' requires boxing of the value type
 (39): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TStruct' instance method to 'Action' delegate type
-(40): ReSharper HeapView Allocation: Delegate allocation: from method group
+(40): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (41): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TStruct' to 'I' requires boxing of the value type
 (42): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
 (43): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance if 'TStruct' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
@@ -209,7 +209,7 @@ public static class A {
 (50): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of the value type
 (51): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged?' to 'I' requires boxing of the value type
 (52): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TUnmanaged' instance method to 'Action' delegate type
-(53): ReSharper HeapView Allocation: Delegate allocation: from method group
+(53): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (54): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TUnmanaged' to 'I' requires boxing of the value type
 (55): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
 (56): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance if 'TUnmanaged' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
@@ -219,17 +219,17 @@ public static class A {
 (60): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'ValueType' requires boxing of the value type
 (61): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of the value type
 (62): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'TNullable?' instance method to 'Func<int>' delegate type
-(63): ReSharper HeapView Allocation: Delegate allocation: from method group
+(63): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
 (64): ReSharper HeapView Boxing: Boxing allocation: conversion from 'TNullable?' to 'I' requires boxing of the value type
 (65): ReSharper HeapView Boxing: Boxing allocation: special 'Object.GetType()' method invocation over the value type instance
 (66): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance if 'TNullable' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method
 (67): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'ValueType.ToString()' virtual method invocation over the value type instance if 'TNullable' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
 (68): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'ValueType.Equals()' virtual method invocation over the value type instance if 'TNullable' type parameter will be substituted with the value type that do not overrides 'Equals' virtual method
-(69): ReSharper HeapView Allocation: Delegate allocation: from method group
+(69): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (70): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'object' possibly requires boxing of the value type
 (71): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of the value type
 (72): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'TUnconstrained' instance method to 'Action' delegate type if 'TUnconstrained' type parameter will be substituted with the value type
-(73): ReSharper HeapView Allocation: Delegate allocation: from method group
+(73): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (74): ReSharper HeapView Boxing: Possible boxing allocation: conversion from 'TUnconstrained' to 'I' possibly requires boxing of the value type
 (75): ReSharper HeapView Boxing: Possible boxing allocation: special 'Object.GetType()' method may be invoked over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type
 (76): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance if 'TUnconstrained' type parameter will be substituted with the value type that do not overrides 'GetHashCode' virtual method

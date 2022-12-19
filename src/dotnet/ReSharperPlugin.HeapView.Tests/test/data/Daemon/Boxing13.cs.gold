@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 
 class C {
   public void M1<T>(T t) {
@@ -31,7 +32,7 @@ class C {
   }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
+(0): ReSharper HeapView Boxing: Possible boxing allocation: inherited 'Object.ToString()' virtual method invocation over the value type instance if 'T' type parameter will be substituted with the value type that do not overrides 'ToString' virtual method
 (1):<overlapped> ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'object' type in .NET Framework projects possibly requires boxing of the value type
 (2): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IComparable' type in .NET Framework projects possibly requires boxing of the value type
 (3): ReSharper HeapView Boxing: Possible boxing allocation: type testing 'T' value for 'IEquatable<T>' type in .NET Framework projects possibly requires boxing of the value type

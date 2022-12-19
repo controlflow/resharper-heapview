@@ -63,7 +63,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         CheckInvocationExpression(invocationExpression, consumer);
         return;
 
-      // Action f = F;
       // var xs = Iterator;
       case IReferenceExpression referenceExpression:
         CheckReferenceExpression(referenceExpression, consumer);
@@ -235,22 +234,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(referenceExpression, "iterator property access"),
-            referenceExpression.NameIdentifier.GetDocumentRange());
-        }
-
-        break;
-      }
-
-      case IMethod:
-      case ILocalFunction:
-      {
-        // todo: check inside delegate invocation
-
-        var convertedTo = referenceExpression.GetImplicitlyConvertedTo();
-        if (convertedTo is IDeclaredType (IDelegate, _))
-        {
-          consumer.AddHighlighting(
-            new DelegateAllocationHighlighting(referenceExpression, "from method group"),
             referenceExpression.NameIdentifier.GetDocumentRange());
         }
 

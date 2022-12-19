@@ -1,0 +1,29 @@
+﻿// ReSharper disable UnusedVariable
+#pragma warning disable CS0219
+
+if (args.Length == 0)
+{
+  var error = 42.ToString;
+  var boxingAndDelegate = |42|(0).|GetHashCode|(1);
+  var nameTake = nameof(int.GetHashCode);
+}
+else
+{
+  var action = LocalFunc;
+
+  throw null!;
+  void LocalFunc() { }
+}
+
+struct BoxingInside
+{
+  public void InstanceMethod()
+  {
+    var f = ||InstanceMethod|(2)|(3);
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'int' instance method to 'Func<int>' delegate type
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+(2):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'BoxingInside' instance method to 'Action' delegate type
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation

@@ -284,37 +284,36 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
 
     var captures = structure.TryGetCapturesOf(closure);
-    if (captures != null)
+    if (captures == null) return;
+
+    var createdType = TryGetCreatedLambdaType();
+    if (createdType != null && createdType.IsDelegateType())
     {
-      var createdType = TryGetCreatedLambdaType();
-      if (createdType != null && createdType.IsDelegateType())
-      {
-        ReportDelegateAllocation(closure, createdType, captures, consumer, data);
-      }
+      ReportDelegateAllocation(closure, createdType, captures, consumer, data);
+    }
 
-      IType? TryGetCreatedLambdaType()
+    IType? TryGetCreatedLambdaType()
+    {
+      switch (closure)
       {
-        switch (closure)
+        case IAnonymousFunctionExpression anonymousFunctionExpression:
         {
-          case IAnonymousFunctionExpression anonymousFunctionExpression:
+          var targetType = anonymousFunctionExpression.GetImplicitlyConvertedTo();
+          if (!targetType.IsDelegateType())
           {
-            var targetType = anonymousFunctionExpression.GetImplicitlyConvertedTo();
-            if (!targetType.IsDelegateType())
-            {
-              return anonymousFunctionExpression.GetExpressionType().ToIType();
-            }
-
-            return targetType;
+            return anonymousFunctionExpression.GetExpressionType().ToIType();
           }
 
-          case IQueryParameterPlatform parameterPlatform:
-          {
-            return parameterPlatform.GetImplicitlyConvertedTo();
-          }
-
-          default:
-            return null;
+          return targetType;
         }
+
+        case IQueryParameterPlatform parameterPlatform:
+        {
+          return parameterPlatform.GetImplicitlyConvertedTo();
+        }
+
+        default:
+          return null;
       }
     }
 

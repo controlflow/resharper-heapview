@@ -1,4 +1,5 @@
 using System;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 
 class C {
   public void M1<T>(T t) {

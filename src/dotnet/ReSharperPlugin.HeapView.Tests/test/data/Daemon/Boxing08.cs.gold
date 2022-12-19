@@ -33,11 +33,11 @@ public interface I {
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(1): ReSharper HeapView Allocation: Delegate allocation: from method group
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (2):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(3): ReSharper HeapView Allocation: Delegate allocation: from method group
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (4): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type if 'T' type parameter will be substituted with the value type
-(5): ReSharper HeapView Allocation: Delegate allocation: from method group
-(6): ReSharper HeapView Allocation: Delegate allocation: from method group
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (7): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
-(8): ReSharper HeapView Allocation: Delegate allocation: from method group
+(8): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
