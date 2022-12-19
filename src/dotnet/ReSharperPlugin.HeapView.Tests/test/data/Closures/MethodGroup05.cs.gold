@@ -1,0 +1,4 @@
+﻿var f = |Local|(0);
+ref int Local() => throw null!;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'anonymous ref int delegate()' instance creation

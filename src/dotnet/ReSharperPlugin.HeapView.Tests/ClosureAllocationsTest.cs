@@ -2,6 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -42,8 +43,13 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestExpressionTree01() { DoNamedTest2(); }
 
+  [LatestSupportedCSharpLanguageLevel(CSharpLanguageLevel.CSharp100)]
   [Test] public void TestMethodGroup01() { DoNamedTest2(); }
   [Test] public void TestMethodGroup02() { DoNamedTest2(); }
+  [Test] public void TestMethodGroup03() { DoNamedTest2(); }
+  [LatestSupportedCSharpLanguageLevel(CSharpLanguageLevel.CSharp100)]
+  [Test] public void TestMethodGroup04() { DoNamedTest2(); }
+  [Test] public void TestMethodGroup05() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

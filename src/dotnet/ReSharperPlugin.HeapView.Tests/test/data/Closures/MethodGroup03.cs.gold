@@ -1,0 +1,18 @@
+﻿var func0 = |new|(0) DelegateOptimization<bool>().|InstanceMethod|(1); // alloc
+var func1 = DelegateOptimization<int>.StaticMethod;
+var func2 = |LocalFunction|(2); // alloc
+var func3 = StaticLocalFunction;
+var func4 = () => { };
+var func5 = static () => { };
+
+void LocalFunction() { }
+static void StaticLocalFunction() { }
+
+public class DelegateOptimization<T> {
+  public static void StaticMethod() { }
+  public void InstanceMethod() { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'DelegateOptimization<bool>' instance creation
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation

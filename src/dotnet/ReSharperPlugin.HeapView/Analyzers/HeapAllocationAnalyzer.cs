@@ -103,35 +103,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     }
   }
 
-  private static void CheckArrayInitializer([NotNull] IArrayInitializer arrayInitializer, [NotNull] IHighlightingConsumer consumer)
-  {
-    ITreeNode start = null, end = null;
-    var variableDeclaration = LocalVariableDeclarationNavigator.GetByInitial(arrayInitializer);
-    if (variableDeclaration?.EquivalenceSign != null)
-    {
-      start = variableDeclaration.NameIdentifier;
-      end = variableDeclaration.EquivalenceSign;
-    }
-    else
-    {
-      var fieldDeclaration = FieldDeclarationNavigator.GetByInitial(arrayInitializer);
-      if (fieldDeclaration?.EquivalenceSign != null)
-      {
-        start = fieldDeclaration.NameIdentifier;
-        end = fieldDeclaration.EquivalenceSign;
-      }
-    }
-
-    if (start != null && end != null)
-    {
-      var endOffset = end.GetDocumentEndOffset();
-      var highlighting = new ObjectAllocationEvidentHighlighting(arrayInitializer, "array instantiation");
-      var documentRange = start.GetDocumentRange().SetEndTo(endOffset);
-
-      consumer.AddHighlighting(highlighting, documentRange);
-    }
-  }
-
   private static void CheckInvocationExpression([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
   {
     var invokedExpression = invocation.InvokedExpression;

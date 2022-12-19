@@ -1,6 +1,9 @@
 #nullable enable
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -32,7 +35,12 @@ public class AllocationOfMethodGroupDelegateAnalyzer : HeapAllocationAnalyzerBas
     if (referenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
       return;
 
-    // todo: optimize in C# 11
+    if (parametersOwner is IMethod { IsStatic: true } or ILocalFunction { IsStatic: true }
+        && data.GetLatestSupportedLanguageLevel() >= CSharpLanguageLevel.CSharp110)
+    {
+      // C# 11 caches delegate instances from static methods and static local functions
+      return;
+    }
 
     var delegateTypeText = delegateType.GetPresentableName(referenceExpression.Language, CommonUtils.DefaultTypePresentationStyle);
     consumer.AddHighlighting(new DelegateAllocationHighlighting(
