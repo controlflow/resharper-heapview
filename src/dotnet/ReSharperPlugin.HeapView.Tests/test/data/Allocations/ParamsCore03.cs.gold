@@ -1,0 +1,22 @@
+﻿using System.Collections.Generic;
+// ReSharper disable RedundantCollectionInitializerElementBraces
+
+|new|(0) MyList
+{
+  111,
+  {222},
+  {333, |333|(1)}, // alloc
+  {|"aaa"|(2)}, // alloc
+  {|"aaa"|(3), "bbb"} // alloc
+};
+
+public class MyList : List<int>
+{
+  public void Add(int x, params int[] xs) { }
+  public void Add(params string[] xs) { }
+}
+---------------------------------------------------------
+(0):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'MyList' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(2): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'

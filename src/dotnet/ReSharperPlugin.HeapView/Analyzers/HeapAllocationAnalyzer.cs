@@ -52,12 +52,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
   {
     switch (element)
     {
-      // var t = new object();
-      case IObjectCreationExpression objectCreation:
-        CheckInvocationInfo(objectCreation, objectCreation.TypeName, consumer);
-        return;
-
-      // F(); when F(params T[] xs);
       // F(); when F is iterator
       case IInvocationExpression invocationExpression:
         CheckInvocationExpression(invocationExpression, consumer);
@@ -85,32 +79,15 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
       case IForeachStatement foreachStatement:
         CheckForeachDeclaration(foreachStatement, consumer);
         return;
-
-      // ["params", "arg"]
-      case IElementAccessExpression elementAccessExpression:
-        CheckInvocationInfo(elementAccessExpression, null, consumer);
-        return;
-
-      // : base("params", "arg")
-      case IConstructorInitializer constructorInitializer:
-        CheckInvocationInfo(constructorInitializer, constructorInitializer.Instance, consumer);
-        return;
-
-      // new C { {"params", "arg"} }
-      case ICollectionElementInitializer collectionElementInitializer:
-        CheckInvocationInfo(collectionElementInitializer, null, consumer);
-        return;
     }
   }
 
-  private static void CheckInvocationExpression([NotNull] IInvocationExpression invocation, [NotNull] IHighlightingConsumer consumer)
+  private static void CheckInvocationExpression([NotNull] IInvocationExpression invocationExpression, [NotNull] IHighlightingConsumer consumer)
   {
-    var invokedExpression = invocation.InvokedExpression;
+    var invokedExpression = invocationExpression.InvokedExpression;
     if (invokedExpression == null) return;
 
-    CheckInvocationInfo(invocation, invokedExpression as IReferenceExpression, consumer);
-
-    var invocationReference = invocation.InvocationExpressionReference.NotNull("reference != null");
+    var invocationReference = invocationExpression.InvocationExpressionReference.NotNull();
 
     var (declaredElement, _, resolveErrorType) = invocationReference.Resolve();
     if (resolveErrorType != ResolveErrorType.OK) return;
@@ -121,73 +98,22 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     if (method.IsIterator)
     {
       consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(invocation, "iterator method call"),
+        new ObjectAllocationHighlighting(invocationExpression, "iterator method call"),
         invokedExpression.GetExpressionRange());
     }
     else if (method.ReturnType.Classify == TypeClassification.REFERENCE_TYPE)
     {
-      var annotationsCache = invocation.GetPsiServices().GetCodeAnnotationsCache();
+      var annotationsCache = invocationExpression.GetPsiServices().GetCodeAnnotationsCache();
       var linqTunnelAnnotationProvider = annotationsCache.GetProvider<LinqTunnelAnnotationProvider>();
       var pureAnnotationProvider = annotationsCache.GetProvider<PureAnnotationProvider>();
 
       if (pureAnnotationProvider.GetInfo(method) && linqTunnelAnnotationProvider.GetInfo(method))
       {
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(invocation, "LINQ method call"),
+          new ObjectAllocationHighlighting(invocationExpression, "LINQ method call"),
           invokedExpression.GetExpressionRange());
       }
     }
-  }
-
-  private static void CheckInvocationInfo(
-    [NotNull] ICSharpInvocationInfo invocationInfo, [CanBeNull] ITreeNode invocationAnchor, [NotNull] IHighlightingConsumer consumer)
-  {
-    var invocationReference = invocationInfo.Reference;
-    if (invocationReference == null) return;
-
-    var (declaredElement, _, resolveErrorType) = invocationReference.Resolve();
-
-    var parametersOwner = declaredElement as IParametersOwner;
-    if (parametersOwner == null) return;
-
-    if (resolveErrorType != ResolveErrorType.OK) return;
-
-    var parameters = parametersOwner.Parameters;
-    if (parameters.Count == 0) return;
-
-    var lastParameter = parameters[^1];
-    if (!lastParameter.IsParameterArray) return;
-
-    ICSharpExpression paramsArgument = null;
-    foreach (var argumentInfo in invocationInfo.Arguments)
-    {
-      var parameter = argumentInfo.MatchingParameter;
-      if (parameter == null) continue;
-
-      if (!Equals(parameter.Element, lastParameter)) continue;
-
-      // found explicit array pass
-      if (parameter.Expanded == ArgumentsUtil.ExpandedKind.None) return;
-
-      if (argumentInfo is ICSharpArgument argument)
-      {
-        paramsArgument = argument.Value;
-      }
-
-      break;
-    }
-
-    var anchor = invocationAnchor ?? paramsArgument ?? invocationInfo as ICSharpExpression;
-    if (anchor == null) return;
-
-    // todo: wrong! only when no
-    if (paramsArgument == null && IsCachedEmptyArrayAvailable(anchor)) return;
-
-    var expression = anchor as ICSharpExpression;
-    var paramsRange = expression?.GetExpressionRange() ?? anchor.GetDocumentRange();
-
-    var description = $"parameters array '{lastParameter.ShortName}' creation";
-    consumer.AddHighlighting(new ObjectAllocationHighlighting(anchor, description), paramsRange);
   }
 
   private static void CheckReferenceExpression([NotNull] IReferenceExpression referenceExpression, [NotNull] IHighlightingConsumer consumer)

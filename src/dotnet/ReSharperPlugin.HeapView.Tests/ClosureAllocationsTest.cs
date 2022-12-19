@@ -57,7 +57,7 @@ public class ClosureAllocationsNetFrameworkTest : ClosureAllocationsTestBase
 {
 }
 
-[TestNet60]
+[TestNet70]
 public class ClosureAllocationsNetCoreTest : ClosureAllocationsTestBase
 {
 }

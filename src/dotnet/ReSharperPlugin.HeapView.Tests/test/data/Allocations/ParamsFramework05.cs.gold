@@ -1,0 +1,33 @@
+﻿var withIndexer = |new|(0) WithIndexer
+{
+  [111|]|(1) = 1, // alloc
+  [222, |222|(2)] = 2, // alloc
+  [333, |333|(3), 333] = 3, // alloc
+};
+
+_ = withIndexer[111|]|(4); // alloc
+_ = withIndexer[222, |222|(5)]; // alloc
+_ = withIndexer[333, |333|(6), 333]; // alloc
+
+public class WithIndexer
+{
+  public int this[int x, params int[] xs]
+  {
+    get => 0;
+    set { }
+  }
+
+  public int this[params string[] xs]
+  {
+    get => 0;
+    set { }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'WithIndexer' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(2): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(5): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(6): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'

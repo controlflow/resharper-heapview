@@ -1,0 +1,54 @@
+﻿// ReSharper disable UseArrayEmptyMethod
+// ReSharper disable RedundantExplicitParamsArrayCreation
+// ReSharper disable ExpressionIsAlwaysNull
+
+unsafe
+{
+  // no args
+  |Safe|(0)();
+  |Unsafe1|(1)(); // alloc
+  |Unsafe2|(2)(); // alloc
+  |Unsafe3|(3)(); // alloc
+
+  // expanded args
+  Safe(|1|(4)); // alloc
+  Safe(|1|(5), 2); // alloc
+  int* ptr = null;
+  Unsafe1(|ptr|(6)); // alloc
+  Unsafe1(|null|(7), ptr); // alloc
+  var ptrArray = |new|(8) int*[0];
+  Unsafe2(|ptrArray|(9)); // alloc
+
+  // explicit array passed
+  var array = |new|(10) int[0];
+  Safe(array);
+  var pointers = |new|(11) int*[0];
+  Unsafe1(pointers);
+  Unsafe2(|new|(12) int*[0][]);
+  Unsafe3(|new|(13) delegate*<void>[0]);
+
+  Safe(null);
+  Unsafe1(null);
+  Unsafe2(null);
+  Unsafe3(null);
+
+  void Safe(params int[] xs) { }
+  void Unsafe1(params int*[] xs) { }
+  void Unsafe2(params int*[][] xs) { }
+  void Unsafe3(params delegate*<void>[] xs) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation for params parameter 'xs'
+(2): ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Object allocation: new 'delegate*<void>[]' array instance creation for params parameter 'xs'
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(5): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(6): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation for params parameter 'xs'
+(7): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation for params parameter 'xs'
+(8): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation for params parameter 'xs'
+(10): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(11): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation
+(12): ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation
+(13): ReSharper HeapView Allocation: Object allocation: new 'delegate*<void>[]' array instance creation
