@@ -50,6 +50,7 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
   [Test] public void TestParamsFramework03() { DoNamedTest2(); }
   [Test] public void TestParamsFramework04() { DoNamedTest2(); }
   [Test] public void TestParamsFramework05() { DoNamedTest2(); }
+  [Test] public void TestParamsFramework06() { DoNamedTest2(); }
 }
 
 [TestNet70]
@@ -66,4 +67,5 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestParamsCore02() { DoNamedTest2(); }
   [Test] public void TestParamsCore03() { DoNamedTest2(); }
   [Test] public void TestParamsCore04() { DoNamedTest2(); }
+  [Test] public void TestParamsCore05() { DoNamedTest2(); }
 }

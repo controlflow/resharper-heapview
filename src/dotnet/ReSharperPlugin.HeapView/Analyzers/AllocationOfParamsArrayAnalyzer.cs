@@ -16,33 +16,16 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(ICSharpArgumentsOwner), typeof(ICollectionElementInitializer) },
+  ElementTypes: new[] { typeof(ICSharpArgumentsOwner) },
   HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
-public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
+public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICSharpArgumentsOwner>
 {
   protected override void Run(
-    ITreeNode invocationNode, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    ICSharpArgumentsOwner argumentsOwner, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    switch (invocationNode)
-    {
-      case IAttribute:
-        break;
+    if (argumentsOwner is IAttribute) return;
 
-      // case ICollectionElementInitializer collectionElementInitializer:
-      //   CheckInvocationInfo(collectionElementInitializer, invocationAnchor: null, data, consumer);
-      //   break;
-
-      case ICSharpArgumentsOwner argumentsOwner:
-        CheckInvocationInfo(argumentsOwner, invocationAnchor: null, data, consumer);
-        break;
-    }
-  }
-
-  private void CheckInvocationInfo(
-    ICSharpInvocationInfo invocationInfo, ITreeNode? invocationAnchor,
-    ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
-  {
-    var invocationReference = invocationInfo.Reference;
+    var invocationReference = argumentsOwner.Reference;
     if (invocationReference == null) return;
 
     var (declaredElement, substitution, resolveErrorType) = invocationReference.Resolve();
@@ -57,18 +40,25 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ITreeN
     var lastParameter = parameters[^1];
     if (!lastParameter.IsParameterArray) return;
 
-    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorresponindArguments(invocationInfo, lastParameter, out var paramsArgument))
+    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorresponindArguments(argumentsOwner, lastParameter, out var paramsArgument))
       return; // explicit array passed
 
     var paramsParameterType = substitution[lastParameter.Type];
+    ReportParamsAllocation(argumentsOwner, paramsArgument, lastParameter, paramsParameterType, data, consumer);
+  }
 
-    ITreeNode? anchor;
+  private static void ReportParamsAllocation(
+    ICSharpArgumentsOwner argumentsOwner, ICSharpArgumentInfo? paramsArgument,
+    IParameter paramsParameter, IType paramsParameterType,
+    ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  {
+    ITreeNode? nodeToHighlight;
     if (paramsArgument == null)
     {
       if (IsArrayEmptyMemberOptimizationAvailable(data, paramsParameterType))
         return;
 
-      anchor = invocationInfo switch
+      nodeToHighlight = argumentsOwner switch
       {
         IInvocationExpression invocationExpression
           when invocationExpression.InvokedExpression.GetOperandThroughParenthesis() is IReferenceExpression referenceExpression
@@ -82,32 +72,39 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ITreeN
         ICollectionElementInitializer { ArgumentsEnumerable.SingleItem: { } singleArgument } => singleArgument.Value,
         IElementAccessExpression elementAccessExpression => elementAccessExpression.RBracket,
         IIndexerInitializer indexerInitializer => indexerInitializer.RBracket,
-        ICSharpExpression expr => expr,
+        ICSharpExpression expression => expression,
         _ => null
       };
     }
     else
     {
-      // highlight arg
-
-      anchor = paramsArgument switch
+      nodeToHighlight = paramsArgument switch
       {
-        //ICSharpArgument { Mode: { } mode } => mode,
-        ICSharpArgument { Value: { } value } => value,
+        ICSharpArgument { Value: { } value } => GetFirstToken(value),
         _ => null
       };
+
+      ITreeNode GetFirstToken(ITreeNode expr)
+      {
+        var tokenNode = expr.FindFirstTokenIn();
+        while (tokenNode != null && tokenNode.IsFiltered())
+        {
+          tokenNode = tokenNode.GetNextToken();
+        }
+
+        return tokenNode ?? expr;
+      }
     }
 
-    if (anchor == null) return;
-
-    if (anchor.IsInTheContextWhereAllocationsAreNotImportant())
-    {
+    if (nodeToHighlight == null)
       return;
-    }
 
-    var arrayType = paramsParameterType.GetPresentableName(anchor.Language, CommonUtils.DefaultTypePresentationStyle);
-    var description = $"new '{arrayType}' array instance creation for params parameter '{lastParameter.ShortName}'";
-    consumer.AddHighlighting(new ObjectAllocationHighlighting(anchor, description));
+    if (nodeToHighlight.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    var arrayType = paramsParameterType.GetPresentableName(nodeToHighlight.Language, CommonUtils.DefaultTypePresentationStyle);
+    var description = $"new '{arrayType}' array instance creation for params parameter '{paramsParameter.ShortName}'";
+    consumer.AddHighlighting(new ObjectAllocationHighlighting(nodeToHighlight, description));
   }
 
   [Pure]
