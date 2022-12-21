@@ -195,13 +195,13 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
       // note: this works for all types, not only BCL ones (including unconstrained types)
 
       if (BinaryExpressionNavigator.GetByAnyOperand(containingParenthesized) is IAdditiveExpression additiveExpression
-          && additiveExpression.OperatorReference.IsStringConcatOperatorReference())
+          && additiveExpression.OperatorReference.IsStringConcatOperator())
       {
         return true;
       }
 
       if (AssignmentExpressionNavigator.GetBySource(containingParenthesized) is { AssignmentType: AssignmentType.PLUSEQ } additiveAssignmentExpression
-          && additiveAssignmentExpression.OperatorReference.IsStringConcatOperatorReference())
+          && additiveAssignmentExpression.OperatorReference.IsStringConcatOperator())
       {
         return true;
       }

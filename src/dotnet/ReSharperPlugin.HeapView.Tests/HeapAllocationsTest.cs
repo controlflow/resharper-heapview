@@ -18,7 +18,8 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
     return highlighting
       is ObjectAllocationHighlighting
       or ObjectAllocationEvidentHighlighting
-      or ObjectAllocationPossibleHighlighting;
+      or ObjectAllocationPossibleHighlighting
+      or BoxingAllocationHighlighting;
   }
 
   [Test] public void TestObjectCreation01() { DoNamedTest2(); }
@@ -38,6 +39,9 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestArrayInitializer01() { DoNamedTest2(); }
 
   [Test] public void TestWithExpression01() { DoNamedTest2(); }
+
+  [Test] public void TestStringConcat01() { DoNamedTest2(); }
+  [Test] public void TestStringConcat02() { DoNamedTest2(); }
 }
 
 [TestNetFramework45]

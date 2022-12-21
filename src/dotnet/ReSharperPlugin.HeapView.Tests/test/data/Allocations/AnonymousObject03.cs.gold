@@ -16,7 +16,7 @@ var ys2 = args
 (0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {xxx, yyy}
 (1): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{xxx, yyy}, zzz}
 (2): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{{xxx, yyy}, zzz}, lll}
-(3): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
+(3): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
 (4): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (5): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
 (6): ReSharper HeapView Allocation: Object allocation: LINQ method call
@@ -24,4 +24,4 @@ var ys2 = args
 (8): ReSharper HeapView Allocation: Object allocation: LINQ method call
 (9): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
 (10): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(11): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
+(11): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)

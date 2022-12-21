@@ -4,12 +4,12 @@ string x = "xxx";
 int i = 42;
 var tup = (42, true, "ref");
 
-var f1 = () |=>|(1) s |+|(2) u + i + tup;
+var f1 = () |=>|(1) s |+|(2) u + |i|(3) + tup;
 f1();
 
 {
-  var |t|(3) = "ttt";
-  var f2 = () |=>|(4) x |+|(5) t;
+  var |t|(4) = "ttt";
+  var f2 = () |=>|(5) x |+|(6) t;
   f2();
 }
 ---------------------------------------------------------
@@ -22,9 +22,10 @@ f1();
 (1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of variables 's', 'u', 'i' and 'tup'
 Implicit capture of variable 'x' (can cause memory leaks)
-(2): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
-(3):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 't' variable and containing closure ('s', 'u', 'x', 'i', 'tup')
-(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
+(3): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(4):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 't' variable and containing closure ('s', 'u', 'x', 'i', 'tup')
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of variables 'x' and 't'
 Implicit capture of variables 's', 'u' and 'tup' (can cause memory leaks)
-(5): ReSharper HeapView Allocation: Object allocation: string concatenation
+(6): ReSharper HeapView Allocation: Object allocation: string concatenation

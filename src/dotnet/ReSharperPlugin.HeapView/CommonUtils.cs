@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -18,15 +19,14 @@ public static class CommonUtils
   };
 
   [Pure]
-  public static bool IsStringConcatOperatorReference(this IReference? reference)
+  public static bool IsStringConcatOperator(this IReference? reference)
   {
-    if (reference?.Resolve() is (ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
+    if (reference is (ISignOperator { IsPredefined: true } signOperator, _) && signOperator.ReturnType.IsString())
     {
-      var lhsType = parameters[0].Type;
-      var rhsType = parameters[1].Type;
-
-      if (lhsType.IsString()) return rhsType.IsString() || rhsType.IsObject();
-      if (rhsType.IsString()) return lhsType.IsString() || lhsType.IsObject();
+      var predefined = CSharpPredefined.GetInstance(reference.GetTreeNode());
+      return signOperator.Equals(predefined.BinaryPlusObjectString)
+             || signOperator.Equals(predefined.BinaryPlusStringString)
+             || signOperator.Equals(predefined.BinaryPlusStringObject);
     }
 
     return false;
@@ -196,7 +196,7 @@ public static class CommonUtils
   }
 
   [Pure]
-  public static bool IsTypeParameterType(this IType type, out ITypeParameter? typeParameter)
+  public static bool IsTypeParameterType(this IType type, [NotNullWhen(returnValue: true)] out ITypeParameter? typeParameter)
   {
     if (type is IDeclaredType declaredType)
     {

@@ -173,7 +173,7 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
           // Nullable<T> overrides won't help us to detect if the corresponding method in T
           // is overriden or not, so we have to do the override check manually
           case IStruct structType:
-            return StructOverridesChecker.IsMethodOverridenInStruct(structType, method, data);
+            return StructOverridesChecker.IsMethodOverridenInStruct(structType, method.ShortName, data);
           case IEnum:
             return false; // enums do not have virtual method overrides
           case ITypeParameter:
@@ -235,10 +235,11 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
       return;
 
     var language = referenceExpression.Language;
-    var sourceTypeText = qualifierType.GetPresentableName(language);
-    var delegateTypeText = delegateType.GetPresentableName(language);
+    var sourceTypeText = qualifierType.GetPresentableName(language, CommonUtils.DefaultTypePresentationStyle);
+    var delegateTypeText = delegateType.GetPresentableName(language, CommonUtils.DefaultTypePresentationStyle);
 
-    var nodeToHighlight = referenceExpression.QualifierExpression ?? (ITreeNode) referenceExpression.NameIdentifier;
+    var nodeToHighlight = referenceExpression.QualifierExpression
+                          ?? (ITreeNode) referenceExpression.NameIdentifier;
 
     if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
     {

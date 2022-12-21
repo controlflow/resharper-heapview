@@ -63,16 +63,16 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
         return;
 
       // string s = "abc" + x + "def";
-      case IAdditiveExpression additiveExpression:
-        CheckStringConcatenation(additiveExpression, consumer);
-        return;
+      // case IAdditiveExpression additiveExpression:
+      //   CheckStringConcatenation(additiveExpression, consumer);
+      //   return;
 
       // str += "abc";
-      case IAssignmentExpression { IsCompoundAssignment: true } assignmentExpression when IsStringConcatenation(assignmentExpression):
-        consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
-          assignmentExpression.OperatorSign.GetDocumentRange());
-        break;
+      // case IAssignmentExpression { IsCompoundAssignment: true } assignmentExpression when IsStringConcatenation(assignmentExpression):
+      //   consumer.AddHighlighting(
+      //     new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
+      //     assignmentExpression.OperatorSign.GetDocumentRange());
+      //   break;
 
       // foreach (var x in xs); when xs.GetEnumerator() is ref-type
       // note: produces false-positive for LocalList<T>-produced IList<T>
@@ -213,7 +213,7 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     var rightOperand = concatenation.RightOperand;
     if (rightOperand == null) return false;
 
-    return concatenation.OperatorReference.IsStringConcatOperatorReference();
+    return concatenation.OperatorReference.IsStringConcatOperator();
   }
 
   private static bool IsStringConcatenation([NotNull] IAssignmentExpression concatenation)
@@ -224,7 +224,7 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     var destinationOperand = concatenation.Dest;
     if (destinationOperand == null) return false;
 
-    return concatenation.OperatorReference.IsStringConcatOperatorReference();
+    return concatenation.OperatorReference.IsStringConcatOperator();
   }
 
   private static void CheckForeachDeclaration([NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)

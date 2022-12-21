@@ -1,0 +1,46 @@
+﻿// ReSharper disable ArrangeRedundantParentheses
+
+class StringConcat
+{
+  public const string? NotEmptyConst = "aa", EmptyConst = "", NullConst = null;
+
+  public string Folding01(string s) => s + NullConst;
+  public string Folding02(string s) => NullConst + s;
+  public string Folding03(string s) => s + EmptyConst;
+  public string Folding04(string s) => EmptyConst + s;
+  public string Folding05(string s) => s |+|(0) NotEmptyConst; // alloc
+  public string Folding06(string s) => NotEmptyConst |+|(1) s; // alloc
+  public string Folding07() => NotEmptyConst + NotEmptyConst;
+  public string Folding07(string s) => EmptyConst + s + NullConst;
+  public string Folding08(string s) => EmptyConst + s + null;
+  public string Folding09(string s) => null + EmptyConst + s;
+
+  public string ConstantFolding(int x, int y) => (|x|(2) |+|(3) "aaa") + "bbb" + (|'9' + y|(4));
+
+  public string CustomStruct(S1 s1, S2 s2)
+    => s1
+       |+|(5) // alloc
+       ""
+       +
+       |s2|(6); // alloc
+
+  public string GenericStruct<T>(T t) where T : struct
+    => t
+       + // no alloc
+       "";
+}
+
+struct S1
+{
+  public override string ToString() => "";
+}
+
+struct S2 { }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation
+(2): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(3): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
+(4): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(5): ReSharper HeapView Allocation: Object allocation: string concatenation
+(6): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.ToString' virtual method invocation over the value type instance

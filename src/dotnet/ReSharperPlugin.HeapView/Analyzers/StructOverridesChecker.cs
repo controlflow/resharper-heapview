@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -20,8 +21,9 @@ public static class StructOverridesChecker
 
   private static readonly Key<Dictionary<IStruct, StandardMethodOverrides>> StructOverridesCache = new(nameof(StructOverridesCache));
 
+  [Pure]
   public static bool IsMethodOverridenInStruct(
-    [NotNull] IStruct structType, [NotNull] IMethod method, [NotNull] IUserDataHolder cache)
+    IStruct structType, string methodShortName, IUserDataHolder cache)
   {
     var overridesMap = cache.GetOrCreateDataUnderLock(
       StructOverridesCache, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
@@ -35,9 +37,9 @@ public static class StructOverridesChecker
       }
     }
 
-    return (overrides & NameToOverride(method.ShortName)) != 0;
+    return (overrides & NameToOverride(methodShortName)) != 0;
 
-    static StandardMethodOverrides DiscoverOverrides([NotNull] IStruct structType)
+    static StandardMethodOverrides DiscoverOverrides(IStruct structType)
     {
       var allOverrides = StandardMethodOverrides.None;
 
@@ -52,7 +54,7 @@ public static class StructOverridesChecker
       return allOverrides;
     }
 
-    static StandardMethodOverrides NameToOverride([NotNull] string overrideName)
+    static StandardMethodOverrides NameToOverride(string overrideName)
     {
       return overrideName switch
       {

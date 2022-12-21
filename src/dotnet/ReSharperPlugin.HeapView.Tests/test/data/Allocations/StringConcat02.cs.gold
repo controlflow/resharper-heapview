@@ -1,0 +1,17 @@
+﻿class StringConcat
+{
+  public string Case01(string s, char c)
+  {
+    s |+=|(0) |c|(1) + "" + |c|(2);
+    s |+=|(3) |c|(4);
+    return s |+|(5) |c|(6);
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
+(1): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(2): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(3): ReSharper HeapView Allocation: Object allocation: string concatenation
+(4): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(5): ReSharper HeapView Allocation: Object allocation: string concatenation
+(6): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
