@@ -21,21 +21,28 @@ public class AllocationOfDelegateOperatorsAnalyzer : HeapAllocationAnalyzerBase<
     IOperatorExpression operatorExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var resolveResult = operatorExpression.OperatorReference?.Resolve().Result;
-    if (resolveResult == null) return;
 
-    if (resolveResult is (DelegatePredefinedOperator predefinedOperator, _))
+    switch (resolveResult)
     {
-      var operationName = predefinedOperator.ShortName == StandardOperatorNames.Addition ? "addition" : "removal";
+      case (DelegatePredefinedOperator predefinedOperator, _)
+        when !operatorExpression.IsInTheContextWhereAllocationsAreNotImportant():
+      {
+        var operationName = predefinedOperator.ShortName == StandardOperatorNames.Addition ? "addition" : "removal";
 
-      consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
-        operatorExpression.OperatorSign, $"delegate {operationName} operation may allocate new delegate instance"));
-    }
-    else if (resolveResult is EventSubscriptionResolveResult (IAccessor { Kind: var accessorKind }, _))
-    {
-      var operationName = accessorKind == AccessorKind.ADDER ? "subscription" : "unsubscription";
+        consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
+          operatorExpression.OperatorSign, $"delegate {operationName} operation may allocate new delegate instance"));
+        break;
+      }
 
-      consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
-        operatorExpression.OperatorSign, $"event {operationName} may allocate new delegate instance"));
+      case EventSubscriptionResolveResult (IAccessor { Kind: var accessorKind }, _)
+        when !operatorExpression.IsInTheContextWhereAllocationsAreNotImportant():
+      {
+        var operationName = accessorKind == AccessorKind.ADDER ? "subscription" : "unsubscription";
+
+        consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
+          operatorExpression.OperatorSign, $"event {operationName} may allocate new delegate instance"));
+        break;
+      }
     }
   }
 }

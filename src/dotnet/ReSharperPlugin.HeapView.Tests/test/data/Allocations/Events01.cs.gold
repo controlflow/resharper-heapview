@@ -45,7 +45,7 @@ class Derived : Events
 
   public void Usage3()
   {
-    FieldLike |+=|(12) delegate { };
+    FieldLike += delegate { };
     throw null!;
   }
 }
@@ -62,4 +62,3 @@ class Derived : Events
 (9): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
 (10): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
 (11): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
-(12): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
