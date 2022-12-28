@@ -72,4 +72,5 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestParamsCore03() { DoNamedTest2(); }
   [Test] public void TestParamsCore04() { DoNamedTest2(); }
   [Test] public void TestParamsCore05() { DoNamedTest2(); }
+  [Test] public void TestParamsCore06() { DoNamedTest2(); }
 }
