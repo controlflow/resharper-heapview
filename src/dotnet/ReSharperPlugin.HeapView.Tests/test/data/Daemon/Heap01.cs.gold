@@ -88,18 +88,18 @@ class HeapAllocations
     GC.KeepAlive("bb" |+|(30) s + ("bb" + "cvcv" + s) + s);
     GC.KeepAlive("bb" |+|(31) s + s + s + s + s);
     GC.KeepAlive("bb" |+|(32) s + s + (s + s + s));
-    GC.KeepAlive("bb" |+|(33) (s + s) + s + (s + s));
-    GC.KeepAlive("aa" |+|(34) i);
-    GC.KeepAlive(i |+|(35) "aa");
+    GC.KeepAlive("bb" + (s |+|(33) s) + s + (s + s));
+    GC.KeepAlive("aa" |+|(34) |i|(35));
+    GC.KeepAlive(|i|(36) |+|(37) "aa");
 
     string t = "asas";
-    t |+=|(36) "sdsdsd";
-    t |+=|(37) "sdsdsd";
+    t |+=|(38) "sdsdsd";
+    t |+=|(39) "sdsdsd";
 
-    s |+=|(38) "aaa";
-    s |+=|(39) "bb";
+    s |+=|(40) "aaa";
+    s |+=|(41) "bb";
 
-    GC.KeepAlive(t |+|(40) s);
+    GC.KeepAlive(t |+|(42) s);
   }
 
   private static void P0(params int[] xs) { }
@@ -143,17 +143,19 @@ class TestAttribute : Attribute
 (24): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
 (25): ReSharper HeapView Allocation: Object allocation: string concatenation
 (26): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
-(27): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
+(27): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
 (28): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'values'
-(29): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands) + params array allocation
-(30): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands) + params array allocation
-(31): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
-(32): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
-(33): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
+(29): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands, allocates parameter array)
+(30): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands, allocates parameter array)
+(31): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
+(32): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
+(33): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
 (34): ReSharper HeapView Allocation: Object allocation: string concatenation
-(35): ReSharper HeapView Allocation: Object allocation: string concatenation
-(36): ReSharper HeapView Allocation: Object allocation: string concatenation
+(35): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(36): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
 (37): ReSharper HeapView Allocation: Object allocation: string concatenation
 (38): ReSharper HeapView Allocation: Object allocation: string concatenation
 (39): ReSharper HeapView Allocation: Object allocation: string concatenation
 (40): ReSharper HeapView Allocation: Object allocation: string concatenation
+(41): ReSharper HeapView Allocation: Object allocation: string concatenation
+(42): ReSharper HeapView Allocation: Object allocation: string concatenation

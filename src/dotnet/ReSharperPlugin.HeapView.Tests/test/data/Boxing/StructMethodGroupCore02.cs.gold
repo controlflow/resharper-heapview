@@ -6,7 +6,7 @@ var equalsFunc = |e|(1).Equals;
 Func<string> toStringFunc = |e|(2).ToString;
 var getTypeCodeFunc = |e|(3).GetTypeCode;
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object?,int>' delegate type
-(1): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object?,bool>' delegate type
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object,int>' delegate type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<object,bool>' delegate type
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<string>' delegate type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'ConsoleKey' instance method to 'Func<TypeCode>' delegate type

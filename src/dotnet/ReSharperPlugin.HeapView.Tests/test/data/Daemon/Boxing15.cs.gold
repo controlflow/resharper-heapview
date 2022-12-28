@@ -1,27 +1,27 @@
 ﻿// all optimized in C# 8.0 compiler
 class StringConcat {
   string Char(string s) => s |+|(0) 'a'; // + "a"
-  string Char(string s, char c) => s |+|(1)  c; // char.ToString()
+  string Char(string s, char c) => s |+|(1)  |c|(2); // char.ToString()
   
-  string Int32(string s) => s |+|(2) 1; // int.ToString()
-  string Int32(string s, int i) => s |+|(3) (object) i; // int.ToString()
+  string Int32(string s) => s |+|(3) |1|(4); // int.ToString()
+  string Int32(string s, int i) => s |+|(5) (object) i; // int.ToString()
 
-  string Boolean(string s, bool b) => b |+|(4) s; // bool.ToString()
+  string Boolean(string s, bool b) => b |+|(6) s; // bool.ToString()
     
-  string NoOverride(string s, NoToString n) => s |+|(5) n; // constrained. callvirt
-  string HasOverride(string s, HasToString h) => s |+|(6) h; // constrained. callvirt
+  string NoOverride(string s, NoToString n) => s |+|(7) |n|(8); // constrained. callvirt
+  string HasOverride(string s, HasToString h) => s |+|(9) h; // constrained. callvirt
     
-  string Generic<T>(string s, T t) where T : struct => s |+|(7) t; // constrained. callvirt
-  string Nullable<T>(string s, T? t) where T : struct => s |+|(8) t; // constrained. callvirt
+  string Generic<T>(string s, T t) where T : struct => s |+|(10) t; // constrained. callvirt
+  string Nullable<T>(string s, T? t) where T : struct => s |+|(11) t; // constrained. callvirt
 
   string Compound<T>(string s, char c, int i, bool b, T? n, T t) where T : struct {
-    s |+=|(9) 'a';
-    s |+=|(10) c;
-    s |+=|(11) i;
-    s |+=|(12) b;
-    s |+=|(13) n;
-    s |+=|(14) t;
-    return $"id: {|i|(15)} {s}"; // box
+    s |+=|(12) 'a';
+    s |+=|(13) |c|(14);
+    s |+=|(15) |i|(16);
+    s |+=|(17) b;
+    s |+=|(18) n;
+    s |+=|(19) t;
+    return $"id: {|i|(20)} {s}"; // box
   }
 }
 
@@ -30,17 +30,22 @@ struct HasToString { public override string ToString() => ""; }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: string concatenation
 (1): ReSharper HeapView Allocation: Object allocation: string concatenation
-(2): ReSharper HeapView Allocation: Object allocation: string concatenation
+(2): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
 (3): ReSharper HeapView Allocation: Object allocation: string concatenation
-(4): ReSharper HeapView Allocation: Object allocation: string concatenation
+(4): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
 (5): ReSharper HeapView Allocation: Object allocation: string concatenation
 (6): ReSharper HeapView Allocation: Object allocation: string concatenation
 (7): ReSharper HeapView Allocation: Object allocation: string concatenation
-(8): ReSharper HeapView Allocation: Object allocation: string concatenation
+(8): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.ToString' virtual method invocation over the value type instance
 (9): ReSharper HeapView Allocation: Object allocation: string concatenation
 (10): ReSharper HeapView Allocation: Object allocation: string concatenation
 (11): ReSharper HeapView Allocation: Object allocation: string concatenation
 (12): ReSharper HeapView Allocation: Object allocation: string concatenation
 (13): ReSharper HeapView Allocation: Object allocation: string concatenation
-(14): ReSharper HeapView Allocation: Object allocation: string concatenation
-(15): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(14): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(15): ReSharper HeapView Allocation: Object allocation: string concatenation
+(16): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(17): ReSharper HeapView Allocation: Object allocation: string concatenation
+(18): ReSharper HeapView Allocation: Object allocation: string concatenation
+(19): ReSharper HeapView Allocation: Object allocation: string concatenation
+(20): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

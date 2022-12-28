@@ -29,13 +29,13 @@ namespace ConsoleApplication2
         Console.WriteLine(bbb + 1);
         Console.WriteLine("sdsd {0}", |123|(2));
 
-        var |s|(3) = 1 |+|(4) "sdsds";
-        Action g = |delegate|(5) {
+        var |s|(3) = |1|(4) |+|(5) "sdsds";
+        Action g = |delegate|(6) {
           Console.WriteLine(s);
-          Console.WriteLine(s |+|(6) "!");
+          Console.WriteLine(s |+|(7) "!");
         };
 
-        foreach (var x |in|(7) Enumerable.Range(0, 100))
+        foreach (var x |in|(8) Enumerable.Range(0, 100))
           Console.WriteLine(x);
 
         this.Foo(bbb + 2);
@@ -57,8 +57,9 @@ namespace ConsoleApplication2
 Capture of parameter 'bbb', variable 'cc' and 'this' reference
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Allocation: Closure allocation: capture of 's' variable
-(4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(4): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(5): ReSharper HeapView Allocation: Object allocation: string concatenation
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 Capture of variable 's'
-(6): ReSharper HeapView Allocation: Object allocation: string concatenation
-(7): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
+(7): ReSharper HeapView Allocation: Object allocation: string concatenation
+(8): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)

@@ -1,17 +1,30 @@
-﻿class StringConcat
+﻿using System;
+using System.Linq.Expressions;
+
+class StringConcat
 {
   public string Case01(string s, char c)
   {
-    s |+=|(0) |c|(1) + "" + |c|(2);
-    s |+=|(3) |c|(4);
-    return s |+|(5) |c|(6);
+    s |+=|(0) |c + c|(1);
+    s |+=|(2) |c|(3);
+    return s |+|(4) |c|(5);
+  }
+
+  public void Case02(string s)
+  {
+    throw new ArgumentException(message: s + "abc");
+  }
+
+  public void Case03()
+  {
+    Expression expr = (string s) |=>|(6) s + "abc";
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
-(1): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
-(2): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
-(3): ReSharper HeapView Allocation: Object allocation: string concatenation
-(4): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
-(5): ReSharper HeapView Allocation: Object allocation: string concatenation
-(6): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(2): ReSharper HeapView Allocation: Object allocation: string concatenation
+(3): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(4): ReSharper HeapView Allocation: Object allocation: string concatenation
+(5): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'char' value
+(6): ReSharper HeapView Allocation: Object allocation: expression tree construction

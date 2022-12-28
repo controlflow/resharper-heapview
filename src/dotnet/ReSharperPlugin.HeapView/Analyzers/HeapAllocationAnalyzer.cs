@@ -1,19 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
-using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable RedundantExplicitParamsArrayCreation
@@ -61,18 +56,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
       case IReferenceExpression referenceExpression:
         CheckReferenceExpression(referenceExpression, consumer);
         return;
-
-      // string s = "abc" + x + "def";
-      // case IAdditiveExpression additiveExpression:
-      //   CheckStringConcatenation(additiveExpression, consumer);
-      //   return;
-
-      // str += "abc";
-      // case IAssignmentExpression { IsCompoundAssignment: true } assignmentExpression when IsStringConcatenation(assignmentExpression):
-      //   consumer.AddHighlighting(
-      //     new ObjectAllocationHighlighting(assignmentExpression.OperatorSign, "string concatenation"),
-      //     assignmentExpression.OperatorSign.GetDocumentRange());
-      //   break;
 
       // foreach (var x in xs); when xs.GetEnumerator() is ref-type
       // note: produces false-positive for LocalList<T>-produced IList<T>
@@ -139,94 +122,6 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     }
   }
 
-  private static void CheckStringConcatenation([NotNull] IAdditiveExpression concatenation, [NotNull] IHighlightingConsumer consumer)
-  {
-    if (!IsStringConcatenation(concatenation)) return;
-
-    // do not inspect inner concatenations
-    var parent = concatenation.GetContainingParenthesizedExpression();
-    var parentConcatenation = AdditiveExpressionNavigator.GetByLeftOperand(parent)
-                              ?? AdditiveExpressionNavigator.GetByRightOperand(parent);
-    if (parentConcatenation != null && IsStringConcatenation(parentConcatenation)) return;
-
-    // collect all operands
-    var allConstants = true;
-    var concatenations = new List<IAdditiveExpression>();
-    if (CollectStringConcatenation(concatenation, concatenations, ref allConstants)
-        && !allConstants
-        && concatenations.Count > 0)
-    {
-      var mostLeftConcatSign = concatenations
-        .Select(x => x.OperatorSign.GetDocumentRange())
-        .OrderBy(x => x.TextRange.StartOffset).First();
-
-      var operandsCount = concatenations.Count + 1;
-      var description = "string concatenation"
-                        + (operandsCount <= 2 ? null : $" ({operandsCount} operands)")
-                        + (operandsCount <= 4 ? null : " + params array allocation");
-
-      consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(concatenation, description),
-        mostLeftConcatSign);
-    }
-  }
-
-  private static bool CollectStringConcatenation(
-    [NotNull] IAdditiveExpression concatenation, [NotNull] List<IAdditiveExpression> parts, ref bool allConstants)
-  {
-    var lhsOperand = concatenation.LeftOperand;
-    var rhsOperand = concatenation.RightOperand;
-    if (lhsOperand == null || rhsOperand == null ||
-        concatenation.OperatorSign == null) return false;
-
-    var lhsConstant = lhsOperand.ConstantValue;
-    if (!lhsConstant.IsString() && !lhsConstant.IsPureNull(concatenation.Language))
-    {
-      allConstants = false;
-
-      if (lhsOperand.GetOperandThroughParenthesis() is IAdditiveExpression left && IsStringConcatenation(concatenation))
-      {
-        if (!CollectStringConcatenation(left, parts, ref allConstants)) return false;
-      }
-    }
-
-    var rhsConstant = rhsOperand.ConstantValue;
-    if (!rhsConstant.IsString() && !rhsConstant.IsPureNull(concatenation.Language))
-    {
-      allConstants = false;
-
-      if (rhsOperand.GetOperandThroughParenthesis() is IAdditiveExpression right && IsStringConcatenation(concatenation))
-      {
-        if (!CollectStringConcatenation(right, parts, ref allConstants)) return false;
-      }
-    }
-
-    parts.Add(concatenation);
-    return true;
-  }
-
-  private static bool IsStringConcatenation([NotNull] IAdditiveExpression concatenation)
-  {
-    var leftOperand = concatenation.LeftOperand;
-    if (leftOperand == null) return false;
-
-    var rightOperand = concatenation.RightOperand;
-    if (rightOperand == null) return false;
-
-    return concatenation.OperatorReference.IsStringConcatOperator();
-  }
-
-  private static bool IsStringConcatenation([NotNull] IAssignmentExpression concatenation)
-  {
-    var sourceOperand = concatenation.Source;
-    if (sourceOperand == null) return false;
-
-    var destinationOperand = concatenation.Dest;
-    if (destinationOperand == null) return false;
-
-    return concatenation.OperatorReference.IsStringConcatOperator();
-  }
-
   private static void CheckForeachDeclaration([NotNull] IForeachStatement foreachStatement, [NotNull] IHighlightingConsumer consumer)
   {
     var collection = foreachStatement.Collection;
@@ -271,25 +166,5 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
 
       break;
     }
-  }
-
-  // todo: cache in problem analyzer data
-  private static bool IsCachedEmptyArrayAvailable([NotNull] ITreeNode context)
-  {
-    if (!context.IsCSharp6Supported()) return false;
-
-    var systemArrayType = context.GetPredefinedType().Array;
-    var classType = systemArrayType.GetTypeElement() as IClass;
-    if (classType == null) return false;
-
-    foreach (var typeMember in classType.EnumerateMembers("Empty", caseSensitive: false))
-    {
-      var method = typeMember as IMethod;
-      if (method?.Parameters.Count == 0
-          && method.TypeParameters.Count == 1
-          && method.GetAccessRights() == AccessRights.PUBLIC) return true;
-    }
-
-    return false;
   }
 }

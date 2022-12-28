@@ -1,16 +1,17 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util.DataStructures;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
-
-// todo: where allocs are not important
 
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IAssignmentExpression), typeof(IAdditiveExpression) },
@@ -24,29 +25,17 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
   protected override void Run(
     IOperatorExpression operatorExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    switch (operatorExpression)
+    if (!IsTopLevelStringInterpolation(operatorExpression))
+      return;
+
+    if (operatorExpression.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    using var concatenationCompiler = myInspectorPool.Allocate();
+
+    if (concatenationCompiler.TryInspect(operatorExpression))
     {
-      case IAdditiveExpression additiveExpression when IsTopLevelStringInterpolation(additiveExpression):
-      {
-        var concatenationCompiler = new ConcatenationCompiler();
-        if (concatenationCompiler.TryCompile(additiveExpression))
-        {
-          concatenationCompiler.ReportAllocations(data, consumer);
-        }
-
-        break;
-      }
-
-      case IAssignmentExpression assignmentExpression when IsTopLevelStringInterpolation(assignmentExpression):
-      {
-        var concatenationCompiler = new ConcatenationCompiler();
-        if (concatenationCompiler.TryInspect(assignmentExpression))
-        {
-          concatenationCompiler.ReportAllocations(data, consumer);
-        }
-
-        break;
-      }
+      concatenationCompiler.ReportAllocations(data, consumer);
     }
   }
 
@@ -72,8 +61,9 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
     return true;
   }
 
-  // todo: pooling?
-  private sealed class ConcatenationCompiler
+  private readonly ObjectPool<ConcatenationInspector> myInspectorPool = new(static _ => new ConcatenationInspector());
+
+  private sealed class ConcatenationInspector : IDisposable
   {
     // expressions or constant markers
     private readonly List<object> myOperands = new();
@@ -81,22 +71,30 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
 
     private static readonly object ConstantPartMarker = new();
 
-    public bool TryInspect(IAssignmentExpression stringConcatenationAssignment)
+    public void Dispose()
     {
-      myCurrentConcatSign = stringConcatenationAssignment.OperatorSign;
-      if (!AppendOperandConvertToString(stringConcatenationAssignment.Dest))
+      myOperands.Clear();
+      if (myOperands.Count > 100)
+        myOperands.TrimExcess();
+
+      myCurrentConcatSign = null;
+      myFirstConcatSign = null;
+    }
+
+    public bool TryInspect(IOperatorExpression stringConcatenation)
+    {
+      var operands = stringConcatenation.OperatorOperands;
+      if (operands.Count != 2) return false;
+
+      myCurrentConcatSign = stringConcatenation.OperatorSign;
+      if (!AppendOperandConvertToString(operands[0]))
         return false;
 
-      myCurrentConcatSign = stringConcatenationAssignment.OperatorSign;
-      if (!AppendOperandConvertToString(stringConcatenationAssignment.Source))
+      myCurrentConcatSign = stringConcatenation.OperatorSign;
+      if (!AppendOperandConvertToString(operands[1]))
         return false;
 
       return true;
-    }
-
-    public bool TryCompile(IAdditiveExpression stringConcatenation)
-    {
-      return AppendOperandConvertToString(stringConcatenation);
     }
 
     private bool AppendOperandConvertToString(ICSharpExpression? expression)
@@ -173,7 +171,8 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
 
       foreach (var operand in myOperands)
       {
-        if (operand is ICSharpExpression operandExpression)
+        // C# >= 8.0 started to invoke .ToString() methods before passing args to string.Concat() invocation
+        if (operand is ICSharpExpression operandExpression && operandExpression.IsCSharp8Supported())
         {
           ReportOperandAllocations(operandExpression, data, consumer);
         }
@@ -184,8 +183,6 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
       ICSharpExpression operandExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
       var operandType = operandExpression.Type();
-
-      // todo: what about arrays? cached. enums? cached.
 
       if (IsTypeKnownToAllocateOnToStringCall(operandType))
       {
@@ -205,6 +202,7 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
     }
   }
 
+  [Pure]
   private static bool IsTypeKnownToAllocateOnToStringCall(IType type)
   {
     if (type is IDeclaredType ({ }) declaredType)
@@ -214,6 +212,7 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
         return true;
       }
 
+      // todo: what about other well-known compiled types?
       // todo: add StringBuilder?
     }
 
