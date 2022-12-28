@@ -50,6 +50,8 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
   [LatestSupportedCSharpLanguageLevel(CSharpLanguageLevel.CSharp100)]
   [Test] public void TestMethodGroup04() { DoNamedTest2(); }
   [Test] public void TestMethodGroup05() { DoNamedTest2(); }
+  [Test] public void TestMethodGroup06() { DoNamedTest2(); }
+  [Test] public void TestMethodGroup07() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]

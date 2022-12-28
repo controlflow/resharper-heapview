@@ -7,7 +7,7 @@ if (args.Length == 0)
   var error = 42.ToString; // ambiguous
   var boxingAndDelegate = |42|(0).|GetHashCode|(1);
   var nameTake = nameof(int.GetHashCode);
-  var explicitFunc = new Func<int>(args[0].|GetHashCode|(2));
+  var explicitFunc = |new|(2) Func<int>(args[0].GetHashCode);
 }
 else
 {

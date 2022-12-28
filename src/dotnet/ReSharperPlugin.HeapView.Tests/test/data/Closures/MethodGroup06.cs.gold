@@ -1,0 +1,23 @@
+﻿using System;
+
+public class Optimization
+{
+  static void Static() { }
+  void Instance() { }
+
+  public Action CombineThemAll()
+  {
+    Action action = |new|(0) ((Static)); // alloc
+
+    return
+      |new|(1) Action(Static) // alloc
+      + Static
+      + |new|(2) Action(Instance) // alloc
+      + |Instance|(3); // alloc
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
