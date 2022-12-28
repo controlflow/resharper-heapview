@@ -1,0 +1,2 @@
+var utf8Literal1 = "aaaa"u8;
+var utf8Literal2 = "aaaa"u8 + "bbbb"u8;
