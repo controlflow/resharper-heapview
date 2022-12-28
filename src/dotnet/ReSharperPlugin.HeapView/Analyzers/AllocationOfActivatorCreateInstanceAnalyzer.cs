@@ -15,7 +15,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   HighlightingTypes = new[]
   {
     typeof(ObjectAllocationHighlighting),
-    typeof(ObjectAllocationPossibleHighlighting),
+    typeof(ObjectAllocationPossibleHighlighting)
   })]
 public class AllocationOfActivatorCreateInstanceAnalyzer : HeapAllocationAnalyzerBase<IInvocationExpression>
 {

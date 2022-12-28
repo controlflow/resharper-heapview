@@ -42,6 +42,8 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestStringConcat01() { DoNamedTest2(); }
   [Test] public void TestStringConcat02() { DoNamedTest2(); }
+
+  [Test] public void TestEvents01() { DoNamedTest2(); }
 }
 
 [TestNetFramework45]

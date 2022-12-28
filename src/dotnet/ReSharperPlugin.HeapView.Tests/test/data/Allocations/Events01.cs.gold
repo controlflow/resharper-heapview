@@ -1,0 +1,65 @@
+﻿#nullable enable
+using System;
+using System.Runtime.InteropServices;
+
+// ReSharper disable ConvertToLocalFunction
+// ReSharper disable ValueParameterNotUsed
+
+class Events
+{
+  public event Action FieldLike = delegate { };
+
+  public event Action Custom
+  {
+    add { } // it's VERY likely we do some kind of allocations here!
+    remove { }
+  }
+
+  public void Usage()
+  {
+    FieldLike();
+    FieldLike.Invoke();
+    Action? action = delegate { };
+    FieldLike |+=|(0) action;
+    FieldLike |-=|(1) action;
+    Custom |+=|(2) action;
+    Custom |-=|(3) action;
+    _ = action |+|(4) action;
+    _ = action |-|(5) action;
+    action |+=|(6) action;
+    action |-=|(7) action;
+    action?.Invoke();
+  }
+}
+
+class Derived : Events
+{
+  public void Usage2()
+  {
+    Action action = delegate { };
+    FieldLike |+=|(8) action;
+    FieldLike |-=|(9) action;
+    Custom |+=|(10) action;
+    Custom |-=|(11) action;
+  }
+
+  public void Usage3()
+  {
+    FieldLike |+=|(12) delegate { };
+    throw null!;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
+(1): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
+(2): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
+(3): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
+(4): ReSharper HeapView Allocation: Possible object allocation: delegate addition operation may allocate new delegate instance
+(5): ReSharper HeapView Allocation: Possible object allocation: delegate removal operation may allocate new delegate instance
+(6): ReSharper HeapView Allocation: Possible object allocation: delegate addition operation may allocate new delegate instance
+(7): ReSharper HeapView Allocation: Possible object allocation: delegate removal operation may allocate new delegate instance
+(8): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
+(9): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
+(10): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
+(11): ReSharper HeapView Allocation: Possible object allocation: event unsubscription may allocate new delegate instance
+(12): ReSharper HeapView Allocation: Possible object allocation: event subscription may allocate new delegate instance
