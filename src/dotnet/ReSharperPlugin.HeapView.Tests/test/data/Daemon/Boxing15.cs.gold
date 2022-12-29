@@ -21,7 +21,7 @@ class StringConcat {
     s |+=|(17) b;
     s |+=|(18) n;
     s |+=|(19) t;
-    return $"id: {|i|(20)} {s}"; // box
+    return |$"|(20)id: {|i|(21)} {s}"; // box
   }
 }
 
@@ -48,4 +48,5 @@ struct HasToString { public override string ToString() => ""; }
 (17): ReSharper HeapView Allocation: Object allocation: string concatenation
 (18): ReSharper HeapView Allocation: Object allocation: string concatenation
 (19): ReSharper HeapView Allocation: Object allocation: string concatenation
-(20): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(20): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(21): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

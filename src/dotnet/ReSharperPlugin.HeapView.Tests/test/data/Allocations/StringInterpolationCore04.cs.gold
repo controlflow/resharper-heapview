@@ -1,0 +1,17 @@
+﻿using System.Threading.Tasks;
+// ReSharper disable UnusedVariable
+
+public class StringInterpolationExpression
+{
+  private const string ConstPart = "const";
+
+  public async void Method(int value, Task<string> task)
+  {
+    var string01 = |$"|(0)value={value}"; // alloc, handler
+    var string02 = |$"|(1)text1={await task} boxin={|value|(2)}"; // alloc, format, boxing
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

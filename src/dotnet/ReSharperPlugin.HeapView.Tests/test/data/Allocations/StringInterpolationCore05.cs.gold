@@ -1,0 +1,32 @@
+﻿using System.Runtime.CompilerServices;
+// ReSharper disable UnusedVariable
+
+public class StringInterpolationExpression
+{
+  public void Method(int value)
+  {
+    CustomInterpolationHandler01 hander01 = |$"|(0)aaa"; // alloc, custom handler creation
+    CustomInterpolationHandler01 hander02 = |$"|(1)bbb{|value|(2)}"; // alloc, boxing
+    CustomInterpolationHandler02 hander03 = $"aaa";
+    CustomInterpolationHandler02 hander04 = $"bbb{|value|(3)}"; // boxing
+  }
+}
+
+[InterpolatedStringHandler]
+class CustomInterpolationHandler01 {
+  public CustomInterpolationHandler01(int a, int b) { }
+  public void AppendLiteral(string part) { }
+  public void AppendFormatted(object box) { }
+}
+
+[InterpolatedStringHandler]
+struct CustomInterpolationHandler02 {
+  public CustomInterpolationHandler02(int a, int b) { }
+  public void AppendLiteral(string part) { }
+  public void AppendFormatted(object box) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'CustomInterpolationHandler01' interpolated string handler instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'CustomInterpolationHandler01' interpolated string handler instance creation
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

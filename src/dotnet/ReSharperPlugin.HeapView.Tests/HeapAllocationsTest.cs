@@ -2,6 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -57,6 +58,8 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
   [Test] public void TestParamsFramework04() { DoNamedTest2(); }
   [Test] public void TestParamsFramework05() { DoNamedTest2(); }
   [Test] public void TestParamsFramework06() { DoNamedTest2(); }
+
+  [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 }
 
 [TestNet70]
@@ -77,4 +80,11 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestParamsCore06() { DoNamedTest2(); }
 
   [Test] public void TestStringConcatCore01() { DoNamedTest2(); }
+
+  [Test] public void TestStringInterpolationCore01() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore02() { DoNamedTest2(); }
+  [LatestSupportedCSharpLanguageLevel(CSharpLanguageLevel.CSharp90)]
+  [Test] public void TestStringInterpolationCore03() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore04() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore05() { DoNamedTest2(); }
 }
