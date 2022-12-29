@@ -13,11 +13,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 // ReSharper disable RedundantExplicitParamsArrayCreation
 // TODO: "fake" string concatenations between interpolated string handlers - do not allocates
-// TODO: "fake" C# 11 utf-8 string concatenations
 // TODO: string interpolation allocations (in the case of "default interpolation handler")
-// TODO: string interpolations + custom non-struct handlers
-// todo: string interpolations + awaits in holes?
-// todo: string interpolations + FormattableString
 // todo: string interpolation can compile into string.Concat
 
 namespace ReSharperPlugin.HeapView.Analyzers;

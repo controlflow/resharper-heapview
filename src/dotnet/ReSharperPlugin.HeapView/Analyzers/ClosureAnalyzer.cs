@@ -21,9 +21,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 // ReSharper disable ConvertClosureToMethodGroup
 
 namespace ReSharperPlugin.HeapView.Analyzers;
-// todo: generics can be introduces by local functions - not a problem in Roslyn
-// todo: report delegate allocations from method group
-// todo: implement "Implicitly captured closure"
 
 [ElementProblemAnalyzer(
   ElementTypes: new[]

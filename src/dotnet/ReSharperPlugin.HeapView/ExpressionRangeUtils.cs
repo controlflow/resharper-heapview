@@ -19,7 +19,6 @@ public static class ExpressionRangeUtils
         return referenceExpression.NameIdentifier.GetDocumentRange();
 
       case IInvocationExpression { InvokedExpression: IReferenceExpression { QualifierExpression: { } } invokedExpression }:
-        // todo: too short?
         return invokedExpression.NameIdentifier.GetDocumentRange();
 
       case IParenthesizedExpression parenthesizedExpression:
@@ -29,8 +28,6 @@ public static class ExpressionRangeUtils
         return expression.GetDocumentRange();
     }
   }
-
-  // todo: IsUnconstrainedGenericType
 }
 
 [ShellComponent]

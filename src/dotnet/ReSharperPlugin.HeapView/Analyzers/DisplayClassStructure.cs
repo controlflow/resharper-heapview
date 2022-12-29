@@ -23,8 +23,6 @@ using JetBrains.Util.DataStructures.Collections;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: func lambda creation inside expression<func> lambda
-
 public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposable
 {
   private readonly ITreeNode myDeclaration;
@@ -830,7 +828,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     public ICSharpClosure Closure { get; private set; } = null!;
 
-    // todo: probably replace with a single reference
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
 
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
