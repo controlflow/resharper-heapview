@@ -1,0 +1,36 @@
+﻿using System.Runtime.CompilerServices;
+// ReSharper disable RedundantStringInterpolation
+
+class Interpolation
+{
+  public void Overloaded(string text) { }
+  public void Overloaded(CustomInterpolationHandler handler) { }
+
+  public void Usage(int id, string s)
+  {
+    Overloaded($"aaa");
+    Overloaded("aaa" + $"bbb");
+    Overloaded($"aaa" + "bbb");
+    Overloaded($"aaa" + $"bbb");
+    Overloaded(|$"|(0)aaa" + $"bbb{|id|(1)}"); // alloc handler, boxing
+    Overloaded(|$"|(2)aaa{|id|(3)}" + $"bbb"); // alloc handler, boxing
+    Overloaded(|$"|(4)aaa" + $"bbb" + $"ccc{s}"); // alloc handler
+    Overloaded(|$"|(5)aaa{id}" + $"bbb" |+|(6) "ccc"); // alloc string
+  }
+}
+
+[InterpolatedStringHandler]
+class CustomInterpolationHandler
+{
+  public CustomInterpolationHandler(int a, int b) { }
+  public void AppendLiteral(string part) { }
+  public void AppendFormatted(object box) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'CustomInterpolationHandler' interpolated string handler instance creation
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Allocation: Object allocation: new 'CustomInterpolationHandler' interpolated string handler instance creation
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Allocation: Object allocation: new 'CustomInterpolationHandler' interpolated string handler instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(6): ReSharper HeapView Allocation: Object allocation: string concatenation

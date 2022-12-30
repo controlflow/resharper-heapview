@@ -30,43 +30,62 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     if (IsConcatenatedContinuationOfInterpoledString(interpolatedStringExpression))
       return; // allocations reported before
 
+    var concatenations = UnwrapFromContainingInterpolationConcatentations(interpolatedStringExpression);
+
+    var highlighting = TryFindAllocationInConcatenation(concatenations);
+    if (highlighting != null)
+    {
+      consumer.AddHighlighting(highlighting, GetRangeToHighlight(interpolatedStringExpression));
+    }
+
+    IHighlighting? TryFindAllocationInConcatenation(ICSharpExpression expression)
+    {
+      switch (expression.GetOperandThroughParenthesis())
+      {
+        case IInterpolatedStringExpression interpolation:
+          return TryFindAllocation(interpolation, data);
+
+        case IAdditiveExpression { OperatorReference: (InterpolatedStringConcatenationOperator, _) } concatenation:
+          return TryFindAllocationInConcatenation(concatenation.LeftOperand)
+                 ?? TryFindAllocationInConcatenation(concatenation.RightOperand);
+
+        default:
+          return null;
+      }
+    }
+  }
+
+  private static IHighlighting? TryFindAllocation(IInterpolatedStringExpression interpolatedStringExpression, ElementProblemAnalyzerData data)
+  {
     switch (interpolatedStringExpression.GetInterpolatedStringKind())
     {
       case InterpolatedStringKind.String:
-        ReportOrdinaryStringFormatting(interpolatedStringExpression, consumer);
-        break;
-
+        return TryReportOrdinaryStringFormatting(interpolatedStringExpression);
       case InterpolatedStringKind.FormattableString:
-        ReportFormattableStringAllocations(interpolatedStringExpression, consumer);
-        break;
-
+        return TryReportFormattableStringAllocations(interpolatedStringExpression);
       case InterpolatedStringKind.InterpolatedStringHandler:
-        ReportInterpolatedStringHandlerAllocations(interpolatedStringExpression, data, consumer);
-        break;
-
+        return ReportInterpolatedStringHandlerAllocations(interpolatedStringExpression, data);
       default:
         throw new ArgumentOutOfRangeException();
     }
   }
 
-  private static void ReportOrdinaryStringFormatting(IInterpolatedStringExpression interpolatedStringExpression, IHighlightingConsumer consumer)
+  private static IHighlighting? TryReportOrdinaryStringFormatting(IInterpolatedStringExpression interpolatedStringExpression)
   {
     if (interpolatedStringExpression.InsertsEnumerable.IsEmpty())
-      return; // compiled into ordinary string
+      return null; // compiled into ordinary string
 
     if (interpolatedStringExpression.IsConstantValue())
-      return; // C# 10 constant interpolation expressions
+      return null; // C# 10 constant interpolation expressions
 
     var hint = CanCompileToStringConcat(interpolatedStringExpression) ? " ('String.Concat' method call)" : null;
-    consumer.AddHighlighting(
-      new ObjectAllocationHighlighting(interpolatedStringExpression, $"new 'String' instance creation{hint}"),
-      GetRangeToHighlight(interpolatedStringExpression));
+    return new ObjectAllocationHighlighting(interpolatedStringExpression, $"new 'String' instance creation{hint}");
   }
 
-  private static void ReportFormattableStringAllocations(IInterpolatedStringExpression interpolatedStringExpression, IHighlightingConsumer consumer)
+  private static IHighlighting? TryReportFormattableStringAllocations(IInterpolatedStringExpression interpolatedStringExpression)
   {
     var resolveResult = interpolatedStringExpression.FormatReference.Resolve();
-    if (resolveResult is not { DeclaredElement: IMethod method, ResolveErrorType.IsAcceptable: true }) return;
+    if (resolveResult is not { DeclaredElement: IMethod method, ResolveErrorType.IsAcceptable: true }) return null;
 
     var returnType = resolveResult.Substitution[method.ReturnType];
     var interpolationType = returnType.GetPresentableName(interpolatedStringExpression.Language, CommonUtils.DefaultTypePresentationStyle);
@@ -80,33 +99,31 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
       paramsArrayHint = ", allocates parameter array";
     }
 
-    consumer.AddHighlighting(
-      new ObjectAllocationHighlighting(interpolatedStringExpression, $"new '{interpolationType}' instance creation{paramsArrayHint}"),
-      GetRangeToHighlight(interpolatedStringExpression));
+    return new ObjectAllocationHighlighting(interpolatedStringExpression, $"new '{interpolationType}' instance creation{paramsArrayHint}");
   }
 
-  private static void ReportInterpolatedStringHandlerAllocations(
-    IInterpolatedStringExpression interpolatedStringExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  private static IHighlighting? ReportInterpolatedStringHandlerAllocations(
+    IInterpolatedStringExpression interpolatedStringExpression, ElementProblemAnalyzerData data)
   {
     var resolveResult = interpolatedStringExpression.HandlerConstructorReference.Resolve();
-    if (resolveResult is not { DeclaredElement: IConstructor { ContainingType: { } interpolatedStringHandlerTypeElement }, ResolveErrorType.IsAcceptable: true }) return;
+    if (resolveResult is not { DeclaredElement: IConstructor { ContainingType: { } interpolatedStringHandlerTypeElement }, ResolveErrorType.IsAcceptable: true })
+      return null;
 
     var predefinedType = data.GetPredefinedType();
     if (interpolatedStringHandlerTypeElement.Equals(predefinedType.DefaultInterpolatedStringHandler.GetTypeElement()))
     {
-      consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(interpolatedStringExpression, $"new 'String' instance creation"),
-        GetRangeToHighlight(interpolatedStringExpression));
+      return new ObjectAllocationHighlighting(interpolatedStringExpression, "new 'String' instance creation");
     }
-    else if (interpolatedStringHandlerTypeElement is IClass classTypeElement)
+
+    if (interpolatedStringHandlerTypeElement is IClass classTypeElement)
     {
       var handlerTypeText = TypeFactory.CreateType(classTypeElement)
         .GetPresentableName(interpolatedStringExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
-      consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(interpolatedStringExpression, $"new '{handlerTypeText}' interpolated string handler instance creation"),
-        GetRangeToHighlight(interpolatedStringExpression));
+      return new ObjectAllocationHighlighting(interpolatedStringExpression, $"new '{handlerTypeText}' interpolated string handler instance creation");
     }
+
+    return null;
   }
 
   [Pure]
@@ -119,24 +136,31 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
       currentExpression = byLeft.GetContainingParenthesizedExpression();
     }
 
-    var buRight = AdditiveExpressionNavigator.GetByRightOperand(currentExpression);
-    return buRight is { OperatorReference: (InterpolatedStringConcatenationOperator, _) };
+    var byRight = AdditiveExpressionNavigator.GetByRightOperand(currentExpression);
+    return byRight is { OperatorReference: (InterpolatedStringConcatenationOperator, _) };
+  }
+
+  [Pure]
+  private static ICSharpExpression UnwrapFromContainingInterpolationConcatentations(IInterpolatedStringExpression interpolatedStringExpression)
+  {
+    ICSharpExpression currentExpression = interpolatedStringExpression;
+
+    while (currentExpression.GetContainingParenthesizedExpression() is { } containingExpression
+           && (AdditiveExpressionNavigator.GetByLeftOperand(containingExpression)
+               ?? AdditiveExpressionNavigator.GetByRightOperand(containingExpression))
+               is { OperatorReference: (InterpolatedStringConcatenationOperator, _) } interpolationConcatenation)
+    {
+      currentExpression = interpolationConcatenation;
+    }
+
+    return currentExpression;
   }
 
   [Pure]
   private static bool CanCompileToStringConcat(IInterpolatedStringExpression interpolatedStringExpression)
   {
-    // unwrap from all of concatenations first
-    var currentExpression = interpolatedStringExpression.GetContainingParenthesizedExpression();
-
-    while ((AdditiveExpressionNavigator.GetByLeftOperand(currentExpression)
-            ?? AdditiveExpressionNavigator.GetByRightOperand(currentExpression))
-           is { OperatorReference: (InterpolatedStringConcatenationOperator, _) } containing)
-    {
-      currentExpression = containing.GetContainingParenthesizedExpression();
-    }
-
-    return CheckAllInterpolations(currentExpression);
+    var expression = UnwrapFromContainingInterpolationConcatentations(interpolatedStringExpression);
+    return CheckAllInterpolations(expression);
 
     [Pure]
     static bool CheckAllInterpolations(ICSharpExpression expressionToCheck)
@@ -160,10 +184,10 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
           return true;
         }
 
-        case IAdditiveExpression { OperatorReference: (InterpolatedStringConcatenationOperator, _) } additiveExpression:
+        case IAdditiveExpression { OperatorReference: (InterpolatedStringConcatenationOperator, _) } concatenation:
         {
-          return CheckAllInterpolations(additiveExpression.LeftOperand)
-              && CheckAllInterpolations(additiveExpression.RightOperand);
+          return CheckAllInterpolations(concatenation.LeftOperand)
+              && CheckAllInterpolations(concatenation.RightOperand);
         }
 
         default: return false;
