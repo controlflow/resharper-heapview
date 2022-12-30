@@ -47,6 +47,8 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestEvents01() { DoNamedTest2(); }
 
   [Test] public void TestIterators01() { DoNamedTest2(); }
+
+  [Test] public void TestForeach01() { DoNamedTest2(); }
 }
 
 [TestNetFramework45]
@@ -93,4 +95,6 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestStringInterpolationCore07() { DoNamedTest2(); }
 
   [Test] public void TestIteratorsCore01() { DoNamedTest2(); }
+
+  [Test] public void TestForeachCore01() { DoNamedTest2(); }
 }

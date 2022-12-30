@@ -62,4 +62,4 @@ Capture of parameter 'bbb', variable 'cc' and 'this' reference
 (6): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 Capture of variable 's'
 (7): ReSharper HeapView Allocation: Object allocation: string concatenation
-(8): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
+(8): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)

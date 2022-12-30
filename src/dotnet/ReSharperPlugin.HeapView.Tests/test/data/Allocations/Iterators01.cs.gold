@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+
 // ReSharper disable ValueParameterNotUsed
 
 class Iterators
@@ -30,6 +32,8 @@ class Iterators
     _ = |IteratorMethod02|(3)(); // alloc
     _ = |IteratorFunction01|(4)(); // alloc
     _ = |IteratorFunction02|(5)(); // alloc
+
+    Expression unused = () |=>|(6) IteratorProperty01;
   }
 }
 ---------------------------------------------------------
@@ -39,3 +43,4 @@ class Iterators
 (3): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator method invocation
 (4): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable' instance creation on iterator local function invocation
 (5): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator local function invocation
+(6): ReSharper HeapView Allocation: Object allocation: expression tree construction

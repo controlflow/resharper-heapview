@@ -140,7 +140,7 @@ class TestAttribute : Attribute
 (21): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator method invocation
 (22): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator property access
 (23): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
-(24): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
+(24): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
 (25): ReSharper HeapView Allocation: Object allocation: string concatenation
 (26): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
 (27): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)

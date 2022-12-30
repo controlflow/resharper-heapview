@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+
 // ReSharper disable ValueParameterNotUsed
 
 class Iterators
@@ -30,5 +32,7 @@ class Iterators
     _ = IteratorMethod02(); // alloc
     _ = IteratorFunction01(); // alloc
     _ = IteratorFunction02(); // alloc
+
+    Expression unused = () => IteratorProperty01;
   }
 }
