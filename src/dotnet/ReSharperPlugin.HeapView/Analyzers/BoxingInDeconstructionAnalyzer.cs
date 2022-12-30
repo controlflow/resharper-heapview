@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;

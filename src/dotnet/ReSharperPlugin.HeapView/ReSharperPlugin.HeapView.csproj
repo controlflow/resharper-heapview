@@ -10,6 +10,8 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <IsPackable>True</IsPackable>
+    <Nullable>enable</Nullable>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
     <DefineConstants>$(DefineConstants);RESHARPER</DefineConstants>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>

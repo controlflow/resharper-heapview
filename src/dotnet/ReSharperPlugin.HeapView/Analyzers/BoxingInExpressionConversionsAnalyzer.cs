@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;

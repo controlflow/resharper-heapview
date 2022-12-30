@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
@@ -22,6 +21,6 @@ public class CanEliminateClosureCreationHighlighting : PerformanceHighlightingBa
   public const string SEVERITY_ID = "HeapView.CanAvoidClosure";
   public const string MESSAGE = "Closure can be eliminated: {0}";
 
-  public CanEliminateClosureCreationHighlighting([NotNull] ITreeNode element)
+  public CanEliminateClosureCreationHighlighting(ITreeNode element)
     : base(element, MESSAGE, "method has overload to avoid closure creation") { }
 }

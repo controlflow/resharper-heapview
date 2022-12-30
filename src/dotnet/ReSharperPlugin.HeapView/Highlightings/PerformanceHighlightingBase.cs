@@ -9,9 +9,9 @@ namespace ReSharperPlugin.HeapView.Highlightings;
 [UsedImplicitly(ImplicitUseKindFlags.Access,ImplicitUseTargetFlags.WithMembers | ImplicitUseTargetFlags.WithInheritors)]
 public abstract class PerformanceHighlightingBase : IHighlighting
 {
-  [NotNull] private readonly ITreeNode myElement;
+  private readonly ITreeNode myElement;
 
-  protected PerformanceHighlightingBase([NotNull] ITreeNode element, [NotNull] string format, [NotNull] string description)
+  protected PerformanceHighlightingBase(ITreeNode element, string format, string description)
   {
     myElement = element;
     ToolTip = string.Format(format, description);
@@ -27,6 +27,6 @@ public abstract class PerformanceHighlightingBase : IHighlighting
     return myElement.GetDocumentRange();
   }
 
-  [NotNull] public string ToolTip { get; }
-  [NotNull] public string ErrorStripeToolTip => ToolTip;
+  public string ToolTip { get; }
+  public string ErrorStripeToolTip => ToolTip;
 }

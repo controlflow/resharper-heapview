@@ -7,10 +7,10 @@ namespace ReSharperPlugin.HeapView;
 
 public static class TargetRuntimeUtils
 {
-  [NotNull] private static readonly Key<Boxed<TargetRuntime>> RuntimeKey = new(nameof(RuntimeKey));
+  private static readonly Key<Boxed<TargetRuntime>> RuntimeKey = new(nameof(RuntimeKey));
 
   [Pure]
-  public static TargetRuntime GetTargetRuntime([NotNull] this ElementProblemAnalyzerData data)
+  public static TargetRuntime GetTargetRuntime(this ElementProblemAnalyzerData data)
   {
     return (TargetRuntime) data.GetOrCreateDataNoLock(RuntimeKey, data.File, static file =>
     {

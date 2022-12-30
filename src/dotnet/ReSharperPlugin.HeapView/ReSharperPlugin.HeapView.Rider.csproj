@@ -11,6 +11,7 @@
     <AssemblyName>ReSharperPlugin.HeapView</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);RIDER</DefineConstants>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>

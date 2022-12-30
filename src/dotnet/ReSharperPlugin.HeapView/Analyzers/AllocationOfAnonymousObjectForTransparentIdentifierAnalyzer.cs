@@ -1,4 +1,3 @@
-#nullable enable
 using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Impl.Query;

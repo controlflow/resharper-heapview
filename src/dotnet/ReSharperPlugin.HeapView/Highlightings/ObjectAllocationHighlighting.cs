@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -23,7 +22,7 @@ public class ObjectAllocationHighlighting : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.ObjectAllocation";
   public const string MESSAGE = "Object allocation: {0}";
 
-  public ObjectAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+  public ObjectAllocationHighlighting(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }
 
@@ -45,7 +44,7 @@ public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Evident";
   public const string MESSAGE = "Object allocation: {0}";
 
-  public ObjectAllocationEvidentHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+  public ObjectAllocationEvidentHighlighting(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }
 
@@ -67,6 +66,6 @@ public class ObjectAllocationPossibleHighlighting : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Possible";
   public const string MESSAGE = "Possible object allocation: {0}";
 
-  public ObjectAllocationPossibleHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+  public ObjectAllocationPossibleHighlighting(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }

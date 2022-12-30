@@ -1,4 +1,3 @@
-#nullable enable
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
 using ReSharperPlugin.HeapView.Settings;

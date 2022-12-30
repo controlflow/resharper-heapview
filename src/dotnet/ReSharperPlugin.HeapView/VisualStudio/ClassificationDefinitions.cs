@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
+using JetBrains.Annotations;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using ReSharperPlugin.HeapView.Highlightings;
 
-// ReSharper disable UnassignedField.Global
 #pragma warning disable 649
-
-// todo: extract constants
 
 namespace ReSharperPlugin.HeapView.VisualStudio;
 
@@ -27,7 +25,8 @@ internal class ReSharperBoxingOccurrenceClassificationDefinition : Classificatio
   }
 
   [Export, Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
@@ -45,7 +44,8 @@ internal class ReSharperHeapAllocationClassificationDefinition : ClassificationF
   }
 
   [Export, Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.STRUCT_COPY_ID)]
@@ -63,7 +63,8 @@ internal class ReSharperStructCopyClassificationDefinition : ClassificationForma
   }
 
   [Export, Name(HeapViewAttributeIds.STRUCT_COPY_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [Export(typeof(EditorFormatDefinition))]

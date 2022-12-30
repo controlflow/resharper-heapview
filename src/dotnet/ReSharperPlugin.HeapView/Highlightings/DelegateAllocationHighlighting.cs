@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -23,6 +22,6 @@ public class DelegateAllocationHighlighting : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.DelegateAllocation";
   public const string MESSAGE = "Delegate allocation: {0}";
 
-  public DelegateAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+  public DelegateAllocationHighlighting(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }

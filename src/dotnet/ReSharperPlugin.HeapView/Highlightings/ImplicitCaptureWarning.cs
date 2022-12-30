@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -24,6 +23,6 @@ public class ImplicitCaptureWarning : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.ImplicitCapture";
   public const string MESSAGE = "Implicit capture of {0}";
 
-  public ImplicitCaptureWarning([NotNull] ITreeNode element, [NotNull] string description)
+  public ImplicitCaptureWarning(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }

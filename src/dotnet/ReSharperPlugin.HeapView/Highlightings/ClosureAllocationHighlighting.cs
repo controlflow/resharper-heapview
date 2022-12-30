@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -23,6 +22,6 @@ public class ClosureAllocationHighlighting : PerformanceHighlightingBase
   public const string SEVERITY_ID = "HeapView.ClosureAllocation";
   public const string MESSAGE = "Closure allocation: {0}";
 
-  public ClosureAllocationHighlighting([NotNull] ITreeNode element, [NotNull] string description)
+  public ClosureAllocationHighlighting(ITreeNode element, string description)
     : base(element, MESSAGE, description) { }
 }

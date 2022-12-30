@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -7,19 +6,20 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
+
 // todo: support M(Key, Func<T>) + M(TKey, Func<TKey, T>) where TKey : Key;
 
 public static class ClosurelessOverloadSearcher
 {
-  [CanBeNull]
-  public static IReference FindMethodInvocationByArgument([NotNull] ICSharpExpression expression)
+  public static IReference? FindMethodInvocationByArgument(ICSharpExpression expression)
   {
     var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
     var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
 
     var invocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
+    if (invocationExpression == null) return null;
 
-    var invokedReference = invocationExpression?.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
+    var invokedReference = invocationExpression.InvokedExpression.GetOperandThroughParenthesis() as IReferenceExpression;
     if (invokedReference == null) return null;
 
     var invocationReference = invocationExpression.InvocationExpressionReference;
@@ -31,8 +31,7 @@ public static class ClosurelessOverloadSearcher
     return invokedReference.Reference;
   }
 
-  [CanBeNull]
-  public static IParameter FindClosureParameter([NotNull] ICSharpExpression expression)
+  public static IParameter? FindClosureParameter(ICSharpExpression expression)
   {
     var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
     var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
@@ -50,8 +49,7 @@ public static class ClosurelessOverloadSearcher
     return parameterInstance.Element;
   }
 
-  [CanBeNull]
-  public static IMethod FindOverloadByParameter([NotNull] IParameter parameter)
+  public static IMethod? FindOverloadByParameter(IParameter parameter)
   {
     if (parameter.ContainingParametersOwner is not IMethod { ContainingType: { } containingType } invokedMethod)
       return null;
@@ -83,7 +81,7 @@ public static class ClosurelessOverloadSearcher
     return null;
   }
 
-  private static bool CompareSignatures2([NotNull] IMethod invokedMethod, [NotNull] IMethod candidate, [NotNull] IParameter closureParameter)
+  private static bool CompareSignatures2(IMethod invokedMethod, IMethod candidate, IParameter closureParameter)
   {
     var invokedTypeParametersCount = invokedMethod.TypeParameters.Count;
     var candidatesTypeParametersCount = candidate.TypeParameters.Count;
@@ -95,7 +93,7 @@ public static class ClosurelessOverloadSearcher
     return false;
   }
 
-  private static bool CompareSignatures([NotNull] IMethod currentMethod, [NotNull] IMethod closurelessCandidate, [NotNull] IParameter closureParameter)
+  private static bool CompareSignatures(IMethod currentMethod, IMethod closurelessCandidate, IParameter closureParameter)
   {
     // we expect extra formal parameters to pass state
     var parameters = currentMethod.Parameters;
@@ -113,7 +111,7 @@ public static class ClosurelessOverloadSearcher
         // ([M2::T1], {M1::T1 -> M2::T2, M1::T2 -> M2::TState}),
         // ([M2::T2], {M1::T1 -> M2::T1, M1::T2 -> M2::TState}),
         // ([M3::TState], {M1::T1 -> M2::T1, M1::T2 -> M2::T2})
-        HashSet<ITypeParameter> stateParametersToVisit = null;
+        HashSet<ITypeParameter>? stateParametersToVisit = null;
 
         int currentIndex = 0, candidateIndex = 0;
         while (candidateIndex < candidateParameters.Count)
@@ -171,8 +169,7 @@ public static class ClosurelessOverloadSearcher
     return false;
   }
 
-  [CanBeNull]
-  private static ITypeParameter TryFindStateTypeParameter([NotNull] IParameter parameter, [NotNull] ISubstitution substitution)
+  private static ITypeParameter? TryFindStateTypeParameter(IParameter parameter, ISubstitution substitution)
   {
     if (parameter is { Kind: ParameterKind.VALUE, IsOptional: false, IsParameterArray: false })
     {
@@ -187,17 +184,21 @@ public static class ClosurelessOverloadSearcher
   }
 
   private static bool CompareDelegateTypes(
-    [NotNull] IType closureParameterType, [NotNull] IType closureCandidateParameterType,
-    [NotNull] IList<ITypeParameter> stateTypeParameters, [NotNull] ISubstitution typeParametersMapping)
+    IType closureParameterType, IType closureCandidateParameterType,
+    IList<ITypeParameter> stateTypeParameters, ISubstitution typeParametersMapping)
   {
     // Func<int, M1::T1, List<M1::T2>, string>
     var closureDeclaredType = closureParameterType as IDeclaredType;
-    var closureDelegateType = closureDeclaredType?.GetTypeElement() as IDelegate;
+    if (closureDeclaredType == null) return false;
+
+    var closureDelegateType = closureDeclaredType.GetTypeElement() as IDelegate;
     if (closureDelegateType == null) return false;
 
     // Func<int, M2::T1, List<M2::T2>, M2::TState, string>
     var candidateClosureDeclaredType = closureCandidateParameterType as IDeclaredType;
-    var candidateClosureDelegateType = candidateClosureDeclaredType?.GetTypeElement() as IDelegate;
+    if (candidateClosureDeclaredType == null) return false;
+
+    var candidateClosureDelegateType = candidateClosureDeclaredType.GetTypeElement() as IDelegate;
     if (candidateClosureDelegateType == null) return false;
 
     // {T1 -> int, T2 -> M1::T1, T3 -> List<M1::T2>, TResult -> string}
@@ -219,7 +220,7 @@ public static class ClosurelessOverloadSearcher
     var parametersCountDelta = candidateDelegateParameters.Count - delegateParameters.Count;
     if (parametersCountDelta != stateTypeParameters.Count) return false; // we expect more parameters
 
-    HashSet<ITypeParameter> stateParametersToVisit = null;
+    HashSet<ITypeParameter>? stateParametersToVisit = null;
     int currentIndex = 0, candidateIndex = 0;
 
     while (candidateIndex < candidateDelegateParameters.Count)
@@ -262,9 +263,8 @@ public static class ClosurelessOverloadSearcher
     return stateParametersToVisit is { Count: 0 };
   }
 
-  [NotNull]
   private static IEnumerable<Pair<IList<ITypeParameter>, ISubstitution>> EnumeratePossibleTStateCandidates(
-    [NotNull] IList<ITypeParameter> typeParameters, [NotNull] IList<ITypeParameter> candidateTypeParameters)
+    IList<ITypeParameter> typeParameters, IList<ITypeParameter> candidateTypeParameters)
   {
     var typeParametersCount = typeParameters.Count;
 
@@ -305,7 +305,7 @@ public static class ClosurelessOverloadSearcher
     }
   }
 
-  private static bool CompareParameterKinds([NotNull] IParameter currentParameter, [NotNull] IParameter candidateParameter)
+  private static bool CompareParameterKinds(IParameter currentParameter, IParameter candidateParameter)
   {
     if (currentParameter.Kind != candidateParameter.Kind) return false;
     if (currentParameter.IsParameterArray != candidateParameter.IsParameterArray) return false;

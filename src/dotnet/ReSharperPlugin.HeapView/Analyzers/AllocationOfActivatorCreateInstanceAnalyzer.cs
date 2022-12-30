@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
