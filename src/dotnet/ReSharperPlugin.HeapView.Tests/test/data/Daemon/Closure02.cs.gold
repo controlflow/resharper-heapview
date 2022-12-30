@@ -75,58 +75,58 @@ class Closures
   
     var t8 = from x in XS select (
                from y in YS select y);
-    var t9 = from x in XS |select|(23) (
-               from y in YS.|Concat|(24)(t7)
-               |select|(25) y + x + 123);
+    var t9 = from |x|(22) in XS |select|(23) (
+               from y in YS.Concat(t7)
+               |select|(24) y + x + 123);
   }
 
   public void M4()
   {
-    |int i|(26) = I, j = I;
-    F(() |=>|(27) M() + X);
-    F(() |=>|(28) M() + X + i);
-    F(() |=>|(29) X + j);
+    int |i|(25) = I, j = I;
+    F(() |=>|(26) M() + X);
+    F(() |=>|(27) M() + X + i);
+    F(() |=>|(28) X + j);
   }
 
   public void M5()
   {
-    |var i|(30) = I;
-    F(() |=>|(31) i);
+    var |i|(29) = I;
+    F(() |=>|(30) i);
 
     {
-      |var j|(32) = I;
-      F(() |=>|(33) j);
+      var |j|(31) = I;
+      F(() |=>|(32) j);
     }
   }
 
   public void M6()
   {
-    |var i|(34) = I;
-    F(() |=>|(35) i);
+    var |i|(33) = I;
+    F(() |=>|(34) i);
 
     var j = I;
-    F(() |=>|(36) j);
+    F(() |=>|(35) j);
   }
 
   public void M7()
   {
-    F(() |=>|(37)
+    F(() |=>|(36)
     {
       M();
-      |var i|(38) = I;
-      F(() |=>|(39) i);
+      var |i|(37) = I;
+      F(() |=>|(38) i);
     });
   }
 
   public void M8(bool b)
   {
-    |int a|(40);
+    int |a|(39);
     Console.WriteLine();
     if (b)
     {
       a = I;
+      F(() |=>|(40) a);
       F(() |=>|(41) a);
-      F(() |=>|(42) a);
     }
   }
 
@@ -134,13 +134,13 @@ class Closures
   {
     if (t)
     {
-      |var a|(43) = I;
+      var |a|(42) = I;
+      F(() |=>|(43) a);
       F(() |=>|(44) a);
-      F(() |=>|(45) a);
     }
     else
     {
-      int z = I, b = I;
+      int z = I, |b|(45) = I;
       F(() |=>|(46) b);
       F(() |=>|(47) b);
     }
@@ -150,11 +150,11 @@ class Closures
   {
     if (t)
     {
-      |var a|(48) = I;
+      var |a|(48) = I;
       F(() |=>|(49) a);
 
       {
-        |var c|(50) = I;
+        var |c|(50) = I;
         F(() |=>|(51) a + c);
 
         var d = I;
@@ -163,30 +163,30 @@ class Closures
     }
     else
     {
-      |var b|(53) = I;
+      var |b|(53) = I;
       F(() |=>|(54) b);
       F(() |=>|(55) b);
     }
   }
 
-  public void M11(int arg)
+  public void M11(int |arg|(56))
   {
-    F(() |=>|(56)
+    F(() =>
     {
-      F(|delegate|(57)(|int u|(58))
+      F(delegate(int |u|(57))
       {
-        F(|t|(59) |=>|(60) arg + t + u);
+        F(t |=>|(58) arg + t + u);
       });
     });
   }
 
   public void M12()
   {
-    |var i|(61) = I;
+    var |i|(59) = I;
     {
-      |var j|(62) = I;
+      var |j|(60) = I;
       {
-        F(() |=>|(63)
+        F(() |=>|(61)
         {
           M();
           return i + j;
@@ -197,9 +197,9 @@ class Closures
 
   public void M13()
   {
-    F(() |=>|(64)
+    F(() =>
     {
-      F(() |=>|(65)
+      F(() |=>|(62)
       {
         M();
         M();
@@ -215,78 +215,78 @@ class Closures
              where x > 0
              group x + 1 by x + 2
              into x // should not be highlighted
-             join |y|(66) in YS on x.Key equals y
-             let |t|(67) = 1
+             join |y|(63) in YS on x.Key equals y
+             let |t|(64) = 1
              select y + t;
   }
 
-  public void M15(int |arg|(68))
+  public void M15(int |arg|(65))
   {
-    var y = F(() |=>|(69) X + arg);
-    F(z |=>|(70) y);
+    var y = F(() |=>|(66) X + arg);
+    F(z |=>|(67) y);
   }
 
   public Action M16
   {
     get
     {
-      return () |=>|(71) {
+      return () |=>|(68) {
         var x = X;
       };
     }
-    |set|(78)
+    |set|(69)
     {
-      F(() |=>|(79) value);
+      F(() |=>|(70) value);
     }
   }
 
-  public Action this[||int i|(80)|(81)]
+  public Action this[int i]
   {
-    get
+    |get|(71)
     {
-      return () |=>|(82)
-        F(() |=>|(83) X + i);
+      return () =>
+        F(() |=>|(72) X + i);
     }
-    set
+    |set|(73)
     {
-      var y = F(() |=>|(84) X + i);
-      F(z |=>|(85) y);
+      var y = F(() |=>|(74) X + i);
+      F(z |=>|(75) y);
     }
   }
 
   private Action<int>
-    f = |x|(86) =>
+    f = |x|(76) =>
     {
 
-      F(() |=>|(87) x);
+      F(() |=>|(77) x);
     },
-    g = |x|(88) =>
+    g = |x|(78) =>
     {
-      F(() |=>|(89) x);
+      F(() |=>|(79) x);
     };
 
   private Action<int, int, int>
-    tt = (x, |y|(90), z) =>
+    tt = (x, |y|(80), z) =>
     {
-      F(() |=>|(91) y);
+      F(() |=>|(81) y);
     };
 
-  private IEnumerable<int> xsss = from x in Enumerable.Range(0, 100)
+  private IEnumerable<int> xsss = from |x|(82) in Enumerable.Range(0, 100)
                                   where x < 0
-                                  select F(() |=>|(92) x);
+                                  select F(() |=>|(83) x);
 
-  public void M17(int |arg|(93))
+  public void M17(int |arg|(84))
   {
-    Expression<Func<int, int>> e = x |=>|(94) x;
+    Expression<Func<int, int>> e = x |=>|(85) x;
 
     var xs = Enumerable.Range(0, 10).AsQueryable();
     var ys = from x in xs
-             |where|(95) x > 0
-             |select|(96) x + 1;
+             |where|(86) x > 0
+             |select|(87) x + 1;
 
-    Expression<Func<int>> f = () |=>|(97) arg;
-    Expression<Action<int>> g = |t|(98) |=>|(99) F(() |=>|(100) t + arg);
-    Expression<Func<int, int>> u = t |=>|(101) 1;
+    Expression<Func<int>> f = () |=>|(88) arg;
+    Expression<Action<int>> g = t |=>|(89) F(() => t + arg);
+    Expression<Func<int, int>> u = t |=>|(90) 1;
   }
 
   private static int I { get; set; }
@@ -300,105 +300,158 @@ class Closures
   private static void F(Func<int, int> f) { }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Closure allocation: 'i', 'xs' variables
-(1): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(2): ReSharper HeapView Allocation: Delegate allocation: capture of 'xs' variable
-(3): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(4): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(5): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(6): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(7): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(8): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(9): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(10): ReSharper HeapView Allocation: Closure allocation: 'i', 't1', 't7' variables
-(11): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(12): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(13): ReSharper HeapView Allocation: Delegate allocation: capture of 't1' variable
-(14): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(15): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(16): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(17): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(18): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(19): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(20): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(21): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(22): ReSharper HeapView Allocation: Delegate allocation: capture of 't7' variable
-(23): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(24): ReSharper HeapView Allocation: Closure allocation: 'i', 'j' variables and 'this' reference
-(25): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(26): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable and 'this' reference
-(27): ReSharper HeapView Allocation: Delegate allocation: capture of 'j' variable and 'this' reference
-(28): ReSharper HeapView Allocation: Closure allocation: 'i' variable
-(29): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(30): ReSharper HeapView Allocation: Closure allocation: 'j' variable
-(31): ReSharper HeapView Allocation: Delegate allocation: capture of 'j' variable
-(32): ReSharper HeapView Allocation: Closure allocation: 'i', 'j' variables
-(33): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(34): ReSharper HeapView Allocation: Delegate allocation: capture of 'j' variable
-(35): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(36): ReSharper HeapView Allocation: Closure allocation: 'i' variable
-(37): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' variable
-(38): ReSharper HeapView Allocation: Closure allocation: 'a' variable
-(39): ReSharper HeapView Allocation: Delegate allocation: capture of 'a' variable
-(40): ReSharper HeapView Allocation: Delegate allocation: capture of 'a' variable
-(41): ReSharper HeapView Allocation: Closure allocation: 'a' variable
-(42): ReSharper HeapView Allocation: Delegate allocation: capture of 'a' variable
-(43): ReSharper HeapView Allocation: Delegate allocation: capture of 'a' variable
-(44): ReSharper HeapView Allocation: Delegate allocation: capture of 'b' variable
-(45): ReSharper HeapView Allocation: Delegate allocation: capture of 'b' variable
-(46): ReSharper HeapView Allocation: Closure allocation: 'a' variable
-(47): ReSharper HeapView Allocation: Delegate allocation: capture of 'a' variable
-(48): ReSharper HeapView Allocation: Closure allocation: 'c', 'd' variables + (outer closure of 'a' variable)
-(49): ReSharper HeapView Allocation: Delegate allocation: capture of 'a', 'c' variables
-(50): ReSharper HeapView Allocation: Delegate allocation: capture of 'a', 'd' variables
-(51): ReSharper HeapView Allocation: Closure allocation: 'b' variable
-(52): ReSharper HeapView Allocation: Delegate allocation: capture of 'b' variable
-(53): ReSharper HeapView Allocation: Delegate allocation: capture of 'b' variable
-(54): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter
-(55): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg' parameter
-(56): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg' parameter
-(57): ReSharper HeapView Allocation: Closure allocation: 'u' parameter + (outer closure of 'arg' parameter)
-(58): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg', 'u' parameters
-(59): ReSharper HeapView Allocation: Closure allocation: 'i' variable and 'this' reference
-(60): ReSharper HeapView Allocation: Closure allocation: 'j' variable + (outer closure of 'i' variable and 'this' reference)
-(61): ReSharper HeapView Allocation: Delegate allocation: capture of 'i', 'j' variables and 'this' reference
-(62): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(63): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(64): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(65): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(66): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(67): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(68): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(69): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(70): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(71): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(72): ReSharper HeapView Allocation: Object allocation: transparent identifier anonymous type instantiation
-(73): ReSharper HeapView Allocation: Delegate allocation: from generic anonymous function (always non cached)
-(74): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter, 'y' variable and 'this' reference
-(75): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg' parameter and 'this' reference
-(76): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
-(77): ReSharper HeapView Allocation: Delegate allocation: capture of 'this' reference
-(78): ReSharper HeapView Allocation: Closure allocation: 'value' parameter
-(79): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
-(80): ReSharper HeapView Allocation: Closure allocation: 'i' parameter and 'this' reference
-(81): ReSharper HeapView Allocation: Closure allocation: 'i' parameter, 'y' variable and 'this' reference
-(82): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(83): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(84): ReSharper HeapView Allocation: Delegate allocation: capture of 'i' parameter and 'this' reference
-(85): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' variable
-(86): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(87): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(88): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(89): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(90): ReSharper HeapView Allocation: Closure allocation: 'y' parameter
-(91): ReSharper HeapView Allocation: Delegate allocation: capture of 'y' parameter
-(92): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(93): ReSharper HeapView Allocation: Closure allocation: 'arg' parameter
-(94): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(95): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(96): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(97): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(98): ReSharper HeapView Allocation: Closure allocation: 't' parameter + (outer closure of 'arg' parameter)
-(99): ReSharper HeapView Allocation: Object allocation: expression tree construction
-(100): ReSharper HeapView Allocation: Delegate allocation: capture of 'arg', 't' parameters
-(101): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable and 'xs' variable
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variable 'xs' (can cause memory leaks)
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,IEnumerable<int>>' instance creation
+Capture of variable 'xs'
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variable 'xs' (can cause memory leaks)
+(4): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,{int x, int y}>' instance creation
+Capture of variable 'i'
+Implicit capture of variable 'xs' (can cause memory leaks)
+(6): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(7): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(8): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(9): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{x, y}, z}
+(10): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable, 't1' variable and 't7' variable
+(11): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(12): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{x, y}, z}
+(13): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,IEnumerable<int>>' instance creation
+Capture of variable 't1'
+Implicit capture of variable 't7' (can cause memory leaks)
+(14): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(15): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(16): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(17): ReSharper HeapView Allocation: Delegate allocation: new 'Func<IGrouping<int,int>,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(18): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(19): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(20): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(21): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'i'
+Implicit capture of variables 't1' and 't7' (can cause memory leaks)
+(22): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(23): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,IEnumerable<int>>' instance creation
+Capture of variable 't7'
+Implicit capture of variable 't1' (can cause memory leaks)
+(24): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of parameter 'x'
+(25): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable, 'j' variable and 'this' reference
+(26): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of 'this' reference
+(27): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'i' and 'this' reference
+(28): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'j' and 'this' reference
+(29): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable
+(30): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'i'
+(31): ReSharper HeapView Allocation: Closure allocation: capture of 'j' variable
+(32): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'j'
+(33): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable and 'j' variable
+(34): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'i'
+(35): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'j'
+(36): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of 'this' reference
+(37): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable
+(38): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'i'
+(39): ReSharper HeapView Allocation: Closure allocation: capture of 'a' variable
+(40): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'a'
+(41): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'a'
+(42): ReSharper HeapView Allocation: Closure allocation: capture of 'a' variable
+(43): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'a'
+(44): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'a'
+(45): ReSharper HeapView Allocation: Closure allocation: capture of 'b' variable
+(46): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'b'
+(47): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'b'
+(48): ReSharper HeapView Allocation: Closure allocation: capture of 'a' variable
+(49): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'a'
+(50): ReSharper HeapView Allocation: Closure allocation: capture of 'c' variable, 'd' variable and containing closure ('a')
+(51): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variables 'a' and 'c'
+(52): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variables 'a' and 'd'
+(53): ReSharper HeapView Allocation: Closure allocation: capture of 'b' variable
+(54): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'b'
+(55): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'b'
+(56): ReSharper HeapView Allocation: Closure allocation: capture of 'arg' parameter
+(57): ReSharper HeapView Allocation: Closure allocation: capture of 'u' parameter and containing closure ('arg')
+(58): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of parameters 'arg' and 'u'
+(59): ReSharper HeapView Allocation: Closure allocation: capture of 'i' variable and 'this' reference
+(60): ReSharper HeapView Allocation: Closure allocation: capture of 'j' variable and containing closure ('i', 'this')
+(61): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variables ('i', 'j') and 'this' reference
+(62): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of 'this' reference
+(63): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {x, y}
+(64): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{x, y}, t}
+(65): ReSharper HeapView Allocation: Closure allocation: capture of 'arg' parameter, 'y' variable and 'this' reference
+(66): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'arg' and 'this' reference
+(67): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'y'
+Implicit capture of 'this' reference (can cause memory leaks)
+(68): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of 'this' reference
+(69): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
+(70): ReSharper HeapView Allocation: Delegate allocation: new 'Func<Action>' instance creation
+Capture of parameter 'value'
+(71): ReSharper HeapView Allocation: Closure allocation: capture of 'i' parameter and 'this' reference
+(72): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'i' and 'this' reference
+(73):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'i' parameter, 'y' variable and 'this' reference
+(74): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'i' and 'this' reference
+(75): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int,int>' instance creation
+Capture of variable 'y'
+Implicit capture of 'this' reference (can cause memory leaks)
+(76): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(77): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(78): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(79): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(80): ReSharper HeapView Allocation: Closure allocation: capture of 'y' parameter
+(81): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'y'
+(82): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(83): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(84): ReSharper HeapView Allocation: Closure allocation: capture of 'arg' parameter
+(85): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(86): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(87): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(88): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(89): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(90): ReSharper HeapView Allocation: Object allocation: expression tree construction

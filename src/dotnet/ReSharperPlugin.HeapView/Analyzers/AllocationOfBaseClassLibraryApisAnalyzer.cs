@@ -4,6 +4,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+// TODO: LINQ method calls in query syntax
+// TODO: hidden method calls? GetEnumerator? operators (like in BigInteger)?
+
 // [ElementProblemAnalyzer(
 //   ElementTypes: new[] { typeof(IArrayInitializer) },
 //   HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]

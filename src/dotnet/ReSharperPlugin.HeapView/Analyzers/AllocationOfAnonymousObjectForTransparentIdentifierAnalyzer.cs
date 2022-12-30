@@ -1,15 +1,14 @@
 #nullable enable
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Impl.Query;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
+using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
-
-// TODO: finish me
-// TODO: LINQ method calls in query syntax, similat to ordinary invocation
 
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IQueryRangeVariableDeclaration) },
@@ -20,9 +19,9 @@ public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapA
     IQueryRangeVariableDeclaration queryRangeVariableDeclaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var relatedDeclaredElements = queryRangeVariableDeclaration.DeclaredElement.RelatedDeclaredElements;
-    if (relatedDeclaredElements.Count != 1) return;
-
-    if (relatedDeclaredElements[0] is IQueryAnonymousTypeProperty { ContainingType: IQueryAnonymousType queryAnonymousType })
+    if (relatedDeclaredElements.OfType<IQueryAnonymousTypeProperty>().SingleItem() is { ContainingType: IQueryAnonymousType queryAnonymousType }
+        && QueryContinuationNavigator.GetByDeclaration(queryRangeVariableDeclaration) == null
+        && QueryFirstFromNavigator.GetByDeclaration(queryRangeVariableDeclaration) == null)
     {
       ReportAllocation(queryRangeVariableDeclaration, queryAnonymousType, consumer);
     }

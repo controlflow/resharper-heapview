@@ -1,0 +1,13 @@
+﻿using System.Linq;
+
+var ys1 =
+  from xxx in args
+  select (from yyy in args
+          select xxx |+|(0) yyy);
+
+var ys2 = args
+  .Select(xxx =>
+    args.Select(yyy => xxx |+|(1) yyy));
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation
