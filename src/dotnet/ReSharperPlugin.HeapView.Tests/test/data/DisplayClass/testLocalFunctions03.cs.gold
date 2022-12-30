@@ -6,6 +6,7 @@ Closures:
 > lambda expression 'void () => { Local(); }'
     Captures:
     > local function 'Local'
+    > local variable 'x'
 Display classes:
   Display class #1
     Scope: ITopLevelCode 'int x = 0; void Local() { x++; } if (arg...'

@@ -34,10 +34,14 @@ class CachedValue {
 
 interface ITreeNode { }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Closure allocation: 'node' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: capture of 'node' parameter
-(2): ReSharper HeapView Allocation: Delegate allocation: capture of 'node' parameter
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'node' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'node'
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'node'
 (3): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
-(4): ReSharper HeapView Allocation: Delegate allocation: capture of 'node' parameter
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'node'
 (5): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
-(6): ReSharper HeapView Allocation: Delegate allocation: capture of 'node' parameter
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'node'

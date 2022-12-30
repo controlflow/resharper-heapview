@@ -7,9 +7,12 @@ Closures:
     Captures:
     > local variable 'x'
     > local function 'Outer'
+    > local variable 'y'
 > lambda expression 'void () => { Local(); }'
     Captures:
     > local function 'Local'
+    > local variable 'x'
+    > local variable 'y'
 Display classes:
   Display class #1
     Scope: ITopLevelCode 'int y = 0; if (args.Length > 0) { void O...'

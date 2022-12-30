@@ -193,20 +193,38 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       modified = false;
 
+      using var additionalCapturesByLocalFunction = PooledHashSet<IDeclaredElement>.GetInstance();
+
       foreach (var (_, currentCaptures) in myClosureToCaptures)
-      foreach (var capturedEntity in currentCaptures.CapturedEntities)
       {
-        if (capturedEntity is ILocalFunction capturedLocalFunction)
+        additionalCapturesByLocalFunction.Clear();
+
+        foreach (var capturedEntity in currentCaptures.CapturedEntities)
         {
-          var localFunctionDeclaration = capturedLocalFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
-          if (localFunctionDeclaration != null
-              && myClosureToCaptures.TryGetValue(localFunctionDeclaration, out var localFunctionCaptures))
+          if (capturedEntity is ILocalFunction capturedLocalFunction)
           {
-            foreach (var otherDisplayClass in localFunctionCaptures.CapturedDisplayClasses)
+            var localFunctionDeclaration = capturedLocalFunction.GetSingleDeclaration<ILocalFunctionDeclaration>();
+            if (localFunctionDeclaration != null
+                && myClosureToCaptures.TryGetValue(localFunctionDeclaration, out var localFunctionCaptures))
             {
-              modified |= currentCaptures.CapturedDisplayClasses.Add(otherDisplayClass);
+              foreach (var otherDisplayClass in localFunctionCaptures.CapturedDisplayClasses)
+              {
+                modified |= currentCaptures.CapturedDisplayClasses.Add(otherDisplayClass);
+              }
+
+              // include local function's captures into other's closure direct captures
+              foreach (var addictionalCapture in localFunctionCaptures.CapturedEntities)
+              {
+                if (addictionalCapture is not ILocalFunction)
+                  additionalCapturesByLocalFunction.Add(addictionalCapture);
+              }
             }
           }
+        }
+
+        foreach (var additionalCapture in additionalCapturesByLocalFunction)
+        {
+          modified |= currentCaptures.CapturedEntities.Add(additionalCapture);
         }
       }
     } while (modified);

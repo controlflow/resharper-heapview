@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
+using JetBrains.Util.DataStructures.Collections;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
@@ -83,14 +84,47 @@ public static class ClosurelessOverloadSearcher
 
   private static bool CompareSignatures2(IMethod invokedMethod, IMethod candidate, IParameter closureParameter)
   {
-    var invokedTypeParametersCount = invokedMethod.TypeParameters.Count;
-    var candidatesTypeParametersCount = candidate.TypeParameters.Count;
-    if (invokedTypeParametersCount + 1 != candidatesTypeParametersCount) return false;
+    var invokedParameters = invokedMethod.Parameters;
+    var candidateParameters = candidate.Parameters;
+    if (invokedParameters.Count + 1 != candidateParameters.Count)
+      return false; // one more formal parameter expected
+
+    var invokedTypeParameters = invokedMethod.TypeParameters;
+    var candidateTypeParameters = candidate.TypeParameters;
+    if (invokedTypeParameters.Count + 1 != candidateTypeParameters.Count)
+      return false; // one more type parameter expected
+
+    foreach (var (stateTypeParameter, equalitySubstitution) in EnumeratePossibleTStateTypeParameters(invokedTypeParameters, candidateTypeParameters))
+    {
+      // compare signatures
 
 
-
+    }
 
     return false;
+  }
+
+  private static IEnumerable<(ITypeParameter StateTypeParameter, ISubstitution EqualitySubstitution)> EnumeratePossibleTStateTypeParameters(
+    IList<ITypeParameter> invokedTypeParameters, IList<ITypeParameter> candidateTypeParameters)
+  {
+    using var substitution = PooledDictionary<ITypeParameter, IType>.GetInstance();
+
+    for (var candidateIndex = 0; candidateIndex < candidateTypeParameters.Count; candidateIndex++)
+    {
+      var candidateTypeParameter = candidateTypeParameters[candidateIndex];
+      if (candidateTypeParameter is { IsReferenceType: false, IsUnmanagedType: false, IsValueType: false, HasDefaultConstructor: false })
+      {
+        substitution.Clear();
+
+        for (var invokedIndex = 0; invokedIndex < invokedTypeParameters.Count; invokedIndex++)
+        {
+          var correspondingIndex = invokedIndex + (invokedIndex < candidateIndex ? 0 : 1);
+          substitution[invokedTypeParameters[invokedIndex]] = TypeFactory.CreateType(candidateTypeParameters[correspondingIndex]);
+        }
+
+        yield return (candidateTypeParameter, EmptySubstitution.INSTANCE.Extend(substitution));
+      }
+    }
   }
 
   private static bool CompareSignatures(IMethod currentMethod, IMethod closurelessCandidate, IParameter closureParameter)

@@ -7,6 +7,7 @@ Closures:
     Captures:
     > local function 'Local'
     > local variable 'x'
+    > local variable 'y'
 Display classes:
   Display class #1
     Scope: ITopLevelCode 'int x = 0; { // display class #2, optimi...'

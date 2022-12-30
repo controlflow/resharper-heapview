@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -363,14 +364,14 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
         consumer.AddHighlightingWithOverrides(
           new ImplicitCaptureWarning(closure, builder.ToString()), closureRange,
           overriddenOverlapResolve: OverlapResolveKind.WARNING);
-        TryReportClosurelessOverloads(closure, consumer);
+        TryReportClosurelessOverloads(closure, captures, consumer);
         return;
       }
     }
 
     consumer.AddHighlighting(
       new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
-    TryReportClosurelessOverloads(closure, consumer);
+    TryReportClosurelessOverloads(closure, captures, consumer);
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
@@ -403,6 +404,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       using var sortedMembers = SortedMembersPool.Allocate();
 
       sortedMembers.AddRange(members);
+      sortedMembers.RemoveAll(x => x is ILocalFunction);
       sortedMembers.Sort(DisplayClassMembersDeclarationOrderComparer.Instance);
 
       var hasThisReference = false;
@@ -474,10 +476,18 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
   }
 
-  private static void TryReportClosurelessOverloads(ICSharpClosure closure, IHighlightingConsumer consumer)
+  private static void TryReportClosurelessOverloads(ICSharpClosure closure, IClosureCaptures captures, IHighlightingConsumer consumer)
   {
     var closureExpression = closure as ICSharpExpression;
     if (closureExpression == null) return;
+
+    foreach (var capturedEntity in captures.CapturedEntities)
+    {
+      if (capturedEntity is ILocalFunction)
+      {
+        return; // we can't pass local function as a TState parameter value w/o allocations
+      }
+    }
 
     var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocationByArgument(closureExpression);
     if (invocationReference == null) return;
