@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -33,7 +32,7 @@ public static class ClosurelessOverloadSearcher
   }
 
   [CanBeNull]
-  public static DeclaredElementInstance<IParameter> FindClosureParameter([NotNull] ICSharpExpression expression)
+  public static IParameter FindClosureParameter([NotNull] ICSharpExpression expression)
   {
     var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
     var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
@@ -48,37 +47,52 @@ public static class ClosurelessOverloadSearcher
     var delegateType = parameterDeclaredType?.GetTypeElement() as IDelegate;
     if (delegateType == null) return null;
 
-    return parameterInstance;
+    return parameterInstance.Element;
   }
 
   [CanBeNull]
-  public static IMethod FindOverloadByParameter([NotNull] DeclaredElementInstance<IParameter> parameterInstance)
+  public static IMethod FindOverloadByParameter([NotNull] IParameter parameter)
   {
-    var closureParameter = parameterInstance.Element.NotNull("closureParameter != null");
+    if (parameter.ContainingParametersOwner is not IMethod { ContainingType: { } containingType } invokedMethod)
+      return null;
 
-    var currentMethod = closureParameter.ContainingParametersOwner as IMethod;
-
-    var containingType = currentMethod?.GetContainingType();
-    if (containingType == null) return null;
-
-    var shortName = currentMethod.ShortName;
+    var invokedName = invokedMethod.ShortName;
+    var invokedIsStatic = invokedMethod.IsStatic;
+    var invokedReturnKind = invokedMethod.ReturnKind;
+    var invokedAccessRights = invokedMethod.GetAccessRights();
 
     foreach (var typeMember in containingType.GetMembers())
     {
-      if (typeMember is IMethod closurelessCandidate
-          && !ReferenceEquals(closurelessCandidate, currentMethod)
-          && closurelessCandidate.ShortName == shortName
-          && closurelessCandidate.IsStatic == currentMethod.IsStatic
-          && closurelessCandidate.IsExtensionMethod == currentMethod.IsExtensionMethod)
+      if (typeMember is IMethod candidate
+          && !ReferenceEquals(candidate, invokedMethod)
+          && candidate.ShortName == invokedName
+          && candidate.IsStatic == invokedIsStatic
+          && candidate.ReturnKind == invokedReturnKind
+          && candidate.IsExtensionMethod == invokedMethod.IsExtensionMethod
+          && candidate.GetAccessRights() == invokedAccessRights)
       {
-        if (CompareSignatures(currentMethod, closurelessCandidate, closureParameter))
+        if (
+          CompareSignatures2(invokedMethod, candidate, parameter) ||
+          CompareSignatures(invokedMethod, candidate, parameter))
         {
-          return closurelessCandidate;
+          return candidate;
         }
       }
     }
 
     return null;
+  }
+
+  private static bool CompareSignatures2([NotNull] IMethod invokedMethod, [NotNull] IMethod candidate, [NotNull] IParameter closureParameter)
+  {
+    var invokedTypeParametersCount = invokedMethod.TypeParameters.Count;
+    var candidatesTypeParametersCount = candidate.TypeParameters.Count;
+    if (invokedTypeParametersCount + 1 != candidatesTypeParametersCount) return false;
+
+
+
+
+    return false;
   }
 
   private static bool CompareSignatures([NotNull] IMethod currentMethod, [NotNull] IMethod closurelessCandidate, [NotNull] IParameter closureParameter)
@@ -94,13 +108,11 @@ public static class ClosurelessOverloadSearcher
     // we expect extra type parameters for state parameter
     if (candidateTypeParameters.Count > typeParameters.Count)
     {
-      foreach (var pair in EnumeratePossibleTStateCandidates(typeParameters, candidateTypeParameters))
+      foreach (var (stateTypeParameters, candidateSubstitution) in EnumeratePossibleTStateCandidates(typeParameters, candidateTypeParameters))
       {
         // ([M2::T1], {M1::T1 -> M2::T2, M1::T2 -> M2::TState}),
         // ([M2::T2], {M1::T1 -> M2::T1, M1::T2 -> M2::TState}),
         // ([M3::TState], {M1::T1 -> M2::T1, M1::T2 -> M2::T2})
-        var stateTypeParameters = pair.First;
-        var candidateSubstitution = pair.Second;
         HashSet<ITypeParameter> stateParametersToVisit = null;
 
         int currentIndex = 0, candidateIndex = 0;

@@ -198,7 +198,7 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
         {
           consumer.AddHighlighting(
             new BoxingAllocationHighlighting(
-              operandExpression, $"inherited 'ValueType.ToString' virtual method invocation over the value type instance"));
+              operandExpression, "inherited 'ValueType.ToString' virtual method invocation over the value type instance"));
         }
       }
     }

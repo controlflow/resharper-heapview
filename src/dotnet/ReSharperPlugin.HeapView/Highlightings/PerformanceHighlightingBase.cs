@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 
+[UsedImplicitly(ImplicitUseKindFlags.Access,ImplicitUseTargetFlags.WithMembers | ImplicitUseTargetFlags.WithInheritors)]
 public abstract class PerformanceHighlightingBase : IHighlighting
 {
   [NotNull] private readonly ITreeNode myElement;

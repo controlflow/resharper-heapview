@@ -2,9 +2,6 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
-using ReSharperPlugin.HeapView.Highlightings;
-
-// ReSharper disable MemberCanBePrivate.Global
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 

@@ -15,7 +15,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
@@ -108,8 +107,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     // if type declaration is partial and has primary parameters in some part
     // we need to scan the other parts to find possible captures of such parameters
-    if (classLikeDeclaration.IsPartial
-        && classLikeDeclaration.DeclaredElement is IRecord { PrimaryConstructor.Parameters: { Count: > 0 } parameters } record)
+    if (classLikeDeclaration is
+        {
+          IsPartial: true,
+          DeclaredElement: IRecord { PrimaryConstructor.Parameters: { Count: > 0 } parameters } record
+        })
     {
       var allDeclarations = record.GetDeclarations();
       if (allDeclarations.Count > 1)
@@ -695,23 +697,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       var poppedClosure = myCurrentClosures.Pop();
       Assertion.Assert(closure == poppedClosure);
-
-      if (!myIsScanningNonMainPart)
-      {
-        ProcessClosureAfterInterior(closure);
-      }
-    }
-  }
-
-  private void ProcessClosureAfterInterior(ICSharpClosure closure)
-  {
-    if (!myClosureToCaptures.ContainsKey(closure))
-    {
-      // do we need this?
-    }
-    else
-    {
-      // captureless closure
     }
   }
 
@@ -826,12 +811,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       Pool.Return(this);
     }
 
-    public ICSharpClosure Closure { get; private set; } = null!;
+    private ICSharpClosure Closure { get; set; } = null!;
 
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
 
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
-    public DisplayClass? AttachedDisplayClass { get; private set; }
+    private DisplayClass? AttachedDisplayClass { get; set; }
 
     IDisplayClass IClosureCaptures.AttachedDisplayClass => AttachedDisplayClass.NotNull();
 
@@ -1105,7 +1090,6 @@ public interface IDisplayClass
 
 public interface IClosureCaptures
 {
-  ICSharpClosure Closure { get; }
   HashSet<IDeclaredElement> CapturedEntities { get; }
   IDisplayClass AttachedDisplayClass { get; }
 }

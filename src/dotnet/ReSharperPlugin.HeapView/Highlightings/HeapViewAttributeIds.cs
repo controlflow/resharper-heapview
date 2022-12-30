@@ -1,4 +1,5 @@
-﻿using JetBrains.TextControl.DocumentMarkup;
+﻿using JetBrains.Annotations;
+using JetBrains.TextControl.DocumentMarkup;
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 
@@ -26,6 +27,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
 [RegisterHighlighterGroup(
   GROUP_ID, "Heap Allocation Viewer", HighlighterGroupPriority.COMMON_SETTINGS,
   RiderNamesProviderType = typeof(HeapViewSettingsNamesProvider))]
+[PublicAPI]
 public static class HeapViewAttributeIds
 {
   public const string GROUP_ID = "ReSharper HeapView Boxing";

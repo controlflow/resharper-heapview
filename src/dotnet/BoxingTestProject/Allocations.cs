@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace BoxingTestProject;
 
+[PublicAPI]
 public static class Allocations
 {
   private const int IterationsCount = 500000000;

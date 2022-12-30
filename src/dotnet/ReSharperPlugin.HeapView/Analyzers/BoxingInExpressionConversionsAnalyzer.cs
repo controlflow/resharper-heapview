@@ -264,8 +264,6 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
       }
     }
 
-
-
     return false;
   }
 

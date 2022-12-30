@@ -5,9 +5,7 @@ using NUnit.Framework;
 //[assembly: TestDataPathBase(@".\..\..\..\ReSharper.HeapView.Tests\data")]
 //#pragma warning restore 618
 
-// ReSharper disable once CheckNamespace
-namespace ReSharperPlugin.HeapView.Tests
-{
-    [SetUpFixture]
-    public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<HeapViewTestEnvironmentZone> { }
-}
+namespace ReSharperPlugin.HeapView.Tests;
+
+[SetUpFixture]
+public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<HeapViewTestEnvironmentZone> { }

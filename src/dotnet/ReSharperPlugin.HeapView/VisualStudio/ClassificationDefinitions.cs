@@ -31,7 +31,7 @@ internal class ReSharperBoxingOccurrenceClassificationDefinition : Classificatio
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
-[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
 [Export(typeof(EditorFormatDefinition))]
 [Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
 [DisplayName(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
@@ -49,7 +49,7 @@ internal class ReSharperHeapAllocationClassificationDefinition : ClassificationF
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.STRUCT_COPY_ID)]
-[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
 [Export(typeof(EditorFormatDefinition))]
 [Name(HeapViewAttributeIds.STRUCT_COPY_ID)]
 [DisplayName(HeapViewAttributeIds.STRUCT_COPY_ID)]

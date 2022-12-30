@@ -8,11 +8,10 @@ using NUnit.Framework;
 
 [assembly: Apartment(ApartmentState.STA)]
 
-namespace ReSharperPlugin.HeapView.Tests
-{
-  [ZoneDefinition]
-  public class HeapViewTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone> { }
+namespace ReSharperPlugin.HeapView.Tests;
 
-  [ZoneMarker]
-  public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<HeapViewTestEnvironmentZone> { }
-}
+[ZoneDefinition]
+public class HeapViewTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone> { }
+
+[ZoneMarker]
+public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<HeapViewTestEnvironmentZone> { }

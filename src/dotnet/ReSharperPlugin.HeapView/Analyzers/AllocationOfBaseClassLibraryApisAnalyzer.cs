@@ -18,7 +18,7 @@ public class AllocationOfBaseClassLibraryApisAnalyzer : HeapAllocationAnalyzerBa
 
   }
 
-  void InitMap()
+  private void InitMap()
   {
     Add<string>(nameof(string.Insert));
     Add<string>(nameof(string.Concat));

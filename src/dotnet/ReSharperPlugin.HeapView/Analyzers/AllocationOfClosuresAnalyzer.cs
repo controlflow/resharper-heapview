@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
@@ -34,7 +35,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(ClosureAllocationHighlighting),
     typeof(DelegateAllocationHighlighting),
     typeof(ObjectAllocationHighlighting),
-    typeof(ImplicitCaptureWarning)
+    typeof(ImplicitCaptureWarning),
+    typeof(CanEliminateClosureCreationHighlighting)
   })]
 public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
@@ -166,11 +168,11 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       }
       else
       {
-        for (var index = 0; index < sortedMembers.Count; index++)
+        foreach (var t in sortedMembers)
         {
           builder.Append(Environment.NewLine).Append("    ");
 
-          AppendMember(sortedMembers[index]);
+          AppendMember(t);
         }
 
         if (containingClosure != null)
@@ -362,12 +364,14 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
         consumer.AddHighlightingWithOverrides(
           new ImplicitCaptureWarning(closure, builder.ToString()), closureRange,
           overriddenOverlapResolve: OverlapResolveKind.WARNING);
+        TryReportClosurelessOverloads(closure, consumer);
         return;
       }
     }
 
     consumer.AddHighlighting(
       new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
+    TryReportClosurelessOverloads(closure, consumer);
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
@@ -468,6 +472,25 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
         if (hasManyOfDifferentKinds) builder.Append(')');
       }
+    }
+  }
+
+  private static void TryReportClosurelessOverloads(ICSharpClosure closure, IHighlightingConsumer consumer)
+  {
+    var closureExpression = closure as ICSharpExpression;
+    if (closureExpression == null) return;
+
+    var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocationByArgument(closureExpression);
+    if (invocationReference == null) return;
+
+    var parameter = ClosurelessOverloadSearcher.FindClosureParameter(closureExpression);
+    if (parameter == null) return;
+
+    var overloadWithStateParameter = ClosurelessOverloadSearcher.FindOverloadByParameter(parameter);
+    if (overloadWithStateParameter != null)
+    {
+      var highlighting = new CanEliminateClosureCreationHighlighting(closureExpression);
+      consumer.AddHighlighting(highlighting, invocationReference.GetDocumentRange());
     }
   }
 

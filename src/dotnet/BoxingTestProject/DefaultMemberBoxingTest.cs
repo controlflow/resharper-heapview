@@ -1,8 +1,8 @@
+#if NETCOREAPP
+
 using NUnit.Framework;
 
 namespace BoxingTestProject;
-
-#if NETCOREAPP
 
 [TestFixture]
 public class DefaultMemberBoxingTest
