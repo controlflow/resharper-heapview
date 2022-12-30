@@ -11,15 +11,10 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using ReSharperPlugin.HeapView.Highlightings;
 
-// ReSharper disable RedundantExplicitParamsArrayCreation
-// TODO: "fake" string concatenations between interpolated string handlers - do not allocates
-// TODO: string interpolation allocations (in the case of "default interpolation handler")
-// todo: string interpolation can compile into string.Concat
-
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  new[] {
+  ElementTypes: new[] {
     typeof(IReferenceExpression),
     typeof(IObjectCreationExpression),
     typeof(IArrayCreationExpression),
@@ -45,12 +40,12 @@ public sealed class HeapAllocationAnalyzer : HeapAllocationAnalyzerBase<ITreeNod
     {
       // F(); when F is iterator
       case IInvocationExpression invocationExpression:
-        CheckInvocationExpression(invocationExpression, consumer);
+        //CheckInvocationExpression(invocationExpression, consumer);
         return;
 
       // var xs = Iterator;
       case IReferenceExpression referenceExpression:
-        CheckReferenceExpression(referenceExpression, consumer);
+        //CheckReferenceExpression(referenceExpression, consumer);
         return;
 
       // foreach (var x in xs); when xs.GetEnumerator() is ref-type

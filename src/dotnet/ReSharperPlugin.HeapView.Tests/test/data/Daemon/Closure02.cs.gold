@@ -56,21 +56,21 @@ class Closures
              where x > 0
              select x + z;
     var t2 = from x in XS
-             from y |in|(13) YS.|Concat|(14)(t1)
+             from y |in|(13) YS.Concat(t1)
              select x into y
-             |select|(15) y + i;
+             |select|(14) y + i;
     var t3 = from x in XS
-             group x |by|(16) x / 10 + i;
+             group x |by|(15) x / 10 + i;
     var t4 = from x in XS
-             |group|(17) x + i by x / 10;
+             |group|(16) x + i by x / 10;
     var t5 = from x in XS
              group x by x / 10 into g
-             |select|(18) g.Key + i;
+             |select|(17) g.Key + i;
     var t6 = from x in XS
-             join y in YS |on|(19) x + i |equals|(20) y + i
-             |select|(21) x + y + i;
+             join y in YS |on|(18) x + i |equals|(19) y + i
+             |select|(20) x + y + i;
     var t7 = from x in XS
-             join y in YS |on|(22) x + i equals y
+             join y in YS |on|(21) x + i equals y
              into z select x;
   
     var t8 = from x in XS select (

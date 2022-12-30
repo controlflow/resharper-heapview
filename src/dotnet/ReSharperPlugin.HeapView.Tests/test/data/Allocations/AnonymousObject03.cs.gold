@@ -8,20 +8,16 @@ var ys1 =
   select xxx |+|(3) yyy + zzz + lll;
 
 var ys2 = args
-  .|SelectMany|(4)(_ => args, (xxx, yyy) => |new|(5) { xxx, yyy })
-  .|SelectMany|(6)(_ => args, (t, zzz) => |new|(7) { t, zzz })
-  .|Select|(8)(t => |new|(9) { t, lll = t.zzz })
-  .|Select|(10)(t => t.t.t.xxx |+|(11) t.t.t.yyy + t.t.zzz + t.lll);
+  .SelectMany(_ => args, (xxx, yyy) => |new|(4) { xxx, yyy })
+  .SelectMany(_ => args, (t, zzz) => |new|(5) { t, zzz })
+  .Select(t => |new|(6) { t, lll = t.zzz })
+  .Select(t => t.t.t.xxx |+|(7) t.t.t.yyy + t.t.zzz + t.lll);
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {xxx, yyy}
 (1): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{xxx, yyy}, zzz}
 (2): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation for range variables {{{xxx, yyy}, zzz}, lll}
 (3): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
-(4): ReSharper HeapView Allocation: Object allocation: LINQ method call
+(4): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
 (5): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
-(6): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(7): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
-(8): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(9): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
-(10): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(11): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
+(6): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(7): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)

@@ -6,8 +6,7 @@ var ys1 =
   select xxx |+|(0) yyy;
 
 var ys2 = args
-  .|Join|(1)(args, xxx => xxx, yyy => yyy, (xxx, yyy) => xxx |+|(2) yyy);
+  .Join(args, xxx => xxx, yyy => yyy, (xxx, yyy) => xxx |+|(1) yyy);
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: string concatenation
-(1): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(2): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation
