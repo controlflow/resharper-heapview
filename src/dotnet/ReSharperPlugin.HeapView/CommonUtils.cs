@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -21,7 +22,9 @@ public static class CommonUtils
   [Pure]
   public static bool IsStringConcatOperator(this IReference? reference)
   {
-    if (reference is (ISignOperator { IsPredefined: true } signOperator, _) && signOperator.ReturnType.IsString())
+    if (reference is (ISignOperator { IsPredefined: true } signOperator, _)
+        && signOperator.ReturnType.IsString()
+        && signOperator is not InterpolatedStringConcatenationOperator)
     {
       var predefined = CSharpPredefined.GetInstance(reference.GetTreeNode());
       return signOperator.Equals(predefined.BinaryPlusObjectString)

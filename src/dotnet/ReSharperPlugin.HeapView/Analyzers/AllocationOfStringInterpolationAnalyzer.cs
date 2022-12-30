@@ -5,11 +5,16 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
+
+// TODO: [ReSharper] fix RSRP-490846
 
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IInterpolatedStringExpression) },
@@ -21,6 +26,9 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
   {
     if (interpolatedStringExpression.IsInTheContextWhereAllocationsAreNotImportant())
       return;
+
+    if (IsConcatenatedContinuationOfInterpoledString(interpolatedStringExpression))
+      return; // allocations reported before
 
     switch (interpolatedStringExpression.GetInterpolatedStringKind())
     {
@@ -102,18 +110,65 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
   }
 
   [Pure]
-  private static bool CanCompileToStringConcat(IInterpolatedStringExpression interpolatedStringExpression)
+  private static bool IsConcatenatedContinuationOfInterpoledString(IInterpolatedStringExpression interpolatedStringExpression)
   {
-    foreach (var insert in interpolatedStringExpression.InsertsEnumerable)
-    {
-      if (insert.AlignmentExpression != null) return false;
-      if (insert.FormatSpecifier != null) return false;
+    var currentExpression = interpolatedStringExpression.GetContainingParenthesizedExpression();
 
-      var insertExpression = insert.Expression;
-      if (insertExpression == null || !insertExpression.GetExpressionType().ToIType().IsString()) return false;
+    while (AdditiveExpressionNavigator.GetByLeftOperand(currentExpression) is { OperatorReference: (InterpolatedStringConcatenationOperator, _) } byLeft)
+    {
+      currentExpression = byLeft.GetContainingParenthesizedExpression();
     }
 
-    return true;
+    var buRight = AdditiveExpressionNavigator.GetByRightOperand(currentExpression);
+    return buRight is { OperatorReference: (InterpolatedStringConcatenationOperator, _) };
+  }
+
+  [Pure]
+  private static bool CanCompileToStringConcat(IInterpolatedStringExpression interpolatedStringExpression)
+  {
+    // unwrap from all of concatenations first
+    var currentExpression = interpolatedStringExpression.GetContainingParenthesizedExpression();
+
+    while ((AdditiveExpressionNavigator.GetByLeftOperand(currentExpression)
+            ?? AdditiveExpressionNavigator.GetByRightOperand(currentExpression))
+           is { OperatorReference: (InterpolatedStringConcatenationOperator, _) } containing)
+    {
+      currentExpression = containing.GetContainingParenthesizedExpression();
+    }
+
+    return CheckAllInterpolations(currentExpression);
+
+    [Pure]
+    static bool CheckAllInterpolations(ICSharpExpression expressionToCheck)
+    {
+      switch (expressionToCheck.GetOperandThroughParenthesis())
+      {
+        case IInterpolatedStringExpression interpolatedStringExpression:
+        {
+          foreach (var insert in interpolatedStringExpression.InsertsEnumerable)
+          {
+            if (insert.AlignmentExpression != null) return false;
+            if (insert.FormatSpecifier != null) return false;
+
+            var insertExpression = insert.Expression;
+            if (insertExpression == null) return false;
+
+            var insertType = insertExpression.GetExpressionType();
+            if (!insertType.ToIType().IsString()) return false;
+          }
+
+          return true;
+        }
+
+        case IAdditiveExpression { OperatorReference: (InterpolatedStringConcatenationOperator, _) } additiveExpression:
+        {
+          return CheckAllInterpolations(additiveExpression.LeftOperand)
+              && CheckAllInterpolations(additiveExpression.RightOperand);
+        }
+
+        default: return false;
+      }
+    }
   }
 
   [Pure]

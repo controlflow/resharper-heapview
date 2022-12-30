@@ -87,4 +87,5 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestStringInterpolationCore03() { DoNamedTest2(); }
   [Test] public void TestStringInterpolationCore04() { DoNamedTest2(); }
   [Test] public void TestStringInterpolationCore05() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore06() { DoNamedTest2(); }
 }

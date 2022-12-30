@@ -13,6 +13,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+// TODO: 4-parameter overloads of string.Concat do exist
+
 [ElementProblemAnalyzer(
   ElementTypes: new[] { typeof(IAssignmentExpression), typeof(IAdditiveExpression) },
   HighlightingTypes = new[]
