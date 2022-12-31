@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -33,17 +35,18 @@ public static class ClosurelessOverloadSearcher
   }
 
   [Pure]
-  public static IParameter? FindClosureParameter(ICSharpExpression expression)
+  private static IParameter? FindClosureParameter(ICSharpExpression expression)
   {
     var containingExpression = expression.GetContainingParenthesizedExpressionStrict();
 
     var argument = CSharpArgumentNavigator.GetByValue(containingExpression);
     if (argument is
         {
+          Mode: null,
           MatchingParameter:
           {
             Expanded: ArgumentsUtil.ExpandedKind.None,
-            Element: { Type: IDeclaredType (IDelegate) } parameter
+            Element: { Type: IDeclaredType (IDelegate), Kind: ParameterKind.VALUE } parameter
           }
         })
     {
@@ -53,37 +56,56 @@ public static class ClosurelessOverloadSearcher
     return null;
   }
 
+  private static readonly Key<Dictionary<IDeclaredElement, bool>> HasAllocationlessOverloadKey = new(nameof(HasAllocationlessOverloadKey));
+
   [Pure]
-  public static IMethod? FindOverloadByParameter(IParameter parameter)
+  public static bool TryFindOverloadWithAdditionalStateParameter(ElementProblemAnalyzerData data, ICSharpExpression closureExpression)
   {
-    if (parameter.ContainingParametersOwner is not IMethod { ContainingType: { } containingType } invokedMethod)
-      return null;
+    var parameter = FindClosureParameter(closureExpression);
+    if (parameter is not { ContainingParametersOwner: IMethod { ContainingType: { } containingType } invokedMethod })
+      return false;
 
-    var invokedName = invokedMethod.ShortName;
-    var invokedIsStatic = invokedMethod.IsStatic;
-    var invokedReturnKind = invokedMethod.ReturnKind;
-    var invokedAccessRights = invokedMethod.GetAccessRights();
+    var cache = data.GetOrCreateDataUnderLock(HasAllocationlessOverloadKey, static () => new());
 
-    foreach (var typeMember in containingType.GetMembers())
+    lock (cache)
     {
-      if (typeMember is IMethod candidate
-          && !ReferenceEquals(candidate, invokedMethod)
-          && candidate.ShortName == invokedName
-          && candidate.IsStatic == invokedIsStatic
-          && candidate.ReturnKind == invokedReturnKind
-          && candidate.IsExtensionMethod == invokedMethod.IsExtensionMethod
-          && candidate.GetAccessRights() == invokedAccessRights)
+      if (!cache.TryGetValue(invokedMethod, out var hasOverload))
       {
-        if (CompareSignatures(invokedMethod, candidate, parameter))
-        {
-          return candidate;
-        }
+        cache[invokedMethod] = hasOverload = HasTStateOverload();
       }
+
+      return hasOverload;
     }
 
-    return null;
+    bool HasTStateOverload()
+    {
+      var invokedName = invokedMethod.ShortName;
+      var invokedIsStatic = invokedMethod.IsStatic;
+      var invokedReturnKind = invokedMethod.ReturnKind;
+      var invokedAccessRights = invokedMethod.GetAccessRights();
+
+      foreach (var typeMember in containingType.GetMembers())
+      {
+        if (typeMember is IMethod candidate
+            && !ReferenceEquals(candidate, invokedMethod)
+            && candidate.ShortName == invokedName
+            && candidate.IsStatic == invokedIsStatic
+            && candidate.ReturnKind == invokedReturnKind
+            && candidate.IsExtensionMethod == invokedMethod.IsExtensionMethod
+            && candidate.GetAccessRights() == invokedAccessRights)
+        {
+          if (CompareSignatures(invokedMethod, candidate, parameter))
+          {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
   }
 
+  [Pure]
   private static bool CompareSignatures(IMethod invokedMethod, IMethod candidate, IParameter closureParameter)
   {
     var invokedParameters = invokedMethod.Parameters;
@@ -98,10 +120,16 @@ public static class ClosurelessOverloadSearcher
 
     foreach (var (stateTypeParameterCandidate, equalitySubstitution) in EnumeratePossibleTStateTypeParameters(invokedTypeParameters, candidateTypeParameters))
     {
-      // compare signatures
+      if (TryCompare(stateTypeParameterCandidate, equalitySubstitution))
+        return true;
+    }
 
-      bool seenStateParameter = false; // note: not needed?
-      bool seenDelegateParameter = false;
+    return false;
+
+    bool TryCompare(ITypeParameter stateTypeParameterCandidate, ISubstitution equalitySubstitution)
+    {
+      var seenStateParameter = false;
+      var seenDelegateParameter = false;
 
       for (int invokedIndex = 0, candidateIndex = 0; candidateIndex < candidateParameters.Count;)
       {
@@ -135,7 +163,8 @@ public static class ClosurelessOverloadSearcher
           if (ReferenceEquals(invokedParameter, closureParameter))
           {
             if (CheckCandidateDelegateToHaveExtraStateParameterPassed(
-                  invokedParameterType, candidateParameterType, stateTypeParameterCandidate, equalitySubstitution))
+                  invokedParameterType, candidateParameterType, stateTypeParameterCandidate, equalitySubstitution)
+                && MatchParameterKinds(invokedParameter, candidateParameter))
             {
               seenDelegateParameter = true;
               invokedIndex++;
@@ -144,28 +173,17 @@ public static class ClosurelessOverloadSearcher
             }
           }
 
-          // may be delegate parameter
-          // may be TState parameter - skip
-
-          seenStateParameter = false; // todo: replace w return
-          break; // fail
+          return false; // failed match
         }
 
-        if (!MatchParameterKinds(invokedParameter, candidateParameter))
-        {
-          seenStateParameter = false; // todo: replace w return
-          break;
-        }
+        if (!MatchParameterKinds(invokedParameter, candidateParameter)) return false;
 
         invokedIndex++;
         candidateIndex++;
       }
 
-      if (seenStateParameter && seenDelegateParameter)
-        return true;
+      return seenStateParameter && seenDelegateParameter;
     }
-
-    return false;
 
     [Pure]
     static bool CheckCandidateDelegateToHaveExtraStateParameterPassed(
@@ -233,6 +251,7 @@ public static class ClosurelessOverloadSearcher
     }
   }
 
+  [Pure]
   private static IEnumerable<(ITypeParameter StateTypeParameter, ISubstitution EqualitySubstitution)> EnumeratePossibleTStateTypeParameters(
     IList<ITypeParameter> invokedTypeParameters, IList<ITypeParameter> candidateTypeParameters)
   {
@@ -281,7 +300,7 @@ public static class ClosurelessOverloadSearcher
     if (!candidateTypeParameter.Equals(stateParameterCandidate)) return false;
 
     if (parameter.IsParameterArray) return false;
-    if (parameter.Kind == ParameterKind.OUTPUT) return false;
+    if (parameter.Kind != ParameterKind.VALUE) return false;
     if (parameter.IsOptional) return false;
 
     return true;

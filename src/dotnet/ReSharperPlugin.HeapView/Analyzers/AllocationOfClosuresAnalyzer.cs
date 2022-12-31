@@ -364,14 +364,14 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
         consumer.AddHighlightingWithOverrides(
           new ImplicitCaptureWarning(closure, builder.ToString()), closureRange,
           overriddenOverlapResolve: OverlapResolveKind.WARNING);
-        TryReportClosurelessOverloads(closure, captures, consumer);
+        TryReportClosurelessOverloads(closure, captures, data, consumer);
         return;
       }
     }
 
     consumer.AddHighlighting(
       new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
-    TryReportClosurelessOverloads(closure, captures, consumer);
+    TryReportClosurelessOverloads(closure, captures, data, consumer);
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
@@ -476,7 +476,8 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
   }
 
-  private static void TryReportClosurelessOverloads(ICSharpClosure closure, IClosureCaptures captures, IHighlightingConsumer consumer)
+  private static void TryReportClosurelessOverloads(
+    ICSharpClosure closure, IClosureCaptures captures, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     var closureExpression = closure as ICSharpExpression;
     if (closureExpression == null) return;
@@ -484,19 +485,16 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     foreach (var capturedEntity in captures.CapturedEntities)
     {
       if (capturedEntity is ILocalFunction)
-      {
         return; // we can't pass local function as a TState parameter value w/o allocations
-      }
     }
+
+    // note: in reality we need to check how captures members are used inside the closure - TState overloads
+    // are usually pass state by value, so we can't express mutations of captured variables with such overloads
 
     var invocationReference = ClosurelessOverloadSearcher.FindMethodInvocationByArgument(closureExpression);
     if (invocationReference == null) return;
 
-    var parameter = ClosurelessOverloadSearcher.FindClosureParameter(closureExpression);
-    if (parameter == null) return;
-
-    var overloadWithStateParameter = ClosurelessOverloadSearcher.FindOverloadByParameter(parameter);
-    if (overloadWithStateParameter != null)
+    if (ClosurelessOverloadSearcher.TryFindOverloadWithAdditionalStateParameter(data, closureExpression))
     {
       var highlighting = new CanEliminateClosureCreationHighlighting(closureExpression);
       consumer.AddHighlighting(highlighting, invocationReference.GetDocumentRange());

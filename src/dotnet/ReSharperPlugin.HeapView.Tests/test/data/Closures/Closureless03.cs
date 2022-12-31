@@ -5,9 +5,9 @@ class Foo {
     // no
     var str1 = cachedValue.GetOrCreate(() => node.ToString());
     var str2 = cachedValue.GetOrCreate2(() => node.ToString());
+    var str4 = cachedValue.GetOrCreate4(() => node.ToString());
     // yes
     var str3 = cachedValue.GetOrCreate3(() => node.ToString());
-    var str4 = cachedValue.GetOrCreate4(() => node.ToString());
   }
 }
 

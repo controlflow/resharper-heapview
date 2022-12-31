@@ -5,9 +5,9 @@ class Foo {
     // no
     var str1 = cachedValue.GetOrCreate(() |=>|(1) node.ToString());
     var str2 = cachedValue.GetOrCreate2(() |=>|(2) node.ToString());
+    var str4 = cachedValue.GetOrCreate4(() |=>|(3) node.ToString());
     // yes
-    var str3 = cachedValue.|GetOrCreate3|(3)(() |=>|(4) node.ToString());
-    var str4 = cachedValue.|GetOrCreate4|(5)(() |=>|(6) node.ToString());
+    var str3 = cachedValue.|GetOrCreate3|(4)(() |=>|(5) node.ToString());
   }
 }
 
@@ -39,9 +39,8 @@ interface ITreeNode { }
 Capture of parameter 'node'
 (2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of parameter 'node'
-(3): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
-(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of parameter 'node'
-(5): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
-(6): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+(4): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
 Capture of parameter 'node'

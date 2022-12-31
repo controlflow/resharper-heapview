@@ -61,6 +61,7 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestClosureless02() { DoNamedTest2(); }
   [Test] public void TestClosureless03() { DoNamedTest2(); }
   [Test] public void TestClosureless04() { DoNamedTest2(); }
+  [Test] public void TestClosureless05() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]
