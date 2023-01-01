@@ -72,4 +72,5 @@ public class ClosureAllocationsNetFrameworkTest : ClosureAllocationsTestBase
 [TestNet70]
 public class ClosureAllocationsNetCoreTest : ClosureAllocationsTestBase
 {
+  [Test] public void TestStructClosureCore01() { DoNamedTest2(); }
 }

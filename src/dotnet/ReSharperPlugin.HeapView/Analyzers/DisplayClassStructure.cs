@@ -737,10 +737,29 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       var displayClass = Pool.Allocate();
       displayClass.ScopeNode = scopeNode;
-      displayClass.IsStruct = true;
+      displayClass.IsStruct = !HasContainingVarianceAnnotations(scopeNode);
       displayClass.IsReplacedWithInstanceMethods = false;
 
       return displayClass;
+    }
+
+    [Pure]
+    private static bool HasContainingVarianceAnnotations(ITreeNode scopeNode)
+    {
+      var containingTypeDeclaration = scopeNode.GetContainingNode<IClassLikeDeclaration>(returnThis: true);
+
+      for (var containingType = containingTypeDeclaration?.DeclaredElement; containingType != null; containingType = containingType.GetContainingType())
+      {
+        if (containingType is not IInterface interfaceType) break;
+
+        foreach (var typeParameter in interfaceType.TypeParameters)
+        {
+          if (typeParameter.Variance != TypeParameterVariance.INVARIANT)
+            return true;
+        }
+      }
+
+      return false;
     }
 
     public void Free()
@@ -765,7 +784,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     public DisplayClass? ContainingDisplayClass { get; set; }
 
-    public bool IsStruct { get; set; } = true;
+    public bool IsStruct { get; set; }
     public bool IsReplacedWithInstanceMethods { get; set; }
     public bool IsAllocationOptimized => IsStruct || IsReplacedWithInstanceMethods;
 
