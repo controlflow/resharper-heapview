@@ -1,0 +1,41 @@
+﻿public interface IWithDefaultMembers<T>
+{
+  void DefaultMethod(T x) { }
+}
+
+public interface IInherits : IWithDefaultMembers<int> {  }
+public interface IInherits2 : IWithDefaultMembers<int>, IWithDefaultMembers<string> {  }
+
+public struct SomeStruct1 : |IInherits|(0) { } // warn
+public struct SomeStruct2 : |IInherits2|(1) { } // warn
+
+public struct SomeStruct3 : |IInherits2|(2) // warn
+{
+  public void DefaultMethod(string x) { }
+}
+
+public struct WillNotBox : IInherits2
+{
+  public void DefaultMethod(int x) { }
+  public void DefaultMethod(string x) { }
+}
+
+public struct WillNotBox2 : IWithDefaultMembers<int>, IWithDefaultMembers<string>
+{
+  void IWithDefaultMembers<int>.DefaultMethod(int x) { }
+  void IWithDefaultMembers<string>.DefaultMethod(string x) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct1' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct1' values at runtime in generic code (where T : IInherits)
+(1): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct2' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+  void DefaultMethod(string)
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct2' values at runtime in generic code (where T : IInherits2)
+(2): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct3' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct3' values at runtime in generic code (where T : IInherits2)

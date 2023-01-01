@@ -1,0 +1,44 @@
+﻿// ReSharper disable ValueParameterNotUsed
+
+public interface IWithDefaultMembers
+{
+  public int Property
+  {
+    get => 1;
+    set { }
+  }
+}
+
+public struct SomeStruct1 : |IWithDefaultMembers|(0) { } // warn
+
+public struct SomeStruct2 : |IWithDefaultMembers|(1) // warn
+{
+  public int Property => 1;
+}
+
+public struct SomeStruct3 : |IWithDefaultMembers|(2) // warn
+{
+  public int Property
+  {
+    set { }
+  }
+}
+
+public struct WillNotBox : IWithDefaultMembers
+{
+  public int Property { get; set; }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct1' do not provides the implementations for the following interface members with default bodies:
+  int Property.get
+  int Property.set
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct1' values at runtime in generic code (where T : IWithDefaultMembers)
+(1): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct2' do not provides the implementations for the following interface members with default bodies:
+  int Property.set
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct2' values at runtime in generic code (where T : IWithDefaultMembers)
+(2): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct3' do not provides the implementations for the following interface members with default bodies:
+  int Property.get
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct3' values at runtime in generic code (where T : IWithDefaultMembers)

@@ -184,6 +184,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     }
   }
 
+  private static readonly ObjectPool<PooledHashSet<IDeclaredElement>> CapturesPool = PooledHashSet<IDeclaredElement>.CreatePool();
+
   private void FinalizeStructure()
   {
     // 1. Iteratively propagate local function captures into dislay class captures
@@ -193,7 +195,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       modified = false;
 
-      using var additionalCapturesByLocalFunction = PooledHashSet<IDeclaredElement>.GetInstance();
+      using var additionalCapturesByLocalFunction = CapturesPool.Allocate();
 
       foreach (var (_, currentCaptures) in myClosureToCaptures)
       {

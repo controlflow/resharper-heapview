@@ -17,7 +17,6 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   protected override bool HighlightingPredicate(
     IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
   {
-    // todo: return highlighting is PerformanceHighlightingBase;
     return highlighting is BoxingAllocationHighlighting or PossibleBoxingAllocationHighlighting;
   }
 
@@ -160,4 +159,8 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
   [Test] public void TestEnumHasFlagCore02() { DoNamedTest2(); }
 
   [Test] public void TestEnumGetHashCodeCore01() { DoNamedTest2(); }
+
+  [Test] public void TestDefaultMembersCore01() { DoNamedTest2(); }
+  [Test] public void TestDefaultMembersCore02() { DoNamedTest2(); }
+  [Test] public void TestDefaultMembersCore03() { DoNamedTest2(); }
 }

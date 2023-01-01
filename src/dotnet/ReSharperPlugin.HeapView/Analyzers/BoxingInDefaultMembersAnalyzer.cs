@@ -1,25 +1,25 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Impl;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
+using JetBrains.Util.DataStructures;
+using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// [ElementProblemAnalyzer(
-//   ElementTypes: new[]
-//   {
-//     typeof(ICSharpFunctionDeclaration),
-//     typeof(IExpressionBodyOwnerDeclaration),
-//   },
-//   HighlightingTypes = new[]
-//   {
-//     typeof(BoxingAllocationHighlighting),
-//     typeof(PossibleBoxingAllocationHighlighting)
-//   })]
-public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<ICSharpDeclaration>
+[ElementProblemAnalyzer(
+  ElementTypes: new[] { typeof(IClassLikeDeclaration) },
+  HighlightingTypes = new[] { typeof(PossibleBoxingAllocationHighlighting) })]
+public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassLikeDeclaration>
 {
   protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
   {
@@ -27,66 +27,172 @@ public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<ICSharp
   }
 
   protected override void Run(
-    ICSharpDeclaration declaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    IClassLikeDeclaration declaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    var typeDeclaration = declaration.GetContainingTypeDeclaration();
-    if (typeDeclaration is not IInterfaceDeclaration) return;
+    if (declaration.DeclaredElement is not IStruct structType) return;
 
-    var typeMemberDeclaration = declaration.GetContainingTypeMemberDeclarationIgnoringClosures(returnThis: true);
-    if (typeMemberDeclaration is not { IsStatic: false }) return;
+    var extendsList = declaration.ExtendsList;
+    if (extendsList == null) return;
 
-    var codeBody = declaration.GetCodeBody();
-    if (codeBody.GetAnyTreeNode() is not { } memberBody) return;
+    using var visitedInterfaceTypes = VisitedTypesPool.Allocate();
+    using var defaultMembers = DefaultMembersPool.Allocate();
 
-    if (memberBody is IConditionalAccessExpression conditionalAccessExpression1)
+    PooledHashSet<OverridableMemberInstance>? implementedMembers = null;
+    try
     {
-      CheckInstanceMethodInvocationFromDefaultMember(conditionalAccessExpression1, data, consumer);
-    }
-
-    foreach (var descendant in memberBody.CompositeDescendants())
-    {
-      if (descendant is IConditionalAccessExpression conditionalAccessExpression)
+      foreach (var typeUsage in extendsList.ExtendedInterfacesEnumerable)
       {
-        CheckInstanceMethodInvocationFromDefaultMember(conditionalAccessExpression, data, consumer);
+        if (typeUsage is not IUserTypeUsage
+            {
+              ScalarTypeName:
+              {
+                NameIdentifier: { } typeNameIdentifier,
+                Reference: (IInterface interfaceType, var substitution)
+              }
+            }) continue;
+
+        defaultMembers.Clear();
+
+        var extendedType = TypeFactory.CreateType(interfaceType, substitution, NullableAnnotation.Unknown);
+
+        if (visitedInterfaceTypes.Add(extendedType))
+        {
+          AppendDefaultMembersFrom(interfaceType, substitution);
+        }
+
+        foreach (var superType in extendedType.GetAllSuperTypes())
+        {
+          if (superType is (IInterface superInterface, var superSubstitution) && visitedInterfaceTypes.Add(superType))
+          {
+            AppendDefaultMembersFrom(superInterface, superSubstitution);
+          }
+        }
+
+        if (defaultMembers.Count > 0)
+        {
+          implementedMembers ??= ComputeAllImplementedMembers(structType);
+
+          defaultMembers.ExceptWith(implementedMembers);
+
+          if (defaultMembers.Count > 0)
+          {
+            ReportNotImplementedDefaultMembers(defaultMembers, structType, extendedType, typeNameIdentifier, consumer);
+          }
+        }
+
+        void AppendDefaultMembersFrom(IInterface iface, ISubstitution sub)
+        {
+          foreach (var defaultMember in GetAllInstanceDefaultMembers(iface, data))
+          {
+            defaultMembers.Add(new OverridableMemberInstance(defaultMember, sub));
+          }
+        }
       }
+    }
+    finally
+    {
+      implementedMembers?.Dispose();
     }
   }
 
-  private static void CheckInstanceMethodInvocationFromDefaultMember(
-    IConditionalAccessExpression conditionalAccessExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  private static void ReportNotImplementedDefaultMembers(
+    HashSet<OverridableMemberInstance> defaultMembers, IStruct structType, IDeclaredType superInterfaceType,
+    ICSharpIdentifier implementedInterfaceTypeName, IHighlightingConsumer consumer)
   {
-    switch (conditionalAccessExpression)
+    var kindAndName = DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.KIND_QUOTED_NAME_PRESENTER, structType).Text;
+
+    using var builder = PooledStringBuilder.GetInstance();
+    builder.Append(kindAndName.Capitalize()).AppendLine(" do not provides the implementations for the following interface members with default bodies:");
+
+    foreach (var defaultMember in defaultMembers)
     {
-      case IReferenceExpression referenceExpression
-        when referenceExpression.QualifierExpression.IsThisOrNull()
-             && !referenceExpression.IsSubpatternMemberAccessPart():
+      builder.Append("  ").AppendLine(DeclaredElementPresenter.Format(CSharpLanguage.Instance, MemberWithInterfaceQualificationPresenter, defaultMember).Text);
+    }
+
+    builder.AppendLine();
+    builder.Append("Using the default implementations of the interface members may result in boxing of the ");
+    builder.Append(kindAndName);
+    builder.Append(" values at runtime in generic code (where T : ");
+    builder.Append(superInterfaceType.GetPresentableName(implementedInterfaceTypeName.Language, CommonUtils.DefaultTypePresentationStyle));
+    builder.Append(")");
+
+    consumer.AddHighlighting(
+      new PossibleBoxingAllocationHighlighting(implementedInterfaceTypeName, builder.ToString()));
+  }
+
+  private static readonly DeclaredElementPresenterStyle MemberWithInterfaceQualificationPresenter = new()
+  {
+    ShowName = NameStyle.SHORT,
+    ShowParameterTypes = true,
+    ShowParameterNames = false,
+    ShowTypesQualified = false,
+    ShowExplicitInterfaceQualification = true,
+    ShowType = TypeStyle.DEFAULT
+  };
+
+  private static readonly ObjectPool<PooledHashSet<IType>> VisitedTypesPool = PooledHashSet<IType>.CreatePool(TypeEqualityComparer.Default);
+  private static readonly ObjectPool<PooledHashSet<OverridableMemberInstance>> DefaultMembersPool = PooledHashSet<OverridableMemberInstance>.CreatePool();
+
+  private static readonly Key<Dictionary<IInterface, IReadOnlyList<IOverridableMember>>> DefaultMembersInInterfaceKey = new(nameof(DefaultMembersInInterfaceKey));
+
+  [Pure]
+  private static PooledHashSet<OverridableMemberInstance> ComputeAllImplementedMembers(IStruct structType)
+  {
+    var implementedMembers = DefaultMembersPool.Allocate();
+    try
+    {
+      foreach (var typeMember in structType.GetMembers())
       {
-        var resolveResult = referenceExpression.Reference.Resolve();
-        if (!resolveResult.ResolveErrorType.IsAcceptable) return;
-
-        if (resolveResult.DeclaredElement is ITypeMember { IsStatic: false, ContainingType: IInterface } and (IProperty or IMethod or IEvent))
+        if (typeMember is IOverridableMember { IsStatic: false } overridableMember)
         {
-          consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
-            referenceExpression.NameIdentifier, "aa"));
+          foreach (var implementedMember in overridableMember.GetAllSuperMembers())
+          {
+            if (implementedMember.Member.ContainingType is IInterface)
+            {
+              implementedMembers.Add(implementedMember);
+            }
+          }
         }
+      }
+    }
+    catch
+    {
+      implementedMembers.Dispose();
+      throw;
+    }
 
-        break;
+    return implementedMembers;
+  }
+
+  [Pure]
+  private static IReadOnlyList<IOverridableMember> GetAllInstanceDefaultMembers(IInterface interfaceElement, ElementProblemAnalyzerData data)
+  {
+    var cache = data.GetOrCreateDataUnderLock(DefaultMembersInInterfaceKey, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
+
+    lock (cache)
+    {
+      if (!cache.TryGetValue(interfaceElement, out var defaultMembers))
+      {
+        cache[interfaceElement] = defaultMembers = CollectDefaultMembers();
       }
 
-      case IElementAccessExpression elementAccessExpression
-        when elementAccessExpression.Operand.GetOperandThroughParenthesis() is IThisExpression thisExpression:
+      return defaultMembers;
+    }
+
+    [Pure]
+    IReadOnlyList<IOverridableMember> CollectDefaultMembers()
+    {
+      var defaultMembers = new LocalList<IOverridableMember>();
+
+      foreach (var typeMember in interfaceElement.GetMembers())
       {
-        var resolveResult = elementAccessExpression.Reference.Resolve();
-        if (!resolveResult.ResolveErrorType.IsAcceptable) return;
-
-        if (resolveResult.DeclaredElement is IProperty { IsStatic: false, ContainingType: IInterface })
+        if (typeMember is IOverridableMember { IsStatic: false, IsVirtual: true } overridableMember and not (IProperty or IEvent))
         {
-          consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
-            thisExpression, "bb"));
+          defaultMembers.Add(overridableMember);
         }
-
-        break;
       }
+
+      return defaultMembers.ReadOnlyList();
     }
   }
 }
