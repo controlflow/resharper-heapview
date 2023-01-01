@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2022.3.0
 - Added support for ReSharper and Rider 2022.3
 - Detect boxing allocations because of not implemented default interface members
-- "Closure can be eliminated" inspection rewrite, simplification, fix a few issues
+- 'Closure can be eliminated' inspection rewrite, simplification, fix a few issues
 - Report allocations in C# string interpolation expressions
 - Report allocations in delegate/events operators
 - Rewritten analysis of string concatenations
