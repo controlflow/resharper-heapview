@@ -4,8 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## vNext
+## 2022.3.0
 - Added support for ReSharper and Rider 2022.3
+- Detect boxing allocations because of not implemented default interface members
+- "Closure can be eliminated" inspection rewrite, simplification, fix a few issues
+- Report allocations in C# string interpolation expressions
+- Report allocations in delegate/events operators
+- Rewritten analysis of string concatenations
+- Support for C# 10 and C# 11 constructs
+- Handle C# 11 static method delegate caching
+- Rewritten 'params' allocation analyzer
 
 ## 2022.2.0
 - Boxing allocations analysis was rewritten to match the recent compiler/runtime
