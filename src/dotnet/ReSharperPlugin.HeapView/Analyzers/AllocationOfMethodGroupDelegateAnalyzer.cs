@@ -28,7 +28,7 @@ public class AllocationOfMethodGroupDelegateAnalyzer : HeapAllocationAnalyzerBas
     if (!resolveErrorType.IsAcceptable) return;
 
     var parametersOwner = declaredElement as IParametersOwner;
-    if (parametersOwner == null) return;
+    if (parametersOwner is not (IMethod or ILocalFunction)) return;
 
     var delegateType = referenceExpression.TryFindTargetDelegateType();
     if (delegateType == null) return;
