@@ -1,5 +1,6 @@
 ﻿var s = new S();
 _ = s.GetType();
+_ = s.GetType(42);
 
 S? ns = s;
 _ = ns.GetType();

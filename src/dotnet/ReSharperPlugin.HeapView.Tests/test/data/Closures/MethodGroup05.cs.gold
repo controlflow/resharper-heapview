@@ -1,0 +1,13 @@
+﻿using System.Linq.Expressions;
+
+var f = |Local|(0);
+ref int Local() => throw null!;
+
+Expression expr = () |=>|(1) new C().Method;
+
+class C {
+  public void Method() { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'anonymous ref int delegate()' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: expression tree construction

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -21,24 +20,24 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 public abstract class Boxing
 {
-  private Boxing([NotNull] ITreeNode correspondingNode)
+  private Boxing(ITreeNode correspondingNode)
   {
     CorrespondingNode = correspondingNode;
   }
 
-  [NotNull] public ITreeNode CorrespondingNode { get; }
+  private ITreeNode CorrespondingNode { get; }
 
   protected abstract bool IsPossible { get; }
   protected virtual bool IsAnyPossible => IsPossible;
   protected virtual bool IsAllPossible => IsPossible;
   protected abstract void AppendReasons(
-    [NotNull] StringBuilder builder, [NotNull] string indent, bool presentPossible);
+    StringBuilder builder, string indent, bool presentPossible);
 
-  public abstract void Report([NotNull] IHighlightingConsumer consumer);
+  public abstract void Report(IHighlightingConsumer consumer);
 
-  [CanBeNull, Pure]
-  public static Boxing TryFind(
-    Conversion conversion, [NotNull] IExpressionType sourceExpressionType, [NotNull] IType targetType, [NotNull] ITreeNode correspondingNode)
+  [Pure]
+  public static Boxing? TryFind(
+    Conversion conversion, IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode)
   {
     switch (conversion.Kind)
     {
@@ -96,8 +95,7 @@ public abstract class Boxing
 
     return null;
 
-    [CanBeNull]
-    Boxing RefineBoxingConversionResult()
+    Boxing? RefineBoxingConversionResult()
     {
       var sourceType = sourceExpressionType.ToIType();
       if (sourceType is IDeclaredType (ITypeParameter, _) sourceTypeParameterType)
@@ -129,7 +127,7 @@ public abstract class Boxing
       return new Ordinary(sourceExpressionType, targetType, correspondingNode);
 
       [Pure]
-      static bool IsValueTypeOrEffectivelyTypeParameterType([NotNull] IType type)
+      static bool IsValueTypeOrEffectivelyTypeParameterType(IType type)
       {
         if (type.IsValueType())
           return true;
@@ -159,32 +157,39 @@ public abstract class Boxing
       }
     }
 
-    [CanBeNull]
-    Boxing RefineUnboxingConversionResult()
+    Boxing? RefineUnboxingConversionResult()
     {
       var sourceType = sourceExpressionType.ToIType();
 
       // yep, some "unboxing" conversions do actually cause boxing at runtime
       if (sourceType != null && targetType.Classify == TypeClassification.REFERENCE_TYPE)
       {
-        // value type to reference type
-        if (sourceType.Classify == TypeClassification.VALUE_TYPE)
-        {
-          return new Ordinary(sourceExpressionType, targetType, correspondingNode);
-        }
-
-        // unconstrained generic to reference type
-        return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
+        // value type parameter type to some random reference type
+        // unconstrained type parameter type to some random reference type
+        return new Ordinary(
+          sourceExpressionType, targetType, correspondingNode,
+          isPossible: sourceType.Classify != TypeClassification.VALUE_TYPE);
       }
 
       return null;
     }
   }
 
-  [CanBeNull] private static HashSet<ITypeParameter> TypeParametersInProgress;
+  [Pure]
+  public static Boxing Create(
+    IType sourceType,
+    IType targetType,
+    ITreeNode correspondingNode,
+    bool isPossible = false,
+    string messageFormat = "conversion from '{0}' to '{1}'")
+  {
+    return new Ordinary(sourceType, targetType, correspondingNode, isPossible, messageFormat);
+  }
 
-  [CanBeNull]
-  private static ITreeNode TryGetComponentNode([NotNull] ITreeNode nodeToHighlight, int componentIndex)
+  [ThreadStatic]
+  private static HashSet<ITypeParameter>? TypeParametersInProgress;
+
+  private static ITreeNode? TryGetComponentNode(ITreeNode nodeToHighlight, int componentIndex)
   {
     switch (nodeToHighlight)
     {
@@ -251,14 +256,19 @@ public abstract class Boxing
 
   private sealed class Ordinary : Boxing
   {
-    public Ordinary(IExpressionType sourceExpressionType, IType targetType, ITreeNode correspondingNode, bool isPossible = false)
+    public Ordinary(
+      IExpressionType sourceExpressionType,
+      IType targetType,
+      ITreeNode correspondingNode,
+      bool isPossible = false,
+      string messageFormat = "conversion from '{0}' to '{1}'")
       : base(correspondingNode)
     {
       IsPossible = isPossible;
 
-      var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
-      var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, TypePresentationStyle.Default).Text;
-      Reason = $"conversion from '{sourceTypeText}' to '{targetTypeText}'";
+      var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle).Text;
+      var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle).Text;
+      Reason = string.Format(messageFormat, sourceTypeText, targetTypeText);
     }
 
     public string Reason { get; }
@@ -294,7 +304,7 @@ public abstract class Boxing
 
   private sealed class InsideTupleConversion : Boxing
   {
-    public InsideTupleConversion([NotNull] IReadOnlyList<Boxing> componentBoxings, [NotNull] ITreeNode correspondingNode)
+    public InsideTupleConversion(IReadOnlyList<Boxing> componentBoxings, ITreeNode correspondingNode)
       : base(correspondingNode)
     {
       Assertion.Assert(componentBoxings.Count > 0);
@@ -302,7 +312,7 @@ public abstract class Boxing
       ComponentBoxings = componentBoxings;
     }
 
-    [NotNull] public IReadOnlyList<Boxing> ComponentBoxings { get; }
+    private IReadOnlyList<Boxing> ComponentBoxings { get; }
 
     protected override bool IsPossible
     {
@@ -415,8 +425,7 @@ public abstract class Boxing
         return true;
       }
 
-      [CanBeNull]
-      Ordinary TryFindSingleOrdinaryBoxing()
+      Ordinary? TryFindSingleOrdinaryBoxing()
       {
         var boxing = ComponentBoxings.SingleItem();
         while (boxing is InsideTupleConversion innerTupleBoxings)

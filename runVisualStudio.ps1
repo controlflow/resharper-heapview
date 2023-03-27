@@ -19,7 +19,6 @@ if (!(Test-Path "$UserProjectXmlFile")) {
     $SdkVersionNode = $PluginPropsXml.SelectSingleNode(".//SdkVersion")
     $VersionSplit = $SdkVersionNode.InnerText.Split(".")
     $MajorVersion = "$($VersionSplit[0]).$($VersionSplit[1])"
-    $MajorVersionShort = "$($MajorVersion[2])$($MajorVersion[3])$($MajorVersion[5])"
 
     # Determine download link
     $ReleaseUrl = "https://data.services.jetbrains.com/products/releases?code=RSU&type=eap&type=release&majorVersion=$MajorVersion"
@@ -41,7 +40,7 @@ if (!(Test-Path "$UserProjectXmlFile")) {
     Write-Output "Installing experimental hive"
     Invoke-Exe $InstallerFile "/VsVersion=$VisualStudioMajorVersion.0" "/SpecificProductNames=ReSharper" "/Hive=$RootSuffix" "/Silent=True"
 
-    $Installations = @(Get-ChildItem "$env:APPDATA\JetBrains\ReSharperPlatformVs$VisualStudioMajorVersion\v$($MajorVersionShort)_$VisualStudioInstanceId$RootSuffix\NuGet.Config")
+    $Installations = @(Get-ChildItem "$env:APPDATA\JetBrains\ReSharperPlatformVs$VisualStudioMajorVersion\vAny_$VisualStudioInstanceId$RootSuffix\NuGet.Config")
     if ($Installations.Count -ne 1) { Write-Error "Found no or multiple installation directories: $Installations" }
     $InstallationDirectory = $Installations.Directory
     Write-Host "Found installation directory at $InstallationDirectory"

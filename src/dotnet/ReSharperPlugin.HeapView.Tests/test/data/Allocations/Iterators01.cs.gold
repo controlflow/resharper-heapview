@@ -1,0 +1,46 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+
+// ReSharper disable ValueParameterNotUsed
+
+class Iterators
+{
+  public IEnumerable IteratorProperty01
+  {
+    get { yield break; }
+    set { }
+  }
+
+  public IEnumerable<int> IteratorProperty02 { get { yield break; } }
+  public static IEnumerable IteratorMethod01() { yield break; }
+  public static IEnumerable<int> IteratorMethod02() { yield break; }
+
+  public void Usage()
+  {
+    IEnumerable IteratorFunction01() { yield break; }
+    IEnumerable<int> IteratorFunction02() { yield break; }
+
+    _ = |IteratorProperty01|(0); // alloc
+    IteratorProperty01 = null!;
+    _ = nameof(IteratorProperty01);
+    _ = nameof(IteratorProperty01.GetEnumerator);
+
+    _ = |IteratorProperty02|(1); // alloc
+    _ = IteratorMethod01;
+    _ = |IteratorMethod01|(2)(); // alloc
+    _ = |IteratorMethod02|(3)(); // alloc
+    _ = |IteratorFunction01|(4)(); // alloc
+    _ = |IteratorFunction02|(5)(); // alloc
+
+    Expression unused = () |=>|(6) IteratorProperty01;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable' instance creation on iterator property access
+(1): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator property access
+(2): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable' instance creation on iterator method invocation
+(3): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator method invocation
+(4): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable' instance creation on iterator local function invocation
+(5): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator local function invocation
+(6): ReSharper HeapView Allocation: Object allocation: expression tree construction

@@ -1,0 +1,48 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+
+class Foreach
+{
+  public void Method(string str, string[] array, string[,] multiDimArray, dynamic dyn)
+  {
+    foreach (var _ in str) { }
+    foreach (var _ |in|(0) dyn) { } // alloc, IEnumerator
+    foreach (var _ in array) { }
+    foreach (var _ in multiDimArray) { }
+    foreach (var _ in List()) { }
+    foreach (var _ |in|(1) Enumerable()) { } // alloc
+    foreach (var _ in |IteratorMethod|(2)()) { }
+    foreach (var _ in |IteratorFunction|(3)()) { }
+    foreach (var _ |in|(4) MyCollection()) { } // alloc
+
+    IEnumerable<string> IteratorFunction() { yield break; }
+  }
+
+  public void Method2()
+  {
+    foreach (var _ in Enumerable()) { }
+    throw null!;
+  }
+
+  private List<string> List() => null!;
+  private IEnumerable<string> Enumerable() => null!;
+  private IEnumerable<string> IteratorMethod() { yield break; }
+  private MyCollection MyCollection() => null!;
+}
+
+class MyCollection : IEnumerable<string>
+{
+  public IEnumerator<string> GetEnumerator()
+  {
+    yield break;
+  }
+
+  IEnumerator IEnumerable.GetEnumerator() => |GetEnumerator|(5)();
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(1): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(2): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<string>' instance creation on iterator method invocation
+(3): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<string>' instance creation on iterator local function invocation
+(4): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(5): ReSharper HeapView Allocation: Object allocation: new 'IEnumerator<string>' instance creation on iterator method invocation

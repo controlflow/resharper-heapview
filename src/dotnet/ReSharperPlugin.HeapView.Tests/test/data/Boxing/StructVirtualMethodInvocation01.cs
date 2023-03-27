@@ -1,4 +1,7 @@
-﻿var s1 = new NoGetHashCodeOverride();
+﻿// ReSharper disable BaseObjectGetHashCodeCallInGetHashCode
+// ReSharper disable RedundantOverriddenMember
+
+var s1 = new NoGetHashCodeOverride();
 _ = checked((s1).GetHashCode)();
 
 var s2 = new WithGetHashCodeOverride();

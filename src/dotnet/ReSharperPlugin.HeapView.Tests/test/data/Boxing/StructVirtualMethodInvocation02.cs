@@ -1,4 +1,7 @@
-﻿struct NoGetHashCodeOverride
+﻿// ReSharper disable ConditionIsAlwaysTrueOrFalse
+#nullable disable
+
+struct NoGetHashCodeOverride
 {
   public int Method1() => GetHashCode();
   public bool Method2() => checked(this).Equals(null);

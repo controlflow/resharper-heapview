@@ -1,0 +1,27 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+// ReSharper disable ValueParameterNotUsed
+#pragma warning disable CS1998
+
+/// <summary>
+/// <see cref="IteratorProperty01"/>
+/// </summary>
+public class Iterators
+{
+  public IEnumerable IteratorProperty01 { get { yield break; } set { } }
+  public static async IAsyncEnumerable<int> IteratorMethod01() { yield break; }
+
+  public void Usage()
+  {
+    static async IAsyncEnumerable<int> IteratorFunction01() { yield break; }
+
+    _ = |IteratorProperty01|(0); // alloc
+    _ = IteratorMethod01;
+    _ = |IteratorMethod01|(1)(); // alloc
+    _ = |IteratorFunction01|(2)(); // alloc
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable' instance creation on iterator property access
+(1): ReSharper HeapView Allocation: Object allocation: new 'IAsyncEnumerable<int>' instance creation on iterator method invocation
+(2): ReSharper HeapView Allocation: Object allocation: new 'IAsyncEnumerable<int>' instance creation on iterator local function invocation

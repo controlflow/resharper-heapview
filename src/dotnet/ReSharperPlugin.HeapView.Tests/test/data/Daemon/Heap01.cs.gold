@@ -24,8 +24,8 @@ class HeapAllocations
     var t6 = |new|(4) {Foo = 123};
   }
 
-  private static readonly int[] |xs0 =|(5) {1, 2, 3};
-  private int[] |xs1 =|(6) {1, 2, 3};
+  private static readonly int[] xs0 |= {|(5)1, 2, 3};
+  private int[] xs1 |= {|(6)1, 2, 3};
   private static readonly int[] xs2 = |new|(7)[] {1, 2, 3};
   private int[] xs3 = |new|(8)[] {1, 2, 3};
 
@@ -37,40 +37,40 @@ class HeapAllocations
     var ts3 = |new|(12) string[] { };
     var ts4 = |new|(13)[] {1, 2, 3};
     var ts5 = |new|(14) int[2, 2];
-    int[] |ts6 =|(15) {},
-          |ts7 =|(16) {1,2,3};
+    int[] ts6 |= {|(15)},
+          ts7 |= {|(16)1,2,3};
   }
 
   public void M3()
   {
-    |P0|(17)();
-    |P0|(18)(1, 2);
-    |P0|(19)(1, 2, 3);
+    P0();
+    P0(|1|(17), 2);
+    P0(|1|(18), 2, 3);
     P0(null); // nothing
     P0(xs2); // nothing
-    |P1|(20)(1, "abc");
-    |P1|(21)(1, "abc", 1);
+    P1(1, "abc");
+    P1(1, "abc", |1|(19));
     P1(1, "abc", xs0); // nothing
     P1(1, "abc", null); // nothing
     P2(null); // nothing
-    |P2|(22)(null, null);
+    P2(|null|(20), null);
     P3<int>(xs0); // nothing
   }
 
   public void M4()
   {
-    var ts0 = |I0|(23)();
-    var ts1 = |I1|(24);
+    var ts0 = |I0|(21)();
+    var ts1 = |I1|(22);
     I1 = null; // nothing
   }
 
   public void M5()
   {
-    var xs = |new|(25) List<int>();
+    var xs = |new|(23) List<int>();
     IList<int> ys = xs;
 
     foreach (var i in xs) { }
-    foreach (var i |in|(26) ys) { }
+    foreach (var i |in|(24) ys) { }
   }
 
   public void M6(string s, int i)
@@ -80,26 +80,26 @@ class HeapAllocations
     GC.KeepAlive("aa" + bb);
     GC.KeepAlive("aa" + null);
     GC.KeepAlive(null + "bb");
-    GC.KeepAlive("bb" |+|(27) s);
-    GC.KeepAlive("bb" |+|(28) s + s);
-    GC.KeepAlive("bb" |+|(29) s + s + s);
-    GC.KeepAlive(string.|Concat|(30)("bb", s, s, s, s));
-    GC.KeepAlive("bb" |+|(31) s + s + s + s);
-    GC.KeepAlive("bb" |+|(32) s + ("bb" + "cvcv" + s) + s);
-    GC.KeepAlive("bb" |+|(33) s + s + s + s + s);
-    GC.KeepAlive("bb" |+|(34) s + s + (s + s + s));
-    GC.KeepAlive("bb" |+|(35) (s + s) + s + (s + s));
-    GC.KeepAlive("aa" |+|(36) |i|(37));
-    GC.KeepAlive(|i|(38) |+|(39) "aa");
+    GC.KeepAlive("bb" |+|(25) s);
+    GC.KeepAlive("bb" |+|(26) s + s);
+    GC.KeepAlive("bb" |+|(27) s + s + s);
+    GC.KeepAlive(string.Concat(|"bb"|(28), s, s, s, s));
+    GC.KeepAlive("bb" |+|(29) s + s + s + s);
+    GC.KeepAlive("bb" |+|(30) s + ("bb" + "cvcv" + s) + s);
+    GC.KeepAlive("bb" |+|(31) s + s + s + s + s);
+    GC.KeepAlive("bb" |+|(32) s + s + (s + s + s));
+    GC.KeepAlive("bb" + (s |+|(33) s) + s + (s + s));
+    GC.KeepAlive("aa" |+|(34) |i|(35));
+    GC.KeepAlive(|i|(36) |+|(37) "aa");
 
     string t = "asas";
-    t |+=|(40) "sdsdsd";
-    t |+=|(41) "sdsdsd";
+    t |+=|(38) "sdsdsd";
+    t |+=|(39) "sdsdsd";
 
-    s |+=|(42) "aaa";
-    s |+=|(43) "bb";
+    s |+=|(40) "aaa";
+    s |+=|(41) "bb";
 
-    GC.KeepAlive(t |+|(44) s);
+    GC.KeepAlive(t |+|(42) s);
   }
 
   private static void P0(params int[] xs) { }
@@ -116,48 +116,46 @@ class TestAttribute : Attribute
   public TestAttribute(Type[] xs, int a, params Type[] ys) { }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Object allocation: reference type creation
-(1): ReSharper HeapView Allocation: Object allocation: reference type creation
-(2): ReSharper HeapView Allocation: Possible object allocation: reference type creation
-(3): ReSharper HeapView Allocation: Object allocation: reference type creation
-(4): ReSharper HeapView Allocation: Object allocation: reference type instantiation
-(5): ReSharper HeapView Allocation: Object allocation: array instantiation
-(6): ReSharper HeapView Allocation: Object allocation: array instantiation
-(7): ReSharper HeapView Allocation: Object allocation: array creation
-(8): ReSharper HeapView Allocation: Object allocation: array creation
-(9): ReSharper HeapView Allocation: Object allocation: array creation
-(10): ReSharper HeapView Allocation: Object allocation: array creation
-(11): ReSharper HeapView Allocation: Object allocation: array creation
-(12): ReSharper HeapView Allocation: Object allocation: array creation
-(13): ReSharper HeapView Allocation: Object allocation: array creation
-(14): ReSharper HeapView Allocation: Object allocation: array creation
-(15): ReSharper HeapView Allocation: Object allocation: array instantiation
-(16): ReSharper HeapView Allocation: Object allocation: array instantiation
-(17): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(18): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(19): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(20): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(21): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(22): ReSharper HeapView Allocation: Object allocation: parameters array 'xs' creation
-(23): ReSharper HeapView Allocation: Object allocation: iterator method call
-(24): ReSharper HeapView Allocation: Object allocation: iterator property access
-(25): ReSharper HeapView Allocation: Object allocation: reference type creation
-(26): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(27): ReSharper HeapView Allocation: Object allocation: string concatenation
-(28): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
-(29): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands)
-(30): ReSharper HeapView Allocation: Object allocation: parameters array 'values' creation
-(31): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands) + params array allocation
-(32): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands) + params array allocation
-(33): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
-(34): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
-(35): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands) + params array allocation
-(36): ReSharper HeapView Allocation: Object allocation: string concatenation
-(37): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
-(38): ReSharper HeapView Boxing: Boxing allocation: conversion from value type 'int' to reference type 'object'
+(0): ReSharper HeapView Allocation: Object allocation: new 'string' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'object' instance creation
+(2): ReSharper HeapView Allocation: Possible object allocation: new instance creation if 'T' type parameter will be substituted with the reference type
+(3): ReSharper HeapView Allocation: Object allocation: new 'U' instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(10):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(11): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(12): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(13): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(14): ReSharper HeapView Allocation: Object allocation: new 'int[,]' array instance creation
+(15): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(16): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(17): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(18): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(19): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(20): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(21): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator method invocation
+(22): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' instance creation on iterator property access
+(23): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(24): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(25): ReSharper HeapView Allocation: Object allocation: string concatenation
+(26): ReSharper HeapView Allocation: Object allocation: string concatenation (3 operands)
+(27): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
+(28): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'values'
+(29): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands, allocates parameter array)
+(30): ReSharper HeapView Allocation: Object allocation: string concatenation (5 operands, allocates parameter array)
+(31): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
+(32): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
+(33): ReSharper HeapView Allocation: Object allocation: string concatenation (6 operands, allocates parameter array)
+(34): ReSharper HeapView Allocation: Object allocation: string concatenation
+(35): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(36): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(37): ReSharper HeapView Allocation: Object allocation: string concatenation
+(38): ReSharper HeapView Allocation: Object allocation: string concatenation
 (39): ReSharper HeapView Allocation: Object allocation: string concatenation
 (40): ReSharper HeapView Allocation: Object allocation: string concatenation
 (41): ReSharper HeapView Allocation: Object allocation: string concatenation
 (42): ReSharper HeapView Allocation: Object allocation: string concatenation
-(43): ReSharper HeapView Allocation: Object allocation: string concatenation
-(44): ReSharper HeapView Allocation: Object allocation: string concatenation

@@ -1,0 +1,19 @@
+﻿class Foo
+{
+  void Usage()
+  {
+    int |x|(0) = 0;
+
+    void Local()
+    {
+      x++;
+      System.Console.WriteLine(x);
+    }
+
+    var f = () |=>|(1) Local();
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' variable
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of variable 'x'

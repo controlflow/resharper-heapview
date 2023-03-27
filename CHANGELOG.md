@@ -4,11 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vNext
+- Added support for ReSharper and Rider 2023.1
+
+## 2022.3.0
+- Added support for ReSharper and Rider 2022.3
+- Detect boxing allocations because of not implemented default interface members
+- 'Closure can be eliminated' inspection rewrite, simplification, fix a few issues
+- Report allocations in C# string interpolation expressions
+- Report allocations in delegate/events operators
+- Rewritten analysis of string concatenations
+- Support for C# 10 and C# 11 constructs
+- Handle C# 11 static method delegate caching
+- Rewritten 'params' allocation analyzer
+
 ## 2022.2.0
 - Boxing allocations analysis was rewritten to match the recent compiler/runtime
 - Boxing is now detected in implicit extension method invocations (in deconstruction, foreach statement, await expression, collection initializers)
 - Boxing detection inside tuple conversions was completely rewritten (fix a few unrecognized allocations, better allocation reports, better highlighting placements when possible)
 - Boxing is now detected in Enumerable.Cast<T>() method invocations (including query expressions)
+- Boxing detection in type tests was completely rewritten, more boxing cases recognized in .NET Framework projects
+- Boxing is now detected when variables of unconstrained generic type are being checked for null via patterns
+- New options page to control the analysis mode - allows to hide or show the allocations that only happen in Release build with optimizations enabled
+- Added much more tests, currently reported boxing cases are verified in various runtimes/configurations
 - Added support for ReSharper and Rider 2022.2
 
 ## 2022.1.0

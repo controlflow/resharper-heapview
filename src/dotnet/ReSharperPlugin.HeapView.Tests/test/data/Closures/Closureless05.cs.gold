@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+
+|var|(0) holder = |new|(1) DataHolder();
+
+var list = |new|(2) List<bool>();
+
+string[] Local() => args;
+
+_ = holder.|VeryGeneric|(3)(42, list, (string t2, int x) |=>|(4) args, 'a'); // warn
+_ = holder.VeryGeneric(42, list, (string t2, int x) |=>|(5) Local(), 'a');
+
+class DataHolder
+{
+  public TResult VeryGeneric<T1, T2, TExtra, TResult>(int key, List<T1> list, Func<T2, int, TResult> factory, TExtra extra) => default!;
+  public TResult VeryGeneric<T1, T2, TExtra, TState, TResult>(int key, List<T1> list, TState state, Func<T2, int, TState, TResult> factory, TExtra extra) => default!;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Object allocation: new 'DataHolder' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'List<bool>' instance creation
+(3): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string,int,string[]>' instance creation
+Capture of parameter 'args'
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string,int,string[]>' instance creation
+Capture of parameter 'args'

@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <SdkVersion>2022.2.0</SdkVersion>
+    <SdkVersion>2023.1.0-eap03</SdkVersion>
 
     <Title>Heap Allocations Viewer</Title>
     <Description>Highlights local object allocations, boxing, delegates and closure creations points.</Description>

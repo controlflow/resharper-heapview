@@ -6,12 +6,14 @@ output
 /packages
 .gradle
 *.tmp
+.nuke
 
 # User-specific files
 *.suo
 *.user
 *.sln.docstates
 *.cache
+*.log
 
 # IDEs
 /.idea/*.iml

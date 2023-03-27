@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
+// ReSharper disable MoreSpecificForeachVariableTypeAvailable
 
-IAsyncEnumerable<int> xs = null;
+IAsyncEnumerable<int> xs = null!;
 
 await foreach (|object|(0) x in xs) { }
-
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

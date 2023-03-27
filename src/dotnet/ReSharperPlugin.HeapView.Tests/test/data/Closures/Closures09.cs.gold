@@ -1,0 +1,22 @@
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+
+int |x|(0) = 0;
+Func<int> func = () |=>|(1) x;
+var funcAnon = () |=>|(2) x;
+Expression exprAnon = () |=>|(3) x;
+Expression<Func<int>> exprFunc = () |=>|(4) x;
+var ys = from _ in args |where|(5) x > 0 |select|(6) x;
+---------------------------------------------------------
+(0):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' variable
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'x'
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'x'
+(3): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(4): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string,bool>' instance creation
+Capture of variable 'x'
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string,int>' instance creation
+Capture of variable 'x'

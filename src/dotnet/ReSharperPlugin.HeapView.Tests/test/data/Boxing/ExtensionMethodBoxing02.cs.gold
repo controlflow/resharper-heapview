@@ -1,4 +1,10 @@
-﻿var foo = new Foo();
+﻿#nullable enable
+// ReSharper disable NotAccessedVariable
+// ReSharper disable RedundantAssignment
+// ReSharper disable ArrangeVarKeywordsInDeconstructingDeclaration
+// ReSharper disable AssignmentIsFullyDiscarded
+
+var foo = new Foo();
 
 |var|(0) (a, b) = foo;
 |(a, b)|(1) = foo;

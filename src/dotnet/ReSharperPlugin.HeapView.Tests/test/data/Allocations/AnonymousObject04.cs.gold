@@ -1,0 +1,12 @@
+﻿using System.Linq;
+
+var ys1 =
+  from xxx in args
+  join yyy in args on xxx equals yyy
+  select xxx |+|(0) yyy;
+
+var ys2 = args
+  .Join(args, xxx => xxx, yyy => yyy, (xxx, yyy) => xxx |+|(1) yyy);
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation

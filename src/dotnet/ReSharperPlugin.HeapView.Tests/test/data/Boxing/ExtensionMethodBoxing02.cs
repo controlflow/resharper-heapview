@@ -1,3 +1,9 @@
+#nullable enable
+// ReSharper disable NotAccessedVariable
+// ReSharper disable RedundantAssignment
+// ReSharper disable ArrangeVarKeywordsInDeconstructingDeclaration
+// ReSharper disable AssignmentIsFullyDiscarded
+
 var foo = new Foo();
 
 var (a, b) = foo;

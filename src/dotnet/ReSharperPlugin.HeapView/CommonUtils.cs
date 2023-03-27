@@ -1,31 +1,41 @@
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace ReSharperPlugin.HeapView;
 
 public static class CommonUtils
 {
-  [Pure]
-  public static bool IsStringConcatOperatorReference([CanBeNull] this IReference reference)
+  public static readonly TypePresentationStyle DefaultTypePresentationStyle = TypePresentationStyle.Default with
   {
-    if (reference?.Resolve() is (ISignOperator { IsPredefined: true, Parameters: { Count: 2 } parameters }, _))
-    {
-      var lhsType = parameters[0].Type;
-      var rhsType = parameters[1].Type;
+    Options = TypePresentationStyle.Default.Options & ~TypePresentationOptions.IncludeNullableAnnotations
+  };
 
-      if (lhsType.IsString()) return rhsType.IsString() || rhsType.IsObject();
-      if (rhsType.IsString()) return lhsType.IsString() || lhsType.IsObject();
+  [Pure]
+  public static bool IsStringConcatOperator(this IReference? reference)
+  {
+    if (reference is (ISignOperator { IsPredefined: true } signOperator, _)
+        && signOperator.ReturnType.IsString()
+        && signOperator is not InterpolatedStringConcatenationOperator)
+    {
+      var predefined = CSharpPredefined.GetInstance(reference.GetTreeNode());
+      return signOperator.Equals(predefined.BinaryPlusObjectString)
+             || signOperator.Equals(predefined.BinaryPlusStringString)
+             || signOperator.Equals(predefined.BinaryPlusStringObject);
     }
 
     return false;
   }
 
   [Pure]
-  public static bool IsInTheContextWhereAllocationsAreNotImportant([NotNull] this ITreeNode context)
+  public static bool IsInTheContextWhereAllocationsAreNotImportant(this ITreeNode context)
   {
     if (context.IsUnderLinqExpressionTree())
       return true; // not a "real" code
@@ -47,7 +57,7 @@ public static class CommonUtils
   }
 
   [Pure]
-  private static bool NextStatementsExecutionAlwaysEndsWithThrowStatement([NotNull] ICSharpStatement statement)
+  private static bool NextStatementsExecutionAlwaysEndsWithThrowStatement(ICSharpStatement statement)
   {
     var nextStatement = statement.GetNextStatement(skipPreprocessor: false);
 
@@ -70,7 +80,8 @@ public static class CommonUtils
      */
     return false;
 
-    static bool HasControlFlowJumps([CanBeNull] ICSharpStatement statement, bool allowContinue = false, bool allowBreak = false)
+    [SuppressMessage("ReSharper", "TailRecursiveCall")]
+    static bool HasControlFlowJumps(ICSharpStatement? statement, bool allowContinue = false, bool allowBreak = false)
     {
       switch (statement)
       {
@@ -187,7 +198,7 @@ public static class CommonUtils
   }
 
   [Pure]
-  public static bool IsTypeParameterType(this IType type, out ITypeParameter typeParameter)
+  public static bool IsTypeParameterType(this IType type, [NotNullWhen(returnValue: true)] out ITypeParameter? typeParameter)
   {
     if (type is IDeclaredType declaredType)
     {
@@ -200,7 +211,8 @@ public static class CommonUtils
   }
 
   [Pure]
-  public static bool IsUnconstrainedGenericType(this IType type, out ITypeParameter typeParameter)
+  public static bool IsUnconstrainedGenericType(
+    this IType type, [NotNullWhen(returnValue: true)] out ITypeParameter? typeParameter)
   {
     if (type is IDeclaredType { Classify: TypeClassification.UNKNOWN } declaredType)
     {
@@ -212,5 +224,21 @@ public static class CommonUtils
     return false;
   }
 
+  [Pure]
+  public static IType? TryFindTargetDelegateType(this IReferenceExpression methodGroupExpression)
+  {
+    var targetType = methodGroupExpression.GetImplicitlyConvertedTo();
+    if (targetType.IsDelegateType())
+    {
+      return targetType;
+    }
 
+    var naturalType = methodGroupExpression.GetExpressionType().ToIType();
+    if (naturalType != null && naturalType.IsDelegateType())
+    {
+      return naturalType;
+    }
+
+    return null;
+  }
 }

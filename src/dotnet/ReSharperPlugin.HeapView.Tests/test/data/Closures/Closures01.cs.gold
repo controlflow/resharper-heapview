@@ -1,0 +1,5 @@
+﻿|var|(0) f = () |=>|(1) args;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'

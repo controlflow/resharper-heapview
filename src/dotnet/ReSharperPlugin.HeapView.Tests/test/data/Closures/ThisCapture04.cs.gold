@@ -1,0 +1,19 @@
+﻿class Foo {
+  int ThisCapture(int |param|(0)) {
+    var g = () |=>|(1) param;
+
+    {
+      var |t|(2) = 0;
+      var f = () |=>|(3) ThisCapture(param) + t;
+      return f();
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'param' parameter and 'this' reference
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'param'
+Implicit capture of 'this' reference (can cause memory leaks)
+(2):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 't' variable and containing closure ('param', 'this')
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'param', variable 't' and 'this' reference

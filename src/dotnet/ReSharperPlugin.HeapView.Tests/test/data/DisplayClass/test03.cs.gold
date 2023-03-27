@@ -8,9 +8,11 @@ Closures:
 > local function 'void Local3()'
     Captures:
     > local function 'Local2'
+    > local variable 'i'
 > local function 'void Local4()'
     Captures:
     > local function 'Local3'
+    > local variable 'i'
 Display classes:
   Display class #1
     Scope: ITopLevelCode 'int i = 0; void Local1() { } void Local2...'

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 
 var e = ConsoleKey.A;

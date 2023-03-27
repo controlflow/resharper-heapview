@@ -1,0 +1,12 @@
+﻿using System.Linq.Expressions;
+
+|Expression|(0) expr1 = () |=>|(1) 1;
+Expression expr2 = () |=>|(2) args;
+Expression expr3 = () |=>|(3) () => 1;
+Expression expr4 = () |=>|(4) () => args;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(2): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(3): ReSharper HeapView Allocation: Object allocation: expression tree construction
+(4): ReSharper HeapView Allocation: Object allocation: expression tree construction

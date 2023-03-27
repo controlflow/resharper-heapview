@@ -1,0 +1,8 @@
+﻿WithParams withParams = _ => { };
+withParams(|1|(0), 2, 3);
+withParams.Invoke(|1|(1), 2, 3);
+
+public delegate void WithParams(params int[] xs);
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'

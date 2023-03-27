@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -38,5 +37,6 @@ public sealed class PooledStack<T> : Stack<T>, IDisposable
     }
   }
 
-  [Pure] public static ObjectPool<PooledStack<T>> CreatePool() => new(static p => new(p));
+  [Pure, PublicAPI]
+  public static ObjectPool<PooledStack<T>> CreatePool() => new(static p => new(p));
 }

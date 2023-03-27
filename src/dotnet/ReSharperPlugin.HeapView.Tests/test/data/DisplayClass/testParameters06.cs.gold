@@ -60,7 +60,7 @@ Display classes:
     > lambda expression 'int () => parameter + local + 3'
 
 ========
-Owner: operator 'bool C.-(C parameter)'
+Owner: operator 'bool C.operator -(C parameter)'
 Closures:
 > lambda expression 'string () => parameter + "4" + local'
     Captures:

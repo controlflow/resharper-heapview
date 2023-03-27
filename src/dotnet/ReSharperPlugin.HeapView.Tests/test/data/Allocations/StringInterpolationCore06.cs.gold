@@ -1,0 +1,39 @@
+﻿// ReSharper disable UnusedVariable
+// ReSharper disable RedundantStringInterpolation
+#pragma warning disable CS0219
+
+public class StringInterpolationExpression
+{
+  public void Method(int value)
+  {
+    var string01 = "aaa" |+|(0) |$"|(1)bbb{value}"; // concat, alloc
+    var string02 = |$"|(2)aaa" + $"bbb{value}"; // alloc
+    var string03 = |$"|(3)bbb{value}" |+|(4) "aaa"; // alloc, concat
+    var string04 = |$"|(5)bbb{value}" + $"aaa"; // alloc
+    var string05 = |$"|(6)aaa{value}" + $"bbb{value}";
+    var string06 = ("A" |+|(7) |$"|(8)aaa{value}") + (|$"|(9)bbb{value}" + "B"); // concat 4x, no fuse
+    var string07 = (|$"|(10)aaa{value}" + $"bbb{value}") + $"ccc{value}"; // alloc
+    // TODO: [ReSharper] fix this, no concat here
+    var string08 = |$"|(11)aaa{value}" |+|(12) (|$"|(13)bbb{value}" + $"ccc{value}"); // alloc
+
+    var const01 = "aaa" + $"bbb";
+    var const02 = $"aaa" + "bbb";
+    var const03 = "aaa" + "bbb";
+    var const04 = $"aaa" + $"bbb";
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: string concatenation
+(1): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(4): ReSharper HeapView Allocation: Object allocation: string concatenation
+(5): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(7): ReSharper HeapView Allocation: Object allocation: string concatenation (4 operands, allocates parameter array)
+(8): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(10): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(11): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(12): ReSharper HeapView Allocation: Object allocation: string concatenation
+(13): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation

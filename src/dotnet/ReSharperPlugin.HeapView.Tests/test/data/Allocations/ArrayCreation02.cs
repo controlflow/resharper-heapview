@@ -1,0 +1,7 @@
+using System;
+
+if (args.Length > 0)
+{
+  var xs = new[] { 1, 2, 3 };
+  throw new Exception();
+}

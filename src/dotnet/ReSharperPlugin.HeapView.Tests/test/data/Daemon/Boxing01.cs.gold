@@ -22,24 +22,24 @@ namespace ConsoleApplication2
 
       object a = |123|(2);
       object b = o.Foo.|Bar|(3);
-      string s = "sdsdsdsds" |+|(4) 1;
+      string s = "sdsdsdsds" |+|(4) |1|(5);
 
-      var foo = |new|(5) Foo();
-      var bar = |new|(6) Bar();
+      var foo = |new|(6) Foo();
+      var bar = |new|(7) Bar();
 
-      foreach (var x |in|(7) foo) Console.WriteLine(x);
-      foreach (var x |in|(8) bar) Console.WriteLine(x);
-      foreach (var x in (dynamic) foo) Console.WriteLine(x);
+      foreach (var x |in|(8) foo) Console.WriteLine(x);
+      foreach (var x |in|(9) bar) Console.WriteLine(x);
+      foreach (var x |in|(10) (dynamic) foo) Console.WriteLine(x);
 
       var s1 = new S1();
       var s2 = new S2();
 
-      foreach (var x in |s1|(9)) Console.WriteLine(x);
-      foreach (var x |in|(10) s2) Console.WriteLine(x);
+      foreach (var x |in|(11) |s1|(12)) Console.WriteLine(x);
+      foreach (var x |in|(13) s2) Console.WriteLine(x);
 
-      |s1|(11).|Select|(12)(x => x + 1)
-        .|Where|(13)(x => x > 0)
-        .|Select|(14)(x => |new|(15)[] { x })
+      |s1|(14).Select(x => x + 1)
+        .Where(x => x > 0)
+        .Select(x => |new|(15)[] { x })
         .ToList()
         .ForEach(_ => { });
 
@@ -97,21 +97,21 @@ namespace ConsoleApplication2
 }
 
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Object allocation: reference type instantiation
-(1): ReSharper HeapView Allocation: Object allocation: reference type instantiation
+(0): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new anonymous type instance creation
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (4): ReSharper HeapView Allocation: Object allocation: string concatenation
-(5): ReSharper HeapView Allocation: Object allocation: reference type creation
-(6): ReSharper HeapView Allocation: Object allocation: reference type creation
-(7): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(8): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of the value type
-(10): ReSharper HeapView Allocation: Possible object allocation: enumerator allocation (except iterators or collection with cached enumerator)
-(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of the value type
-(12): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(13): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(14): ReSharper HeapView Allocation: Object allocation: LINQ method call
-(15): ReSharper HeapView Allocation: Object allocation: array creation
+(5): ReSharper HeapView Allocation: Object allocation: implicit 'ToString' invocation over 'int' value
+(6): ReSharper HeapView Allocation: Object allocation: new 'Foo' instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'Bar' instance creation
+(8): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(9): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(10): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(11): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of the value type
+(13): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<int>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(14): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S1' to 'IEnumerable<int>' requires boxing of the value type
+(15): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
 (16): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (17): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

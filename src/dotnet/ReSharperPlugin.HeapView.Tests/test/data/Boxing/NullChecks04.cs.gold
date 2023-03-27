@@ -1,0 +1,42 @@
+﻿// ReSharper disable RedundantPatternParentheses
+// ReSharper disable ArrangeRedundantParentheses
+// ReSharper disable MergeNestedPropertyPatterns
+
+struct NullChecks<TUnconstrained, TStruct, TClass>
+  where TUnconstrained : IFoo
+  where TStruct : struct, IFoo
+  where TClass : class, IFoo
+{
+  public TUnconstrained Unconstrained => default!;
+  public TClass Class => default!;
+  public TStruct Struct => default!;
+
+  public void Method()
+  {
+    _ = this is { Unconstrained: |null|(0) }; // yes in DEBUG
+    _ = this is { Unconstrained: (not |(null)|(1)) }; // yes in DEBUG
+    _ = this is { Class: null };
+    _ = this is { Class: not null };
+    _ = this is { Unconstrained.|Property|(2): 42 }; // yes in DEBUG
+    _ = this is { Class.Property: 42 };
+    _ = this is { Struct.Property: 42 };
+    _ = this is { Unconstrained: |{|(3) Property: 42 } }; // yes in DEBUG
+    _ = this is { Class: { Property: 42 } };
+    _ = this is { Struct: { Property: 42 } };
+
+    _ = Unconstrained is |{|(4) }; // yes in DEBUG
+    _ = Unconstrained is |{|(5) Property: 42 }; // yes in DEBUG
+  }
+}
+
+interface IFoo
+{
+  int Property { get; }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(1): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(2): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(3): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(4): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type
+(5): ReSharper HeapView Boxing: Possible boxing allocation: checking the value of unconstrained generic type 'TUnconstrained' for 'null' possibly requires boxing of the value type

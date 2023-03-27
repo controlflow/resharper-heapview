@@ -1,0 +1,16 @@
+﻿using System;
+
+|var|(0) f1 = new Func<string[]>(() |=>|(1) args);
+var f2 = new Func<string[]>(|delegate|(2) { return args; });
+Func<string[]> f3 = () |=>|(3) args;
+Func<string[]> f4 = new (() |=>|(4) args);
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'

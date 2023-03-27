@@ -1,0 +1,24 @@
+﻿var c = |new|(0) C();
+c = |new|(1)();
+
+var s = new S { };
+s = new();
+
+S? ns = new();
+ns = new();
+
+var r = |new|(2) R();
+r = |new|(3)();
+
+var rs = new RS();
+rs = new();
+
+class C { }
+struct S { }
+record R;
+record struct RS;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'C' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'C' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'R' instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'R' instance creation

@@ -1,0 +1,14 @@
+﻿[System.Runtime.CompilerServices.InterpolatedStringHandler]
+public class CustomHandler
+{
+  public CustomHandler Usage => $"aaa {|42|(0),-1} bbb {|true|(1)}";
+
+  public CustomHandler(int a, int b) { }
+
+  public void AppendFormatted(object o) { }
+  public void AppendFormatted(object o, object alignment) { }
+  public void AppendLiteral(string s) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type

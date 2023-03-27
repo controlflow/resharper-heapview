@@ -1,0 +1,5 @@
+﻿void M() { }
+var a1 = new Action(M);
+var a2 = new Action();
+Action a3 = new (M);
+---------------------------------------------------------

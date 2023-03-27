@@ -1,5 +1,4 @@
 using JetBrains.Application.Settings;
-using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -8,6 +7,7 @@ using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using ReSharperPlugin.HeapView.Analyzers;
 using ReSharperPlugin.HeapView.Highlightings;
+using ReSharperPlugin.HeapView.Settings;
 
 namespace ReSharperPlugin.HeapView.Tests;
 
@@ -26,6 +26,20 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestBoxing03() { DoNamedTest2(); }
   [Test] public void TestBoxing04() { DoNamedTest2(); }
   [Test] public void TestBoxing05() { DoNamedTest2(); }
+  [Test] public void TestBoxing06() { DoNamedTest2(); }
+  [Test] public void TestBoxing07() { DoNamedTest2(); }
+
+  [Test] public void TestNullChecks01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestNullChecks02() { DoNamedTest2(); }
+  [Test] public void TestNullChecks03() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestNullChecks04() { DoNamedTest2(); }
+  [Test] public void TestNullChecks05() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestNullChecks06() { DoNamedTest2(); }
+
+  [Test] public void TestConstrainedBoxing01() { DoNamedTest2(); }
 
   [Test] public void TestGenericBoxing01() { DoNamedTest2(); }
   [Test] public void TestGenericBoxing02() { DoNamedTest2(); }
@@ -40,6 +54,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestTuplesIndividualLeft01() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualLeft02() { DoNamedTest2(); }
   [Test] public void TestTuplesIndividualLeft03() { DoNamedTest2(); }
+  [Test] public void TestTuplesIndividualLeft04() { DoNamedTest2(); }
 
   [Test] public void TestTuplesForeach01() { DoNamedTest2(); }
   [Test] public void TestTuplesForeach02() { DoNamedTest2(); }
@@ -64,7 +79,9 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestStructVirtualMethodInvocation05() { DoNamedTest2(); }
   [Test] public void TestStructVirtualMethodInvocation06() { DoNamedTest2(); }
 
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestStructGetTypeInvocation01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation03() { DoNamedTest2(); }
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.ShowWithoutOptimizations)]
@@ -84,6 +101,12 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestLinqCast02() { DoNamedTest2(); }
   [Test] public void TestLinqCast03() { DoNamedTest2(); }
   [Test] public void TestLinqCast04() { DoNamedTest2(); }
+
+  [Test] public void TestPatternMatching01() { DoNamedTest2(); }
+  [Test] public void TestPatternMatching02() { DoNamedTest2(); }
+  [Test] public void TestPatternMatching03() { DoNamedTest2(); }
+  [Test] public void TestPatternMatching04() { DoNamedTest2(); }
+  [Test] public void TestPatternMatching05() { DoNamedTest2(); }
 }
 
 [TestNetFramework46]
@@ -93,10 +116,24 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
 
   [Test] public void TestStructMethodGroupFramework01() { DoNamedTest2(); }
   [Test] public void TestStructMethodGroupFramework02() { DoNamedTest2(); }
+
+  [Test] public void TestGenericUnboxingFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestPatternMatchingFramework04() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework05() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework06() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingFramework07() { DoNamedTest2(); }
+
+  [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestConstrainedBoxingFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestEnumHasFlagFramework01() { DoNamedTest2(); }
+
+  [Test] public void TestEnumGetHashCodeFramework01() { DoNamedTest2(); }
 }
 
-[TestNet60]
-[NullableContext(NullableContextKind.Disable)]
+[TestNet70]
 public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 {
   [Test] public void TestTuplesAwaitForeach01() { DoNamedTest2(); }
@@ -106,4 +143,26 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 
   [Test] public void TestStructMethodGroupCore01() { DoNamedTest2(); }
   [Test] public void TestStructMethodGroupCore02() { DoNamedTest2(); }
+
+  [Test] public void TestGenericUnboxingCore01() { DoNamedTest2(); }
+
+  [Test] public void TestPatternMatchingCore04() { DoNamedTest2(); }
+  [Test] public void TestPatternMatchingCore05() { DoNamedTest2(); }
+
+  [Test] public void TestStringInterpolationCore01() { DoNamedTest2(); }
+  [Test] public void TestStringInterpolationCore02() { DoNamedTest2(); }
+
+  [Test] public void TestConstrainedBoxingCore01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestConstrainedBoxingCore02() { DoNamedTest2(); }
+
+  [Test] public void TestEnumHasFlagCore01() { DoNamedTest2(); }
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
+  [Test] public void TestEnumHasFlagCore02() { DoNamedTest2(); }
+
+  [Test] public void TestEnumGetHashCodeCore01() { DoNamedTest2(); }
+
+  [Test] public void TestDefaultMembersCore01() { DoNamedTest2(); }
+  [Test] public void TestDefaultMembersCore02() { DoNamedTest2(); }
+  [Test] public void TestDefaultMembersCore03() { DoNamedTest2(); }
 }

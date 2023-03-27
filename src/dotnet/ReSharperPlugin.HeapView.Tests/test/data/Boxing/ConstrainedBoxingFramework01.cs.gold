@@ -1,0 +1,39 @@
+﻿// ReSharper disable RedundantCast
+
+class Constrained
+{
+  private void Concrete(SomeStruct some)
+  {
+    ((|IFoo|(0))some).Method();
+    _ = ((|IFoo|(1))some).Property;
+    _ = ((|IFoo|(2))some)[42];
+  }
+
+  private void Generic(SomeStruct some)
+  {
+    ((|IFoo|(3))some).Method();
+    _ = ((|IFoo|(4))some).Property;
+    _ = ((|IFoo|(5))some)[42];
+  }
+
+  private struct SomeStruct : IFoo
+  {
+    public int Method() => 42;
+    public int Property => 42;
+    public int this[int index] => index;
+  }
+
+  private interface IFoo
+  {
+    int Method();
+    int Property { get; }
+    int this[int index] { get; }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'SomeStruct' to 'IFoo' requires boxing of the value type

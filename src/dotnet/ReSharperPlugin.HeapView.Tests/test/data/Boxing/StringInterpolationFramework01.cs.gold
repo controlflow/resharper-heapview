@@ -1,0 +1,22 @@
+﻿class StringInterpolation
+{
+  public string Empty() => $"id";
+  public string Simple(int id) => $"id: {|id|(0)}";
+  public string TwoArgs(int id) => $"id: {|id|(1)} id2: {|id|(2)}";
+  public string ThreeArgs(int id) => $"id: {|id|(3)} id2: {|id|(4)} id3: {|id|(5)}";
+  public string FourArgs(int id) => $"id: {|id|(6)} id2: {|id|(7)} id3: {|id|(8)} id4: {|id|(9)}";
+  public string Broken(int id) => $"id: {|id|(10)} id2: {|id|(11)} id3: {}";
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(2): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(9): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(10): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

@@ -50,8 +50,8 @@ struct S {
 (7): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (8): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
 (9): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'int' to 'object' performs boxing of the value type
-(10): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
-(11): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
-(12): ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
-(13): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(10):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(11):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(12):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'bool' to 'object' requires boxing of the value type
+(13):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
 (14): ReSharper HeapView Boxing: Boxing allocation: tuple component conversion from 'short' to 'object' performs boxing of the value type

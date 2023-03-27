@@ -1,0 +1,49 @@
+﻿using System;
+
+|var|(0) holder = |new|(1) DataHolder();
+
+_ = holder.|NonGeneric01|(2)(() |=>|(3) args.Length); // warn
+_ = holder.NonGeneric01(args, a => a.Length);
+
+_ = holder.|NonGeneric02|(4)(() |=>|(5) args.Length); // warn
+_ = holder.NonGeneric02(a => a.Length, args);
+
+_ = holder.|NonGeneric03|(6)("aa", () |=>|(7) args.Length); // warn
+_ = holder.|NonGeneric03|(8)("aa", args, a |=>|(9) args.Length); // warn
+
+_ = holder.|WasGeneric|(10)(() |=>|(11) args); // warn
+
+
+class DataHolder
+{
+  public int NonGeneric01(Func<int> factory) => 0;
+  public int NonGeneric01<TState>(TState t, Func<TState, int> factory) => 0;
+
+  public int NonGeneric02(Func<int> factory) => 0;
+  public int NonGeneric02<TState>(Func<TState, int> factory, TState t) => 0;
+
+  public int NonGeneric03(string key, Func<int> factory) => 0;
+  public int NonGeneric03<TState>(string key, TState t, Func<TState, int> factory) => 0;
+  public int NonGeneric03<TState1, TState2>(string key, TState1 t1, TState2 t2, Func<TState1, TState2, int> factory) => 0;
+
+  public T WasGeneric<T>(Func<T> factory) => default!;
+  public T WasGeneric<T, TState>(TState t, Func<TState, T> factory) => default!;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Object allocation: new 'DataHolder' instance creation
+(2): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'args'
+(4): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'args'
+(6): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(7): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'args'
+(8): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(9): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[],int>' instance creation
+Capture of parameter 'args'
+(10): ReSharper Suggestion: Closure can be eliminated: method has overload to avoid closure creation
+(11): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'

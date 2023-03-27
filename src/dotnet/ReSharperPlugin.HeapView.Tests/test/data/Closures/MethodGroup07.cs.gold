@@ -1,0 +1,17 @@
+﻿#nullable disable
+using System;
+
+Func<object> func1 = Variance.Static<string>;
+Func<object> func2 = Variance.Static<object>;
+Func<object> func3 = |new|(0)(Variance.Static<string>); // alloc
+Func<object> func3 = |new|(1) Variance().|Instance|(2)<string>; // alloc
+
+public class Variance
+{
+  public static T Static<T>() => default;
+  public T Instance<T>() => default;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Func<object>' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'Variance' instance creation
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<object>' instance creation

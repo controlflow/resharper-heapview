@@ -1,0 +1,6 @@
+﻿record Base(params int[] Items);
+record Derived1(int X) : Base;
+record Derived2(int Y) : Base();
+record Derived3(int Z) : Base(|Z|(0)); // alloc
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'Items'

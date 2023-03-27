@@ -2,24 +2,24 @@
 
 public struct S {
   void M() {
-    Action a = this.||M|(0)|(1), // alloc
+    Action a = |this|(0).|M|(1), // alloc
            a2 = ||M|(2)|(3); // alloc
     string s = nameof(this.M);
-    Action b = this.|E|(4); // error
+    Action b = this.E; // error
   }
 
   void Generic<T>(T t) where T : I {
-    Action a = t.||M|(5)|(6); // possible
+    Action a = |t|(4).|M|(5); // possible
     string s = nameof(t.M);
-    Action b = t.|E2|(7); // error
+    Action b = t.E2; // error
   }
 
   void Generic2<T>(T t) where T : class, I {
-    Action a = t.|M|(8);
+    Action a = t.|M|(6);
   }
 
   void Generic3<T>(T t) where T : struct, I {
-    Action a = t.||M|(9)|(10); // alloc
+    Action a = |t|(7).|M|(8); // alloc
   }
 }
 
@@ -33,13 +33,11 @@ public interface I {
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(1): ReSharper HeapView Allocation: Delegate allocation: from method group
-(2): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(3): ReSharper HeapView Allocation: Delegate allocation: from method group
-(4): ReSharper HeapView Allocation: Delegate allocation: from method group
-(5): ReSharper HeapView Allocation: Delegate allocation: from method group
-(6): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type if 'T' type parameter will be substituted with the value type
-(7): ReSharper HeapView Allocation: Delegate allocation: from method group
-(8): ReSharper HeapView Allocation: Delegate allocation: from method group
-(9): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
-(10): ReSharper HeapView Allocation: Delegate allocation: from method group
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(2):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(4): ReSharper HeapView Boxing: Possible boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type if 'T' type parameter will be substituted with the value type
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(7): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'T' instance method to 'Action' delegate type
+(8): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation

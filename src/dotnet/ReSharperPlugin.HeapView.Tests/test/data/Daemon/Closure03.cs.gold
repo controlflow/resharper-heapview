@@ -9,105 +9,142 @@ public class Initializers {
 
 public class BlockBodies {
   static BlockBodies() {
-    |var x|(6) = 0;
+    var |x|(6) = 0;
     F(() |=>|(7) x);
   }
 
-  public BlockBodies(int x) {
-    F(() |=>|(8) x);
+  public BlockBodies(int |x|(8)) {
+    F(() |=>|(9) x);
   }
 
-  public void Method(int x) {
-    F(() |=>|(9) x);
+  public void Method(int |x|(10)) {
+    F(() |=>|(11) x);
   }
 
   public Func<int> Property {
     get {
-      |var x|(10) = 0;
-      return () |=>|(11) x;
+      var |x|(12) = 0;
+      return () |=>|(13) x;
     }
-    set {
-      F(() |=>|(12) value());
+    |set|(14) {
+      F(() |=>|(15) value());
     }
   }
 
   public int this[int x] {
-    get {
-      F(() |=>|(13) x);
+    |get|(16) {
+      F(() |=>|(17) x);
       return x;
     }
-    set {
-      F(() |=>|(14) value);
+    |set|(18) {
+      F(() |=>|(19) value);
     }
   }
 
-  public static implicit operator BlockBodies(int x) {
-    F(() |=>|(15) x);
+  public static implicit operator BlockBodies(int |x|(20)) {
+    F(() |=>|(21) x);
     return null;
   }
 
-  public static Func<int> operator+(BlockBodies _, int x) {
-    return () |=>|(16) x;
+  public static Func<int> operator+(BlockBodies _, int |x|(22)) {
+    return () |=>|(23) x;
   }
 
   private static extern void F(Func<int> f);
 }
 
 public class ExpressionBodies {
-  static ExpressionBodies() => F(|x|(17) => () |=>|(18) x);
-  public ExpressionBodies(int x) => F(() |=>|(19) x);
+  static ExpressionBodies() => F(|x|(24) => () |=>|(25) x);
+  public ExpressionBodies(int |x|(26)) => F(() |=>|(27) x);
 
-  public void Method(int x) => F(() |=>|(20) x);
+  public void Method(int |x|(28)) => F(() |=>|(29) x);
 
-  public Func<int, Func<int>> Property => |x|(21) => () |=>|(22) x;
-  public int this[int x] => F(() |=>|(23) x);
+  public Func<int, Func<int>> Property => |x|(30) => () |=>|(31) x;
+  public int this[int |x|(32)] => F(() |=>|(33) x);
 
   public int GetSetProperty {
-    get => F(|x|(24) => () |=>|(25) x);
-    set => F(() |=>|(26) value);
+    get => F(|x|(34) => () |=>|(35) x);
+    |set|(36) => F(() |=>|(37) value);
   }
 
   public int this[int x, int y] {
-    get => F(() |=>|(27) x);
-    set => F(() |=>|(28) value + y);
+    |get|(38) => F(() |=>|(39) x);
+    |set|(40) => F(() |=>|(41) value + y);
   }
 
-  public static implicit operator int(ExpressionBodies _) => F(|x|(29) => () |=>|(30) x);
-  public static int operator +(ExpressionBodies _, int x) => F(() |=>|(31) x);
+  public static implicit operator int(ExpressionBodies _) => F(|x|(42) => () |=>|(43) x);
+  public static int operator +(ExpressionBodies _, int |x|(44)) => F(() |=>|(45) x);
 
   private static extern int F(Func<int> f);
   private static extern int F(Func<int, Func<int>> f);
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(1): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(2): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(3): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(4): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(5): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(6): ReSharper HeapView Allocation: Closure allocation: 'x' variable
-(7): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' variable
-(8): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(9): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(10): ReSharper HeapView Allocation: Closure allocation: 'x' variable
-(11): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' variable
-(12): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
-(13): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(14): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
-(15): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(16): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(17): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(18): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(19): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(20): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(21): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(22): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(23): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(24): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(25): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(26): ReSharper HeapView Allocation: Delegate allocation: capture of 'value' parameter
-(27): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(28): ReSharper HeapView Allocation: Delegate allocation: capture of 'value', 'y' parameters
-(29): ReSharper HeapView Allocation: Closure allocation: 'x' parameter
-(30): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
-(31): ReSharper HeapView Allocation: Delegate allocation: capture of 'x' parameter
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(2): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(4): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(6):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' variable
+(7): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'x'
+(8): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(9): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(10): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(11): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(12):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'x' variable
+(13): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'x'
+(14): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
+(15): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'value'
+(16): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(17): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(18): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
+(19): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'value'
+(20): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(21): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(22): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(23): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(24): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(25): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(26): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(27): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(28): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(29): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(30): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(31): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(32): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(33): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(34): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(35): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(36): ReSharper HeapView Allocation: Closure allocation: capture of 'value' parameter
+(37): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'value'
+(38): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(39): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(40): ReSharper HeapView Allocation: Closure allocation: capture of 'y' parameter and 'value' parameter
+(41): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameters 'y' and 'value'
+(42): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(43): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'
+(44): ReSharper HeapView Allocation: Closure allocation: capture of 'x' parameter
+(45): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'x'

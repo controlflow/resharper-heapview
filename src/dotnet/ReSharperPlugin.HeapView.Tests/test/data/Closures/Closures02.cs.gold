@@ -1,0 +1,6 @@
+﻿var |xs|(0) = args;
+var f = () |=>|(1) xs;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'xs' variable
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of variable 'xs'

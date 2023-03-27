@@ -1,21 +1,21 @@
 ﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
+using JetBrains.Annotations;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using ReSharperPlugin.HeapView.Highlightings;
 
-// ReSharper disable UnassignedField.Global
 #pragma warning disable 649
-
-// todo: extract constants
 
 namespace ReSharperPlugin.HeapView.VisualStudio;
 
-[ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
- Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),
- Export(typeof(EditorFormatDefinition)), Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID),
- DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), UserVisible(true)]
+[ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+[Export(typeof(EditorFormatDefinition))]
+[Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[DisplayName(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID)]
+[UserVisible(true)]
 internal class ReSharperBoxingOccurrenceClassificationDefinition : ClassificationFormatDefinition
 {
   public ReSharperBoxingOccurrenceClassificationDefinition()
@@ -25,11 +25,12 @@ internal class ReSharperBoxingOccurrenceClassificationDefinition : Classificatio
   }
 
   [Export, Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
-[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
 [Export(typeof(EditorFormatDefinition))]
 [Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
 [DisplayName(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID)]
@@ -43,11 +44,12 @@ internal class ReSharperHeapAllocationClassificationDefinition : ClassificationF
   }
 
   [Export, Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.STRUCT_COPY_ID)]
-[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name),]
+[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
 [Export(typeof(EditorFormatDefinition))]
 [Name(HeapViewAttributeIds.STRUCT_COPY_ID)]
 [DisplayName(HeapViewAttributeIds.STRUCT_COPY_ID)]
@@ -61,7 +63,8 @@ internal class ReSharperStructCopyClassificationDefinition : ClassificationForma
   }
 
   [Export, Name(HeapViewAttributeIds.STRUCT_COPY_ID), BaseDefinition("formal language")]
-  internal ClassificationTypeDefinition ClassificationTypeDefinition;
+  [UsedImplicitly]
+  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }
 
 [Export(typeof(EditorFormatDefinition))]

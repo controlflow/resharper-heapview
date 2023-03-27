@@ -5,12 +5,12 @@
   where TUnconstrained : I
 {
   var tcm = tc.Method;
-  var tvm = tv.|Method|(0);
-  var tum = tu.|Method|(1);
+  var tvm = |tv|(0).Method;
+  var tum = |tu|(1).Method;
 
   var tcg = tc.GetHashCode;
-  var tvg = tv.|GetHashCode|(2);
-  var tug = tu.|GetHashCode|(3);
+  var tvg = |tv|(2).GetHashCode;
+  var tug = |tu|(3).GetHashCode;
 }
 
 interface I

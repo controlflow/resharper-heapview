@@ -1,0 +1,19 @@
+﻿using static System.Activator;
+
+void Generic<TUnconstrained>()
+{
+  |CreateInstance|(0)<int>(); // yes in .NET Framework
+  |CreateInstance|(1)<string>(); // yes
+  |CreateInstance|(2)<TUnconstrained>(); // yes in .NET Framework
+
+  |CreateInstance|(3)(typeof(int)); // yes
+  |CreateInstance|(4)(typeof(string)); // yes
+  |CreateInstance|(5)(typeof(TUnconstrained)); // yes
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type
+(1): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type
+(2): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type
+(3): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type
+(4): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type
+(5): ReSharper HeapView Allocation: Object allocation: new instance creation or boxing of the value type

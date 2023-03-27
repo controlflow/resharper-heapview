@@ -1,0 +1,49 @@
+﻿public interface IWithDefaultMembers
+{
+  void DefaultMethod(int x) { }
+  void DefaultMethod(string x) { }
+  public static virtual void StaticDefaultMethod() { }
+}
+
+public interface IUsualInterface
+{
+  void AbstractMethod(bool f);
+}
+
+public struct SomeStruct : |IWithDefaultMembers|(0) { } // warn
+public record struct RecordStruct : |IWithDefaultMembers|(1);
+
+public struct WillNotBox : IWithDefaultMembers, IUsualInterface
+{
+  public void DefaultMethod(int x) { }
+  public void DefaultMethod(string x) { }
+  public void AbstractMethod(bool f) { }
+}
+
+public struct WillNotBox2 : IUsualInterface, IWithDefaultMembers
+{
+  void IWithDefaultMembers.DefaultMethod(int x) { }
+  void IWithDefaultMembers.DefaultMethod(string x) { }
+  void IUsualInterface.AbstractMethod(bool f) { }
+}
+
+public struct WillBoxSometimes : IUsualInterface, |IWithDefaultMembers|(2)
+{
+  void IWithDefaultMembers.DefaultMethod(string x) { }
+  void IUsualInterface.AbstractMethod(bool f) { }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'SomeStruct' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+  void DefaultMethod(string)
+
+Using the default implementations of the interface members may result in boxing of the struct 'SomeStruct' values at runtime in generic code (where T : IWithDefaultMembers)
+(1): ReSharper HeapView Boxing: Possible boxing allocation: Record struct 'RecordStruct' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+  void DefaultMethod(string)
+
+Using the default implementations of the interface members may result in boxing of the record struct 'RecordStruct' values at runtime in generic code (where T : IWithDefaultMembers)
+(2): ReSharper HeapView Boxing: Possible boxing allocation: Struct 'WillBoxSometimes' do not provides the implementations for the following interface members with default bodies:
+  void DefaultMethod(int)
+
+Using the default implementations of the interface members may result in boxing of the struct 'WillBoxSometimes' values at runtime in generic code (where T : IWithDefaultMembers)

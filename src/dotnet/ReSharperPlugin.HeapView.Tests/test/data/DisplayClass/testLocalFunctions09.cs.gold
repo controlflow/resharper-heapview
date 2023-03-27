@@ -6,6 +6,7 @@ Closures:
 > local function 'void Local2()'
     Captures:
     > local function 'Local1'
+    > local variable 'i'
 > local function 'void Local1()'
     Captures:
     > local variable 'a'

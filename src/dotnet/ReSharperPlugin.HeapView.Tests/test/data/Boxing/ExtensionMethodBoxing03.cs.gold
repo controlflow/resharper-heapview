@@ -16,4 +16,4 @@ static class Extensions
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type
+(0):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'Foo' to 'IFoo' requires boxing of the value type

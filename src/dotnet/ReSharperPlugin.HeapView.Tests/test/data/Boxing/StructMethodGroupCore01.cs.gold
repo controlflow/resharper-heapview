@@ -3,15 +3,15 @@
 var s = new S();
 
 checked(s.Method)();
-var naturalType = s.|Method|(0);
-var naturalFunc = s.|Func|(1);
-Action action = s.|Method|(2);
-object obj = s.|Method|(3);
-Delegate del = s.|Method|(4);
-var customDelegate = s.|Custom|(5);
-var toString = s.|ToString|(6);
-Func<int> ghc = s.|GetHashCode|(7);
-var equals = s.|Equals|(8);
+var naturalType = |s|(0).Method;
+var naturalFunc = |s|(1).Func;
+Action action = |s|(2).Method;
+object obj = |s|(3).Method;
+Delegate del = |s|(4).Method;
+var customDelegate = |s|(5).Custom;
+var toString = |s|(6).ToString;
+Func<int> ghc = |s|(7).GetHashCode;
+var equals = |s|(8).Equals;
 var name = nameof(s.Method);
 
 struct S
@@ -27,6 +27,6 @@ struct S
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (4): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (5): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'anonymous int delegate(ref int)' delegate type
-(6): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<string?>' delegate type
+(6): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<string>' delegate type
 (7): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
-(8): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<object?,bool>' delegate type
+(8): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<object,bool>' delegate type

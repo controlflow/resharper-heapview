@@ -26,4 +26,4 @@ struct S : I {
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of value type
+(0): ReSharper HeapView Boxing: Boxing allocation: conversion from 'S' to 'I' requires boxing of the value type

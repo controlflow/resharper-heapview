@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+class Foreach
+{
+  public void Spans(Span<char> xs)
+  {
+    foreach (var _ in xs) { }
+  }
+
+  public async void Method(IAsyncEnumerable<string> asyncEnumerable)
+  {
+    await foreach (var _ |in|(0) asyncEnumerable) { } // alloc
+    await foreach (var _ in |IteratorMethod|(1)()) { }
+  }
+
+  private async IAsyncEnumerable<string> IteratorMethod() { yield break; }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: new 'IAsyncEnumerator<string>' instance creation on 'GetAsyncEnumerator()' call (except when it's cached by the implementation)
+(1): ReSharper HeapView Allocation: Object allocation: new 'IAsyncEnumerable<string>' instance creation on iterator method invocation

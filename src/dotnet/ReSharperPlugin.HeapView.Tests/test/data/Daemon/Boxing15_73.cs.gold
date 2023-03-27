@@ -21,7 +21,7 @@ class StringConcat {
     s |+=|(24) |b|(25);
     s |+=|(26) |n|(27);
     s |+=|(28) |t|(29);
-    return $"id: {|i|(30)} {s}"; // box
+    return |$"|(30)id: {|i|(31)} {s}"; // box
   }
 }
 
@@ -58,4 +58,5 @@ struct HasToString { public override string ToString() => ""; }
 (27): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T?' to 'object' requires boxing of the value type
 (28): ReSharper HeapView Allocation: Object allocation: string concatenation
 (29): ReSharper HeapView Boxing: Boxing allocation: conversion from 'T' to 'object' requires boxing of the value type
-(30): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(30): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(31): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type

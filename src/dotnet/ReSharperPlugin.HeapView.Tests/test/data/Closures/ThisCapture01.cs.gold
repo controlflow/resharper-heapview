@@ -1,0 +1,9 @@
+﻿class Foo {
+  void ThisCapture() {
+    var f = () |=>|(0) ThisCapture();
+    f();
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+Capture of 'this' reference

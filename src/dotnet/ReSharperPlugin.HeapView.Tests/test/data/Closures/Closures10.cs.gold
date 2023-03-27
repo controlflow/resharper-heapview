@@ -1,0 +1,18 @@
+﻿using System;
+
+public class C
+{
+  public void M(Func<int> a) { }
+
+  public void M(out int x)
+  {
+    for (;; M(out var |y|(0)), M(() |=>|(1) y++))
+    {
+      // ..
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'y' variable
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of variable 'y'

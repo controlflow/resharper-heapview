@@ -31,7 +31,7 @@ Owner: accessor 'string Class.this[int parameter1, bool parameter2].get'
 Owner: accessor 'string Class.this[int parameter1, bool parameter2].init'
 
 ========
-Owner: operator 'Class.implicit bool(Class c)'
+Owner: operator 'implicit Class.operator bool(Class c)'
 
 ========
 Owner: record 'Derived'

@@ -1,0 +1,29 @@
+﻿using System;
+// ReSharper disable UnusedVariable
+
+var fromStatic = Static.|Method|(0);
+var fromLocal = |LocalFunc|(1);
+Delegate delegateType1 = Static.|Method|(2);
+Delegate delegateType2 = |LocalFunc|(3);
+object objDelegate1 = Static.|Method|(4);
+object objDelegate2 = |LocalFunc|(5);
+MyAction myAction1 = Static.|Method|(6);
+MyAction myAction2 = |LocalFunc|(7);
+
+void LocalFunc() { }
+
+public class Static
+{
+  public static void Method() { }
+}
+
+public delegate void MyAction();
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(4): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(6): ReSharper HeapView Allocation: Delegate allocation: new 'MyAction' instance creation
+(7): ReSharper HeapView Allocation: Delegate allocation: new 'MyAction' instance creation

@@ -1,0 +1,6 @@
+﻿|string|(0) Local(ref int x) => args[0];
+var g = () |=>|(1) args;
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'args' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string[]>' instance creation
+Capture of parameter 'args'

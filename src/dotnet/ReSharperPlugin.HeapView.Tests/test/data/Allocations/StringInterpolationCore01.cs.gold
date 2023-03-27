@@ -1,0 +1,29 @@
+﻿using System;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+// ReSharper disable UnusedVariable
+
+public class StringInterpolationExpression
+{
+  public void Method(int value, string text)
+  {
+    _ = FormattableStringFactory.Create("aaa{0}", ||value|(0)|(1)); // params, boxing
+    _ = FormattableString.Invariant(|$@"|(2)bbb={|value|(3),20:D}, ccc"); // alloc, params, boxing
+    FormattableString string01 = |@$"|(4)aaa={|value|(5)}, bbb"; // alloc, params, boxing
+    IFormattable string02 = |$$"""|(6)aaa={{text}}"""; // alloc, params
+    IFormattable string03 = |$"|(7)aaa"; // alloc
+
+    Expression<Func<IFormattable>> expr = () |=>|(8) $@"aaa={value}";
+  }
+}
+
+---------------------------------------------------------
+(0):<overlapped> ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(1): ReSharper HeapView Allocation: Object allocation: new 'object[]' array instance creation for params parameter 'arguments'
+(2): ReSharper HeapView Allocation: Object allocation: new 'FormattableString' instance creation, allocates parameter array
+(3): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(4): ReSharper HeapView Allocation: Object allocation: new 'FormattableString' instance creation, allocates parameter array
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion from 'int' to 'object' requires boxing of the value type
+(6): ReSharper HeapView Allocation: Object allocation: new 'FormattableString' instance creation, allocates parameter array
+(7): ReSharper HeapView Allocation: Object allocation: new 'FormattableString' instance creation
+(8): ReSharper HeapView Allocation: Object allocation: expression tree construction

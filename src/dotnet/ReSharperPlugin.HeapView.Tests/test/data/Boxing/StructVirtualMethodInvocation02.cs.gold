@@ -1,4 +1,7 @@
-﻿struct NoGetHashCodeOverride
+﻿// ReSharper disable ConditionIsAlwaysTrueOrFalse
+#nullable disable
+
+struct NoGetHashCodeOverride
 {
   public int Method1() => |GetHashCode|(0)();
   public bool Method2() => checked(this).|Equals|(1)(null);
@@ -23,6 +26,6 @@ record struct RecordStruct2
   public int Method() => base.|GetHashCode|(2)();
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
-(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.Equals()' virtual method invocation over the value type instance
-(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'Object.GetHashCode()' virtual method invocation over the value type instance
+(0): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance
+(1): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.Equals()' virtual method invocation over the value type instance
+(2): ReSharper HeapView Boxing: Boxing allocation: inherited 'ValueType.GetHashCode()' virtual method invocation over the value type instance

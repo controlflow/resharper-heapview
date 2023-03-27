@@ -1,4 +1,5 @@
 using System;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 
 class C {
   public void M1<T>(T t) {
@@ -11,9 +12,9 @@ class C {
     if (t is { }) { }
     if (ReferenceEquals(t, null)) { }
     t?.ToString(); // optimized ?, possible callvirt
-    if (t is object) { } // optimized
 
     // type checks are boxings in .net fw
+    if (t is object) { }
     if (t is IComparable) { }
     if (t is IEquatable<T> _) { }
     if (t is ValueType { }) { }

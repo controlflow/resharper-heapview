@@ -1,5 +1,8 @@
-int[] xs = null;
-string[] ys = null;
+// ReSharper disable MoreSpecificForeachVariableTypeAvailable
+#nullable enable
+
+int[] xs = null!;
+string[] ys = null!;
 
 foreach (object x in xs) { }
 foreach (object y in ys) { }
