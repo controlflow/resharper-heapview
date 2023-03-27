@@ -99,12 +99,12 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
   {
     // shortcut: do not check for boxing when source is a pointer already
     // note: boxing may be hidden in user-defined + tuple conversions
-    if (sourceExpressionType is IType { Classify: TypeClassification.REFERENCE_TYPE } && targetType is not ITupleType)
+    if (sourceExpressionType is IType { Classify: TypeClassification.REFERENCE_TYPE } && !targetType.IsTupleType())
       return;
 
     // shortcut: if target type is a value type other than ValueTuple - it can't be boxing
     // note: boxing may be hidden in user-defined + tuple conversions
-    if (targetType.Classify == TypeClassification.VALUE_TYPE && targetType is not ITupleType && sourceExpressionType is not ITupleType)
+    if (targetType.Classify == TypeClassification.VALUE_TYPE && !targetType.IsTupleType() && !(sourceExpressionType is IType sourceIType && sourceIType.IsTupleType()))
       return;
 
     if (sourceExpressionType is IAnonymousFunctionType)
