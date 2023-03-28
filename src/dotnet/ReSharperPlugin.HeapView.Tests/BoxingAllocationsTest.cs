@@ -84,7 +84,7 @@ public abstract class BoxingAllocationsTestBase : CSharpHighlightingTestBase
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestStructGetTypeInvocation02() { DoNamedTest2(); }
   [Test] public void TestStructGetTypeInvocation03() { DoNamedTest2(); }
-  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.ShowWithoutOptimizations)]
+  [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreEnabled)]
   [Test] public void TestStructGetTypeInvocation04() { DoNamedTest2(); }
 
   [Test] public void TestStructMethodGroup01() { DoNamedTest2(); }
