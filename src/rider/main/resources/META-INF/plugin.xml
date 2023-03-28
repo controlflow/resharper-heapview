@@ -12,4 +12,11 @@
 ]]>
   </description>
 
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable
+            parentId="tools"
+            instance="com.jetbrains.rider.plugins.heapview.HeapViewerPage"
+            id="SamplePage" />
+  </extensions>
+
 </idea-plugin>
