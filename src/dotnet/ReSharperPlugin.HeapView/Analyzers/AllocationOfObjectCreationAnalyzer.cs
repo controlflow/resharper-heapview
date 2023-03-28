@@ -37,7 +37,7 @@ public class AllocationOfObjectCreationAnalyzer : HeapAllocationAnalyzerBase<IOb
   {
     if (objectCreationExpression.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
-    if (createdType is IDynamicType or (IDelegate, _)) return;
+    if (createdType.IsDynamicType() || createdType is (IDelegate, _)) return;
 
     var newKeyword = objectCreationExpression.NewKeyword.NotNull();
     var typeName = createdType.GetPresentableName(objectCreationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
