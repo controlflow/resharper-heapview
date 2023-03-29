@@ -14,9 +14,9 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <applicationConfigurable
-            parentId="tools"
+            parentId="CodeInspectionSettingsId"
             instance="com.jetbrains.rider.plugins.heapview.HeapViewerPage"
-            id="SamplePage" />
+            id="HeapViewer" />
   </extensions>
 
 </idea-plugin>
