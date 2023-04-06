@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
     id 'org.jetbrains.intellij' version '1.13.3'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id 'com.jetbrains.rdgen' version '2023.1.2'     // https://github.com/JetBrains/rd/releases
     id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
