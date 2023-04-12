@@ -17,6 +17,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'heapview'
+rootProject.name = 'ReSharperPlugin.HeapView'
 
 include ':protocol'

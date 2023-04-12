@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="System.Xaml" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 

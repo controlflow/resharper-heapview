@@ -4,8 +4,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.8.10'
-    id 'org.jetbrains.intellij' version '1.13.3'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
-    id 'com.jetbrains.rdgen' version '2023.1.2'     // https://github.com/JetBrains/rd/releases
+    id 'org.jetbrains.intellij' version '1.13.3'     // See https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id 'com.jetbrains.rdgen' version '2023.1.2'      // See https://github.com/JetBrains/rd/releases
     id 'me.filippov.gradle.jvm.wrapper' version '0.14.0'
 }
 
@@ -29,6 +29,10 @@ wrapper {
 
 version = ext.PluginVersion
 
+tasks.named("processResources") {
+    from("dependencies.json", { into "META-INF" })
+}
+
 sourceSets {
     main {
         java.srcDir 'src/rider/main/java'
@@ -43,22 +47,26 @@ compileKotlin {
 
 task setBuildTool {
     doLast {
-        ext.args = []
-        ByteArrayOutputStream stdout = new ByteArrayOutputStream()
+        ext.executable = "dotnet"
+        ext.args = ["msbuild"]
+
         if (isWindows) {
+            ByteArrayOutputStream stdout = new ByteArrayOutputStream()
             exec {
                 executable "${rootDir}\\tools\\vswhere.exe"
                 args '-latest','-property','installationPath','-products','*'
                 standardOutput = stdout
                 workingDir rootDir
             }
-            List<String> files = new FileNameFinder().getFileNames("${stdout.toString().trim()}\\MSBuild", "**/MSBuild.exe")
-            ext.executable = files.get(0)
-            ext.args << "/v:minimal"
-        } else {
-            ext.executable = "dotnet"
-            ext.args << "msbuild"
+
+            def directory = stdout.toString().trim()
+            if (directory) {
+                List<String> files = new FileNameFinder().getFileNames("${directory}\\MSBuild", "**/MSBuild.exe")
+                ext.executable = files.get(0)
+                ext.args = ["/v:minimal"]
+            }
         }
+
         ext.args << "${DotnetSolution}"
         ext.args << "/p:Configuration=${BuildConfiguration}"
         ext.args << "/p:HostFullIdentifier="
@@ -73,6 +81,16 @@ task compileDotNet {
         exec {
             executable setBuildTool.executable
             args arguments
+            workingDir rootDir
+        }
+    }
+}
+
+task testDotNet {
+    doLast {
+        exec {
+            executable "dotnet"
+            args "test","${DotnetSolution}","--logger","GitHubActions"
             workingDir rootDir
         }
     }
@@ -129,7 +147,7 @@ runIde {
 rdgen {
     def modelDir = new File(rootDir, "protocol/src/main/kotlin/model")
     def csOutput = new File(rootDir, "src/dotnet/${DotnetPluginId}/Rider")
-    def ktOutput = new File(rootDir, "src/rider/main/kotlin/com/jetbrains/rider/plugins/${RiderPluginId.replace('.','/').toLowerCase()}")
+    def ktOutput = new File(rootDir, "src/rider/main/kotlin/${RiderPluginId.replace('.','/').toLowerCase()}")
 
     verbose = true
     classpath {
@@ -190,6 +208,7 @@ prepareSandbox {
 }
 
 publishPlugin {
+    dependsOn testDotNet
     dependsOn buildPlugin
     token = "${PublishToken}"
 
