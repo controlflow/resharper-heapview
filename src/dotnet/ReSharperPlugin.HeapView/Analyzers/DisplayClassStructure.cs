@@ -582,13 +582,13 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
 
         // use block for block-bodied lambdas, otherwise lambda node itself is a scope
-        var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILambdaParameterDeclaration);
+        var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILocalRegularParameterDeclaration);
         if (lambdaExpression != null)
         {
           return lambdaExpression.BodyBlock ?? (ITreeNode) lambdaExpression;
         }
 
-        var anonymousMethodExpression = AnonymousMethodExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as IAnonymousMethodParameterDeclaration);
+        var anonymousMethodExpression = AnonymousMethodExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILocalParameterDeclaration);
         if (anonymousMethodExpression != null)
         {
           return anonymousMethodExpression.Body;
