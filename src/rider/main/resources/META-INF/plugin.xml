@@ -20,7 +20,7 @@
             instance="com.jetbrains.rider.plugins.heapview.HeapViewerPage"
             id="HeapViewer"
             bundle="messages.HeapViewerBundle"
-            key="configurable.name.heapview.options.title" />
+            key="configurable.name.heapviewer.options.title" />
   </extensions>
 
 </idea-plugin>

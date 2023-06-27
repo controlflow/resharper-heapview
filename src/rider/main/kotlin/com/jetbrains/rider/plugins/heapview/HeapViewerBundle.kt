@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
-class HeapViewerBundle: DynamicBundle(BUNDLE) {
+class HeapViewerBundle : DynamicBundle(BUNDLE) {
     companion object {
         @NonNls
         private const val BUNDLE = "messages.HeapViewerBundle"
