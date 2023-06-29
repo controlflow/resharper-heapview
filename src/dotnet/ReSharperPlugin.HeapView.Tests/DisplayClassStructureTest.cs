@@ -45,6 +45,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClosures20() { DoNamedTest(); }
   [Test] public void TestClosures21() { DoNamedTest(); }
   [Test] public void TestClosures22() { DoNamedTest(); }
+  [Test] public void TestClosures23() { DoNamedTest(); }
 
   [Test] public void TestParameters01() { DoNamedTest(); }
   [Test] public void TestParameters02() { DoNamedTest(); }

@@ -310,6 +310,24 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
     }
 
+    // 5. Remove closure captures that only capture effectively static local functions
+    {
+      using var allStaticClosures = PooledList<ICSharpClosure>.GetInstance();
+
+      foreach (var (closure, captures) in myClosureToCaptures)
+      {
+        if (captures.CheckOnlyCapturesEffectivelyLocalFunctions())
+        {
+          allStaticClosures.Add(closure);
+        }
+      }
+
+      foreach (var closure in allStaticClosures)
+      {
+        myClosureToCaptures.Remove(closure);
+      }
+    }
+
     [Pure]
     bool CanTakeDisplayClassViaRefParameter(ICSharpClosure closure)
     {
@@ -875,6 +893,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
 
     public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+
+    // note: can be null if closure only captures closureless local functions
     private DisplayClass? AttachedDisplayClass { get; set; }
 
     IDisplayClass IClosureCaptures.AttachedDisplayClass => AttachedDisplayClass.NotNull();
@@ -883,6 +903,19 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       AttachedDisplayClass = displayClass;
       displayClass.AttachClosure(Closure, canTakeRefDisplayClass);
+    }
+
+    [Pure]
+    public bool CheckOnlyCapturesEffectivelyLocalFunctions()
+    {
+      if (CapturedDisplayClasses.Count > 0) return false;
+
+      foreach (var capturedElement in CapturedEntities)
+      {
+        if (capturedElement is not ILocalFunction) return false;
+      }
+
+      return true;
     }
   }
 

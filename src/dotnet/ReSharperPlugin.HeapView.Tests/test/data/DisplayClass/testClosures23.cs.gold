@@ -1,0 +1,6 @@
+﻿Owner: method 'void Foo.Usage()'
+Closures:
+> local function 'void Local()'
+> lambda expression 'void () => Local()'
+
+========
