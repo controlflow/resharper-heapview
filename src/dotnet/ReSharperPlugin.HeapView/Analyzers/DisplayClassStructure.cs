@@ -561,6 +561,17 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         var parametersOwnerDeclaration = CSharpParametersOwnerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration as ICSharpParameterDeclaration);
         if (parametersOwnerDeclaration != null)
         {
+          // use block for block-bodied lambdas, otherwise lambda node itself is a scope
+          if (parametersOwnerDeclaration is ILambdaExpression lambdaExpression)
+          {
+            return lambdaExpression.BodyBlock ?? (ITreeNode) lambdaExpression;
+          }
+
+          if (parametersOwnerDeclaration is IAnonymousMethodExpression anonymousMethodExpression)
+          {
+            return anonymousMethodExpression.Body;
+          }
+
           // constructors introduce additional scope to support constructor initializers
           if (parametersOwnerDeclaration is IConstructorDeclaration constructorDeclaration)
           {
@@ -579,19 +590,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
             default:
               return null;
           }
-        }
-
-        // use block for block-bodied lambdas, otherwise lambda node itself is a scope
-        var lambdaExpression = LambdaExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILocalRegularParameterDeclaration);
-        if (lambdaExpression != null)
-        {
-          return lambdaExpression.BodyBlock ?? (ITreeNode) lambdaExpression;
-        }
-
-        var anonymousMethodExpression = AnonymousMethodExpressionNavigator.GetByParameterDeclaration(parameterDeclaration as ILocalParameterDeclaration);
-        if (anonymousMethodExpression != null)
-        {
-          return anonymousMethodExpression.Body;
         }
       }
       else
