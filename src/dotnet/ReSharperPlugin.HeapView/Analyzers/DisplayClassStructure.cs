@@ -109,37 +109,34 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     if (classLikeDeclaration is
         {
           IsPartial: true,
-          DeclaredElement: IRecord { PrimaryConstructor.Parameters: { Count: > 0 } parameters } record
+          DeclaredElement: ITypeElementWithPrimaryConstructor { PrimaryConstructor.Parameters: { Count: > 0 } primaryParameters } typeElement
         })
     {
-      var allDeclarations = record.GetDeclarations();
-      if (allDeclarations.Count > 1)
+      var parameterNames = PooledHashSet<string>.GetInstance();
+      foreach (var parameter in primaryParameters)
       {
-        var parameterNames = PooledHashSet<string>.GetInstance();
-        foreach (var parameter in parameters)
-          parameterNames.Add(parameter.ShortName);
-
-        structure = new DisplayClassStructure(classLikeDeclaration);
-        structure.myCaptureNamesToLookInOtherParts = parameterNames;
-
-        foreach (var partDeclaration in allDeclarations)
-        {
-          if (partDeclaration is IClassLikeDeclaration thisPartDeclaration)
-          {
-            structure!.myIsScanningNonMainPart = thisPartDeclaration != classLikeDeclaration;
-
-            ScanInitializerScope(thisPartDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
-          }
-        }
-
-        if (!seenBodies)
-        {
-          structure!.Dispose();
-          structure = null;
-        }
-
-        return;
+        parameterNames.Add(parameter.ShortName);
       }
+
+      structure = new DisplayClassStructure(classLikeDeclaration);
+      structure.myCaptureNamesToLookInOtherParts = parameterNames;
+
+      foreach (var partDeclaration in typeElement.EnumerateAllTypeDeclarationsLazily())
+      {
+        if (partDeclaration is IClassLikeDeclaration thisPartDeclaration)
+        {
+          structure!.myIsScanningNonMainPart = thisPartDeclaration != classLikeDeclaration;
+          ScanInitializerScope(thisPartDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
+        }
+      }
+
+      if (!seenBodies)
+      {
+        structure!.Dispose();
+        structure = null;
+      }
+
+      return;
     }
 
     ScanInitializerScope(classLikeDeclaration, classLikeDeclaration, ref structure, ref seenBodies);
@@ -438,11 +435,17 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         var resolveResult = reference.Resolve();
         if (resolveResult.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter)
         {
+          // todo: what if another type part captures captured primary parameter?
+
           // note: use current type as a scope for primary parameter captures in other type parts
           Assertion.Assert(myDeclaration is IClassLikeDeclaration);
 
           var displayClass = myScopeToDisplayClass.GetOrCreateValue(myDeclaration, static key => DisplayClass.Create(key));
           displayClass.AddMember(primaryParameter);
+
+          // note: this is not entirely correct, if C# introduces primary ctor bodies - local functions can be allowed there
+          //       and initializer scope display class probably can be compiled into struct
+          displayClass.IsStruct = false;
         }
       }
     }
@@ -462,6 +465,28 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         if (localScopeNode != null)
         {
           NoteCapture(localScopeNode, localVariable);
+        }
+
+        break;
+      }
+
+      case IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter:
+      {
+        if (referenceExpression.IsInContextWhereReferenceToPrimaryParameterIsAFormalParameterReference())
+        {
+          // todo: this is not correct for captured primary parameters
+          // todo: we need speculative fields API from EAP7 here
+
+          // primary constructor can be declared in other type part, use current part declaration as a scope node
+          var initializerScopeNode = referenceExpression.GetContainingNode<IClassLikeDeclaration>();
+          if (initializerScopeNode != null)
+          {
+            NoteCapture(initializerScopeNode, primaryParameter);
+          }
+        }
+        else // captured primary parameter usage - just like field usage
+        {
+          ProcessThisReferenceCaptureInsideClosure(referenceExpression);
         }
 
         break;
@@ -527,11 +552,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     [Pure]
     static ITreeNode? FindParameterScopeNode(IParameter parameter, IReferenceExpression referenceExpression)
     {
-      // primary constructor can be declared in other type part
-      if (parameter.ContainingParametersOwner is IPrimaryConstructor)
-      {
-        return referenceExpression.GetContainingNode<IClassLikeDeclaration>();
-      }
+      // note: no primary parameters here
 
       var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
       if (parameterDeclaration != null)
@@ -764,14 +785,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       ScopeNode = null!;
       Members.Clear();
+      if (Members.Count > 100) Members.TrimExcess();
       Closures.Clear();
+      if (Closures.Count > 100) Closures.TrimExcess();
       ContainingDisplayClass = null;
 
       Pool.Return(this);
     }
 
     // note: can be IConstructorDeclaration
-    // note: can be IBlock bodt of member declarations or oridinary IBlock
+    // note: can be IBlock body of member declarations or oridinary IBlock
     // note: can be IArrowExpressionClause of expression-bodied members
     // note: can be ILambdaExpression if it's expression-bodied
     // note: can be IQueryParameterPlatform

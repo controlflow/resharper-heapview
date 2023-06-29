@@ -1,0 +1,112 @@
+﻿Owner: property 'Func<int> C3.Property'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
+Owner: method 'Func<int> C4.Method()'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
+Owner: class 'C5'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'class C5(int parameter) { // optimized t...'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
+Owner: method 'Func<int> C5.Method()'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
+Owner: class 'C6'
+Closures:
+> lambda expression 'int () => parameter1 + parameter2'
+    Captures:
+    > parameter 'parameter1'
+    > parameter 'parameter2'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'class C6(int parameter1, int parameter2)...'
+    Members:
+    > parameter 'parameter1'
+    > parameter 'parameter2'
+    Closures:
+    > lambda expression 'int () => parameter1 + parameter2'
+
+========
+Owner: method 'Func<int> C6.Method()'
+Closures:
+> lambda expression 'int () => parameter2'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => parameter2'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => parameter2'
+
+========
+Owner: class 'C7'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'partial class C7(int parameter);'
+    Members:
+    > parameter 'parameter'
+
+========
+Owner: class 'C7'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'partial class C7 { public Func<int> Fiel...'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========

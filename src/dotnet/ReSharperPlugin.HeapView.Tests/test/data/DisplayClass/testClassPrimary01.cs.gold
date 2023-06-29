@@ -1,0 +1,28 @@
+﻿Owner: class 'C1'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'class C1(int parameter) : B(() => parame...'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
+Owner: class 'C2'
+Closures:
+> lambda expression 'int () => parameter'
+    Captures:
+    > parameter 'parameter'
+Display classes:
+  Display class #1
+    Scope: IClassDeclaration 'class C2(int parameter) { public readonl...'
+    Members:
+    > parameter 'parameter'
+    Closures:
+    > lambda expression 'int () => parameter'
+
+========
