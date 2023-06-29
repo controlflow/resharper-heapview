@@ -23,7 +23,7 @@ public delegate void MyAction();
 (1): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (2): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (3): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
-(4): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
-(5): ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(4):<overlapped> ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
+(5):<overlapped> ReSharper HeapView Allocation: Delegate allocation: new 'Action' instance creation
 (6): ReSharper HeapView Allocation: Delegate allocation: new 'MyAction' instance creation
 (7): ReSharper HeapView Allocation: Delegate allocation: new 'MyAction' instance creation
