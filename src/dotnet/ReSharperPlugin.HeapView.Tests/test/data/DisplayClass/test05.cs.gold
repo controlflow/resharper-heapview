@@ -1,0 +1,15 @@
+﻿Owner: method 'void S.M()'
+Closures:
+> local function 'void F()'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IBlock '{ void F() => Field++; }'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > local function 'void F()'
+
+========

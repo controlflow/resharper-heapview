@@ -694,7 +694,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private void ProcessThisReferenceCaptureInsideClosure(ICSharpExpression thisReferenceExpression)
   {
     Assertion.Assert(myCurrentClosures.Count > 0);
-    Assertion.AssertNotNull(myThisReferenceCaptureScopeNode);
+    Assertion.AssertNotNull(myThisReferenceCaptureScopeNode, $"No 'this scope node' for declaration of type {myDeclaration.GetType().Name}");
 
     if (thisReferenceExpression.GetContainingTypeDeclaration() is { DeclaredElement: { } thisTypeElement })
     {
@@ -712,12 +712,11 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   [Pure]
   private static ITreeNode? FindThisCaptureScope(ITreeNode declaration)
   {
+    // todo: probably this method must also work in initializer scope, for captured primary parameters capture
     switch (declaration)
     {
-      case ICSharpTypeMemberDeclaration { DeclaredElement.ContainingType: IClass } typeMemberDeclaration:
+      case ICSharpTypeMemberDeclaration typeMemberDeclaration:
       {
-        if (typeMemberDeclaration.IsStatic) return null;
-
         // constructors introduce additional scope to support constructor initializers
         if (typeMemberDeclaration is IConstructorDeclaration constructorDeclaration)
         {
@@ -736,10 +735,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
       }
 
-      case IAccessorDeclaration { DeclaredElement.ContainingType: IClass } accessorDeclaration:
+      case IAccessorDeclaration accessorDeclaration:
       {
-        if (accessorDeclaration.IsStatic) return null;
-
         return accessorDeclaration.Body ?? (ITreeNode) accessorDeclaration.ArrowClause;
       }
 
