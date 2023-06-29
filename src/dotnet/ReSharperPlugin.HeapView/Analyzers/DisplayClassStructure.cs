@@ -884,8 +884,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   [Pure]
   public IClosureCaptures? TryGetCapturesOf(ICSharpClosure closure)
   {
-    myClosureToCaptures.TryGetValue(closure, out var x);
-    return x;
+    myClosureToCaptures.TryGetValue(closure, out var captures);
+    return captures;
   }
 
   #region Dump
