@@ -29,14 +29,14 @@ Display classes:
     > lambda expression 'int () => X + Y + 1'
     > lambda expression 'int () => X + Y + 2'
   Display class #2
-    Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
+    Scope: IExpressionInitializer 'X is var x && F(() => x + X)'
     Members:
     > local variable 'x'
     > display class #1
     Closures:
     > lambda expression 'int () => x + X'
   Display class #3
-    Scope: IFieldDeclaration 'StaticMember2 = StaticMember1 is var x &...'
+    Scope: IExpressionInitializer 'StaticMember1 is var x && F(() => Static...'
     Members:
     > local variable 'x'
     Closures:

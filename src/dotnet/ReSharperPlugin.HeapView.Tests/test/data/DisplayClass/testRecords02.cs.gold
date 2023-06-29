@@ -17,7 +17,7 @@ Display classes:
     Closures:
     > lambda expression 'int () => X + Y + 2'
   Display class #2
-    Scope: IPropertyDeclaration 'public bool OtherMember { get; } = X is ...'
+    Scope: IExpressionInitializer 'X is var x && F(() => x + X)'
     Members:
     > local variable 'x'
     > display class #1
