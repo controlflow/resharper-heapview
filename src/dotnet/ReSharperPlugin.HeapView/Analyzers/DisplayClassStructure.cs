@@ -31,6 +31,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private readonly PooledDictionary<ITreeNode, DisplayClass> myScopeToDisplayClass = PooledDictionary<ITreeNode, DisplayClass>.GetInstance();
   private readonly PooledDictionary<ICSharpClosure, ClosureCaptures> myClosureToCaptures = PooledDictionary<ICSharpClosure, ClosureCaptures>.GetInstance();
   private readonly PooledHashSet<ILocalFunction> myLocalFunctionsConvertedToDelegates = PooledHashSet<ILocalFunction>.GetInstance();
+  private PooledHashSet<IParameter>? myCapturedPrimaryParameters;
 
   private bool myIsScanningNonMainPart;
   private PooledHashSet<string>? myCaptureNamesToLookInOtherParts;
@@ -365,6 +366,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     myClosureToCaptures.Dispose();
     myLocalFunctionsConvertedToDelegates.Dispose();
     myCaptureNamesToLookInOtherParts?.Dispose();
+    myCapturedPrimaryParameters?.Dispose();
   }
 
   bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
@@ -451,10 +453,9 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
           && myCaptureNamesToLookInOtherParts.Contains(reference.GetName()))
       {
         var resolveResult = reference.Resolve();
-        if (resolveResult.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter)
+        if (resolveResult.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter
+            && !IsCapturedPrimaryParameter(primaryParameter))
         {
-          // todo: what if another type part captures captured primary parameter?
-
           // note: use current type as a scope for primary parameter captures in other type parts
           Assertion.Assert(myDeclaration is IClassLikeDeclaration);
 
@@ -467,6 +468,24 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
       }
     }
+  }
+
+  [Pure]
+  private bool IsCapturedPrimaryParameter(IParameter primaryParameter)
+  {
+    if (myCapturedPrimaryParameters == null)
+    {
+      myCapturedPrimaryParameters = PooledHashSet<IParameter>.GetInstance();
+
+      if (primaryParameter.ContainingParametersOwner
+            is IPrimaryConstructor { ContainingType: ITypeElementWithPrimaryConstructor withPrimaryConstructor } primaryConstructor)
+      {
+        // TODO: EAP8 must bring this API, use it
+        //myCapturedPrimaryParameters.AddRange(withPrimaryConstructor.GetParametersWithSpeculativeFieldsProduced(primaryConstructor.Parameters));
+      }
+    }
+
+    return myCapturedPrimaryParameters.Contains(primaryParameter);
   }
 
   private void ProcessReferenceExpressionInsideClosure(
@@ -492,14 +511,18 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       {
         if (referenceExpression.IsInContextWhereReferenceToPrimaryParameterIsAFormalParameterReference())
         {
-          // todo: this is not correct for captured primary parameters
-          // todo: we need speculative fields API from EAP7 here
-
-          // primary constructor can be declared in other type part, use current part declaration as a scope node
-          var initializerScopeNode = referenceExpression.GetContainingNode<IClassLikeDeclaration>();
-          if (initializerScopeNode != null)
+          if (IsCapturedPrimaryParameter(primaryParameter))
           {
-            NoteCapture(initializerScopeNode, primaryParameter);
+            ProcessThisReferenceCaptureInsideClosure(referenceExpression);
+          }
+          else
+          {
+            // primary constructor can be declared in other type part, use current part declaration as a scope node
+            var initializerScopeNode = referenceExpression.GetContainingNode<IClassLikeDeclaration>();
+            if (initializerScopeNode != null)
+            {
+              NoteCapture(initializerScopeNode, primaryParameter);
+            }
           }
         }
         else // captured primary parameter usage - just like field usage
