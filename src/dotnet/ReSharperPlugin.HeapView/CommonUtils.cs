@@ -166,7 +166,7 @@ public static class CommonUtils
           return HasControlFlowJumps(usingStatement.Body, allowContinue, allowBreak);
         }
 
-        case { }:
+        case not null:
         {
           return IsControlFlowJumpStatement(statement, allowContinue, allowBreak);
         }

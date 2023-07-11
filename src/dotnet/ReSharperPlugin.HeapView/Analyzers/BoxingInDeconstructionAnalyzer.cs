@@ -31,7 +31,7 @@ public class BoxingInDeconstructionAnalyzer : HeapAllocationAnalyzerBase<ITreeNo
         break;
 
       // foreach ((object o, _) in arrayOfIntIntTuples) { }
-      case IForeachStatement { ForeachHeader.DeconstructionTuple: { } } foreachStatement:
+      case IForeachStatement { ForeachHeader.DeconstructionTuple: not null } foreachStatement:
         CheckForeachImplicitConversions(foreachStatement, data, consumer);
         break;
     }

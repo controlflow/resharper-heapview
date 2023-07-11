@@ -1,0 +1,22 @@
+﻿using System;
+
+class C1(int primary)
+{
+  private Func<int> Field = () |=>|(0) primary; // only delegate alloc, this reference
+  public int Capture => primary;
+}
+
+class C2(int primary1, int |primary2|(1)) // display class here, this + primary2
+{
+  private Func<int> Field = () |=>|(2) primary1 + primary2; // delegate
+  public int Capture => primary1;
+  public Func<int> Capture2 => () |=>|(3) primary1; // delegate alloc, this reference
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of 'this' reference
+(1): ReSharper HeapView Allocation: Closure allocation: capture of 'primary2' parameter and 'this' reference
+(2): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'primary2' and 'this' reference
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of 'this' reference

@@ -480,8 +480,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       if (primaryParameter.ContainingParametersOwner
             is IPrimaryConstructor { ContainingType: ITypeElementWithPrimaryConstructor withPrimaryConstructor } primaryConstructor)
       {
-        // TODO: EAP8 must bring this API, use it
-        //myCapturedPrimaryParameters.AddRange(withPrimaryConstructor.GetParametersWithSpeculativeFieldsProduced(primaryConstructor.Parameters));
+        myCapturedPrimaryParameters.AddRange(
+          withPrimaryConstructor.GetParametersWithSpeculativeFieldsProduced(primaryConstructor.Parameters));
       }
     }
 
@@ -735,9 +735,17 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   [Pure]
   private static ITreeNode? FindThisCaptureScope(ITreeNode declaration)
   {
-    // todo: probably this method must also work in initializer scope, for captured primary parameters capture
     switch (declaration)
     {
+      // class C(int primary) {
+      //   Func<int> Field = () => primary; // 'this' reference capture!
+      //   int Capture => primary;
+      // }
+      case IClassLikeDeclaration typeDeclaration:
+      {
+        return typeDeclaration;
+      }
+      
       case ICSharpTypeMemberDeclaration typeMemberDeclaration:
       {
         // constructors introduce additional scope to support constructor initializers

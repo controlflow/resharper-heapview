@@ -62,7 +62,6 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestRecords03() { DoNamedTest(); }
 
   [Test] public void TestClassPrimary01() { DoNamedTest(); }
-  // todo: partially correct, wrong for C5, C6
   [Test] public void TestClassPrimary02() { DoNamedTest(); }
 
   [Test] public void TestQuery01() { DoNamedTest(); }

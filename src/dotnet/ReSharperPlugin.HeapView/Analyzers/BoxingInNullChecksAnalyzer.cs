@@ -45,7 +45,7 @@ public class BoxingInNullChecksAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
         break;
 
       // x is { Unconstrained.Property: { } }
-      case IReferenceExpression { QualifierExpression: { } } referenceExpression when referenceExpression.IsSubpatternMemberAccessPart():
+      case IReferenceExpression { QualifierExpression: not null } referenceExpression when referenceExpression.IsSubpatternMemberAccessPart():
         CheckUnconstrainedNullCheckInSubpattern(referenceExpression, consumer);
         break;
     }

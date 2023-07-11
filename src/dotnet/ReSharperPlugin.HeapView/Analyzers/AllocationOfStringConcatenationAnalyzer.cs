@@ -206,7 +206,7 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
   [Pure]
   private static bool IsTypeKnownToAllocateOnToStringCall(IType type)
   {
-    if (type is IDeclaredType ({ }) declaredType)
+    if (type is IDeclaredType (not null) declaredType)
     {
       if (declaredType.IsPredefinedNumericOrNativeNumeric())
       {

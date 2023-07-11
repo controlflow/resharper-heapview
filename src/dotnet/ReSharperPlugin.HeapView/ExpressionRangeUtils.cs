@@ -18,7 +18,7 @@ public static class ExpressionRangeUtils
       case IReferenceExpression referenceExpression:
         return referenceExpression.NameIdentifier.GetDocumentRange();
 
-      case IInvocationExpression { InvokedExpression: IReferenceExpression { QualifierExpression: { } } invokedExpression }:
+      case IInvocationExpression { InvokedExpression: IReferenceExpression { QualifierExpression: not null } invokedExpression }:
         return invokedExpression.NameIdentifier.GetDocumentRange();
 
       case IParenthesizedExpression parenthesizedExpression:

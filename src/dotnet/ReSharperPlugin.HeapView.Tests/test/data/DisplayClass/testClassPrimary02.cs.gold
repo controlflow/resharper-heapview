@@ -32,12 +32,13 @@ Owner: class 'C5'
 Closures:
 > lambda expression 'int () => parameter'
     Captures:
-    > parameter 'parameter'
+    > 'this' reference
 Display classes:
   Display class #1
     Scope: IClassDeclaration 'class C5(int parameter) { // optimized t...'
+    OPTIMIZED: Closures lowered into instance members
     Members:
-    > parameter 'parameter'
+    > 'this' reference
     Closures:
     > lambda expression 'int () => parameter'
 
@@ -62,13 +63,13 @@ Closures:
 > lambda expression 'int () => parameter1 + parameter2'
     Captures:
     > parameter 'parameter1'
-    > parameter 'parameter2'
+    > 'this' reference
 Display classes:
   Display class #1
     Scope: IClassDeclaration 'class C6(int parameter1, int parameter2)...'
     Members:
     > parameter 'parameter1'
-    > parameter 'parameter2'
+    > 'this' reference
     Closures:
     > lambda expression 'int () => parameter1 + parameter2'
 
