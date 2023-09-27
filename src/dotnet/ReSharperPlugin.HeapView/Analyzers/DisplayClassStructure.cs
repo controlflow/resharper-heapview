@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
@@ -481,7 +482,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
             is IPrimaryConstructor { ContainingType: ITypeElementWithPrimaryConstructor withPrimaryConstructor } primaryConstructor)
       {
         myCapturedPrimaryParameters.AddRange(
-          withPrimaryConstructor.GetParametersWithSpeculativeFieldsProduced(primaryConstructor.Parameters));
+          withPrimaryConstructor.GetCapturedParameters(primaryConstructor.Parameters));
       }
     }
 
