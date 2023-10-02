@@ -39,7 +39,7 @@ public class AllocationOfDelegateOperatorsAnalyzer : HeapAllocationAnalyzerBase<
         var operationName = accessorKind == AccessorKind.ADDER ? "subscription" : "unsubscription";
 
         consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
-          operatorExpression.OperatorSign, $"event {operationName} may allocate new delegate instance"));
+          operatorExpression.OperatorSign, $"event {operationName} may allocate new delegate instance (in case of multiple event subscribers)"));
         break;
       }
     }
