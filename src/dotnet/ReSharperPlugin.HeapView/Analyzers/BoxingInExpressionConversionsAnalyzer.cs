@@ -156,7 +156,7 @@ public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyz
       var assignmentKind = assignmentExpression.GetAssignmentKind();
       if (assignmentKind != AssignmentKind.OrdinaryAssignment)
       {
-        // tuple deconstrutions do not have a "target type" for the assignment source,
+        // tuple deconstructions do not have a "target type" for the assignment source,
         // so we have to handle conversions in deconstructions separately (ad-hoc)
         return false;
       }
