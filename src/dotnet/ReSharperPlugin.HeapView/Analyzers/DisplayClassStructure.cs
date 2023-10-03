@@ -591,6 +591,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       captures.CapturedEntities.Add(localFunctionDeclaration.DeclaredElement);
     }
 
+    // todo: replace with ScopingUtil.FindParameterScopeNode
     [Pure]
     static ITreeNode? FindParameterScopeNode(IParameter parameter, IReferenceExpression referenceExpression)
     {
