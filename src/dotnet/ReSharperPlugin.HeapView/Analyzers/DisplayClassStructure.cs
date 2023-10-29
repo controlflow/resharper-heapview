@@ -187,7 +187,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
   private void FinalizeStructure()
   {
-    // 1. Iteratively propagate local function captures into dislay class captures
+    // 1. Iteratively propagate local function captures into display class captures
     bool modified;
 
     do
@@ -214,10 +214,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
               }
 
               // include local function's captures into other's closure direct captures
-              foreach (var addictionalCapture in localFunctionCaptures.CapturedEntities)
+              foreach (var additionalCapture in localFunctionCaptures.CapturedEntities)
               {
-                if (addictionalCapture is not ILocalFunction)
-                  additionalCapturesByLocalFunction.Add(addictionalCapture);
+                if (additionalCapture is not ILocalFunction)
+                  additionalCapturesByLocalFunction.Add(additionalCapture);
               }
             }
           }
@@ -270,7 +270,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
     }
 
-    // 3. Additional fixup for struct lowering optimization
+    // 3. Additional fix-up for struct lowering optimization
     do
     {
       modified = false;
@@ -536,7 +536,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
       case IParameter { Kind: ParameterKind.VALUE } parameter:
       {
-        var parameterScopeNode = FindParameterScopeNode(parameter, referenceExpression);
+        var parameterScopeNode = ScopingUtil.FindParameterScopeNode(parameter, referenceExpression);
         if (parameterScopeNode != null)
         {
           NoteCapture(parameterScopeNode, parameter);
@@ -590,122 +590,6 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
       captures.CapturedEntities.Add(localFunctionDeclaration.DeclaredElement);
     }
-
-    // todo: replace with ScopingUtil.FindParameterScopeNode
-    [Pure]
-    static ITreeNode? FindParameterScopeNode(IParameter parameter, IReferenceExpression referenceExpression)
-    {
-      // note: no primary parameters here
-
-      var parameterDeclaration = parameter.GetSingleDeclaration<ICSharpDeclaration>();
-      if (parameterDeclaration != null)
-      {
-        // query range variables are "visible" as a parameters for multiple closure nodes
-        if (parameterDeclaration is IQueryRangeVariableDeclaration rangeVariableDeclaration)
-        {
-          return FindParameterPlatformOfRangeVariableInContext(rangeVariableDeclaration, referenceExpression);
-        }
-
-        // indexer parameters are outside of accessor declaration nodes
-        var indexerDeclaration = IndexerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration as ICSharpParameterDeclaration);
-        if (indexerDeclaration != null)
-        {
-          foreach (var accessorDeclaration in indexerDeclaration.AccessorDeclarationsEnumerable)
-          {
-            if (accessorDeclaration.Contains(referenceExpression))
-            {
-              return FromFunctionDeclaration(accessorDeclaration);
-            }
-          }
-
-          // int this[int index] => F(() => index);
-          return indexerDeclaration.ArrowClause;
-        }
-
-        var parametersOwnerDeclaration = CSharpParametersOwnerDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration as ICSharpParameterDeclaration);
-        if (parametersOwnerDeclaration != null)
-        {
-          // use block for block-bodied lambdas, otherwise lambda node itself is a scope
-          if (parametersOwnerDeclaration is ILambdaExpression lambdaExpression)
-          {
-            return lambdaExpression.BodyBlock ?? (ITreeNode) lambdaExpression;
-          }
-
-          if (parametersOwnerDeclaration is IAnonymousMethodExpression anonymousMethodExpression)
-          {
-            return anonymousMethodExpression.Body;
-          }
-
-          // constructors introduce additional scope to support constructor initializers
-          if (parametersOwnerDeclaration is IConstructorDeclaration constructorDeclaration)
-          {
-            return constructorDeclaration;
-          }
-
-          // use body nodes for other members
-          switch (parametersOwnerDeclaration)
-          {
-            case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
-              return arrowClause;
-            case ICSharpFunctionDeclaration functionDeclaration:
-              return functionDeclaration.Body;
-            case ILocalFunctionDeclaration localFunctionDeclaration:
-              return localFunctionDeclaration.Body;
-            default:
-              return null;
-          }
-        }
-      }
-      else
-      {
-        // implicit 'args' parameter
-        if (parameter.ContainingParametersOwner is ITopLevelEntryPoint topLevelEntryPoint)
-        {
-          return topLevelEntryPoint.GetSingleDeclaration<ITopLevelCode>();
-        }
-
-        // implicit 'value' parameter in accessors
-        if (parameter.IsValueVariable)
-        {
-          if (parameter.ContainingParametersOwner is IAccessor accessor)
-          {
-            var accessorDeclaration = accessor.GetSingleDeclaration<IAccessorDeclaration>();
-            if (accessorDeclaration != null)
-            {
-              return FromFunctionDeclaration(accessorDeclaration);
-            }
-          }
-
-          return null;
-        }
-      }
-
-      return null;
-    }
-
-    [Pure]
-    static ITreeNode? FromFunctionDeclaration(ICSharpFunctionDeclaration functionDeclaration)
-    {
-      var blockBody = functionDeclaration.Body;
-      if (blockBody != null) return blockBody;
-
-      return functionDeclaration.ArrowClause;
-    }
-
-    [Pure]
-    static IQueryParameterPlatform? FindParameterPlatformOfRangeVariableInContext(IQueryRangeVariableDeclaration rangeVariableDeclaration, ITreeNode context)
-    {
-      // note: multiple query parameter platforms can have the same range variable as a parameter
-
-      foreach (var containingPlatform in context.ContainingNodes<IQueryParameterPlatform>())
-      foreach (var queryVariable in containingPlatform.GetVariables())
-      {
-        if (queryVariable.Declaration == rangeVariableDeclaration)
-          return containingPlatform;
-      }
-
-      return null;
-    }
   }
 
   private void ProcessThisReferenceCapture(ICSharpExpression thisOrBaseExpression)
@@ -747,7 +631,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       {
         return typeDeclaration;
       }
-      
+
       case ICSharpTypeMemberDeclaration typeMemberDeclaration:
       {
         // constructors introduce additional scope to support constructor initializers
@@ -842,7 +726,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     }
 
     // note: can be IConstructorDeclaration
-    // note: can be IBlock body of member declarations or oridinary IBlock
+    // note: can be IBlock body of member declarations or ordinary IBlock
     // note: can be IArrowExpressionClause of expression-bodied members
     // note: can be ILambdaExpression if it's expression-bodied
     // note: can be IQueryParameterPlatform
