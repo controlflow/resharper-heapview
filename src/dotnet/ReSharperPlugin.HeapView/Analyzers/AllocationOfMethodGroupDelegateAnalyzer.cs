@@ -39,7 +39,8 @@ public class AllocationOfMethodGroupDelegateAnalyzer : HeapAllocationAnalyzerBas
     var isExplicitDelegateCreation = IsSurroundedByExplicitDelegateCreationExpression(referenceExpression, out var explicitCreationNode);
 
     if (parametersOwner is IMethod { IsStatic: true } or ILocalFunction { IsStatic: true }
-        && data.GetLatestSupportedLanguageLevel() >= CSharpLanguageLevel.CSharp110
+        // todo: test this, relies on /langver, not compiler versions
+        && data.GetLanguageLevel() >= CSharpLanguageLevel.CSharp110
         // check for explicit delegate allocation: `new Action(StaticMethod)`
         // see https://github.com/dotnet/roslyn/issues/62832#issuecomment-1201144122
         && !isExplicitDelegateCreation)
