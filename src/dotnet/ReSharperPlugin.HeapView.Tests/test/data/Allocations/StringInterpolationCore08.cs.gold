@@ -1,0 +1,11 @@
+﻿// ReSharper disable UnusedVariable
+var unknownTarget = |$"|(0)aaa{args.Length}";
+string stringTarget = |$"|(1)aaa{args.Length}";
+object objectTarget = |$"|(2)aaa{args.Length}";
+GenericTarget(|$"|(3)aaa{args.Length}");
+void GenericTarget<T>(T unused) { }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation

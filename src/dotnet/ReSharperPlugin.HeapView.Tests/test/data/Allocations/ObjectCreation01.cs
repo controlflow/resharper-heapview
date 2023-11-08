@@ -1,3 +1,5 @@
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+
 var c = new C();
 c = new();
 

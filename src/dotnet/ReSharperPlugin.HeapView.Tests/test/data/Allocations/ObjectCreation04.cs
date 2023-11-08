@@ -1,3 +1,4 @@
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 using System;
 using System.Linq.Expressions;
 

@@ -26,7 +26,7 @@ struct S
 (2): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (3): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
 (4): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Action' delegate type
-(5): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'anonymous int delegate(ref int)' delegate type
+(5): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'anonymous int delegate(ref int arg)' delegate type
 (6): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<string>' delegate type
 (7): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<int>' delegate type
 (8): ReSharper HeapView Boxing: Boxing allocation: conversion of value type 'S' instance method to 'Func<object,bool>' delegate type

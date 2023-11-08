@@ -1,4 +1,6 @@
-﻿var c = |new|(0) C();
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+
+var c = |new|(0) C();
 c = |new|(1)();
 
 var s = new S { };
