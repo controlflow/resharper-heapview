@@ -1,0 +1,18 @@
+﻿int[] empty1 = [];
+string[] empty2 = [];
+
+int[] array1 = |[|(0)111, 222];
+string[] array2 = |[|(1)"a", "b"];
+
+int[] array3 = |[|(2)..array1];
+string[] array4 = |[|(3)..args];
+
+int[] array5 = |[|(4)..array1, 1];
+string[] array6 = |[|(5)..args, "222"];
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'int[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new temporary list and 'int[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation

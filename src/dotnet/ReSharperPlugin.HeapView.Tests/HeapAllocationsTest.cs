@@ -42,6 +42,8 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestArrayInitializer01() { DoNamedTest2(); }
 
+  [Test] public void TestCollectionExpression01() { DoNamedTest2(); }
+
   [Test] public void TestWithExpression01() { DoNamedTest2(); }
 
   [Test] public void TestStringConcat01() { DoNamedTest2(); }
