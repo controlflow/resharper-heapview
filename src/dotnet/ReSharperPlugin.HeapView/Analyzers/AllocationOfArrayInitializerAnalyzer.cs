@@ -26,7 +26,7 @@ public class AllocationOfArrayInitializerAnalyzer : HeapAllocationAnalyzerBase<I
 
     ITreeNode startNode = arrayInitializer.LBrace, endNode = startNode;
 
-    var previousToken = arrayInitializer.LBrace.GetPreviousMeaningfulToken();
+    var previousToken = arrayInitializer.GetPreviousMeaningfulSiblingThroughWhitespaceAndComments(onlyAtTheSameLine: true);
     if (previousToken != null && previousToken.GetTokenType() == CSharpTokenType.EQ)
     {
       // larger range to highlight

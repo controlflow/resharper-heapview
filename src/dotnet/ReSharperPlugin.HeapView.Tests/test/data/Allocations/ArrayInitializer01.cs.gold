@@ -9,6 +9,12 @@ class ArrayInitializers
   public int[,] Array05 |= {|(4) { 1, 2 }, { 3, 4 } }; // yes, outer
   public Unresolved Array06 = { };
   public Unresolved[] Array07 |= {|(5) }; // yes
+  public string[] Array08 =
+  |{|(6)
+    "only",
+    "brace",
+    "highlighted"
+  };
 
   public void Method(int x)
   {
@@ -18,7 +24,7 @@ class ArrayInitializers
       throw new System.Exception();
     }
 
-    string[] ys |= {|(6) "aaa", "bbb" }; // yes
+    string[] ys |= {|(7) "aaa", "bbb" }; // yes
   }
 }
 ---------------------------------------------------------
@@ -29,3 +35,4 @@ class ArrayInitializers
 (4): ReSharper HeapView Allocation: Object allocation: new 'int[,]' array instance creation
 (5): ReSharper HeapView Allocation: Object allocation: new 'Unresolved[]' array instance creation
 (6): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation

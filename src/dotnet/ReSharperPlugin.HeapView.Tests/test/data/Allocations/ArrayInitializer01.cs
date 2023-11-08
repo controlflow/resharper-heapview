@@ -9,6 +9,12 @@ class ArrayInitializers
   public int[,] Array05 = { { 1, 2 }, { 3, 4 } }; // yes, outer
   public Unresolved Array06 = { };
   public Unresolved[] Array07 = { }; // yes
+  public string[] Array08 =
+  {
+    "only",
+    "brace",
+    "highlighted"
+  };
 
   public void Method(int x)
   {
