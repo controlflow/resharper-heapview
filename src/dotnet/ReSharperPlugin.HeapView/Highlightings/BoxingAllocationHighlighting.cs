@@ -11,6 +11,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   Title: "Boxing allocation",
   Description: "Highlights language construct or expression where boxing happens",
   DefaultSeverity: Severity.HINT)]
+
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
@@ -33,6 +34,7 @@ public class BoxingAllocationHighlighting : PerformanceHighlightingBase
   Title: "Boxing allocation (possible)",
   Description: "Highlights language construct or expression where boxing possibly happens",
   DefaultSeverity: Severity.HINT)]
+
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   AttributeId = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,

@@ -21,7 +21,7 @@ internal class ReSharperBoxingOccurrenceClassificationDefinition : Classificatio
   public ReSharperBoxingOccurrenceClassificationDefinition()
   {
     DisplayName = HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID;
-    ForegroundColor = Colors.Red;
+    ForegroundColor = Color.FromRgb(52, 175, 229);
   }
 
   [Export, Name(HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID), BaseDefinition("formal language")]
@@ -40,29 +40,10 @@ internal class ReSharperHeapAllocationClassificationDefinition : ClassificationF
   public ReSharperHeapAllocationClassificationDefinition()
   {
     DisplayName = HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID;
-    ForegroundColor = Colors.Orange;
+    ForegroundColor = Color.FromRgb(52, 175, 229);
   }
 
   [Export, Name(HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID), BaseDefinition("formal language")]
-  [UsedImplicitly]
-  internal ClassificationTypeDefinition? ClassificationTypeDefinition;
-}
-
-[ClassificationType(ClassificationTypeNames = HeapViewAttributeIds.STRUCT_COPY_ID)]
-[Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
-[Export(typeof(EditorFormatDefinition))]
-[Name(HeapViewAttributeIds.STRUCT_COPY_ID)]
-[DisplayName(HeapViewAttributeIds.STRUCT_COPY_ID)]
-[UserVisible(true)]
-internal class ReSharperStructCopyClassificationDefinition : ClassificationFormatDefinition
-{
-  public ReSharperStructCopyClassificationDefinition()
-  {
-    DisplayName = HeapViewAttributeIds.STRUCT_COPY_ID;
-    ForegroundColor = Colors.SkyBlue;
-  }
-
-  [Export, Name(HeapViewAttributeIds.STRUCT_COPY_ID), BaseDefinition("formal language")]
   [UsedImplicitly]
   internal ClassificationTypeDefinition? ClassificationTypeDefinition;
 }

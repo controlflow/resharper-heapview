@@ -42,8 +42,7 @@ public class ConfigurableSeverityHacks
   private static readonly string[] HighlightingIds =
   {
     HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
-    HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID,
-    HeapViewAttributeIds.STRUCT_COPY_ID
+    HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID
   };
 
   public ConfigurableSeverityHacks()
