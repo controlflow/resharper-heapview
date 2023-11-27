@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Resolve;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -11,7 +12,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   HighlightingTypes = new[]
   {
     typeof(ObjectAllocationHighlighting),
-    typeof(ObjectAllocationPossibleHighlighting) // ?
+    typeof(ObjectAllocationPossibleHighlighting) // todo: ???
   })]
 public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBase<ICollectionExpression>
 {
@@ -23,42 +24,32 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
     switch (typeInfo.Kind)
     {
       case CollectionExpressionKind.None:
-        break;
+      {
+        break; // error code
+      }
 
       case CollectionExpressionKind.Array:
       {
-        switch (ClassifyElements(collectionExpression))
+        if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+          return; // Array.Empty<T>() is used
+
+        if (HasSpreadsOfUnknownLength(collectionExpression))
         {
-          case ElementsClassification.Empty:
-          {
-            return; // Array.Empty<T>() is used
-          }
+          // temporary list is required, array can be conditionally allocated
+          var message = CanBeEvaluatedToBeEmpty(collectionExpression)
+            ? $"new temporary list and possible (if not empty) '{TargetTypeName()}' array instance creation"
+            : $"new temporary list and '{TargetTypeName()}' array instance creation";
 
-          case ElementsClassification.NonEmptyHasSpreads:
-          {
-            consumer.AddHighlighting(new ObjectAllocationHighlighting(
-              collectionExpression.LBracket,
-              $"new temporary list and '{TargetTypeName()}' array instance creation"));
-            return;
-          }
-
-          case ElementsClassification.OnlySpreads:
-          {
-            consumer.AddHighlighting(new ObjectAllocationHighlighting(
-              collectionExpression.LBracket,
-              $"new temporary list and possible (if not empty) '{TargetTypeName()}' array instance creation"));
-            return;
-          }
-
-          case ElementsClassification.NonEmpty:
-          {
-            consumer.AddHighlighting(new ObjectAllocationHighlighting(
-              collectionExpression.LBracket, $"new '{TargetTypeName()}' array instance creation"));
-            return;
-          }
-
-          default: throw new ArgumentOutOfRangeException();
+          consumer.AddHighlighting(new ObjectAllocationHighlighting(collectionExpression.LBracket, message));
         }
+        else
+        {
+          consumer.AddHighlighting(new ObjectAllocationHighlighting(
+            collectionExpression.LBracket,
+            $"new '{TargetTypeName()}' array instance creation"));
+        }
+
+        return;
       }
 
       case CollectionExpressionKind.Span:
@@ -149,5 +140,38 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
     NonEmptyHasSpreads,
     // [x, y]
     NonEmpty
+  }
+
+  [Pure]
+  private static bool CanBeEvaluatedToBeEmpty(ICollectionExpression collectionExpression)
+  {
+    foreach (var element in collectionExpression.CollectionElementsEnumerable)
+    {
+      switch (element)
+      {
+        case IExpressionElement:
+          return false; // non-empty element
+        case ISpreadElement:
+          continue; // can be empty sequence
+      }
+    }
+
+    return true;
+  }
+
+  [Pure]
+  private static bool HasSpreadsOfUnknownLength(ICollectionExpression collectionExpression)
+  {
+    foreach (var element in collectionExpression.CollectionElementsEnumerable)
+    {
+      if (element is ISpreadElement spreadElement)
+      {
+        var lengthCountResolveResult = spreadElement.CountOrLengthReference.Resolve();
+        if (lengthCountResolveResult.ResolveErrorType != ResolveErrorType.OK)
+          return true;
+      }
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,6 @@
-﻿int[] empty1 = [];
+﻿using System.Collections.Generic;
+
+int[] empty1 = [];
 string[] empty2 = [];
 
 int[] array1 = |[|(0)111, 222];
@@ -9,10 +11,16 @@ string[] array4 = |[|(3)..args];
 
 int[] array5 = |[|(4)..array1, 1];
 string[] array6 = |[|(5)..args, "222"];
+
+IEnumerable<string> ys = args;
+string[] array7 = |[|(6)..ys];
+string[] array8 = |[|(7)..ys, "aaa"];
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
 (1): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
-(2): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'int[]' array instance creation
-(3): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
-(4): ReSharper HeapView Allocation: Object allocation: new temporary list and 'int[]' array instance creation
-(5): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
