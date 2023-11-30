@@ -8,4 +8,4 @@ using NUnit.Framework;
 namespace ReSharperPlugin.HeapView.Tests;
 
 [SetUpFixture]
-public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<HeapViewTestEnvironmentZone> { }
+public class HeapViewTestsAssembly : ExtensionTestEnvironmentAssembly<HeapViewTestEnvironmentZone>;

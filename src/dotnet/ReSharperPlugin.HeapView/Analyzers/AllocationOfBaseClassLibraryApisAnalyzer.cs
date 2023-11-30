@@ -17,7 +17,7 @@ public class AllocationOfBaseClassLibraryApisAnalyzer : HeapAllocationAnalyzerBa
 
   }
 
-  private void InitMap()
+  public void InitMap()
   {
     Add<string>(nameof(string.Insert));
     Add<string>(nameof(string.Concat));
@@ -25,8 +25,13 @@ public class AllocationOfBaseClassLibraryApisAnalyzer : HeapAllocationAnalyzerBa
     Add<string>(nameof(string.Format));
     Add<string>(nameof(string.ToLowerInvariant));
     Add<string>(nameof(string.ToUpperInvariant));
+    return;
 
-    void Add<T>(string memberName) { }
+    void Add<T>(string memberName)
+    {
+      _ = typeof(T);
+      _ = memberName;
+    }
   }
 
   //InterruptibleLazy<>

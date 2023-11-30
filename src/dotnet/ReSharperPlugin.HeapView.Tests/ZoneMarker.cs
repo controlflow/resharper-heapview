@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace ReSharperPlugin.HeapView.Tests;
 
 [ZoneDefinition]
-public class HeapViewTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone> { }
+public class HeapViewTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>;
 
 [ZoneMarker]
-public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<HeapViewTestEnvironmentZone> { }
+public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<HeapViewTestEnvironmentZone>;

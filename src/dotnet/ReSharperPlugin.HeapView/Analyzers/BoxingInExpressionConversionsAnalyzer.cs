@@ -16,18 +16,14 @@ using ReSharperPlugin.HeapView.Settings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 // todo: [ReSharper] disable method group natural types under nameof() expression
-// todo: [ReSharper] no implictly converted to 'object' under __arglist() expression
+// todo: [ReSharper] no implicitly converted to 'object' under __arglist() expression
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
-    typeof(ICSharpExpression)
-  },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(ICSharpExpression) ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public sealed class BoxingInExpressionConversionsAnalyzer : HeapAllocationAnalyzerBase<ICSharpExpression>
 {
   protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

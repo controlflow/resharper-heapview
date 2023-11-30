@@ -11,8 +11,7 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
+  ElementTypes: [
     typeof(IForeachStatement),
     typeof(IAwaitExpression),
     typeof(ICollectionElementInitializer),
@@ -20,12 +19,11 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(IDeconstructionPatternClause),
     typeof(IVarDeconstructionPattern),
     typeof(IDeclarationExpression)
-  },
-  HighlightingTypes = new[]
-  {
+  ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

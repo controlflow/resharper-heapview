@@ -6,15 +6,11 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
-    typeof(IForeachStatement)
-  },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(IForeachStatement) ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInForeachAnalyzer : HeapAllocationAnalyzerBase<IForeachStatement>
 {
   protected override void Run(IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

@@ -65,7 +65,7 @@ public static class ClosurelessOverloadSearcher
     if (parameter is not { ContainingParametersOwner: IMethod { ContainingType: { } containingType } invokedMethod })
       return false;
 
-    var cache = data.GetOrCreateDataUnderLock(HasAllocationlessOverloadKey, static () => new());
+    var cache = data.GetOrCreateDataUnderLock(HasAllocationlessOverloadKey, static () => new Dictionary<IDeclaredElement, bool>());
 
     lock (cache)
     {

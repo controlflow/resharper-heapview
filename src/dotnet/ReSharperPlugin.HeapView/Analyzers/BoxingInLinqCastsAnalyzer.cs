@@ -13,16 +13,14 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
+  ElementTypes: [
     typeof(IInvocationExpression),
     typeof(IQueryCastReferenceProvider)
-  },
-  HighlightingTypes = new[]
-  {
+  ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInLinqCastsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -70,6 +68,8 @@ public class BoxingInLinqCastsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
       sourceType, castTargetType, targetTypeUsage,
       static (rule, source, target) => rule.ClassifyConversionFromExpression(source, target),
       data, consumer);
+
+    return;
 
     static ITypeUsage? GetCastNode(IQueryCastReferenceProvider queryCastReferenceProvider)
     {

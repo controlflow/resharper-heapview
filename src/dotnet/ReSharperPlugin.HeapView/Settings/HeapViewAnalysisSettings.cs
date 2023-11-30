@@ -63,7 +63,8 @@ internal static class HeapViewAnalysisSettingsExtensions
           var project = sourceFile.GetProject();
           if (project == null) return BooleanBoxes.False;
 
-          var configuration = project.ProjectProperties.TryGetConfiguration<ICSharpProjectConfiguration>(sourceFile.PsiModule.TargetFrameworkId);
+          var configuration = project.ProjectProperties.TryGetConfiguration<ICSharpProjectConfiguration>(
+            sourceFile.PsiModule.TargetFrameworkId);
           if (configuration == null) return BooleanBoxes.False;
 
           return configuration.Optimize ? BooleanBoxes.True : BooleanBoxes.False;

@@ -9,8 +9,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IArrayInitializer) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(IArrayInitializer) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfArrayInitializerAnalyzer : HeapAllocationAnalyzerBase<IArrayInitializer>
 {
   protected override void Run(

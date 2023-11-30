@@ -4,4 +4,4 @@ using JetBrains.VsIntegration.Zones;
 namespace ReSharperPlugin.HeapView.VisualStudio;
 
 [ZoneMarker]
-public class ZoneMarker : IRequire<IVisualStudioFrontendEnvZone> { }
+public class ZoneMarker : IRequire<IVisualStudioFrontendEnvZone>;

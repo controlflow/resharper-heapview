@@ -15,8 +15,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(ICSharpArgumentsOwner) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(ICSharpArgumentsOwner) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICSharpArgumentsOwner>
 {
   protected override void Run(

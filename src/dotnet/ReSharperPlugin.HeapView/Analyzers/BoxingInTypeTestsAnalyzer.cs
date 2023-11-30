@@ -9,17 +9,15 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
+  ElementTypes: [
     typeof(IPatternWithTypeUsage),
     typeof(IConstantOrTypePattern),
     typeof(IAsExpression)
-  },
-  HighlightingTypes = new[]
-  {
+  ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInTypeTestsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

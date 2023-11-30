@@ -15,12 +15,11 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // TODO: 4-parameter overloads of string.Concat do exist
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IAssignmentExpression), typeof(IAdditiveExpression) },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(IAssignmentExpression), typeof(IAdditiveExpression) ],
+  HighlightingTypes = [
     typeof(ObjectAllocationHighlighting),
     typeof(BoxingAllocationHighlighting)
-  })]
+  ])]
 public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBase<IOperatorExpression>
 {
   protected override void Run(
@@ -67,7 +66,7 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
   private sealed class ConcatenationInspector : IDisposable
   {
     // expressions or constant markers
-    private readonly List<object> myOperands = new();
+    private readonly List<object> myOperands = [];
     private ITokenNode? myCurrentConcatSign, myFirstConcatSign;
 
     private static readonly object ConstantPartMarker = new();
@@ -101,14 +100,6 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
     private bool AppendOperandConvertToString(ICSharpExpression? expression)
     {
       if (expression == null) return false;
-
-      void AppendConstPart()
-      {
-        if (myOperands.Count > 0 && myOperands[^1] == ConstantPartMarker)
-          return;
-
-        myOperands.Add(ConstantPartMarker);
-      }
 
       var constantValue = expression.ConstantValue;
       if (!constantValue.IsErrorOrNonCompileTimeConstantValue())
@@ -147,6 +138,14 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
       myFirstConcatSign ??= myCurrentConcatSign;
       myOperands.Add(expression);
       return true;
+
+      void AppendConstPart()
+      {
+        if (myOperands.Count > 0 && myOperands[^1] == ConstantPartMarker)
+          return;
+
+        myOperands.Add(ConstantPartMarker);
+      }
     }
 
     public void ReportAllocations(ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

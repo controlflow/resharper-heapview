@@ -59,6 +59,4 @@ internal class ReSharperHeapAllocationClassificationDefinition : ClassificationF
 [Order(After = "type parameter name", Before = "ReSharper Type Parameter Identifier")]
 [Name("HackOrderReSharperAndVisualStudioClassificationDefinition")]
 [UserVisible(false)]
-internal class HackOrderReSharperAndVisualStudioClassificationDefinition : ClassificationFormatDefinition
-{
-}
+internal class HackOrderReSharperAndVisualStudioClassificationDefinition : ClassificationFormatDefinition;

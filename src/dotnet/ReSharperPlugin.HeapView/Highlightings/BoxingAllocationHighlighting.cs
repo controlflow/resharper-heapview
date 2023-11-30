@@ -18,13 +18,11 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class BoxingAllocationHighlighting : PerformanceHighlightingBase
+public class BoxingAllocationHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.BoxingAllocation";
   public const string MESSAGE = "Boxing allocation: {0}";
-
-  public BoxingAllocationHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }
 
 [RegisterConfigurableSeverity(
@@ -41,11 +39,9 @@ public class BoxingAllocationHighlighting : PerformanceHighlightingBase
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class PossibleBoxingAllocationHighlighting : PerformanceHighlightingBase
+public class PossibleBoxingAllocationHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.PossibleBoxingAllocation";
   public const string MESSAGE = "Possible boxing allocation: {0}";
-
-  public PossibleBoxingAllocationHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }

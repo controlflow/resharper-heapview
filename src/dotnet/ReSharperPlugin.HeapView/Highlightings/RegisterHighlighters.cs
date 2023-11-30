@@ -2,8 +2,5 @@
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 
-public class HeapViewSettingsNamesProvider : PrefixBasedSettingsNamesProvider
-{
-  public HeapViewSettingsNamesProvider()
-    : base("ReSharper HeapView", "HEAP_VIEW") { }
-}
+public class HeapViewSettingsNamesProvider()
+  : PrefixBasedSettingsNamesProvider("ReSharper HeapView", "HEAP_VIEW");

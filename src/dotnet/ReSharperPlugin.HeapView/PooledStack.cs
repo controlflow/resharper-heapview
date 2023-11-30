@@ -38,5 +38,5 @@ public sealed class PooledStack<T> : Stack<T>, IDisposable
   }
 
   [Pure, PublicAPI]
-  public static ObjectPool<PooledStack<T>> CreatePool() => new(static p => new(p));
+  public static ObjectPool<PooledStack<T>> CreatePool() => new(static p => new PooledStack<T>(p));
 }

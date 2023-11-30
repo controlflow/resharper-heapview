@@ -25,7 +25,9 @@ public static class StructOverridesChecker
     IStruct structType, string methodShortName, IUserDataHolder cache)
   {
     var overridesMap = cache.GetOrCreateDataUnderLock(
-      StructOverridesCache, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
+      StructOverridesCache,
+      static () => new Dictionary<IStruct, StandardMethodOverrides>(
+        DeclaredElementEqualityComparer.TypeElementComparer));
 
     StandardMethodOverrides overrides;
     lock (overridesMap)

@@ -16,7 +16,7 @@ namespace ReSharperPlugin.HeapView.Tests;
 [TestNet70]
 public class DisplayClassStructureTest : BaseTestWithSingleProject
 {
-  protected override string RelativeTestDataPath => @"DisplayClass";
+  protected override string RelativeTestDataPath => "DisplayClass";
 
   [Test] public void Test01() { DoNamedTest(); }
   [Test] public void Test02() { DoNamedTest(); }

@@ -6,6 +6,7 @@ namespace BoxingTestProject;
 
 [TestFixture]
 [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
+[SuppressMessage("Usage", "CA2248:Provide correct \'enum\' argument to \'Enum.HasFlag\'")]
 public class RuntimeBoxingOptimizationsTests
 {
   private static readonly MyEnum EnumValue = MyEnum.Flag1 | MyEnum.Flag2;

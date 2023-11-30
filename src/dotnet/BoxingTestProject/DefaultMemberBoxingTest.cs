@@ -17,6 +17,7 @@ public class DefaultMemberBoxingTest
     var woi = new WithoutImpl();
     Allocations.AssertAllocates(() => Generic(woi));
     Allocations.AssertNoAllocations(() => woi.BaseCall());
+    return;
 
     int Generic<T>(T t) where T : IWithDefault => t.Method();
   }
@@ -48,6 +49,7 @@ public class DefaultMemberBoxingTest
     Allocations.AssertNoAllocations(() => VirtualEmpty(foo));
 #endif
     Allocations.AssertAllocates(() => SealedVirtualEmpty(foo));
+    return;
 
     int VirtualEmpty<T>(T t) where T : IFoo => t.VirtualMethod();
     int SealedVirtualEmpty<T>(T t) where T : IFoo => t.SealedVirtualMethod();

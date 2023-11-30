@@ -34,16 +34,16 @@ public static class ExpressionRangeUtils
 public class ConfigurableSeverityHacks
 {
   private static readonly Severity[] Severities =
-  {
+  [
     Severity.HINT,
     Severity.WARNING
-  };
+  ];
 
   private static readonly string[] HighlightingIds =
-  {
+  [
     HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
     HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID
-  };
+  ];
 
   public ConfigurableSeverityHacks()
   {

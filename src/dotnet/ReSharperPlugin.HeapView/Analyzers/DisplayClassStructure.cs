@@ -111,7 +111,10 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     if (classLikeDeclaration is
         {
           IsPartial: true,
-          DeclaredElement: ITypeElementWithPrimaryConstructor { PrimaryConstructor.Parameters: { Count: > 0 } primaryParameters } typeElement
+          DeclaredElement: ITypeElementWithPrimaryConstructor
+          {
+            PrimaryConstructor.Parameters: { Count: > 0 } primaryParameters
+          } typeElement
         })
     {
       var parameterNames = PooledHashSet<string>.GetInstance();
@@ -238,34 +241,44 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       var canTakeRefDisplayClass = CanTakeDisplayClassViaRefParameter(closure);
 
       var capturedDisplayClasses = captures.CapturedDisplayClasses;
-      if (capturedDisplayClasses.Count == 0)
+      switch (capturedDisplayClasses.Count)
       {
-        // only references local functions
-      }
-      else if (capturedDisplayClasses.Count == 1)
-      {
-        foreach (var singleDisplayClass in capturedDisplayClasses)
+        case 0:
         {
-          captures.AssignToDisplayClass(singleDisplayClass, canTakeRefDisplayClass);
+          // only references local functions
           break;
         }
-      }
-      else
-      {
-        using var displayClasses = PooledList<DisplayClass>.GetInstance();
 
-        displayClasses.AddRange(capturedDisplayClasses);
-        displayClasses.Sort();
-
-        captures.AssignToDisplayClass(displayClasses[0], canTakeRefDisplayClass);
-
-        // join display classes together
-        for (var index = 1; index < displayClasses.Count; index++)
+        case 1:
         {
-          var inner = displayClasses[index - 1];
-          var containing = displayClasses[index];
+          foreach (var singleDisplayClass in capturedDisplayClasses)
+          {
+            captures.AssignToDisplayClass(singleDisplayClass, canTakeRefDisplayClass);
+            break;
+          }
 
-          inner.SetContainingDisplayClassReference(containing);
+          break;
+        }
+
+        default:
+        {
+          using var displayClasses = PooledList<DisplayClass>.GetInstance();
+
+          displayClasses.AddRange(capturedDisplayClasses);
+          displayClasses.Sort();
+
+          captures.AssignToDisplayClass(displayClasses[0], canTakeRefDisplayClass);
+
+          // join display classes together
+          for (var index = 1; index < displayClasses.Count; index++)
+          {
+            var inner = displayClasses[index - 1];
+            var containing = displayClasses[index];
+
+            inner.SetContainingDisplayClassReference(containing);
+          }
+
+          break;
         }
       }
     }
@@ -329,6 +342,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         myClosureToCaptures.Remove(closure);
       }
     }
+
+    return;
 
     [Pure]
     bool CanTakeDisplayClassViaRefParameter(ICSharpClosure closure)
@@ -566,6 +581,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
       }
     }
 
+    return;
+
     void NoteCapture(ITreeNode localScope, ITypeOwner capturedEntity)
     {
       var currentClosure = myCurrentClosures.Peek();
@@ -681,7 +698,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private sealed class DisplayClass : IComparable<DisplayClass>, IDisplayClass
   {
     private DisplayClass() { }
-    private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new());
+    private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new DisplayClass());
 
     [Pure]
     public static DisplayClass Create(ITreeNode scopeNode)
@@ -732,8 +749,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     // note: can be IQueryParameterPlatform
     public ITreeNode ScopeNode { get; private set; } = null!;
 
-    public HashSet<IDeclaredElement> Members { get; } = new();
-    public List<ICSharpClosure> Closures { get; } = new();
+    public HashSet<IDeclaredElement> Members { get; } = [];
+    public List<ICSharpClosure> Closures { get; } = [];
 
     public DisplayClass? ContainingDisplayClass { get; set; }
 
@@ -782,7 +799,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   private sealed class ClosureCaptures : IClosureCaptures
   {
     private ClosureCaptures() { }
-    private static readonly ObjectPool<ClosureCaptures> Pool = new(static _ => new());
+    private static readonly ObjectPool<ClosureCaptures> Pool = new(static _ => new ClosureCaptures());
 
     [Pure]
     public static ClosureCaptures Create(ICSharpClosure closure)
@@ -804,9 +821,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
     private ICSharpClosure Closure { get; set; } = null!;
 
-    public HashSet<DisplayClass> CapturedDisplayClasses { get; } = new();
-
-    public HashSet<IDeclaredElement> CapturedEntities { get; } = new();
+    public HashSet<DisplayClass> CapturedDisplayClasses { get; } = [];
+    public HashSet<IDeclaredElement> CapturedEntities { get; } = [];
 
     // note: can be null if closure only captures closureless local functions
     private DisplayClass? AttachedDisplayClass { get; set; }

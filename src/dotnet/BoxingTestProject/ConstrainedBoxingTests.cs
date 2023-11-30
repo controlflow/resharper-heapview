@@ -13,6 +13,7 @@ public class ConstrainedBoxingTests
     Allocations.AssertNoAllocations(() => Generic(new SomeStruct()));
     Allocations.AssertNoAllocations(() => Generic(42));
     Allocations.AssertNoAllocations(() => Generic("aaa"));
+    return;
 
     static int Generic<T>(T t) => typeof(T) == typeof(int) ? (int)(object?)t! : -1;
   }

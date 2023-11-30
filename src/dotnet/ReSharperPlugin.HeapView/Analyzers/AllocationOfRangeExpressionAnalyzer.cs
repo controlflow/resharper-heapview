@@ -10,8 +10,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IElementAccessExpression) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(IElementAccessExpression) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfRangeExpressionAnalyzer : HeapAllocationAnalyzerBase<IElementAccessExpression>
 {
   protected override void Run(

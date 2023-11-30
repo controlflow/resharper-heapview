@@ -21,7 +21,7 @@ public static class CommonUtils
   [Pure]
   public static bool IsStringConcatOperator(this IReference? reference)
   {
-    if (reference is (ISignOperator { IsPredefined: true } signOperator, _)
+    if (reference?.Resolve().DeclaredElement is ISignOperator { IsPredefined: true } signOperator
         && signOperator.ReturnType.IsString()
         && signOperator is not InterpolatedStringConcatenationOperator)
     {
@@ -234,7 +234,7 @@ public static class CommonUtils
     }
 
     var naturalType = methodGroupExpression.GetExpressionType().ToIType();
-    if (naturalType != null && naturalType.IsDelegateType())
+    if (naturalType.IsDelegateType())
     {
       return naturalType;
     }

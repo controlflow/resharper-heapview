@@ -11,18 +11,17 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   CompoundItemName: null,
   Group: HeapViewHighlightingsGroupIds.ID,
   Title: "Implicitly captured variables",
-  Description: "Highlights places where closure implicitly captures some variables that can contain references, resulting in memory leaks",
+  Description: "Highlights places where closure implicitly captures some variables " +
+               "that can contain references, resulting in memory leaks",
   DefaultSeverity: Severity.DO_NOT_SHOW)]
 [ConfigurableSeverityHighlighting(
   SEVERITY_ID, CSharpLanguage.Name,
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ImplicitCaptureWarning : PerformanceHighlightingBase
+public class ImplicitCaptureWarning(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ImplicitCapture";
   public const string MESSAGE = "Implicit capture of {0}";
-
-  public ImplicitCaptureWarning(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }

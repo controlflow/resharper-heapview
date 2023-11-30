@@ -17,11 +17,9 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ClosureAllocationHighlighting : PerformanceHighlightingBase
+public class ClosureAllocationHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ClosureAllocation";
   public const string MESSAGE = "Closure allocation: {0}";
-
-  public ClosureAllocationHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }

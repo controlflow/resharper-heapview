@@ -12,8 +12,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // TODO: Delegate.Combine/Remove/RemoveAll APIs support
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IAssignmentExpression), typeof(IAdditiveExpression) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationPossibleHighlighting) })]
+  ElementTypes: [ typeof(IAssignmentExpression), typeof(IAdditiveExpression) ],
+  HighlightingTypes = [ typeof(ObjectAllocationPossibleHighlighting) ])]
 public class AllocationOfDelegateOperatorsAnalyzer : HeapAllocationAnalyzerBase<IOperatorExpression>
 {
   protected override void Run(

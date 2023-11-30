@@ -16,11 +16,9 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   SEVERITY_ID, CSharpLanguage.Name,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class CanEliminateClosureCreationHighlighting : PerformanceHighlightingBase
+public class CanEliminateClosureCreationHighlighting(ITreeNode element)
+  : PerformanceHighlightingBase(element, MESSAGE, "method has overload to avoid closure creation")
 {
   public const string SEVERITY_ID = "HeapView.CanAvoidClosure";
   public const string MESSAGE = "Closure can be eliminated: {0}";
-
-  public CanEliminateClosureCreationHighlighting(ITreeNode element)
-    : base(element, MESSAGE, "method has overload to avoid closure creation") { }
 }

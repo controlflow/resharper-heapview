@@ -6,8 +6,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IListPattern) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(IListPattern) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfSlicePatternAnalyzer : HeapAllocationAnalyzerBase<IListPattern>
 {
   protected override void Run(

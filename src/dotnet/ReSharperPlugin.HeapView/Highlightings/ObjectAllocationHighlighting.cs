@@ -17,13 +17,11 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationHighlighting : PerformanceHighlightingBase
+public class ObjectAllocationHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation";
   public const string MESSAGE = "Object allocation: {0}";
-
-  public ObjectAllocationHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }
 
 [RegisterConfigurableSeverity(
@@ -39,13 +37,11 @@ public class ObjectAllocationHighlighting : PerformanceHighlightingBase
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
+public class ObjectAllocationEvidentHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Evident";
   public const string MESSAGE = "Object allocation: {0}";
-
-  public ObjectAllocationEvidentHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }
 
 [RegisterConfigurableSeverity(
@@ -61,11 +57,9 @@ public class ObjectAllocationEvidentHighlighting : PerformanceHighlightingBase
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationPossibleHighlighting : PerformanceHighlightingBase
+public class ObjectAllocationPossibleHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Possible";
   public const string MESSAGE = "Possible object allocation: {0}";
-
-  public ObjectAllocationPossibleHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }

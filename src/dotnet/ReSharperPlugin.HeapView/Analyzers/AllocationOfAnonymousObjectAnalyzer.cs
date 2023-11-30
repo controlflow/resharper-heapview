@@ -6,8 +6,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IAnonymousObjectCreationExpression) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationEvidentHighlighting) })]
+  ElementTypes: [ typeof(IAnonymousObjectCreationExpression) ],
+  HighlightingTypes = [ typeof(ObjectAllocationEvidentHighlighting) ])]
 public class AllocationOfAnonymousObjectAnalyzer : HeapAllocationAnalyzerBase<IAnonymousObjectCreationExpression>
 {
   protected override void Run(

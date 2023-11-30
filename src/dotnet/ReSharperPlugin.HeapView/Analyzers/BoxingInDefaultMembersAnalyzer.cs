@@ -17,8 +17,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IClassLikeDeclaration) },
-  HighlightingTypes = new[] { typeof(PossibleBoxingAllocationHighlighting) })]
+  ElementTypes: [ typeof(IClassLikeDeclaration) ],
+  HighlightingTypes = [ typeof(PossibleBoxingAllocationHighlighting) ])]
 public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassLikeDeclaration>
 {
   protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
@@ -44,12 +44,12 @@ public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassL
       {
         if (typeUsage is not IUserTypeUsage
             {
-              ScalarTypeName:
-              {
-                NameIdentifier: { } typeNameIdentifier,
-                Reference: (IInterface interfaceType, var substitution)
-              }
-            }) continue;
+              ScalarTypeName: { NameIdentifier: { } typeNameIdentifier, Reference: { } reference }
+            })
+          continue;
+
+        if (reference.Resolve() is not (IInterface interfaceType, var substitution))
+          continue;
 
         defaultMembers.Clear();
 
@@ -79,6 +79,8 @@ public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassL
             ReportNotImplementedDefaultMembers(defaultMembers, structType, extendedType, typeNameIdentifier, consumer);
           }
         }
+
+        continue;
 
         void AppendDefaultMembersFrom(IInterface iface, ISubstitution sub)
         {
@@ -165,9 +167,12 @@ public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassL
   }
 
   [Pure]
-  private static IReadOnlyList<IOverridableMember> GetAllInstanceDefaultMembers(IInterface interfaceElement, ElementProblemAnalyzerData data)
+  private static IReadOnlyList<IOverridableMember> GetAllInstanceDefaultMembers(
+    IInterface interfaceElement, ElementProblemAnalyzerData data)
   {
-    var cache = data.GetOrCreateDataUnderLock(DefaultMembersInInterfaceKey, static () => new(DeclaredElementEqualityComparer.TypeElementComparer));
+    var cache = data.GetOrCreateDataUnderLock(DefaultMembersInInterfaceKey,
+      static () => new Dictionary<IInterface, IReadOnlyList<IOverridableMember>>(
+        DeclaredElementEqualityComparer.TypeElementComparer));
 
     lock (cache)
     {

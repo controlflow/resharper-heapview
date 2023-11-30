@@ -13,12 +13,11 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(ICollectionExpression) },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(ICollectionExpression) ],
+  HighlightingTypes = [
     typeof(ObjectAllocationHighlighting),
     typeof(ObjectAllocationPossibleHighlighting)
-  })]
+  ])]
 public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBase<ICollectionExpression>
 {
   protected override void Run(
@@ -116,7 +115,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
               consumer.AddHighlighting(
                 new ObjectAllocationPossibleHighlighting(
                   collectionExpression.LBracket,
-                  $"new instance creation if '{TargetTypeName()}' type parameter will be substituted with the reference type"),
+                  $"new instance creation if '{TargetTypeName()}' type parameter " +
+                  $"will be substituted with the reference type"),
                 GetCollectionExpressionRangeToHighlight());
               break;
             }
@@ -130,7 +130,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       {
         // List<T>
         // array wrapper
-        
+
         // temporary list
 
         break;

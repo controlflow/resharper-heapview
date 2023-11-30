@@ -9,8 +9,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IReferenceExpression), typeof(IInvocationExpression) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(IReferenceExpression), typeof(IInvocationExpression) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfIteratorsAnalyzer : HeapAllocationAnalyzerBase<ICSharpExpression>
 {
   protected override void Run(

@@ -20,8 +20,8 @@ using ReSharperPlugin.HeapView.Settings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
+  ElementTypes:
+  [
     // initializer scope
     typeof(IClassLikeDeclaration),
     // methods, properties, indexers
@@ -29,15 +29,15 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(IExpressionBodyOwnerDeclaration),
     // top-level code
     typeof(ITopLevelCode)
-  },
-  HighlightingTypes = new[]
-  {
+  ],
+  HighlightingTypes =
+  [
     typeof(ClosureAllocationHighlighting),
     typeof(DelegateAllocationHighlighting),
     typeof(ObjectAllocationHighlighting),
     typeof(ImplicitCaptureWarning),
     typeof(CanEliminateClosureCreationHighlighting)
-  })]
+  ])]
 public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode treeNode, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -79,6 +79,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
     var description = CreateDisplayClassDescription();
     consumer.AddHighlighting(new ClosureAllocationHighlighting(declarationNode, description));
+    return;
 
     [Pure]
     ITreeNode? GetAllocationNodeFromMemberDeclaration(ICSharpDeclaration displayClassMemberDeclaration)
@@ -294,6 +295,8 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       ReportDelegateAllocation(closure, createdType, captures, consumer, data);
     }
 
+    return;
+
     IType? TryGetCreatedLambdaType()
     {
       switch (closure)
@@ -372,6 +375,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     consumer.AddHighlighting(
       new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
     TryReportClosurelessOverloads(closure, captures, data, consumer);
+    return;
 
     static void CollectImplicitCapturesThatCanContainReferences(
       HashSet<IDeclaredElement> consumer, IClosureCaptures captures, ElementProblemAnalyzerData data)
@@ -445,6 +449,8 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
         builder.Append("'this' reference");
       }
+
+      return;
 
       void AppendMembersIfKind<TElement>(string kindName, int count) where TElement : IDeclaredElement
       {

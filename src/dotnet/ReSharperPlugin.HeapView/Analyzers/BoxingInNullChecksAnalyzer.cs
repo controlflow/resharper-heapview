@@ -10,16 +10,14 @@ using ReSharperPlugin.HeapView.Settings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
+  ElementTypes: [
     typeof(IConstantOrTypePattern),
     typeof(IRecursivePattern),
     typeof(IReferenceExpression)
-  },
-  HighlightingTypes = new[]
-  {
+  ],
+  HighlightingTypes = [
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInNullChecksAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)

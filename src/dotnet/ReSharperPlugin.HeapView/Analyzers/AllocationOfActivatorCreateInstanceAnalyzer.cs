@@ -10,15 +10,14 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IInvocationExpression) },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(IInvocationExpression) ],
+  HighlightingTypes = [
     typeof(ObjectAllocationHighlighting),
     typeof(ObjectAllocationPossibleHighlighting)
-  })]
+  ])]
 public class AllocationOfActivatorCreateInstanceAnalyzer : HeapAllocationAnalyzerBase<IInvocationExpression>
 {
-  private static readonly ClrTypeName ActivatorTypeName = new(typeof(Activator).FullName);
+  private static readonly ClrTypeName ActivatorTypeName = new(typeof(Activator).FullName!);
 
   protected override void Run(
     IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -91,6 +90,8 @@ public class AllocationOfActivatorCreateInstanceAnalyzer : HeapAllocationAnalyze
         }
       }
     }
+
+    return;
 
     void ReportAllocationInNetFramework()
     {

@@ -4,15 +4,14 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IForeachStatement) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationPossibleHighlighting) })]
+  ElementTypes: [ typeof(IForeachStatement) ],
+  HighlightingTypes = [ typeof(ObjectAllocationPossibleHighlighting) ])]
 public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<IForeachStatement>
 {
   protected override void Run(
@@ -36,8 +35,11 @@ public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<
       {
         var enumeratorTypeName = enumeratorType.GetPresentableName(foreachStatement.Language, CommonUtils.DefaultTypePresentationStyle);
 
-        consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
-          inKeyword, $"new '{enumeratorTypeName}' instance creation on '{getEnumeratorMethod.ShortName}()' call (except when it's cached by the implementation)"));
+        consumer.AddHighlighting(
+          new ObjectAllocationPossibleHighlighting(
+            inKeyword,
+            $"new '{enumeratorTypeName}' instance creation on '{getEnumeratorMethod.ShortName}()' call " +
+            $"(except when it's cached by the implementation)"));
       }
     }
   }
@@ -47,11 +49,20 @@ public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<
   {
     switch (collectionExpression.GetOperandThroughParenthesis())
     {
-      case IReferenceExpression { Reference: (IProperty { Getter.IsIterator: true }, _) }:
-      case IInvocationExpression { Reference: (IMethod { IsIterator: true } or ILocalFunction { IsIterator: true }, _) }:
+      case IReferenceExpression referenceExpression
+        when referenceExpression.Reference.Resolve().DeclaredElement
+          is IProperty { Getter.IsIterator: true }:
+      case IInvocationExpression invocationExpression
+        when invocationExpression.Reference.Resolve().DeclaredElement
+          is IMethod { IsIterator: true } or ILocalFunction { IsIterator: true }:
+      {
         return true; // less false positives
+      }
+
       default:
+      {
         return false;
+      }
     }
   }
 

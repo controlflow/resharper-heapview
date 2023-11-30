@@ -14,6 +14,7 @@ namespace BoxingTestProject;
 [SuppressMessage("ReSharper", "InlineTemporaryVariable")]
 [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
 [SuppressMessage("ReSharper", "MergeAndPattern")]
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class PatternMatchingBoxingTests
 {
   [Test]

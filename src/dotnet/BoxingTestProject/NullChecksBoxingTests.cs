@@ -4,6 +4,7 @@ using NUnit.Framework;
 namespace BoxingTestProject;
 
 [TestFixture]
+[SuppressMessage("Reliability", "CA2013:Do not use ReferenceEquals with value types")]
 public class NullChecksBoxingTests
 {
   [Test]
@@ -86,7 +87,6 @@ public class NullChecksBoxingTests
   }
 
   [Test]
-  [SuppressMessage("ReSharper", "RedundantCast")]
   public void CastAndNullCheck()
   {
     var st = new SomeStruct();
@@ -95,6 +95,7 @@ public class NullChecksBoxingTests
 #else
     Allocations.AssertNoAllocations(() => Generic(st));
 #endif
+    // ReSharper disable once RedundantCast
     static bool Generic<T>(T unconstrained) => (object?) unconstrained == null;
   }
 

@@ -414,6 +414,8 @@ public abstract class Boxing
         consumer.AddHighlighting(new BoxingAllocationHighlighting(CorrespondingNode, longDescription));
       }
 
+      return;
+
       bool CanUseIndividualReports()
       {
         foreach (var componentBoxing in ComponentBoxings)

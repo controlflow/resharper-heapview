@@ -10,8 +10,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IQueryRangeVariableDeclaration) },
-  HighlightingTypes = new[] { typeof(ObjectAllocationHighlighting) })]
+  ElementTypes: [ typeof(IQueryRangeVariableDeclaration) ],
+  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
 public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapAllocationAnalyzerBase<IQueryRangeVariableDeclaration>
 {
   protected override void Run(
@@ -34,6 +34,12 @@ public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapA
     using var stringBuilder = PooledStringBuilder.GetInstance();
     var builder = stringBuilder.Builder;
 
+    PresentTransparentIdentifierAnonymousType(queryAnonymousType);
+
+    consumer.AddHighlighting(new ObjectAllocationHighlighting(
+      queryRangeVariableDeclaration.NameIdentifier, "new anonymous type instance creation for range variables " + builder));
+    return;
+
     void PresentTransparentIdentifierAnonymousType(IQueryAnonymousType anonymousType)
     {
       builder.Append('{');
@@ -54,10 +60,5 @@ public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapA
 
       builder.Append('}');
     }
-
-    PresentTransparentIdentifierAnonymousType(queryAnonymousType);
-
-    consumer.AddHighlighting(new ObjectAllocationHighlighting(
-      queryRangeVariableDeclaration.NameIdentifier, "new anonymous type instance creation for range variables " + builder));
   }
 }

@@ -1,5 +1,4 @@
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon.VB.Errors;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -68,9 +67,7 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
 }
 
 [TestNetFramework46]
-public class ClosureAllocationsNetFrameworkTest : ClosureAllocationsTestBase
-{
-}
+public class ClosureAllocationsNetFrameworkTest : ClosureAllocationsTestBase;
 
 [TestNet70]
 public class ClosureAllocationsNetCoreTest : ClosureAllocationsTestBase

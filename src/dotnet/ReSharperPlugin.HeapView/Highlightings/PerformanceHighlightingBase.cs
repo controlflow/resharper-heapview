@@ -7,26 +7,18 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace ReSharperPlugin.HeapView.Highlightings;
 
 [UsedImplicitly(ImplicitUseKindFlags.Access,ImplicitUseTargetFlags.WithMembers | ImplicitUseTargetFlags.WithInheritors)]
-public abstract class PerformanceHighlightingBase : IHighlighting
+public abstract class PerformanceHighlightingBase(ITreeNode element, string format, string description) : IHighlighting
 {
-  private readonly ITreeNode myElement;
-
-  protected PerformanceHighlightingBase(ITreeNode element, string format, string description)
-  {
-    myElement = element;
-    ToolTip = string.Format(format, description);
-  }
-
-  public bool IsValid() => myElement.IsValid();
+  public bool IsValid() => element.IsValid();
 
   public DocumentRange CalculateRange()
   {
-    if (myElement is ICSharpExpression expression)
+    if (element is ICSharpExpression expression)
       return expression.GetExpressionRange();
 
-    return myElement.GetDocumentRange();
+    return element.GetDocumentRange();
   }
 
-  public string ToolTip { get; }
+  public string ToolTip { get; } = string.Format(format, description);
   public string ErrorStripeToolTip => ToolTip;
 }

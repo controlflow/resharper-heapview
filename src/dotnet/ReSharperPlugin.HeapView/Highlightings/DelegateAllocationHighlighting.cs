@@ -17,11 +17,9 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class DelegateAllocationHighlighting : PerformanceHighlightingBase
+public class DelegateAllocationHighlighting(ITreeNode element, string description)
+  : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.DelegateAllocation";
   public const string MESSAGE = "Delegate allocation: {0}";
-
-  public DelegateAllocationHighlighting(ITreeNode element, string description)
-    : base(element, MESSAGE, description) { }
 }

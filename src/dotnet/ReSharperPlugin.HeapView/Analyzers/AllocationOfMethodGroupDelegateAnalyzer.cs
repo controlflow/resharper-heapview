@@ -12,8 +12,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[] { typeof(IReferenceExpression) },
-  HighlightingTypes = new[] { typeof(DelegateAllocationHighlighting) })]
+  ElementTypes: [ typeof(IReferenceExpression) ],
+  HighlightingTypes = [ typeof(DelegateAllocationHighlighting) ])]
 public class AllocationOfMethodGroupDelegateAnalyzer : HeapAllocationAnalyzerBase<IReferenceExpression>
 {
   protected override void Run(

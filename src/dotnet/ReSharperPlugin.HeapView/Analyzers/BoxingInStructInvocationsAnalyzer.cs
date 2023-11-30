@@ -12,16 +12,11 @@ using ReSharperPlugin.HeapView.Settings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: new[]
-  {
-    typeof(IInvocationExpression),
-    typeof(IReferenceExpression)
-  },
-  HighlightingTypes = new[]
-  {
+  ElementTypes: [ typeof(IInvocationExpression), typeof(IReferenceExpression) ],
+  HighlightingTypes = [
     typeof(BoxingAllocationHighlighting),
     typeof(PossibleBoxingAllocationHighlighting)
-  })]
+  ])]
 public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSharpExpression>
 {
   protected override void Run(ICSharpExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -74,6 +69,8 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
       }
     }
 
+    return;
+
     void CheckGetTypeMethodInvocation()
     {
       var qualifierType = TryGetQualifierExpressionType(invokedReferenceExpression);
@@ -81,7 +78,7 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
         return;
 
       if (!qualifierType.IsTypeBoxable())
-        return; // errorneous invocation
+        return; // erroneous invocation
 
       if (invokedReferenceExpression.IsInTheContextWhereAllocationsAreNotImportant())
         return;
@@ -164,6 +161,8 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
             $"inherited '{PresentMethod()}' virtual method invocation over the value type instance"));
       }
 
+      return;
+
       [Pure]
       bool CheckHasVirtualMethodOverride(ITypeElement? typeElement)
       {
@@ -178,7 +177,7 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
           case ITypeParameter:
             return false; // in generic code we are not assuming any overrides
           default:
-            return true; // somewthing weird is found under Nullable<T>
+            return true; // something weird is found under Nullable<T>
         }
       }
 
