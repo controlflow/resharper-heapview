@@ -1,2 +1,5 @@
-﻿var t = $"aaa" + ($"bbb" + $"ccc");
+﻿var t = |$"|(0)aaa{args}" |+|(1) (|$"|(2)bbb{args}" + $"ccc{args}");
 ---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: string concatenation
+(2): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
