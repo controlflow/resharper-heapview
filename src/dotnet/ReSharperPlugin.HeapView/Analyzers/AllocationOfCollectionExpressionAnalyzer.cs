@@ -12,6 +12,8 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+// todo: spread is allocating the enumerator
+
 [ElementProblemAnalyzer(
   ElementTypes: [ typeof(ICollectionExpression) ],
   HighlightingTypes = [
@@ -46,8 +48,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         {
           // temporary list is required, array can be conditionally allocated
           var message = CanBeEvaluatedToBeEmpty(collectionExpression)
-            ? $"new temporary list and possible (if not empty) '{TargetTypeName()}' array instance creation"
-            : $"new temporary list and '{TargetTypeName()}' array instance creation";
+            ? $"new temporary list and possible (if not empty) '{PresentTypeName(typeInfo.TargetType)}' array instance creation"
+            : $"new temporary list and '{PresentTypeName(typeInfo.TargetType)}' array instance creation";
 
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(collectionExpression.LBracket, message),
@@ -57,7 +59,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         {
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(
-              collectionExpression.LBracket, $"new '{TargetTypeName()}' array instance creation"),
+              collectionExpression.LBracket,
+              $"new '{PresentTypeName(typeInfo.TargetType)}' array instance creation"),
             GetCollectionExpressionRangeToHighlight());
         }
 
@@ -105,7 +108,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
             {
               consumer.AddHighlighting(
                 new ObjectAllocationHighlighting(
-                  collectionExpression.LBracket, $"new '{TargetTypeName()}' instance creation"),
+                  collectionExpression.LBracket,
+                  $"new '{PresentTypeName(typeInfo.TargetType)}' instance creation"),
                 GetCollectionExpressionRangeToHighlight());
               break;
             }
@@ -115,7 +119,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
               consumer.AddHighlighting(
                 new ObjectAllocationPossibleHighlighting(
                   collectionExpression.LBracket,
-                  $"new instance creation if '{TargetTypeName()}' type parameter " +
+                  $"new instance creation if '{PresentTypeName(typeInfo.TargetType)}' type parameter " +
                   $"will be substituted with the reference type"),
                 GetCollectionExpressionRangeToHighlight());
               break;
@@ -128,10 +132,35 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
       case CollectionExpressionKind.ArrayInterface:
       {
-        // List<T>
-        // array wrapper
+        var targetType = typeInfo.TargetType;
+        if (targetType.IsGenericIList() || targetType.IsGenericICollection())
+        {
+          var genericListTypeElement = collectionExpression.GetPredefinedType().GenericList.GetTypeElement();
+          if (genericListTypeElement == null) return;
 
-        // temporary list
+          var genericListOfElementType = TypeFactory.CreateType(genericListTypeElement, [typeInfo.ElementType]);
+
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(
+              collectionExpression.LBracket,
+              $"new '{PresentTypeName(genericListOfElementType)}' instance creation"),
+            GetCollectionExpressionRangeToHighlight());
+        }
+        else
+        {
+          if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+          {
+            return; // Array<T>.Empty()
+          }
+
+          var storageKind = HasSpreadsOfUnknownLength(collectionExpression) ? "temporary list" : "array";
+
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(
+              collectionExpression.LBracket,
+              $"new {storageKind} and '{PresentTypeName(typeInfo.TargetType)}' implementation instance creation"),
+            GetCollectionExpressionRangeToHighlight());
+        }
 
         break;
       }
@@ -143,9 +172,9 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
     return;
 
     [Pure]
-    string TargetTypeName()
+    string PresentTypeName(IType type)
     {
-      return typeInfo.TargetType.GetPresentableName(
+      return type.GetPresentableName(
         collectionExpression.Language, CommonUtils.DefaultTypePresentationStyle).Text;
     }
 
