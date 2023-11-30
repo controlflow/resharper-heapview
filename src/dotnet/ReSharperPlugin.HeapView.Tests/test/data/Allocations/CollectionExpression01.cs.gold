@@ -3,8 +3,8 @@
 int[] empty1 = [];
 string[] empty2 = [];
 
-int[] array1 = |[|(0)111, 222];
-string[] array2 = |[|(1)"a", "b"];
+int[] array1 = |[11|(0)1, 222];
+string[] array2 = |["a|(1)", "b"];
 
 int[] array3 = |[|(2)..array1];
 string[] array4 = |[|(3)..args];

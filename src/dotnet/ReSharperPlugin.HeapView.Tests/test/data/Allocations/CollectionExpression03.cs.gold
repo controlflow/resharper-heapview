@@ -1,0 +1,17 @@
+﻿using System.Collections.Generic;
+
+void Generics<TList, TFoo>()
+  where TList : List<int>, new()
+  where TFoo : IFoo, new()
+{
+  TList xs = |[]|(0); // yes
+  TFoo ys = |[]|(1); // possible
+}
+
+interface IFoo : IEnumerable<int>
+{
+  void Add(int x);
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'TList' instance creation
+(1): ReSharper HeapView Allocation: Possible object allocation: new instance creation if 'TFoo' type parameter will be substituted with the reference type

@@ -1,8 +1,13 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -12,14 +17,17 @@ namespace ReSharperPlugin.HeapView.Analyzers;
   HighlightingTypes = new[]
   {
     typeof(ObjectAllocationHighlighting),
-    typeof(ObjectAllocationPossibleHighlighting) // todo: ???
+    typeof(ObjectAllocationPossibleHighlighting)
   })]
 public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBase<ICollectionExpression>
 {
   protected override void Run(
     ICollectionExpression collectionExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    var typeInfo = collectionExpression.GetTargetTypeInfo(collectionExpression.Type());
+    if (collectionExpression.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    var typeInfo = collectionExpression.GetTargetTypeInfo();
 
     switch (typeInfo.Kind)
     {
@@ -31,7 +39,9 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.Array:
       {
         if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+        {
           return; // Array.Empty<T>() is used
+        }
 
         if (HasSpreadsOfUnknownLength(collectionExpression))
         {
@@ -40,13 +50,16 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
             ? $"new temporary list and possible (if not empty) '{TargetTypeName()}' array instance creation"
             : $"new temporary list and '{TargetTypeName()}' array instance creation";
 
-          consumer.AddHighlighting(new ObjectAllocationHighlighting(collectionExpression.LBracket, message));
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(collectionExpression.LBracket, message),
+            GetCollectionExpressionRangeToHighlight());
         }
         else
         {
-          consumer.AddHighlighting(new ObjectAllocationHighlighting(
-            collectionExpression.LBracket,
-            $"new '{TargetTypeName()}' array instance creation"));
+          consumer.AddHighlighting(
+            new ObjectAllocationHighlighting(
+              collectionExpression.LBracket, $"new '{TargetTypeName()}' array instance creation"),
+            GetCollectionExpressionRangeToHighlight());
         }
 
         return;
@@ -55,10 +68,21 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.Span:
       case CollectionExpressionKind.ReadOnlySpan:
       {
-        // when stackalloc?
-        // todo: blittable data
+        if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+        {
+          return; // Span<T>.Empty
+        }
 
-        break;
+        if (typeInfo.Kind == CollectionExpressionKind.ReadOnlySpan
+            && collectionExpression.CanBeLoweredToRuntimeHelpersCreateSpan())
+        {
+          return; // inline data or RuntimeHelpers.CreateSpan
+        }
+
+        // todo: wait for final APIs from RC
+        // todo: no allocation if inline arrays can be used, heap array otherwise
+
+        return;
       }
 
       case CollectionExpressionKind.ImmutableArray:
@@ -74,13 +98,39 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.ImplementsGenericIEnumerable:
       case CollectionExpressionKind.ImplementsIEnumerable:
       {
-        // check ctor, reference type or not?
+        if (typeInfo.TargetType is IDeclaredType createdType)
+        {
+          switch (createdType.Classify)
+          {
+            case TypeClassification.REFERENCE_TYPE:
+            {
+              consumer.AddHighlighting(
+                new ObjectAllocationHighlighting(
+                  collectionExpression.LBracket, $"new '{TargetTypeName()}' instance creation"),
+                GetCollectionExpressionRangeToHighlight());
+              break;
+            }
+
+            case TypeClassification.UNKNOWN when createdType.IsTypeParameterType():
+            {
+              consumer.AddHighlighting(
+                new ObjectAllocationPossibleHighlighting(
+                  collectionExpression.LBracket,
+                  $"new instance creation if '{TargetTypeName()}' type parameter will be substituted with the reference type"),
+                GetCollectionExpressionRangeToHighlight());
+              break;
+            }
+          }
+        }
 
         break;
       }
 
       case CollectionExpressionKind.ArrayInterface:
       {
+        // List<T>
+        // array wrapper
+        
         // temporary list
 
         break;
@@ -90,10 +140,51 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         throw new ArgumentOutOfRangeException();
     }
 
+    return;
+
+    [Pure]
     string TargetTypeName()
     {
       return typeInfo.TargetType.GetPresentableName(
         collectionExpression.Language, CommonUtils.DefaultTypePresentationStyle).Text;
+    }
+
+    [Pure]
+    DocumentRange GetCollectionExpressionRangeToHighlight()
+    {
+      var lBracket = collectionExpression.LBracket;
+      if (lBracket == null) return DocumentRange.InvalidRange;
+
+      var nextToken = lBracket.GetNextToken();
+      if (nextToken != null && nextToken.NodeType != CSharpTokenType.NEW_LINE)
+      {
+        // []
+        // ^^
+        if (nextToken == collectionExpression.RBracket)
+        {
+          return collectionExpression.GetDocumentRange();
+        }
+
+        const int hintMaxLength = 2;
+
+        // [123]
+        // ^^^
+        if (nextToken.GetTextLength() > hintMaxLength)
+        {
+          return lBracket.GetDocumentRange().ExtendRight(hintMaxLength);
+        }
+
+        // [12]
+        // ^^^^
+        if (nextToken.GetNextToken() == collectionExpression.RBracket)
+        {
+          return collectionExpression.GetDocumentRange();
+        }
+      }
+
+      // [1, 2, 3]
+      // ^
+      return lBracket.GetDocumentRange();
     }
   }
 
