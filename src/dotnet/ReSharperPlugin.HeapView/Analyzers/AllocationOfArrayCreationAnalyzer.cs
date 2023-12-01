@@ -21,7 +21,7 @@ public class AllocationOfArrayCreationAnalyzer : HeapAllocationAnalyzerBase<IArr
     if (createdArrayType == null) return;
 
     if (arrayCreationExpression.Initializer != null
-        && IsOptimizedArrayOfBytesConvertedReadonlySpan(arrayCreationExpression, createdArrayType)) return;
+        && IsOptimizedBlobConvertedToReadonlySpan(arrayCreationExpression, createdArrayType)) return;
 
     var typeName = createdArrayType.GetPresentableName(arrayCreationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
@@ -30,7 +30,7 @@ public class AllocationOfArrayCreationAnalyzer : HeapAllocationAnalyzerBase<IArr
       new ObjectAllocationEvidentHighlighting(newKeyword, $"new '{typeName}' array instance creation"));
   }
 
-  private static bool IsOptimizedArrayOfBytesConvertedReadonlySpan(
+  private static bool IsOptimizedBlobConvertedToReadonlySpan(
     IArrayCreationExpression arrayCreationExpression, IArrayType createdArrayType)
   {
     if (createdArrayType.Rank != 1) return false;
@@ -45,21 +45,22 @@ public class AllocationOfArrayCreationAnalyzer : HeapAllocationAnalyzerBase<IArr
 
     // only byte-sized types supported by now, because of the endiannes
     var underlyingType = elementType.GetEnumUnderlying() ?? elementType;
-    if (underlyingType.IsByte() || underlyingType.IsSbyte() || underlyingType.IsBool())
+
+    // note: in reality only byte/sbyte/bool types are supported natively,
+    //       other types require RuntimeHelpers.CreateSpan() provided by the runtime
+    if (!underlyingType.IsTypeAllowedInBlobWrapper()) return false;
+
+    var arrayInitializer = arrayCreationExpression.ArrayInitializer.NotNull();
+
+    // whole array creation must be constant
+    foreach (var variableInitializer in arrayInitializer.ElementInitializersEnumerable)
     {
-      var arrayInitializer = arrayCreationExpression.ArrayInitializer.NotNull();
+      if (variableInitializer is not IExpressionInitializer { Value: { } itemValue }) return false;
 
-      // whole array creation must be constant
-      foreach (var variableInitializer in arrayInitializer.ElementInitializersEnumerable)
-      {
-        if (variableInitializer is not IExpressionInitializer { Value: { } itemValue }) return false;
-
-        if (!itemValue.IsConstantValue()) return false;
-      }
-
-      return true;
+      if (!itemValue.IsConstantValue()) return false;
     }
 
-    return false;
+    return true;
+
   }
 }
