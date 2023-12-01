@@ -13,7 +13,7 @@ using ReSharperPlugin.HeapView.Analyzers;
 namespace ReSharperPlugin.HeapView.Tests;
 
 [TestFixture]
-[TestNet70]
+[TestNet80]
 public class DisplayClassStructureTest : BaseTestWithSingleProject
 {
   protected override string RelativeTestDataPath => "DisplayClass";

@@ -69,7 +69,7 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
 [TestNetFramework46]
 public class ClosureAllocationsNetFrameworkTest : ClosureAllocationsTestBase;
 
-[TestNet70]
+[TestNet80]
 public class ClosureAllocationsNetCoreTest : ClosureAllocationsTestBase
 {
   [Test] public void TestStructClosureCore01() { DoNamedTest2(); }

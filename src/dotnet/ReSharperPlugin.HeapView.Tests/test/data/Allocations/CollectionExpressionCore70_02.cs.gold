@@ -1,0 +1,37 @@
+﻿using System;
+
+// non-constant
+{
+  Span<int> nonConst1 = |[ar|(0)gs.Length]; // heap array
+  ReadOnlySpan<int> nonConst2 = |[ar|(1)gs.Length]; // heap array
+}
+
+// non-blittable
+{
+  Span<string> str1 = |["a|(2)aa"]; // heap array
+  ReadOnlySpan<string> str2 = |["b|(3)bb"]; // heap array
+}
+
+// spread w/ count
+{
+  Span<string> str1 = |[|(4)..args]; // heap array
+  ReadOnlySpan<string> str2 = |[|(5)..args]; // heap array
+}
+
+// spread unbound
+{
+  System.Collections.Generic.IEnumerable<string> xs = args;
+  Span<string> str1 = |[|(6)..xs]; // temp list + heap array
+  ReadOnlySpan<string> str2 = |[|(7)..xs]; // temp list + heap array
+  ReadOnlySpan<string> str3 = |[|(8)"", ..xs]; // temp list + heap array
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation

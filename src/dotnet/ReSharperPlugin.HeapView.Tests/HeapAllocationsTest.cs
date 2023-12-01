@@ -75,7 +75,7 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
   [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 }
 
-[TestNet70]
+[TestNet80]
 public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
 {
   [Test] public void TestArrayCreationCore01() { DoNamedTest2(); }
@@ -109,4 +109,27 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestIteratorsCore01() { DoNamedTest2(); }
 
   [Test] public void TestForeachCore01() { DoNamedTest2(); }
+
+  [Test] public void TestCollectionExpressionCore01() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpressionCore02() { DoNamedTest2(); }
+}
+
+[TestNet70]
+public class HeapAllocationsNetCore70Test : HeapAllocationsTestBase
+{
+  protected override string RelativeTestDataPath => "Allocations";
+
+  protected override bool HighlightingPredicate(
+    IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
+  {
+    return highlighting
+      is ObjectAllocationHighlighting
+      or ObjectAllocationEvidentHighlighting
+      or ObjectAllocationPossibleHighlighting
+      or BoxingAllocationHighlighting;
+  }
+
+  // no inline arrays
+  [Test] public void TestCollectionExpressionCore70_01() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpressionCore70_02() { DoNamedTest2(); }
 }

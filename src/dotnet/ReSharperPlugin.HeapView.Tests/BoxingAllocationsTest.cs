@@ -132,7 +132,7 @@ public class BoxingAllocationsNetFrameworkTest : BoxingAllocationsTestBase
   [Test] public void TestEnumGetHashCodeFramework01() { DoNamedTest2(); }
 }
 
-[TestNet70]
+[TestNet80]
 public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
 {
   [Test] public void TestTuplesAwaitForeach01() { DoNamedTest2(); }

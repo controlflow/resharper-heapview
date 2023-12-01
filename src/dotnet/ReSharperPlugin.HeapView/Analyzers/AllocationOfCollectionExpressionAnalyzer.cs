@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -44,26 +45,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           return; // Array.Empty<T>() is used
         }
 
-        if (HasSpreadsOfUnknownLength(collectionExpression))
-        {
-          // temporary list is required, array can be conditionally allocated
-          var message = CanBeEvaluatedToBeEmpty(collectionExpression)
-            ? $"new temporary list and possible (if not empty) '{PresentTypeName(typeInfo.TargetType)}' array instance creation"
-            : $"new temporary list and '{PresentTypeName(typeInfo.TargetType)}' array instance creation";
-
-          consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(collectionExpression.LBracket, message),
-            GetCollectionExpressionRangeToHighlight());
-        }
-        else
-        {
-          consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(
-              collectionExpression.LBracket,
-              $"new '{PresentTypeName(typeInfo.TargetType)}' array instance creation"),
-            GetCollectionExpressionRangeToHighlight());
-        }
-
+        ReportArrayAndPossibleTemporaryListAllocation(typeInfo.TargetType);
         return;
       }
 
@@ -81,9 +63,13 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           return; // inline data or RuntimeHelpers.CreateSpan
         }
 
-        // todo: wait for final APIs from RC
-        // todo: no allocation if inline arrays can be used, heap array otherwise
+        if (collectionExpression.CanBeLoweredToInlineArray())
+        {
+          return; // stack allocated inline array
+        }
 
+        var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+        ReportArrayAndPossibleTemporaryListAllocation(arrayType);
         return;
       }
 
@@ -215,51 +201,30 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       // ^
       return lBracket.GetDocumentRange();
     }
-  }
 
-  [Pure]
-  private static ElementsClassification ClassifyElements(ICollectionExpression collectionExpression)
-  {
-    var hasAnyElements = false;
-    var hasSpreads = false;
-    var hasExpressions = false;
-
-    foreach (var element in collectionExpression.CollectionElementsEnumerable)
+    void ReportArrayAndPossibleTemporaryListAllocation(IType arrayType)
     {
-      hasAnyElements = true;
+      var typeName = PresentTypeName(arrayType);
 
-      if (element is ISpreadElement)
+      if (HasSpreadsOfUnknownLength(collectionExpression))
       {
-        hasSpreads = true;
+        // temporary list is required, array can be conditionally allocated
+        var message = CanBeEvaluatedToBeEmpty(collectionExpression)
+          ? $"new temporary list and possible (if not empty) '{typeName}' array instance creation"
+          : $"new temporary list and '{typeName}' array instance creation";
+
+        consumer.AddHighlighting(
+          new ObjectAllocationHighlighting(collectionExpression.LBracket, message),
+          GetCollectionExpressionRangeToHighlight());
       }
       else
       {
-        hasExpressions = true;
+        consumer.AddHighlighting(
+          new ObjectAllocationHighlighting(
+            collectionExpression.LBracket, $"new '{typeName}' array instance creation"),
+          GetCollectionExpressionRangeToHighlight());
       }
     }
-
-    if (!hasAnyElements)
-      return ElementsClassification.Empty;
-
-    if (hasSpreads && !hasExpressions)
-      return ElementsClassification.OnlySpreads;
-
-    if (hasSpreads)
-      return ElementsClassification.NonEmptyHasSpreads;
-
-    return ElementsClassification.NonEmpty;
-  }
-
-  private enum ElementsClassification
-  {
-    // []
-    Empty = 0,
-    // [..xs, ..ys] - may be evaluated to be empty
-    OnlySpreads,
-    // [..xs], [x, ..xs]
-    NonEmptyHasSpreads,
-    // [x, y]
-    NonEmpty
   }
 
   [Pure]
