@@ -10,21 +10,28 @@ using ReSharperPlugin.HeapView.Highlightings;
 namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
-  ElementTypes: [ typeof(IForeachStatement) ],
+  ElementTypes: [ typeof(IForeachStatement), typeof(ISpreadElement) ],
   HighlightingTypes = [ typeof(ObjectAllocationPossibleHighlighting) ])]
-public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<IForeachStatement>
+public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<IForeachReferencesOwner>
 {
   protected override void Run(
-    IForeachStatement foreachStatement, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+    IForeachReferencesOwner foreachReferencesOwner, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
-    if (foreachStatement is not { Collection: { } collectionExpression, ForeachHeader.InKeyword: { } inKeyword }) return;
+    if (foreachReferencesOwner.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
-    if (foreachStatement.IsInTheContextWhereAllocationsAreNotImportant()) return;
+    var (collectionExpression, tokenToHighlight) = foreachReferencesOwner switch
+    {
+      IForeachStatement foreachStatement => (foreachStatement.Collection, foreachStatement.ForeachHeader?.InKeyword),
+      ISpreadElement spreadElement => (spreadElement.Expression, spreadElement.OperatorSign),
+      _ => (null, null)
+    };
+
+    if (collectionExpression == null || tokenToHighlight == null) return;
 
     var collectionType = collectionExpression.GetExpressionType().ToIType();
     if (collectionType is not { IsResolved: true }) return;
 
-    var resolveResult = foreachStatement.GetEnumeratorReference.Resolve();
+    var resolveResult = foreachReferencesOwner.GetEnumeratorReference.Resolve();
     if (resolveResult.ResolveErrorType.IsAcceptable
         && resolveResult.DeclaredElement is IMethod getEnumeratorMethod)
     {
@@ -33,11 +40,12 @@ public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<
           && !IsIteratorMemberAccess(collectionExpression)
           && !IsOptimizedCollectionType(collectionType))
       {
-        var enumeratorTypeName = enumeratorType.GetPresentableName(foreachStatement.Language, CommonUtils.DefaultTypePresentationStyle);
+        var enumeratorTypeName = enumeratorType.GetPresentableName(
+          foreachReferencesOwner.Language, CommonUtils.DefaultTypePresentationStyle);
 
         consumer.AddHighlighting(
           new ObjectAllocationPossibleHighlighting(
-            inKeyword,
+            tokenToHighlight,
             $"new '{enumeratorTypeName}' instance creation on '{getEnumeratorMethod.ShortName}()' call " +
             $"(except when it's cached by the implementation)"));
       }

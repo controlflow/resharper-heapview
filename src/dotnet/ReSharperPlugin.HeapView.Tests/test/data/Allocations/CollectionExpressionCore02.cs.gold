@@ -21,13 +21,16 @@
 // spread unbound
 {
   System.Collections.Generic.IEnumerable<string> xs = args;
-  Span<string> str1 = |[|(2)..xs]; // temp list + heap array
-  ReadOnlySpan<string> str2 = |[|(3)..xs]; // temp list + heap array
-  ReadOnlySpan<string> str3 = |[|(4)"", ..xs]; // temp list + heap array
+  Span<string> str1 = |[|(2)|..|(3)xs]; // temp list + heap array
+  ReadOnlySpan<string> str2 = |[|(4)|..|(5)xs]; // temp list + heap array
+  ReadOnlySpan<string> str3 = |[|(6)"", |..|(7)xs]; // temp list + heap array
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
 (1): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
 (2): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
-(3): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
-(4): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(3): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(4): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(5): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(6): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)

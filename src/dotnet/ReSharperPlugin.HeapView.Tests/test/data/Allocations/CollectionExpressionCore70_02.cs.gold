@@ -21,9 +21,9 @@
 // spread unbound
 {
   System.Collections.Generic.IEnumerable<string> xs = args;
-  Span<string> str1 = |[|(6)..xs]; // temp list + heap array
-  ReadOnlySpan<string> str2 = |[|(7)..xs]; // temp list + heap array
-  ReadOnlySpan<string> str3 = |[|(8)"", ..xs]; // temp list + heap array
+  Span<string> str1 = |[|(6)|..|(7)xs]; // temp list + heap array
+  ReadOnlySpan<string> str2 = |[|(8)|..|(9)xs]; // temp list + heap array
+  ReadOnlySpan<string> str3 = |[|(10)"", |..|(11)xs]; // temp list + heap array
 }
 ---------------------------------------------------------
 (0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
@@ -33,5 +33,8 @@
 (4): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
 (5): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
 (6): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
-(7): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
-(8): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(8): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(9): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(10): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(11): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)

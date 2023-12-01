@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+
+List<string> structEnumerator = |[]|(0);
+IEnumerable<string> refEnumerator = structEnumerator;
+
+string[] xs = |[|(1)..structEnumerator, |..|(2)refEnumerator, ..|Iterator|(3)(), ..args];
+return;
+
+static IEnumerable<string> Iterator() { yield break; }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(2): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(3): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<string>' instance creation on iterator local function invocation

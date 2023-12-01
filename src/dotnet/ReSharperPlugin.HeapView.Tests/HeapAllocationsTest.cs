@@ -47,6 +47,7 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestCollectionExpression03() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression04() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression05() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpression06() { DoNamedTest2(); }
 
   [Test] public void TestWithExpression01() { DoNamedTest2(); }
 
@@ -118,7 +119,7 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
 }
 
 [TestNet70]
-public class HeapAllocationsNetCore70Test : HeapAllocationsTestBase
+public class HeapAllocationsNetCore70Test : CSharpHighlightingTestBase
 {
   protected override string RelativeTestDataPath => "Allocations";
 
