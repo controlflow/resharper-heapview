@@ -1,0 +1,12 @@
+﻿using System.Collections.Immutable;
+
+ImmutableArray<string> xs1 = [];
+ImmutableArray<string> xs2 = |["a|(0)aa"]; // heap array
+ImmutableArray<string> xs3 = |[|(1)..args];
+ImmutableArray<string> xs4 = |[|(2)..(System.Collections.Generic.IEnumerable<string>)args];
+ImmutableArray<string> xs5 = |[|(3)..args, "aaa"];
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation

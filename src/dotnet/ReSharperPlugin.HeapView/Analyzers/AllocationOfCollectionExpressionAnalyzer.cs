@@ -74,10 +74,41 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       }
 
       case CollectionExpressionKind.ImmutableArray:
+      {
+        // the array is constructed and moved into the ImmutableArray<T> struct
+
+        if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+        {
+          return; // ImmutableCollectionsMarshal.AsImmutableArray<T>(Array.Empty<T>())
+        }
+
+        var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+        ReportArrayAndPossibleTemporaryListAllocation(arrayType);
+        return;
+      }
+
       case CollectionExpressionKind.CollectionBuilder:
       {
-        // assume works like ctor?
-        // where temporary span is stored?
+        // we need to always construct the ReadOnlySpan<T> to call the factory method
+
+        if (collectionExpression.CollectionElementsEnumerable.Any()
+            && !collectionExpression.CanBeLoweredToRuntimeHelpersCreateSpan()
+            && !collectionExpression.CanBeLoweredToInlineArray())
+        {
+          // we need heap array
+
+          var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+          ReportArrayAndPossibleTemporaryListAllocation(
+            arrayType, additionalAllocation: $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation");
+        }
+        else // span is static (empty or not)
+        {
+          consumer.AddHighlighting(
+            new ObjectAllocationPossibleHighlighting(
+              collectionExpression.LBracket,
+              $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation"),
+            GetCollectionExpressionRangeToHighlight());
+        }
 
         break;
       }
@@ -202,26 +233,33 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       return lBracket.GetDocumentRange();
     }
 
-    void ReportArrayAndPossibleTemporaryListAllocation(IType arrayType)
+    void ReportArrayAndPossibleTemporaryListAllocation(IType arrayType, string? additionalAllocation = null)
     {
       var typeName = PresentTypeName(arrayType);
+
+      if (additionalAllocation != null)
+      {
+        additionalAllocation = " and " + additionalAllocation;
+      }
 
       if (HasSpreadsOfUnknownLength(collectionExpression))
       {
         // temporary list is required, array can be conditionally allocated
+        var firstSeparator = additionalAllocation == null ? " and" : ",";
+
         var message = CanBeEvaluatedToBeEmpty(collectionExpression)
-          ? $"new temporary list and possible (if not empty) '{typeName}' array instance creation"
-          : $"new temporary list and '{typeName}' array instance creation";
+          ? $"new temporary list{firstSeparator} possible (if not empty) '{typeName}' array instance creation"
+          : $"new temporary list{firstSeparator} '{typeName}' array instance creation";
 
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(collectionExpression.LBracket, message),
+          new ObjectAllocationHighlighting(collectionExpression.LBracket, message + additionalAllocation),
           GetCollectionExpressionRangeToHighlight());
       }
       else
       {
         consumer.AddHighlighting(
           new ObjectAllocationHighlighting(
-            collectionExpression.LBracket, $"new '{typeName}' array instance creation"),
+            collectionExpression.LBracket, $"new '{typeName}' array instance creation" + additionalAllocation),
           GetCollectionExpressionRangeToHighlight());
       }
     }

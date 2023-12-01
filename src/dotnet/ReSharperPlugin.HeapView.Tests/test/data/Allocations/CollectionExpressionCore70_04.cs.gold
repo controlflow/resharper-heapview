@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+{
+  MyCollection<int> xs1 = |[]|(0);
+  MyCollection<int> xs2 = |[11|(1)11];
+  MyCollection<int> xs3 = |[11|(2)11, 2222];
+  MyCollection<string> xs4 = |["a|(3)aa"];
+}
+
+{
+  MyCollection<int> xs1 = |[ar|(4)gs.Length];
+  MyCollection<int> xs2 = |[|(5)..xs1];
+  MyCollection<int> xs3 = |[|(6)..xs1, 1111];
+}
+
+[CollectionBuilder(typeof(MyCollection), nameof(MyCollection.Factory))]
+public class MyCollection<T> : List<T>;
+
+public static class MyCollection {
+  public static MyCollection<T> Factory<T>(ReadOnlySpan<T> xs) => |new|(7)();
+}
+
+namespace System.Runtime.CompilerServices
+{
+  public sealed class CollectionBuilderAttribute(Type builderType, string methodName) : Attribute;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(1): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(2): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation and new 'MyCollection<string>' collection creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation and new 'MyCollection<int>' collection creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation and new 'MyCollection<int>' collection creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation and new 'MyCollection<int>' collection creation
+(7):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'MyCollection<T>' instance creation
