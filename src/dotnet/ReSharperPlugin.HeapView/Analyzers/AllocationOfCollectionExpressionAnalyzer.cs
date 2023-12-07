@@ -13,8 +13,6 @@ using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
-// todo: spread is allocating the enumerator
-
 [ElementProblemAnalyzer(
   ElementTypes: [ typeof(ICollectionExpression) ],
   HighlightingTypes = [
