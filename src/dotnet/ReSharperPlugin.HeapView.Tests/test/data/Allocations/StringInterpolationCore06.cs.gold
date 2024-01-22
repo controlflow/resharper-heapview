@@ -13,8 +13,7 @@ public class StringInterpolationExpression
     var string05 = |$"|(6)aaa{value}" + $"bbb{value}";
     var string06 = ("A" |+|(7) |$"|(8)aaa{value}") + (|$"|(9)bbb{value}" + "B"); // concat 4x, no fuse
     var string07 = (|$"|(10)aaa{value}" + $"bbb{value}") + $"ccc{value}"; // alloc
-    // TODO: [ReSharper] fix this, no concat here
-    var string08 = |$"|(11)aaa{value}" |+|(12) (|$"|(13)bbb{value}" + $"ccc{value}"); // alloc
+    var string08 = |$"|(11)aaa{value}" + ($"bbb{value}" + $"ccc{value}"); // alloc
 
     var const01 = "aaa" + $"bbb";
     var const02 = $"aaa" + "bbb";
@@ -35,5 +34,3 @@ public class StringInterpolationExpression
 (9): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
 (10): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
 (11): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
-(12): ReSharper HeapView Allocation: Object allocation: string concatenation
-(13): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation

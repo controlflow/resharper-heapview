@@ -28,11 +28,11 @@ class ArrayInitializers
   }
 }
 ---------------------------------------------------------
-(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
-(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
-(2): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
-(3): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(0):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(1):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(2):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(3):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
 (4): ReSharper HeapView Allocation: Object allocation: new 'int[,]' array instance creation
 (5): ReSharper HeapView Allocation: Object allocation: new 'Unresolved[]' array instance creation
-(6): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
-(7): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(6):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(7):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation

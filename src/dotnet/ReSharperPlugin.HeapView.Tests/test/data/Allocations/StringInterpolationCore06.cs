@@ -13,7 +13,6 @@ public class StringInterpolationExpression
     var string05 = $"aaa{value}" + $"bbb{value}";
     var string06 = ("A" + $"aaa{value}") + ($"bbb{value}" + "B"); // concat 4x, no fuse
     var string07 = ($"aaa{value}" + $"bbb{value}") + $"ccc{value}"; // alloc
-    // TODO: [ReSharper] fix this, no concat here
     var string08 = $"aaa{value}" + ($"bbb{value}" + $"ccc{value}"); // alloc
 
     var const01 = "aaa" + $"bbb";

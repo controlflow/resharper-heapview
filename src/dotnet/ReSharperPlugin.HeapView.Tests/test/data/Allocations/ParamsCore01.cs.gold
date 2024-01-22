@@ -48,5 +48,5 @@ unsafe
 (7): ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation for params parameter 'xs'
 (8): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
 (9): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation
-(10): ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation
-(11): ReSharper HeapView Allocation: Object allocation: new 'delegate*<void>[]' array instance creation
+(10):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'int*[][]' array instance creation
+(11):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'delegate*<void>[]' array instance creation
