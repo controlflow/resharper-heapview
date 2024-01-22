@@ -22,7 +22,7 @@ public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<
     var (collectionExpression, tokenToHighlight) = foreachReferencesOwner switch
     {
       IForeachStatement foreachStatement => (foreachStatement.Collection, foreachStatement.ForeachHeader?.InKeyword),
-      ISpreadElement spreadElement => (spreadElement.Expression, spreadElement.OperatorSign),
+      ISpreadElement spreadElement => (spreadElement.Collection, spreadElement.OperatorSign),
       _ => (null, null)
     };
 
