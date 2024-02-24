@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -30,7 +31,7 @@ public static class ExpressionRangeUtils
   }
 }
 
-[ShellComponent]
+[ShellComponent(Instantiation.ContainerSyncPrimaryThread)]
 public class ConfigurableSeverityHacks
 {
   private static readonly Severity[] Severities =
