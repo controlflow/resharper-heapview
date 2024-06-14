@@ -112,7 +112,6 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
 
   [Test] public void TestCollectionExpressionCore01() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore02() { DoNamedTest2(); }
-  // todo: a bit incorrect, ImmutableArray kind do not supports Length/Count references in 2023.3
   [Test] public void TestCollectionExpressionCore03() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore04() { DoNamedTest2(); }
 }

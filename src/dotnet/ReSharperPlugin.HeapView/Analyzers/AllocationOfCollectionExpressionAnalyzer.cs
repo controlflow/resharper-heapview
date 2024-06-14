@@ -71,7 +71,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         return;
       }
 
-      case CollectionExpressionKind.ImmutableArray:
+      case CollectionExpressionKind.CollectionBuilder when typeInfo.TargetType.IsGenericImmutableArray(out _):
       {
         // the array is constructed and moved into the ImmutableArray<T> struct
 
@@ -111,8 +111,6 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         break;
       }
 
-      case CollectionExpressionKind.List:
-      case CollectionExpressionKind.ImplementsGenericIEnumerable:
       case CollectionExpressionKind.ImplementsIEnumerable:
       {
         if (typeInfo.TargetType is IDeclaredType createdType)
