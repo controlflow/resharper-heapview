@@ -1,9 +1,9 @@
 pluginManagement {
     // Provide repositories to resolve plugins
     repositories {
-        maven { url "https://cache-redirector.jetbrains.com/plugins.gradle.org" }
-        maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
-        maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
+        maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
+        maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
+        maven { setUrl("https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap") }
     }
     resolutionStrategy {
         eachPlugin {
@@ -17,6 +17,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'ReSharperPlugin.HeapView'
+rootProject.name = "ReSharperPlugin.HeapView"
 
-include ':protocol'
+include(":protocol")
