@@ -5,7 +5,8 @@
     <option name="PROGRAM_PARAMETERS" value="/c powershell -ExecutionPolicy ByPass -NoProfile -File runVisualStudio.ps1" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
-    <module name="" />
-    <method v="2" />
+    <method v="2">
+      <option name="Build" default="false" projectName="ReSharperPlugin.HeapView" projectPath="file://$PROJECT_DIR$/src/dotnet/ReSharperPlugin.HeapView/ReSharperPlugin.HeapView.csproj" />
+    </method>
   </configuration>
 </component>

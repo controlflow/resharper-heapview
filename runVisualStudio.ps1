@@ -66,7 +66,7 @@ if (!(Test-Path "$UserProjectXmlFile")) {
     # Adapt user project file
     $HostIdentifier = "$($InstallationDirectory.Parent.Name)_$($InstallationDirectory.Name.Split('_')[-1])"
 
-    Set-Content -Path "$UserProjectXmlFile" -Value "<Project><PropertyGroup><HostFullIdentifier></HostFullIdentifier></PropertyGroup></Project>"
+    Set-Content -Path "$UserProjectXmlFile" -Value "<Project><PropertyGroup Condition=`"'`$(MSBuildRuntimeType)' == 'Full'`"><HostFullIdentifier></HostFullIdentifier></PropertyGroup></Project>"
 
     $ProjectXml = [xml] (Get-Content "$UserProjectXmlFile")
     $HostIdentifierNode = $ProjectXml.SelectSingleNode(".//HostFullIdentifier")

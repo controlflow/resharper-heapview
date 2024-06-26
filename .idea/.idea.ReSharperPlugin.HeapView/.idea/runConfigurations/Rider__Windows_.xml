@@ -10,7 +10,7 @@
     </envs>
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <method v="2">
-      <option name="Build Solution" enabled="true" />
+      <option name="Build" default="false" projectName="ReSharperPlugin.HeapView.Rider" projectPath="file://$PROJECT_DIR$/src/dotnet/ReSharperPlugin.HeapView/ReSharperPlugin.HeapView.Rider.csproj" />
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="Rider – Frontend (Windows)" run_configuration_type="RunNativeExe" />
     </method>
   </configuration>
