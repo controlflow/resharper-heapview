@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.Parts;
@@ -31,38 +32,19 @@ public static class ExpressionRangeUtils
   }
 }
 
-[ShellComponent(Instantiation.ContainerSyncPrimaryThread)]
-public class ConfigurableSeverityHacks
+[ShellComponent(Instantiation.DemandAnyThreadSafe)]
+public sealed class HeapViewSeverityPresentationsProvider : IHighlightingCustomPresentationsForSeverityProvider
 {
-  private static readonly Severity[] Severities =
-  [
-    Severity.HINT,
-    Severity.WARNING
-  ];
-
-  private static readonly string[] HighlightingIds =
-  [
-    HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
-    HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID
-  ];
-
-  public ConfigurableSeverityHacks()
+  public IEnumerable<string> GetAttributeIdsForSeverity(Severity severity)
   {
-    var severityIds = HighlightingAttributeIds.ValidHighlightingsForSeverity;
-    lock (severityIds)
+    if (severity is Severity.HINT or Severity.WARNING)
     {
-      foreach (var severity in Severities)
-      {
-        if (!severityIds.TryGetValue(severity, out var collection)) continue;
-
-        foreach (var highlightingId in HighlightingIds)
-        {
-          if (!collection.Contains(highlightingId))
-          {
-            collection.Add(highlightingId);
-          }
-        }
-      }
+      return [
+        HeapViewAttributeIds.BOXING_HIGHLIGHTING_ID,
+        HeapViewAttributeIds.ALLOCATION_HIGHLIGHTING_ID
+      ];
     }
+
+    return [];
   }
 }

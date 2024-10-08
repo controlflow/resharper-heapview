@@ -700,7 +700,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     private DisplayClass() { }
     private static readonly ObjectPool<DisplayClass> Pool = new(static _ => new DisplayClass());
 
-    [Pure]
+    [Pure, MustDisposeResource]
     public static DisplayClass Create(ITreeNode scopeNode)
     {
       var displayClass = Pool.Allocate();
