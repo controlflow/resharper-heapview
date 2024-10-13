@@ -2,6 +2,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -23,9 +24,24 @@ public class AllocationOfWithExpressionAnalyzer : HeapAllocationAnalyzerBase<IWi
       return; // 'structValue with { }' or unfinished code
 
     var withKeyword = withExpression.WithKeyword.NotNull();
-    var typeKind = clonedType is IAnonymousType ? "anonymous object instance" : "'record class' type instance";
 
-    consumer.AddHighlighting(
-      new ObjectAllocationHighlighting(withKeyword, "'with' expression cloning of " + typeKind));
+    var richText = new RichText()
+      .Append('\'')
+      .Append("with", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword])
+      .Append("' expression cloning of ");
+
+    if (clonedType is IAnonymousType)
+    {
+      richText.Append("anonymous object instance");
+    }
+    else
+    {
+      richText
+        .Append('\'')
+        .Append("record class", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword])
+        .Append("' type instance");
+    }
+
+    consumer.AddHighlighting(new ObjectAllocationHighlighting(withKeyword, richText));
   }
 }

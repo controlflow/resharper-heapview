@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
@@ -8,9 +7,11 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
@@ -136,11 +137,10 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       return null;
     }
 
-    string CreateDisplayClassDescription()
+    RichText CreateDisplayClassDescription()
     {
-      using var pooledBuilder = PooledStringBuilder.GetInstance();
-      var builder = pooledBuilder.Builder;
-      builder.Append("capture of");
+      var richText = new RichText();
+      richText.Append("capture of");
 
       var containingClosure = displayClass.ContainingDisplayClass;
       var lastMemberIndex = sortedMembers.Count - (containingClosure != null ? 0 : 1);
@@ -150,59 +150,65 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       // capture of 'a' parameter, 'b' variable and 'this' reference
       if (lastMemberIndex < 4)
       {
-        builder.Append(' ');
+        richText.Append(' ');
 
         for (var index = 0; index < sortedMembers.Count; index++)
         {
           if (index > 0)
-            builder.Append(index == lastMemberIndex ? " and " : ", ");
+            richText.Append(index == lastMemberIndex ? " and " : ", ");
 
           AppendMember(sortedMembers[index]);
         }
 
         if (containingClosure != null)
         {
-          builder.Append(" and containing closure (");
-          PresentContainingClosureReference(containingClosure, builder);
-          builder.Append(")");
+          richText.Append(" and containing closure (");
+          PresentContainingClosureReference(containingClosure, richText);
+          richText.Append(")");
         }
       }
       else
       {
         foreach (var t in sortedMembers)
         {
-          builder.Append(Environment.NewLine).Append("    ");
+          richText.Append(Environment.NewLine).Append("    ");
 
           AppendMember(t);
         }
 
         if (containingClosure != null)
         {
-          builder.Append(Environment.NewLine).Append("    ");
+          richText.Append(Environment.NewLine).Append("    ");
 
-          builder.Append("containing closure (");
-          PresentContainingClosureReference(containingClosure, builder);
-          builder.Append(")");
+          richText.Append("containing closure (");
+          PresentContainingClosureReference(containingClosure, richText);
+          richText.Append(")");
         }
       }
 
-      return builder.ToString();
+      return richText;
 
       void AppendMember(IDeclaredElement declaredElement)
       {
         if (declaredElement is ITypeElement)
         {
-          builder.Append("'this' reference");
+          richText
+            .Append('\'')
+            .Append("this", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword])
+            .Append("' reference");
         }
         else
         {
-          builder.Append('\'').Append(declaredElement.ShortName).Append("\' ");
-          builder.Append(declaredElement is IParameter ? "parameter" : "variable");
+          var name = DeclaredElementPresenter.Format(
+            CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, declaredElement);
+
+          richText.Append('\'').Append(name).Append("\' ");
+          richText.Append(declaredElement is IParameter ? "parameter" : "variable");
         }
       }
     }
 
-    static void PresentContainingClosureReference(IDisplayClass? displayClass, StringBuilder builder)
+    static void PresentContainingClosureReference(IDisplayClass? displayClass, RichText richText)
     {
       var first = true;
 
@@ -224,12 +230,23 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
           }
           else
           {
-            builder.Append(", ");
+            richText.Append(", ");
           }
 
-          builder.Append('\'');
-          builder.Append(member is ITypeElement ? "this" : member.ShortName);
-          builder.Append('\'');
+          richText.Append('\'');
+
+          if (member is ITypeElement)
+          {
+            richText.Append(
+              "this", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword]);
+          }
+          else
+          {
+            richText.Append(DeclaredElementPresenter.Format(
+              CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, member));
+          }
+
+          richText.Append('\'');
         }
       }
     }
@@ -340,14 +357,14 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
   private static void ReportDelegateAllocation(
     ICSharpClosure closure, IType delegateType, IClosureCaptures captures, IHighlightingConsumer consumer, ElementProblemAnalyzerData data)
   {
-    using var builder = PooledStringBuilder.GetInstance();
-    builder.Append("new '");
-    builder.Append(delegateType.GetPresentableName(closure.Language, CommonUtils.DefaultTypePresentationStyle));
-    builder.Append("' instance creation");
+    var richText = new RichText();
+    richText.Append("new '");
+    richText.Append(delegateType.GetPresentableName(closure.Language, CommonUtils.DefaultTypePresentationStyle));
+    richText.Append("' instance creation");
 
-    builder.AppendLine();
-    builder.Append("Capture of ");
-    AppendCapturesDescription(builder.Builder, captures.CapturedEntities);
+    richText.AppendLine();
+    richText.Append("Capture of ");
+    AppendCapturesDescription(richText, captures.CapturedEntities);
 
     using var implicitCaptures = CapturesPool.Allocate();
     CollectImplicitCapturesThatCanContainReferences(implicitCaptures, captures, data);
@@ -356,16 +373,16 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
 
     if (implicitCaptures.Count > 0)
     {
-      builder.AppendLine();
-      builder.Append("Implicit capture of ");
-      AppendCapturesDescription(builder.Builder, implicitCaptures);
-      builder.Append(" (can cause memory leaks)");
+      richText.AppendLine();
+      richText.Append("Implicit capture of ");
+      AppendCapturesDescription(richText, implicitCaptures);
+      richText.Append(" (can cause memory leaks)");
 
       var warningSeverity = data.GetImplicitCaptureWarningSeverity();
       if (warningSeverity != Severity.DO_NOT_SHOW)
       {
         consumer.AddHighlightingWithOverrides(
-          new ImplicitCaptureWarning(closure, builder.ToString()), closureRange,
+          new ImplicitCaptureWarning(closure, richText), closureRange,
           overriddenOverlapResolve: OverlapResolveKind.WARNING);
         TryReportClosurelessOverloads(closure, captures, data, consumer);
         return;
@@ -373,7 +390,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
     }
 
     consumer.AddHighlighting(
-      new DelegateAllocationHighlighting(closure, builder.ToString()), closureRange);
+      new DelegateAllocationHighlighting(closure, richText), closureRange);
     TryReportClosurelessOverloads(closure, captures, data, consumer);
     return;
 
@@ -403,7 +420,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       }
     }
 
-    static void AppendCapturesDescription(StringBuilder builder, HashSet<IDeclaredElement> members)
+    static void AppendCapturesDescription(RichText richText, HashSet<IDeclaredElement> members)
     {
       using var sortedMembers = SortedMembersPool.Allocate();
 
@@ -436,7 +453,7 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       if (variablesCount > 0)
       {
         if (kindsBefore > 0)
-          builder.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
+          richText.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
 
         AppendMembersIfKind<ILocalVariable>("variable", variablesCount);
         kindsBefore++;
@@ -445,9 +462,11 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       if (hasThisReference)
       {
         if (kindsBefore > 0)
-          builder.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
+          richText.Append(kindsBefore == kindsCount - 1 ? " and " : ", ");
 
-        builder.Append("'this' reference");
+        var thisKeyword = new RichText(
+          "this", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword]);
+        richText.Append($"'{thisKeyword}' reference");
       }
 
       return;
@@ -456,28 +475,32 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
       {
         Assertion.Assert(count > 0);
 
-        builder.Append(kindName);
-        if (count > 1) builder.Append("s");
-        builder.Append(' ');
+        richText.Append(kindName);
+        if (count > 1)
+          richText.Append("s");
+        richText.Append(' ');
 
         var hasManyOfDifferentKinds = count > 1 && kindsCount > 1;
-        if (hasManyOfDifferentKinds) builder.Append('(');
+        if (hasManyOfDifferentKinds) richText.Append('(');
 
-        foreach (var element in sortedMembers)
+        foreach (var declaredElement in sortedMembers)
         {
-          if (element is TElement)
+          if (declaredElement is TElement)
           {
-            builder.Append('\'').Append(element.ShortName).Append('\'');
+            var memberName = DeclaredElementPresenter.Format(
+              CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, declaredElement);
+            richText.Append($"'{memberName}'");
 
             if (--count > 0)
             {
               var canUseAnd = !hasManyOfDifferentKinds && count <= 1;
-              builder.Append(canUseAnd ? " and " : ", ");
+              richText.Append(canUseAnd ? " and " : ", ");
             }
           }
         }
 
-        if (hasManyOfDifferentKinds) builder.Append(')');
+        if (hasManyOfDifferentKinds)
+          richText.Append(')');
       }
     }
   }

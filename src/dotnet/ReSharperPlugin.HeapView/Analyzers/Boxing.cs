@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -11,13 +10,13 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures.Collections;
-using JetBrains.Util.Utils;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
+[HighlightingSource(HighlightingTypes = [typeof(Ordinary)])]
 public abstract class Boxing
 {
   private Boxing(ITreeNode correspondingNode)
@@ -31,7 +30,7 @@ public abstract class Boxing
   protected virtual bool IsAnyPossible => IsPossible;
   protected virtual bool IsAllPossible => IsPossible;
   protected abstract void AppendReasons(
-    StringBuilder builder, string indent, bool presentPossible);
+    RichText builder, string indent, bool presentPossible);
 
   public abstract void Report(IHighlightingConsumer consumer);
 
@@ -110,7 +109,7 @@ public abstract class Boxing
           if (IsValueTypeOrEffectivelyTypeParameterType(sourceTypeParameterType))
           {
             // (TUnconstrained) valueSource; - how?
-            return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
+            return Create(sourceExpressionType, targetType, correspondingNode, isPossible: true);
           }
 
           return null; // very unlikely
@@ -120,11 +119,11 @@ public abstract class Boxing
         if (!IsValueTypeOrEffectivelyTypeParameterType(sourceTypeParameterType))
         {
           // we can't be sure that the boxing will be produced at runtime
-          return new Ordinary(sourceExpressionType, targetType, correspondingNode, isPossible: true);
+          return Create(sourceExpressionType, targetType, correspondingNode, isPossible: true);
         }
       }
 
-      return new Ordinary(sourceExpressionType, targetType, correspondingNode);
+      return Create(sourceExpressionType, targetType, correspondingNode);
 
       [Pure]
       static bool IsValueTypeOrEffectivelyTypeParameterType(IType type)
@@ -166,7 +165,7 @@ public abstract class Boxing
       {
         // value type parameter type to some random reference type
         // unconstrained type parameter type to some random reference type
-        return new Ordinary(
+        return Create(
           sourceExpressionType, targetType, correspondingNode,
           isPossible: sourceType.Classify != TypeClassification.VALUE_TYPE);
       }
@@ -176,12 +175,24 @@ public abstract class Boxing
   }
 
   [Pure]
+  [StringFormatMethod(nameof(messageFormat))]
   public static Boxing Create(
-    IType sourceType,
+    IExpressionType sourceType,
     IType targetType,
     ITreeNode correspondingNode,
     bool isPossible = false,
     string messageFormat = "conversion from '{0}' to '{1}'")
+  {
+    return new Ordinary(sourceType, targetType, correspondingNode, isPossible, new RichText(messageFormat));
+  }
+
+  [Pure]
+  public static Boxing Create(
+    IExpressionType sourceType,
+    IType targetType,
+    ITreeNode correspondingNode,
+    bool isPossible,
+    RichText messageFormat)
   {
     return new Ordinary(sourceType, targetType, correspondingNode, isPossible, messageFormat);
   }
@@ -254,54 +265,61 @@ public abstract class Boxing
     return null;
   }
 
+  [HighlightingSource(HighlightingTypes = [
+      typeof(BoxingAllocationHighlighting),
+      typeof(PossibleBoxingAllocationHighlighting)
+    ])]
   private sealed class Ordinary : Boxing
   {
     public Ordinary(
       IExpressionType sourceExpressionType,
       IType targetType,
       ITreeNode correspondingNode,
-      bool isPossible = false,
-      string messageFormat = "conversion from '{0}' to '{1}'")
+      bool isPossible,
+      RichText messageFormat)
       : base(correspondingNode)
     {
       IsPossible = isPossible;
 
-      var sourceTypeText = sourceExpressionType.GetPresentableName(CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle).Text;
-      var targetTypeText = targetType.GetPresentableName(CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle).Text;
-      Reason = string.Format(messageFormat, sourceTypeText, targetTypeText);
+      var sourceTypeText = sourceExpressionType.GetPresentableName(
+        CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle);
+      var targetTypeText = targetType.GetPresentableName(
+        CorrespondingNode.Language, CommonUtils.DefaultTypePresentationStyle);
+      Reason = RichText.Format(messageFormat, sourceTypeText, targetTypeText);
     }
 
-    public string Reason { get; }
+    public RichText Reason { get; }
 
     protected override bool IsPossible { get; }
 
-    protected override void AppendReasons(StringBuilder builder, string indent, bool presentPossible)
+    protected override void AppendReasons(RichText builder, string indent, bool presentPossible)
     {
-      var line = indent + CapitalizationUtil.ForceCapitalization(Reason, CapitalizationStyle.SentenceCase);
+      builder.Append(indent).Append(Reason.Capitalize());
 
       if (presentPossible && IsPossible)
       {
-        line += " (possible boxing)";
+        builder.Append(" (possible boxing)");
       }
 
-      builder.AppendLine(line);
+      builder.AppendLine();
     }
 
     public override void Report(IHighlightingConsumer consumer)
     {
       if (!IsPossible)
       {
-        var description = Reason + " requires boxing of the value type";
-        consumer.AddHighlighting(new BoxingAllocationHighlighting(CorrespondingNode, description));
+        consumer.AddHighlighting(new BoxingAllocationHighlighting(
+          CorrespondingNode, Reason + " requires boxing of the value type"));
       }
       else
       {
-        var description = Reason + " possibly requires boxing of the value type";
-        consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(CorrespondingNode, description));
+        consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
+          CorrespondingNode, Reason + " possibly requires boxing of the value type"));
       }
     }
   }
 
+  [HighlightingSource]
   private sealed class InsideTupleConversion : Boxing
   {
     public InsideTupleConversion(IReadOnlyList<Boxing> componentBoxings, ITreeNode correspondingNode)
@@ -356,7 +374,7 @@ public abstract class Boxing
       }
     }
 
-    protected override void AppendReasons(StringBuilder builder, string indent, bool presentPossible)
+    protected override void AppendReasons(RichText builder, string indent, bool presentPossible)
     {
       foreach (var componentBoxing in ComponentBoxings)
       {
@@ -383,13 +401,15 @@ public abstract class Boxing
 
         if (!singleBoxing.IsPossible)
         {
-          var description = $"tuple component {reason} performs boxing of the value type";
-          consumer.AddHighlighting(new BoxingAllocationHighlighting(CorrespondingNode, description));
+          consumer.AddHighlighting(new BoxingAllocationHighlighting(
+            CorrespondingNode, new RichText(
+              $"tuple component {reason} performs boxing of the value type")));
         }
         else
         {
-          var description = $"tuple component {reason} possibly performs boxing of the value type";
-          consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(CorrespondingNode, description));
+          consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
+            CorrespondingNode, new RichText(
+              $"tuple component {reason} possibly performs boxing of the value type")));
         }
 
         return;
@@ -397,13 +417,13 @@ public abstract class Boxing
 
       var isAllPossible = IsAllPossible;
 
-      using var builder = PooledStringBuilder.GetInstance();
-      builder.Append("tuple conversion contains component type conversions that perform ");
-      if (isAllPossible) builder.Append("possible ");
-      builder.AppendLine("boxing of the value types");
+      var richText = new RichText();
+      richText.Append("tuple conversion contains component type conversions that perform ");
+      if (isAllPossible) richText.Append("possible ");
+      richText.AppendLine("boxing of the value types");
 
-      AppendReasons(builder.Builder, indent: "    ", presentPossible: IsAnyPossible && !isAllPossible);
-      var longDescription = builder.ToString().Trim();
+      AppendReasons(richText, indent: "    ", presentPossible: IsAnyPossible && !isAllPossible);
+      var longDescription = richText.Trim();
 
       if (isAllPossible)
       {

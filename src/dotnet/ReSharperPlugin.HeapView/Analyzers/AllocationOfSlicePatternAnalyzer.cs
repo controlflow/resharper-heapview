@@ -1,6 +1,7 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -40,8 +41,9 @@ public class AllocationOfSlicePatternAnalyzer : HeapAllocationAnalyzerBase<IList
       if (listPattern.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
       var typeKind = slicedType.IsString() ? "string" : "array";
-      consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(singleSlicePattern.OperatorSign,  $"slicing of the {typeKind} creates new {typeKind} instance"));
+      consumer.AddHighlighting(new ObjectAllocationHighlighting(
+        singleSlicePattern.OperatorSign, new RichText(
+          $"slicing of the {typeKind} creates new {typeKind} instance")));
     }
   }
 }

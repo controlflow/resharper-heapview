@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 using ReSharperPlugin.HeapView.Settings;
 
@@ -15,9 +16,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(IRecursivePattern),
     typeof(IReferenceExpression)
   ],
-  HighlightingTypes = [
-    typeof(PossibleBoxingAllocationHighlighting)
-  ])]
+  HighlightingTypes = [typeof(Boxing)])]
 public class BoxingInNullChecksAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
@@ -91,9 +90,12 @@ public class BoxingInNullChecksAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
   {
     if (patternNode.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
+    var nullKeyword = new RichText(
+      "null", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword]);
+
     var boxing = Boxing.Create(
       sourceType, targetType: sourceType, patternNode, isPossible: true,
-      messageFormat: "checking the value of unconstrained generic type '{0}' for 'null'");
+      messageFormat: new RichText($"checking the value of unconstrained generic type '{{0}}' for '{nullKeyword}'"));
 
     boxing.Report(consumer);
   }

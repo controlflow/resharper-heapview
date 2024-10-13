@@ -1,10 +1,12 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -40,14 +42,16 @@ public class AllocationOfForeachEnumeratorAnalyzer : HeapAllocationAnalyzerBase<
           && !IsIteratorMemberAccess(collectionExpression)
           && !IsOptimizedCollectionType(collectionType))
       {
-        var enumeratorTypeName = enumeratorType.GetPresentableName(
-          foreachReferencesOwner.Language, CommonUtils.DefaultTypePresentationStyle);
+        var richText = new RichText()
+          .Append("new '")
+          .Append(enumeratorType.GetPresentableName(
+            foreachReferencesOwner.Language, CommonUtils.DefaultTypePresentationStyle))
+          .Append("' instance creation on '")
+          .Append(DeclaredElementPresenter.Format(
+            CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, getEnumeratorMethod))
+          .Append("()' call (except when it's cached by the implementation)");
 
-        consumer.AddHighlighting(
-          new ObjectAllocationPossibleHighlighting(
-            tokenToHighlight,
-            $"new '{enumeratorTypeName}' instance creation on '{getEnumeratorMethod.ShortName}()' call " +
-            $"(except when it's cached by the implementation)"));
+        consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(tokenToHighlight, richText));
       }
     }
   }

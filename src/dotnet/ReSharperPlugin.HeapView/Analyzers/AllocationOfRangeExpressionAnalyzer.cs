@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Psi.CSharp.Impl.DeclaredElement;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -31,8 +32,9 @@ public class AllocationOfRangeExpressionAnalyzer : HeapAllocationAnalyzerBase<IE
 
       var typeKind = slicedType.IsString() ? "string" : "array";
       ITreeNode nodeToHighlight = singleArgument is IRangeExpression rangeExpression ? rangeExpression.OperatorSign : singleArgument;
-      consumer.AddHighlighting(
-        new ObjectAllocationHighlighting(nodeToHighlight,  $"slicing of the {typeKind} creates new {typeKind} instance"));
+      consumer.AddHighlighting(new ObjectAllocationHighlighting(
+        nodeToHighlight, new RichText(
+          $"slicing of the {typeKind} creates new {typeKind} instance")));
     }
   }
 

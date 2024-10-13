@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -97,14 +98,15 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
           var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
           ReportArrayAndPossibleTemporaryListAllocation(
-            arrayType, additionalAllocation: $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation");
+            arrayType, additionalAllocation: new RichText(
+              $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation"));
         }
         else // span is static (empty or not)
         {
           consumer.AddHighlighting(
             new ObjectAllocationPossibleHighlighting(
               collectionExpression.LBracket,
-              $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation"),
+              new RichText($"new '{PresentTypeName(typeInfo.TargetType)}' collection creation")),
             GetCollectionExpressionRangeToHighlight());
         }
 
@@ -121,8 +123,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
             {
               consumer.AddHighlighting(
                 new ObjectAllocationHighlighting(
-                  collectionExpression.LBracket,
-                  $"new '{PresentTypeName(typeInfo.TargetType)}' instance creation"),
+                  collectionExpression.LBracket, new RichText(
+                    $"new '{PresentTypeName(typeInfo.TargetType)}' instance creation")),
                 GetCollectionExpressionRangeToHighlight());
               break;
             }
@@ -131,9 +133,9 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
             {
               consumer.AddHighlighting(
                 new ObjectAllocationPossibleHighlighting(
-                  collectionExpression.LBracket,
-                  $"new instance creation if '{PresentTypeName(typeInfo.TargetType)}' type parameter " +
-                  $"will be substituted with the reference type"),
+                  collectionExpression.LBracket, new RichText(
+                    $"new instance creation if '{PresentTypeName(typeInfo.TargetType)}' " +
+                    $"type parameter will be substituted with the reference type")),
                 GetCollectionExpressionRangeToHighlight());
               break;
             }
@@ -156,7 +158,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(
               collectionExpression.LBracket,
-              $"new '{PresentTypeName(genericListOfElementType)}' instance creation"),
+              new RichText($"new '{PresentTypeName(genericListOfElementType)}' instance creation")),
             GetCollectionExpressionRangeToHighlight());
         }
         else
@@ -170,8 +172,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(
-              collectionExpression.LBracket,
-              $"new {storageKind} and '{PresentTypeName(typeInfo.TargetType)}' implementation instance creation"),
+              collectionExpression.LBracket, new RichText(
+                $"new {storageKind} and '{PresentTypeName(typeInfo.TargetType)}' implementation instance creation")),
             GetCollectionExpressionRangeToHighlight());
         }
 
@@ -185,10 +187,10 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
     return;
 
     [Pure]
-    string PresentTypeName(IType type)
+    RichText PresentTypeName(IType type)
     {
       return type.GetPresentableName(
-        collectionExpression.Language, CommonUtils.DefaultTypePresentationStyle).Text;
+        collectionExpression.Language, CommonUtils.DefaultTypePresentationStyle);
     }
 
     [Pure]
@@ -229,7 +231,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       return lBracket.GetDocumentRange();
     }
 
-    void ReportArrayAndPossibleTemporaryListAllocation(IType arrayType, string? additionalAllocation = null)
+    void ReportArrayAndPossibleTemporaryListAllocation(IType arrayType, RichText? additionalAllocation = null)
     {
       var typeName = PresentTypeName(arrayType);
 
@@ -244,8 +246,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         var firstSeparator = additionalAllocation == null ? " and" : ",";
 
         var message = CanBeEvaluatedToBeEmpty(collectionExpression)
-          ? $"new temporary list{firstSeparator} possible (if not empty) '{typeName}' array instance creation"
-          : $"new temporary list{firstSeparator} '{typeName}' array instance creation";
+          ? new RichText($"new temporary list{firstSeparator} possible (if not empty) '{typeName}' array instance creation")
+          : new RichText($"new temporary list{firstSeparator} '{typeName}' array instance creation");
 
         consumer.AddHighlighting(
           new ObjectAllocationHighlighting(collectionExpression.LBracket, message + additionalAllocation),
@@ -255,7 +257,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       {
         consumer.AddHighlighting(
           new ObjectAllocationHighlighting(
-            collectionExpression.LBracket, $"new '{typeName}' array instance creation" + additionalAllocation),
+            collectionExpression.LBracket, new RichText(
+              $"new '{typeName}' array instance creation{additionalAllocation}")),
           GetCollectionExpressionRangeToHighlight());
       }
     }

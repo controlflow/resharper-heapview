@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -7,6 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using JetBrains.Util.DataStructures;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -15,11 +17,8 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 // TODO: 4-parameter overloads of string.Concat do exist
 
 [ElementProblemAnalyzer(
-  ElementTypes: [ typeof(IAssignmentExpression), typeof(IAdditiveExpression) ],
-  HighlightingTypes = [
-    typeof(ObjectAllocationHighlighting),
-    typeof(BoxingAllocationHighlighting)
-  ])]
+  ElementTypes: [typeof(IAssignmentExpression), typeof(IAdditiveExpression)],
+  HighlightingTypes = [typeof(ConcatenationInspector)])]
 public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBase<IOperatorExpression>
 {
   protected override void Run(
@@ -63,6 +62,11 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
 
   private readonly ObjectPool<ConcatenationInspector> myInspectorPool = new(static _ => new ConcatenationInspector());
 
+  [HighlightingSource(
+    HighlightingTypes = [
+      typeof(ObjectAllocationHighlighting),
+      typeof(BoxingAllocationHighlighting)
+    ])]
   private sealed class ConcatenationInspector : IDisposable
   {
     // expressions or constant markers
@@ -186,17 +190,29 @@ public class AllocationOfStringConcatenationAnalyzer : HeapAllocationAnalyzerBas
 
       if (IsTypeKnownToAllocateOnToStringCall(operandType))
       {
-        var typeName = operandType.GetPresentableName(operandExpression.Language, CommonUtils.DefaultTypePresentationStyle);
+        var richText = new RichText()
+          .Append("implicit '")
+          .Append(nameof(ToString), DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Method])
+          .Append("' invocation over '")
+          .Append(operandType.GetPresentableName(operandExpression.Language, CommonUtils.DefaultTypePresentationStyle))
+          .Append("' value");
+
         consumer.AddHighlighting(
-          new ObjectAllocationHighlighting(operandExpression, $"implicit 'ToString' invocation over '{typeName}' value"));
+          new ObjectAllocationHighlighting(operandExpression, richText));
       }
       else if (operandType is IDeclaredType (IStruct structType))
       {
         if (!StructOverridesChecker.IsMethodOverridenInStruct(structType, nameof(ToString), data))
         {
+          var richText = new RichText()
+            .Append("inherited '")
+            .Append(nameof(ValueType), DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Type])
+            .Append('.')
+            .Append(nameof(ToString), DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Method])
+            .Append("' virtual method invocation over the value type instance");
+
           consumer.AddHighlighting(
-            new BoxingAllocationHighlighting(
-              operandExpression, "inherited 'ValueType.ToString' virtual method invocation over the value type instance"));
+            new BoxingAllocationHighlighting(operandExpression, richText));
         }
       }
     }

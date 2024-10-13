@@ -1,8 +1,10 @@
 using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl.Query;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Tree.Query;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -31,18 +33,18 @@ public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapA
   {
     if (queryRangeVariableDeclaration.IsInTheContextWhereAllocationsAreNotImportant()) return;
 
-    using var stringBuilder = PooledStringBuilder.GetInstance();
-    var builder = stringBuilder.Builder;
+    var richText = new RichText(
+      "new anonymous type instance creation for range variables ");
 
     PresentTransparentIdentifierAnonymousType(queryAnonymousType);
 
     consumer.AddHighlighting(new ObjectAllocationHighlighting(
-      queryRangeVariableDeclaration.NameIdentifier, "new anonymous type instance creation for range variables " + builder));
+      queryRangeVariableDeclaration.NameIdentifier, richText));
     return;
 
     void PresentTransparentIdentifierAnonymousType(IQueryAnonymousType anonymousType)
     {
-      builder.Append('{');
+      richText.Append('{');
       var first = true;
 
       foreach (var queryProperty in anonymousType.QueryProperties)
@@ -50,15 +52,15 @@ public class AllocationOfAnonymousObjectForTransparentIdentifierAnalyzer : HeapA
         if (first)
           first = false;
         else
-          builder.Append(", ");
+          richText.Append(", ");
 
         if (queryProperty.Type is IQueryAnonymousType innerAnonymousType)
           PresentTransparentIdentifierAnonymousType(innerAnonymousType);
         else
-          builder.Append(queryProperty.ShortName);
+          richText.Append(queryProperty.ShortName, DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Property]);
       }
 
-      builder.Append('}');
+      richText.Append('}');
     }
   }
 }

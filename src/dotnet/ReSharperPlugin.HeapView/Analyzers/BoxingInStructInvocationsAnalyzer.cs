@@ -1,11 +1,14 @@
 using System;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 using ReSharperPlugin.HeapView.Settings;
 
@@ -89,15 +92,32 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
       if (qualifierType.IsValueType())
       {
         consumer.AddHighlighting(new BoxingAllocationHighlighting(
-          invokedReferenceExpression.NameIdentifier,
-          "special 'Object.GetType()' method invocation over the value type instance"));
+          invokedReferenceExpression.NameIdentifier, new RichText(
+            $"special '{GetObjectGetTypeInvocationText()}' method invocation over the value type instance")));
       }
       else if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
       {
+        var typeParameterName = DeclaredElementPresenter.Format(
+          invokedReferenceExpression.Language, DeclaredElementPresenter.NAME_PRESENTER, typeParameter);
+
         consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
-          invokedReferenceExpression.NameIdentifier,
-          "special 'Object.GetType()' method may be invoked over the value type instance "
-          + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
+          invokedReferenceExpression.NameIdentifier, new RichText(
+            $"special '{GetObjectGetTypeInvocationText()}' method may be invoked over the value type instance "
+            + $"if '{typeParameterName}' type parameter will be substituted with the value type")));
+      }
+
+      return;
+
+      RichText GetObjectGetTypeInvocationText()
+      {
+        var typeStyle = DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Type];
+        var methodStyle = DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Method];
+
+        return new RichText()
+          .Append(nameof(Object), typeStyle)
+          .Append('.')
+          .Append(nameof(GetType), methodStyle)
+          .Append("()");
       }
     }
 
@@ -145,20 +165,28 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
       {
         if (!qualifierType.IsReferenceType())
         {
+          var richText = new RichText();
+          richText.Append("inherited '");
+          richText.Append(PresentMethod());
+          richText.Append("' virtual method invocation over the value type instance if '");
+          richText.Append(DeclaredElementPresenter.Format(
+            CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, typeParameter));
+          richText.Append("' type parameter will be substituted with the value type ");
+          richText.Append("that do not overrides '");
+          richText.Append(DeclaredElementPresenter.Format(
+            CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, method));
+          richText.Append("' virtual method");
+
           consumer.AddHighlighting(
             new PossibleBoxingAllocationHighlighting(
-              invokedReferenceExpression.NameIdentifier,
-              $"inherited '{PresentMethod()}' virtual method invocation over the value type instance "
-              + $"if '{typeParameter.ShortName}' type parameter will be substituted with the value type "
-              + $"that do not overrides '{method.ShortName}' virtual method"));
+              invokedReferenceExpression.NameIdentifier, richText));
         }
       }
       else if (qualifierType.IsValueType())
       {
-        consumer.AddHighlighting(
-          new BoxingAllocationHighlighting(
-            invokedReferenceExpression.NameIdentifier,
-            $"inherited '{PresentMethod()}' virtual method invocation over the value type instance"));
+        consumer.AddHighlighting(new BoxingAllocationHighlighting(
+          invokedReferenceExpression.NameIdentifier, new RichText(
+            $"inherited '{PresentMethod()}' virtual method invocation over the value type instance")));
       }
 
       return;
@@ -241,18 +269,19 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
 
     if (qualifierType.IsUnconstrainedGenericType(out var typeParameter))
     {
-      consumer.AddHighlighting(
-        new PossibleBoxingAllocationHighlighting(
-          nodeToHighlight,
+      var typeParameterName = DeclaredElementPresenter.Format(
+        CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, typeParameter);
+
+      consumer.AddHighlighting(new PossibleBoxingAllocationHighlighting(
+        nodeToHighlight, new RichText(
           $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"
-          + $" if '{typeParameter.ShortName}' type parameter will be substituted with the value type"));
+          + $" if '{typeParameterName}' type parameter will be substituted with the value type")));
     }
     else
     {
-      consumer.AddHighlighting(
-        new BoxingAllocationHighlighting(
-          nodeToHighlight,
-          $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type"));
+      consumer.AddHighlighting(new BoxingAllocationHighlighting(
+        nodeToHighlight, new RichText(
+          $"conversion of value type '{sourceTypeText}' instance method to '{delegateTypeText}' delegate type")));
     }
   }
 

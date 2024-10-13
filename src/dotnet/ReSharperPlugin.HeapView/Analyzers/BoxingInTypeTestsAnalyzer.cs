@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 
@@ -14,10 +13,7 @@ namespace ReSharperPlugin.HeapView.Analyzers;
     typeof(IConstantOrTypePattern),
     typeof(IAsExpression)
   ],
-  HighlightingTypes = [
-    typeof(BoxingAllocationHighlighting),
-    typeof(PossibleBoxingAllocationHighlighting)
-  ])]
+  HighlightingTypes = [typeof(Boxing)])]
 public class BoxingInTypeTestsAnalyzer : HeapAllocationAnalyzerBase<ITreeNode>
 {
   protected override void Run(ITreeNode element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

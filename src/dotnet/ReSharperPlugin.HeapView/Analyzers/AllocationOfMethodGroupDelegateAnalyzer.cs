@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -51,7 +52,7 @@ public class AllocationOfMethodGroupDelegateAnalyzer : HeapAllocationAnalyzerBas
     var delegateTypeText = delegateType.GetPresentableName(referenceExpression.Language, CommonUtils.DefaultTypePresentationStyle);
     consumer.AddHighlighting(new DelegateAllocationHighlighting(
       explicitCreationNode ?? referenceExpression.NameIdentifier,
-      $"new '{delegateTypeText}' instance creation"));
+      new RichText($"new '{delegateTypeText}' instance creation")));
   }
 
   [Pure]

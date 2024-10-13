@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -34,7 +35,9 @@ public class AllocationOfArrayInitializerAnalyzer : HeapAllocationAnalyzerBase<I
     }
 
     var typeName = createdArrayType.GetPresentableName(arrayInitializer.Language, CommonUtils.DefaultTypePresentationStyle);
-    var highlighting = new ObjectAllocationHighlighting(arrayInitializer.LBrace, $"new '{typeName}' array instance creation");
+    var highlighting = new ObjectAllocationHighlighting(
+      arrayInitializer.LBrace, new RichText($"new '{typeName}' array instance creation"));
+
     consumer.AddHighlighting(highlighting, startNode.GetDocumentRange().SetEndTo(endNode.GetDocumentEndOffset()));
   }
 

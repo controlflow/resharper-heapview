@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -73,8 +74,9 @@ public class AllocationOfActivatorCreateInstanceAnalyzer : HeapAllocationAnalyze
             {
               var typeName = returnType.GetPresentableName(invocationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
-              consumer.AddHighlighting(
-                new ObjectAllocationPossibleHighlighting(nameIdentifier, $"new instance creation if '{typeName}' type parameter will be substituted with the reference type"));
+              consumer.AddHighlighting(new ObjectAllocationPossibleHighlighting(
+                nameIdentifier, new RichText(
+                  $"new instance creation if '{typeName}' type parameter will be substituted with the reference type")));
               break;
             }
 
@@ -82,8 +84,9 @@ public class AllocationOfActivatorCreateInstanceAnalyzer : HeapAllocationAnalyze
             {
               var typeName = returnType.GetPresentableName(invocationExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
-              consumer.AddHighlighting(
-                new ObjectAllocationHighlighting(nameIdentifier, $"new '{typeName}' instance creation"));
+              consumer.AddHighlighting(new ObjectAllocationHighlighting(
+                nameIdentifier, new RichText(
+                  $"new '{typeName}' instance creation")));
               break;
             }
           }

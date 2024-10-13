@@ -1,6 +1,7 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 
@@ -17,7 +18,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationHighlighting(ITreeNode element, string description)
+public class ObjectAllocationHighlighting(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation";
@@ -37,7 +38,7 @@ public class ObjectAllocationHighlighting(ITreeNode element, string description)
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationEvidentHighlighting(ITreeNode element, string description)
+public class ObjectAllocationEvidentHighlighting(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Evident";
@@ -57,7 +58,7 @@ public class ObjectAllocationEvidentHighlighting(ITreeNode element, string descr
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ObjectAllocationPossibleHighlighting(ITreeNode element, string description)
+public class ObjectAllocationPossibleHighlighting(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ObjectAllocation.Possible";

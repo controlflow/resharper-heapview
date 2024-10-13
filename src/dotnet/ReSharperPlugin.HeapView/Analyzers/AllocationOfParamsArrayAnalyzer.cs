@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -39,7 +40,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     var lastParameter = parameters[^1];
     if (!lastParameter.IsParameterArray) return;
 
-    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorresponindArguments(argumentsOwner, lastParameter, out var paramsArgument))
+    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
       return; // explicit array passed
 
     var paramsParameterType = substitution[lastParameter.Type];
@@ -102,12 +103,15 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       return;
 
     var arrayType = paramsParameterType.GetPresentableName(nodeToHighlight.Language, CommonUtils.DefaultTypePresentationStyle);
-    var description = $"new '{arrayType}' array instance creation for params parameter '{paramsParameter.ShortName}'";
-    consumer.AddHighlighting(new ObjectAllocationHighlighting(nodeToHighlight, description));
+    var parameterName = DeclaredElementPresenter.Format(CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, paramsParameter);
+
+    consumer.AddHighlighting(new ObjectAllocationHighlighting(
+      nodeToHighlight, new RichText(
+        $"new '{arrayType}' array instance creation for params parameter '{parameterName}'")));
   }
 
   [Pure]
-  private static bool InvocationHasParamsArgumentsInExpandedFormOrNoCorresponindArguments(
+  private static bool InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(
     ICSharpInvocationInfo invocationInfo, IParameter paramsParameter, out ICSharpArgumentInfo? firstExpandedArgument)
   {
     foreach (var argumentInfo in invocationInfo.Arguments)

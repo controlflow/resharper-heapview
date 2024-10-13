@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -82,8 +83,26 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     if (interpolatedStringExpression.IsConstantValue())
       return null; // C# 10 constant interpolation expressions
 
-    var hint = CanCompileToStringConcat(interpolatedStringExpression) ? " ('String.Concat' method call)" : null;
-    return new ObjectAllocationHighlighting(interpolatedStringExpression, $"new 'String' instance creation{hint}");
+    var typeStyle = DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Type];
+
+    var richText = new RichText();
+
+    richText.Append("new '");
+    richText.Append(nameof(String), typeStyle);
+    richText.Append("' instance creation");
+
+    if (CanCompileToStringConcat(interpolatedStringExpression))
+    {
+      var methodStyle = DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Method];
+      richText
+        .Append(" ('")
+        .Append(nameof(String), typeStyle)
+        .Append('.')
+        .Append(nameof(string.Concat), methodStyle)
+        .Append("' method call)");
+    }
+
+    return new ObjectAllocationHighlighting(interpolatedStringExpression, richText);
   }
 
   private static IHighlighting? TryReportFormattableStringAllocations(IInterpolatedStringExpression interpolatedStringExpression)
@@ -95,7 +114,7 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     var interpolationType = returnType.GetPresentableName(
       interpolatedStringExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
-    var paramsArrayHint = (string?)null;
+    string? paramsArrayHint = null;
 
     if (interpolatedStringExpression.InsertsEnumerable.Any()
         && method.Parameters is { Count: > 1 } parameters
@@ -105,7 +124,8 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     }
 
     return new ObjectAllocationHighlighting(
-      interpolatedStringExpression, $"new '{interpolationType}' instance creation{paramsArrayHint}");
+      interpolatedStringExpression, new RichText(
+        $"new '{interpolationType}' instance creation{paramsArrayHint}"));
   }
 
   private static IHighlighting? ReportInterpolatedStringHandlerAllocations(
@@ -122,7 +142,14 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     var predefinedType = data.GetPredefinedType();
     if (interpolatedStringHandlerTypeElement.Equals(predefinedType.DefaultInterpolatedStringHandler.GetTypeElement()))
     {
-      return new ObjectAllocationHighlighting(interpolatedStringExpression, "new 'String' instance creation");
+      var richText = new RichText();
+
+      richText.Append("new '");
+      richText.Append(nameof(String),
+        DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Type]);
+      richText.Append("' instance creation");
+
+      return new ObjectAllocationHighlighting(interpolatedStringExpression, richText);
     }
 
     if (interpolatedStringHandlerTypeElement is IClass classTypeElement)
@@ -131,7 +158,8 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
         .GetPresentableName(interpolatedStringExpression.Language, CommonUtils.DefaultTypePresentationStyle);
 
       return new ObjectAllocationHighlighting(
-        interpolatedStringExpression, $"new '{handlerTypeText}' interpolated string handler instance creation");
+        interpolatedStringExpression,
+        new RichText($"new '{handlerTypeText}' interpolated string handler instance creation"));
     }
 
     return null;
@@ -149,7 +177,7 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     }
 
     var byRight = AdditiveExpressionNavigator.GetByRightOperand(currentExpression);
-    return byRight?.OperatorReference?.Resolve().DeclaredElement is InterpolatedStringConcatenationOperator;
+    return byRight?.OperatorReference.Resolve().DeclaredElement is InterpolatedStringConcatenationOperator;
   }
 
   [Pure]

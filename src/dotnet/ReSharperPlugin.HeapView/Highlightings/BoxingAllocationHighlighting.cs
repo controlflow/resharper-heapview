@@ -1,6 +1,7 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 
 namespace ReSharperPlugin.HeapView.Highlightings;
 
@@ -18,7 +19,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class BoxingAllocationHighlighting(ITreeNode element, string description)
+public class BoxingAllocationHighlighting(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.BoxingAllocation";
@@ -39,7 +40,7 @@ public class BoxingAllocationHighlighting(ITreeNode element, string description)
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class PossibleBoxingAllocationHighlighting(ITreeNode element, string description)
+public class PossibleBoxingAllocationHighlighting(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.PossibleBoxingAllocation";

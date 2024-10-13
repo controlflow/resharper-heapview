@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -32,7 +33,8 @@ public class AllocationOfIteratorsAnalyzer : HeapAllocationAnalyzerBase<ICSharpE
           var iteratorTypeName = iteratorType.GetPresentableName(expression.Language, CommonUtils.DefaultTypePresentationStyle);
 
           consumer.AddHighlighting(new ObjectAllocationHighlighting(
-            referenceExpression, $"new '{iteratorTypeName}' instance creation on iterator property access"));
+            referenceExpression,
+            new RichText($"new '{iteratorTypeName}' instance creation on iterator property access")));
         }
 
         break;
@@ -50,7 +52,8 @@ public class AllocationOfIteratorsAnalyzer : HeapAllocationAnalyzerBase<ICSharpE
           var iteratorKind = DeclaredElementPresenter.Format(expression.Language, DeclaredElementPresenter.KIND_PRESENTER, parametersOwner);
 
           consumer.AddHighlighting(new ObjectAllocationHighlighting(
-            invocationExpression.InvokedExpression, $"new '{iteratorTypeName}' instance creation on iterator {iteratorKind} invocation"));
+            invocationExpression.InvokedExpression,
+            new RichText($"new '{iteratorTypeName}' instance creation on iterator {iteratorKind} invocation")));
         }
 
         break;

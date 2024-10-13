@@ -1,6 +1,7 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.RichText;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -19,7 +20,7 @@ namespace ReSharperPlugin.HeapView.Highlightings;
   OverlapResolve = OverlapResolveKind.WARNING,
   ShowToolTipInStatusBar = false,
   ToolTipFormatString = MESSAGE)]
-public class ImplicitCaptureWarning(ITreeNode element, string description)
+public class ImplicitCaptureWarning(ITreeNode element, RichText description)
   : PerformanceHighlightingBase(element, MESSAGE, description)
 {
   public const string SEVERITY_ID = "HeapView.ImplicitCapture";

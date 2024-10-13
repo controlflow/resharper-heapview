@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
@@ -101,25 +102,34 @@ public class BoxingInDefaultMembersAnalyzer : HeapAllocationAnalyzerBase<IClassL
     HashSet<OverridableMemberInstance> defaultMembers, IStruct structType, IDeclaredType superInterfaceType,
     ICSharpIdentifier implementedInterfaceTypeName, IHighlightingConsumer consumer)
   {
-    var kindAndName = DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.KIND_QUOTED_NAME_PRESENTER, structType).Text;
+    var kindAndName = DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.KIND_QUOTED_NAME_PRESENTER, structType);
 
-    using var builder = PooledStringBuilder.GetInstance();
-    builder.Append(kindAndName.Capitalize()).AppendLine(" do not provides the implementations for the following interface members with default bodies:");
+    var richText = new RichText();
+    richText
+      .Append(kindAndName.Clone().Capitalize())
+      .AppendLine(" do not provides the implementations for the following interface members with default bodies:");
 
     foreach (var defaultMember in defaultMembers)
     {
-      builder.Append("  ").AppendLine(DeclaredElementPresenter.Format(CSharpLanguage.Instance, MemberWithInterfaceQualificationPresenter, defaultMember).Text);
+      richText
+        .Append("  ")
+        .Append(DeclaredElementPresenter.Format(CSharpLanguage.Instance, MemberWithInterfaceQualificationPresenter, defaultMember))
+        .AppendLine();
     }
 
-    builder.AppendLine();
-    builder.Append("Using the default implementations of the interface members may result in boxing of the ");
-    builder.Append(kindAndName);
-    builder.Append(" values at runtime in generic code (where T : ");
-    builder.Append(superInterfaceType.GetPresentableName(implementedInterfaceTypeName.Language, CommonUtils.DefaultTypePresentationStyle));
-    builder.Append(")");
+    richText.AppendLine();
+    richText.Append("Using the default implementations of the interface members may result in boxing of the ");
+    richText.Append(kindAndName);
+    richText.Append(" values at runtime in generic code (");
+    richText.Append("where", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Keyword]);
+    richText.Append(' ');
+    richText.Append("T", DeclaredElementPresenterTextStyles.Generic[DeclaredElementPresentationPartKind.Type]);
+    richText.Append(" : ");
+    richText.Append(superInterfaceType.GetPresentableName(implementedInterfaceTypeName.Language, CommonUtils.DefaultTypePresentationStyle));
+    richText.Append(")");
 
     consumer.AddHighlighting(
-      new PossibleBoxingAllocationHighlighting(implementedInterfaceTypeName, builder.ToString()));
+      new PossibleBoxingAllocationHighlighting(implementedInterfaceTypeName, richText));
   }
 
   private static readonly DeclaredElementPresenterStyle MemberWithInterfaceQualificationPresenter = new()
