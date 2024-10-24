@@ -43,9 +43,6 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
         return; // explicit array passed
 
-      if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
-        return;
-
       var paramsParameterType = substitution[lastParameter.Type];
       ReportParamsAllocation(argumentsOwner, paramsArgument, lastParameter, paramsParameterType, data, consumer);
     }
@@ -54,9 +51,6 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     {
       if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
         return; // explicit collection passed
-
-      if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
-        return;
 
       // todo: classify params collection creation
       // todo: can be span/list<T>/collectionbuilder/ilist/etc
