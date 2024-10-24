@@ -38,13 +38,31 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     if (parameters.Count == 0) return;
 
     var lastParameter = parameters[^1];
-    if (!lastParameter.IsParameterArray) return;
+    if (lastParameter.IsParameterArray)
+    {
+      if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
+        return; // explicit array passed
 
-    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
-      return; // explicit array passed
+      if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
+        return;
 
-    var paramsParameterType = substitution[lastParameter.Type];
-    ReportParamsAllocation(argumentsOwner, paramsArgument, lastParameter, paramsParameterType, data, consumer);
+      var paramsParameterType = substitution[lastParameter.Type];
+      ReportParamsAllocation(argumentsOwner, paramsArgument, lastParameter, paramsParameterType, data, consumer);
+    }
+    else if (lastParameter.IsParameterCollection
+             && lastParameter.IsParameterArrayLike(data.GetLanguageLevel()))
+    {
+      if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
+        return; // explicit collection passed
+
+      if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
+        return;
+
+      // todo: classify params collection creation
+      // todo: can be span/list<T>/collectionbuilder/ilist/etc
+      // todo: reuse collection expressions code somehow...
+      // todo: nested allocations from .ctor invocation?
+    }
   }
 
   private static void ReportParamsAllocation(
