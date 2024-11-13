@@ -31,6 +31,6 @@ public abstract class PerformanceHighlightingBase(ITreeNode element, string form
 
   public RichTextBlock? TryGetTooltip(HighlighterTooltipKind where)
   {
-    return RichTextToolTipHighlighting.CreateBlock(RichToolTip, CSharpLanguage.Instance!, where);
+    return HighlightingToolTipHelper.CreateRichTextBlock(RichToolTip, CSharpLanguage.Instance!, where);
   }
 }
