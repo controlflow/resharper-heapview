@@ -28,9 +28,9 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
     if (collectionExpression.IsInTheContextWhereAllocationsAreNotImportant())
       return;
 
-    var typeInfo = collectionExpression.GetTargetTypeInfo();
+    var targetTypeInfo = collectionExpression.GetTargetTypeInfo();
 
-    switch (typeInfo.Kind)
+    switch (targetTypeInfo.Kind)
     {
       case CollectionExpressionKind.None:
       {
@@ -40,12 +40,12 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.Array:
       {
         if (collectionExpression.CollectionElementsEnumerable.IsEmpty()
-            && data.IsArrayEmptyMemberOptimizationAvailable(typeInfo.TargetType))
+            && data.IsSystemArrayEmptyMemberAvailable(targetTypeInfo.TargetType))
         {
           return; // Array.Empty<T>() is used
         }
 
-        ReportArrayAndPossibleTemporaryListAllocation(typeInfo.TargetType);
+        ReportArrayAndPossibleTemporaryListAllocation(targetTypeInfo.TargetType);
         return;
       }
 
@@ -57,7 +57,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           return; // Span<T>.Empty
         }
 
-        if (typeInfo.Kind == CollectionExpressionKind.ReadOnlySpan
+        if (targetTypeInfo.Kind == CollectionExpressionKind.ReadOnlySpan
             && collectionExpression.CanBeLoweredToRuntimeHelpersCreateSpan())
         {
           return; // inline data or RuntimeHelpers.CreateSpan
@@ -68,12 +68,12 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           return; // stack allocated inline array
         }
 
-        var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+        var arrayType = TypeFactory.CreateArrayType(targetTypeInfo.ElementType.NotNull(), rank: 1);
         ReportArrayAndPossibleTemporaryListAllocation(arrayType);
         return;
       }
 
-      case CollectionExpressionKind.CollectionBuilder when typeInfo.TargetType.IsGenericImmutableArray(out _):
+      case CollectionExpressionKind.CollectionBuilder when targetTypeInfo.TargetType.IsGenericImmutableArray(out _):
       {
         // the array is constructed and moved into the ImmutableArray<T> struct
 
@@ -82,7 +82,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           return; // ImmutableCollectionsMarshal.AsImmutableArray<T>(Array.Empty<T>())
         }
 
-        var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+        var arrayType = TypeFactory.CreateArrayType(targetTypeInfo.ElementType.NotNull(), rank: 1);
         ReportArrayAndPossibleTemporaryListAllocation(arrayType);
         return;
       }
@@ -97,17 +97,17 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         {
           // we need heap array
 
-          var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType.NotNull(), rank: 1);
+          var arrayType = TypeFactory.CreateArrayType(targetTypeInfo.ElementType.NotNull(), rank: 1);
           ReportArrayAndPossibleTemporaryListAllocation(
             arrayType, additionalAllocation: new RichText(
-              $"new '{PresentTypeName(typeInfo.TargetType)}' collection creation"));
+              $"new '{PresentTypeName(targetTypeInfo.TargetType)}' collection creation"));
         }
         else // span is static (empty or not)
         {
           consumer.AddHighlighting(
             new ObjectAllocationPossibleHighlighting(
               collectionExpression.LBracket,
-              new RichText($"new '{PresentTypeName(typeInfo.TargetType)}' collection creation")),
+              new RichText($"new '{PresentTypeName(targetTypeInfo.TargetType)}' collection creation")),
             GetCollectionExpressionRangeToHighlight());
         }
 
@@ -116,7 +116,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
       case CollectionExpressionKind.ImplementsIEnumerable:
       {
-        if (typeInfo.TargetType is IDeclaredType createdType)
+        if (targetTypeInfo.TargetType is IDeclaredType createdType)
         {
           switch (createdType.Classify)
           {
@@ -125,7 +125,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
               consumer.AddHighlighting(
                 new ObjectAllocationHighlighting(
                   collectionExpression.LBracket, new RichText(
-                    $"new '{PresentTypeName(typeInfo.TargetType)}' instance creation")),
+                    $"new '{PresentTypeName(targetTypeInfo.TargetType)}' instance creation")),
                 GetCollectionExpressionRangeToHighlight());
               break;
             }
@@ -135,7 +135,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
               consumer.AddHighlighting(
                 new ObjectAllocationPossibleHighlighting(
                   collectionExpression.LBracket, new RichText(
-                    $"new instance creation if '{PresentTypeName(typeInfo.TargetType)}' " +
+                    $"new instance creation if '{PresentTypeName(targetTypeInfo.TargetType)}' " +
                     $"type parameter will be substituted with the reference type")),
                 GetCollectionExpressionRangeToHighlight());
               break;
@@ -148,13 +148,13 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
       case CollectionExpressionKind.ArrayInterface:
       {
-        var targetType = typeInfo.TargetType;
+        var targetType = targetTypeInfo.TargetType;
         if (targetType.IsGenericIList() || targetType.IsGenericICollection())
         {
           var genericListTypeElement = collectionExpression.GetPredefinedType().GenericList.GetTypeElement();
           if (genericListTypeElement == null) return;
 
-          var genericListOfElementType = TypeFactory.CreateType(genericListTypeElement, [typeInfo.ElementType]);
+          var genericListOfElementType = TypeFactory.CreateType(genericListTypeElement, [targetTypeInfo.ElementType]);
 
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(
@@ -174,7 +174,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           consumer.AddHighlighting(
             new ObjectAllocationHighlighting(
               collectionExpression.LBracket, new RichText(
-                $"new {storageKind} and '{PresentTypeName(typeInfo.TargetType)}' implementation instance creation")),
+                $"new {storageKind} and '{PresentTypeName(targetTypeInfo.TargetType)}' implementation instance creation")),
             GetCollectionExpressionRangeToHighlight());
         }
 
@@ -263,11 +263,6 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           GetCollectionExpressionRangeToHighlight());
       }
     }
-  }
-
-  void ClassifyAllocation()
-  {
-
   }
 
   [Pure]

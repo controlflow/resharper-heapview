@@ -34,7 +34,7 @@ public static class TargetRuntimeUtils
   private static readonly Key<object> ArrayEmptyIsAvailableKey = new(nameof(ArrayEmptyIsAvailableKey));
 
   [Pure]
-  public static bool IsArrayEmptyMemberOptimizationAvailable(this ElementProblemAnalyzerData data, IType targetType)
+  public static bool IsSystemArrayEmptyMemberAvailable(this ElementProblemAnalyzerData data, IType targetType)
   {
     var arrayType = targetType as IArrayType;
     if (arrayType == null) return true;
