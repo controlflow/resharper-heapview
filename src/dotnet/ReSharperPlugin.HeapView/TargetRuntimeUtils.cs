@@ -1,5 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
@@ -24,6 +28,38 @@ public static class TargetRuntimeUtils
         return Boxed.From(TargetRuntime.NetFramework);
 
       return Boxed.From(TargetRuntime.Unknown);
+    });
+  }
+
+  private static readonly Key<object> ArrayEmptyIsAvailableKey = new(nameof(ArrayEmptyIsAvailableKey));
+
+  [Pure]
+  public static bool IsArrayEmptyMemberOptimizationAvailable(this ElementProblemAnalyzerData data, IType targetType)
+  {
+    var arrayType = targetType as IArrayType;
+    if (arrayType == null) return true;
+
+    if (arrayType.ElementType.IsPointerOrFunctionPointer())
+      return false; // can't use unmanaged types as type arguments for Array.Empty<T>()
+
+    return (bool)data.GetOrCreateDataUnderLock(ArrayEmptyIsAvailableKey, data, static data =>
+    {
+      // note: we do not check for C# 6 compiler, since it is minimal supported compiler now
+
+      var predefinedType = data.GetPredefinedType();
+      if (predefinedType.Array.GetTypeElement() is IClass systemArrayTypeElement)
+      {
+        foreach (var typeMember in systemArrayTypeElement.EnumerateMembers(nameof(Array.Empty), caseSensitive: true))
+        {
+          if (typeMember is IMethod { Parameters.Count: 0, TypeParameters.Count: 1 } method
+              && method.GetAccessRights() == AccessRights.PUBLIC)
+          {
+            return BooleanBoxes.True;
+          }
+        }
+      }
+
+      return BooleanBoxes.False;
     });
   }
 }

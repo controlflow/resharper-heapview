@@ -1,0 +1,36 @@
+﻿using System.Collections.Generic;
+
+int[] empty1 = |[]|(0);
+string[] empty2 = |[]|(1);
+
+unsafe
+{
+  int*[] empty3 = |[]|(2);
+}
+
+int[] array1 = |[11|(3)1, 222];
+string[] array2 = |["a|(4)", "b"];
+
+int[] array3 = |[|(5)..array1];
+string[] array4 = |[|(6)..args];
+
+int[] array5 = |[|(7)..array1, 1];
+string[] array6 = |[|(8)..args, "222"];
+
+IEnumerable<string> ys = args;
+string[] array7 = |[|(9)|..|(10)ys];
+string[] array8 = |[|(11)|..|(12)ys, "aaa"];
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'int*[]' array instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new temporary list and possible (if not empty) 'string[]' array instance creation
+(10): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)
+(11): ReSharper HeapView Allocation: Object allocation: new temporary list and 'string[]' array instance creation
+(12): ReSharper HeapView Allocation: Possible object allocation: new 'IEnumerator<string>' instance creation on 'GetEnumerator()' call (except when it's cached by the implementation)

@@ -3,6 +3,11 @@
 int[] empty1 = [];
 string[] empty2 = [];
 
+unsafe
+{
+  int*[] empty3 = [];
+}
+
 int[] array1 = [111, 222];
 string[] array2 = ["a", "b"];
 

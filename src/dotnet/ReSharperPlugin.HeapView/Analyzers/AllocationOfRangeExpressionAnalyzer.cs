@@ -44,7 +44,7 @@ public class AllocationOfRangeExpressionAnalyzer : HeapAllocationAnalyzerBase<IE
     var resolveResult = rangeIndexerReference.Resolve();
     if (!resolveResult.ResolveErrorType.IsAcceptable) return null;
 
-    if (resolveResult.DeclaredElement is CSharpByRangeIndexer { SliceMethod: null } byRangeIndexer)
+    if (resolveResult.DeclaredElement is CSharpByRangeIndexer byRangeIndexer)
     {
       return byRangeIndexer.ReturnType;
     }

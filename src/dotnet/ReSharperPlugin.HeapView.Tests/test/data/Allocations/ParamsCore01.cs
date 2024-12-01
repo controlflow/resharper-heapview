@@ -1,6 +1,7 @@
 // ReSharper disable UseArrayEmptyMethod
 // ReSharper disable RedundantExplicitParamsArrayCreation
 // ReSharper disable ExpressionIsAlwaysNull
+// ReSharper disable UseCollectionExpression
 
 unsafe
 {

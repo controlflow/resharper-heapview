@@ -39,7 +39,8 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
 
       case CollectionExpressionKind.Array:
       {
-        if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+        if (collectionExpression.CollectionElementsEnumerable.IsEmpty()
+            && data.IsArrayEmptyMemberOptimizationAvailable(typeInfo.TargetType))
         {
           return; // Array.Empty<T>() is used
         }
@@ -262,6 +263,11 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
           GetCollectionExpressionRangeToHighlight());
       }
     }
+  }
+
+  void ClassifyAllocation()
+  {
+
   }
 
   [Pure]

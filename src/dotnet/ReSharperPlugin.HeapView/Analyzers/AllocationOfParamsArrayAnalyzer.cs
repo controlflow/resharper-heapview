@@ -52,6 +52,11 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
         return; // explicit collection passed
 
+      var paramsParameterType = substitution[lastParameter.Type];
+      var targetTypeInfo = CSharpCollectionTypeUtil.GetCollectionExpressionTargetTypeInfo(paramsParameterType, argumentsOwner);
+
+
+
       // todo: classify params collection creation
       // todo: can be span/list<T>/collectionbuilder/ilist/etc
       // todo: reuse collection expressions code somehow...
@@ -67,7 +72,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     ITreeNode? nodeToHighlight;
     if (paramsArgument == null)
     {
-      if (IsArrayEmptyMemberOptimizationAvailable(data, paramsParameterType))
+      if (data.IsArrayEmptyMemberOptimizationAvailable(paramsParameterType))
         return;
 
       nodeToHighlight = argumentsOwner switch
@@ -147,37 +152,5 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
 
     firstExpandedArgument = null;
     return true;
-  }
-
-  private static readonly Key<object> ArrayEmptyIsAvailableKey = new(nameof(ArrayEmptyIsAvailableKey));
-
-  [Pure]
-  private static bool IsArrayEmptyMemberOptimizationAvailable(ElementProblemAnalyzerData data, IType paramsParameterType)
-  {
-    var arrayType = paramsParameterType as IArrayType;
-    if (arrayType == null) return true;
-
-    if (arrayType.ElementType.IsPointerOrFunctionPointer())
-      return false; // can't use unmanaged types as type arguments for Array.Empty<T>()
-
-    return (bool)data.GetOrCreateDataUnderLock(ArrayEmptyIsAvailableKey, data, static data =>
-    {
-      // note: we do not check for C# 6 compiler, since it is minimal supported compiler now
-
-      var predefinedType = data.GetPredefinedType();
-      if (predefinedType.Array.GetTypeElement() is IClass systemArrayTypeElement)
-      {
-        foreach (var typeMember in systemArrayTypeElement.EnumerateMembers(nameof(Array.Empty), caseSensitive: true))
-        {
-          if (typeMember is IMethod { Parameters.Count: 0, TypeParameters.Count: 1 } method
-              && method.GetAccessRights() == AccessRights.PUBLIC)
-          {
-            return BooleanBoxes.True;
-          }
-        }
-      }
-
-      return BooleanBoxes.False;
-    });
   }
 }

@@ -42,7 +42,6 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestArrayInitializer01() { DoNamedTest2(); }
 
-  [Test] public void TestCollectionExpression01() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression02() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression03() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression04() { DoNamedTest2(); }
@@ -72,6 +71,8 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
   [Test] public void TestParamsFramework04() { DoNamedTest2(); }
   [Test] public void TestParamsFramework05() { DoNamedTest2(); }
   [Test] public void TestParamsFramework06() { DoNamedTest2(); }
+
+  [Test] public void TestCollectionExpressionFramework01() { DoNamedTest2(); }
 
   [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 }
@@ -114,6 +115,7 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestCollectionExpressionCore02() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore03() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore04() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpressionCore05() { DoNamedTest2(); }
 }
 
 [TestNet70]
