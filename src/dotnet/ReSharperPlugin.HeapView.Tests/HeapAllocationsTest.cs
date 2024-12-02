@@ -44,7 +44,6 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestCollectionExpression02() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression03() { DoNamedTest2(); }
-  [Test] public void TestCollectionExpression04() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression05() { DoNamedTest2(); }
   [Test] public void TestCollectionExpression06() { DoNamedTest2(); }
 
@@ -74,12 +73,14 @@ public class HeapAllocationsNetFrameworkTest : HeapAllocationsTestBase
   [Test] public void TestParamsFramework06() { DoNamedTest2(); }
 
   [Test] public void TestCollectionExpressionFramework01() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpressionFramework02() { DoNamedTest2(); }
 
   [Test] public void TestStringInterpolationFramework01() { DoNamedTest2(); }
 
   [Test] public void TestParamsCollectionsFramework01() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsFramework02() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsFramework03() { DoNamedTest2(); }
+  [Test] public void TestParamsCollectionsFramework04() { DoNamedTest2(); }
 }
 
 [TestNet90]
@@ -121,12 +122,16 @@ public class HeapAllocationsNetCoreTest : HeapAllocationsTestBase
   [Test] public void TestCollectionExpressionCore03() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore04() { DoNamedTest2(); }
   [Test] public void TestCollectionExpressionCore05() { DoNamedTest2(); }
+  [Test] public void TestCollectionExpressionCore06() { DoNamedTest2(); }
 
   [Test] public void TestParamsCollectionsCore01() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsCore02() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsCore03() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsCore04() { DoNamedTest2(); }
   [Test] public void TestParamsCollectionsCore05() { DoNamedTest2(); }
+  [Test] public void TestParamsCollectionsCore06() { DoNamedTest2(); }
+  [Test] public void TestParamsCollectionsCore07() { DoNamedTest2(); }
+  [Test] public void TestParamsCollectionsCore08() { DoNamedTest2(); }
 }
 
 [TestNet70]

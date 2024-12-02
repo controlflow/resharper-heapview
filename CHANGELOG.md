@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## vNext
 
-## [2024.3.0] / 2024-11-13
+## [2024.3.1]
+- Added support for C# 13 (allocations due to "params collections" feature)
+
+## 2024.3.0 / 2024-11-13
 - Added support for ReSharper and Rider 2024.3
 
 ## 2024.2.0

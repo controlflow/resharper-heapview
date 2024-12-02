@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+
+{
+  // new List<T> { x }
+  IList<int> list = |[1]|(0);
+  ICollection<int> collection = |[2]|(1);
+
+  // new WrapperForOne(x)
+  IReadOnlyList<int> readOnlyList = |[3]|(2);
+  IReadOnlyCollection<int> readOnlyCollection = |[4]|(3);
+  IEnumerable<int> enumerable = |[5]|(4);
+
+  // new Wrapper(new[] { x, y })
+  IReadOnlyList<int> readOnlyList = |[|(5)3, 3];
+  IReadOnlyCollection<int> readOnlyCollection = |[|(6)4, 4];
+  IEnumerable<int> enumerable = |[|(7)5, 5];
+}
+
+{
+  // new List<T>
+  IList<int> list = |[]|(8);
+  ICollection<int> collection = |[]|(9);
+
+  // Array.Empty<T>
+  IReadOnlyList<int> readOnlyList = [];
+  IReadOnlyCollection<int> readOnlyCollection = [];
+  IEnumerable<int> enumerable = [];
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(1): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'IReadOnlyList<int>' implementation instance creation
+(3): ReSharper HeapView Allocation: Object allocation: new 'IReadOnlyCollection<int>' implementation instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'IEnumerable<int>' implementation instance creation
+(5): ReSharper HeapView Allocation: Object allocation: new array and 'IReadOnlyList<int>' implementation instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new array and 'IReadOnlyCollection<int>' implementation instance creation
+(7): ReSharper HeapView Allocation: Object allocation: new array and 'IEnumerable<int>' implementation instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation

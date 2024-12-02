@@ -34,12 +34,9 @@ public static class TargetRuntimeUtils
   private static readonly Key<object> ArrayEmptyIsAvailableKey = new(nameof(ArrayEmptyIsAvailableKey));
 
   [Pure]
-  public static bool IsSystemArrayEmptyMemberAvailable(this ElementProblemAnalyzerData data, IType targetType)
+  public static bool IsSystemArrayEmptyMemberAvailable(this ElementProblemAnalyzerData data, IType elementType)
   {
-    var arrayType = targetType as IArrayType;
-    if (arrayType == null) return true;
-
-    if (arrayType.ElementType.IsPointerOrFunctionPointer())
+    if (elementType.IsPointerOrFunctionPointer())
       return false; // can't use unmanaged types as type arguments for Array.Empty<T>()
 
     return (bool)data.GetOrCreateDataUnderLock(ArrayEmptyIsAvailableKey, data, static data =>

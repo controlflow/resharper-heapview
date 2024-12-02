@@ -40,7 +40,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.Array:
       {
         if (collectionExpression.CollectionElementsEnumerable.IsEmpty()
-            && data.IsSystemArrayEmptyMemberAvailable(targetTypeInfo.TargetType))
+            && data.IsSystemArrayEmptyMemberAvailable(targetTypeInfo.ElementType!))
         {
           return; // Array.Empty<T>() is used
         }
@@ -149,7 +149,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
       case CollectionExpressionKind.ArrayInterface:
       {
         var targetType = targetTypeInfo.TargetType;
-        if (targetType.IsGenericIList() || targetType.IsGenericICollection())
+        if (targetType.IsGenericIList() || targetType.IsGenericICollection())  // mutable interface - List<T>
         {
           var genericListTypeElement = collectionExpression.GetPredefinedType().GenericList.GetTypeElement();
           if (genericListTypeElement == null) return;
@@ -164,17 +164,27 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
         }
         else
         {
-          if (collectionExpression.CollectionElementsEnumerable.IsEmpty())
+          if (collectionExpression.CollectionElementsEnumerable.IsEmpty()
+              && data.IsSystemArrayEmptyMemberAvailable(targetTypeInfo.ElementType!))
           {
             return; // Array<T>.Empty()
           }
 
-          var storageKind = HasSpreadsOfUnknownLength(collectionExpression) ? "temporary list" : "array";
+          RichText allocationMessage;
+          if (collectionExpression.CollectionElementsEnumerable.SingleItem is IExpressionElement)
+          {
+            allocationMessage = new RichText(
+              $"new '{PresentTypeName(targetTypeInfo.TargetType)}' implementation instance creation");
+          }
+          else
+          {
+            var storageKind = HasSpreadsOfUnknownLength(collectionExpression) ? "temporary list" : "array";
+            allocationMessage = new RichText(
+              $"new {storageKind} and '{PresentTypeName(targetTypeInfo.TargetType)}' implementation instance creation");
+          }
 
           consumer.AddHighlighting(
-            new ObjectAllocationHighlighting(
-              collectionExpression.LBracket, new RichText(
-                $"new {storageKind} and '{PresentTypeName(targetTypeInfo.TargetType)}' implementation instance creation")),
+            new ObjectAllocationHighlighting(collectionExpression.LBracket, allocationMessage),
             GetCollectionExpressionRangeToHighlight());
         }
 

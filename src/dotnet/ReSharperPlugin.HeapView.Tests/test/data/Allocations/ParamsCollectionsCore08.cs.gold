@@ -1,0 +1,32 @@
+﻿using System.Collections.Generic;
+// ReSharper disable RedundantExplicitParamsArrayCreation
+
+|ParamsCollection|(0)<int>();
+ParamsCollection<int>(|[]|(1));
+ParamsCollection(|1|(2));
+ParamsCollection(|[1]|(3));
+ParamsCollection(|1|(4), 2, 3);
+ParamsCollection(|[|(5)1, 2, 3]);
+ParamsCollection(|"abc"|(6));
+ParamsCollection(|["a|(7)bc"]);
+ParamsCollection(|new|(8) List<string> { "aa" });
+ParamsCollection(|"abc"|(9), args[0]);
+ParamsCollection(|["a|(10)bc", args[0]]);
+return;
+
+void ParamsCollection<T>(params ICollection<T> xs)
+{
+  _ = xs;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation if for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation if for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation if for params parameter 'xs'
+(5): ReSharper HeapView Allocation: Object allocation: new 'List<int>' instance creation
+(6): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation if for params parameter 'xs'
+(7): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation
+(8): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation if for params parameter 'xs'
+(10): ReSharper HeapView Allocation: Object allocation: new 'List<string>' instance creation

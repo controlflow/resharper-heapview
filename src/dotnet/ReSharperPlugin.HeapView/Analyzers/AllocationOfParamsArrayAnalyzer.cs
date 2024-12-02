@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Annotations;
-using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -11,8 +10,8 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.TestFramework.Components.Settings;
 using JetBrains.UI.RichText;
+using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -56,7 +55,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       AnalyzeParamsCollectionAllocation(
         argumentsOwner,
         new DeclaredElementInstanceSlim<IParameter>(lastParameter, substitution),
-        consumer);
+        data, consumer);
     }
   }
 
@@ -71,13 +70,17 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
           argumentsOwner, paramsParameter.Element, out var firstExpandedArgument))
       return;
 
-    var paramsParameterType = paramsParameter.Substitution[paramsParameter.Element.Type];
-    if (firstExpandedArgument is null && data.IsSystemArrayEmptyMemberAvailable(paramsParameterType))
+    var paramsArrayType = paramsParameter.Substitution[paramsParameter.Element.Type] as IArrayType;
+    if (paramsArrayType == null)
+      return;
+
+    if (firstExpandedArgument is null
+        && data.IsSystemArrayEmptyMemberAvailable(paramsArrayType.ElementType))
       return;
 
     ReportParamsAllocation(
       argumentsOwner, firstExpandedArgument, paramsParameter.Element,
-      state: paramsParameterType,
+      state: paramsArrayType,
       allocationReasonMessageFactory: static (context, paramsParameterType) =>
       {
         var parameterTypeText = paramsParameterType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
@@ -88,7 +91,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
 
   private static void AnalyzeParamsCollectionAllocation(
     ICSharpArgumentsOwner argumentsOwner, DeclaredElementInstanceSlim<IParameter> paramsParameter,
-    IHighlightingConsumer consumer)
+    ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
   {
     if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(
           argumentsOwner, paramsParameter.Element, out var firstExpandedArgument))
@@ -157,7 +160,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
               var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType!, rank: 1);
               var arrayTypeText = arrayType.GetPresentableName(
                 context.Language, CommonUtils.DefaultTypePresentationStyle);
-              var collectionTypeText = typeInfo.TargetType!.GetPresentableName(
+              var collectionTypeText = typeInfo.TargetType.GetPresentableName(
                 context.Language, CommonUtils.DefaultTypePresentationStyle);
 
               return new RichText($"new '{arrayTypeText}' array instance creation and new '{collectionTypeText}' collection creation");
@@ -223,6 +226,54 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
 
       case CollectionExpressionKind.ArrayInterface:
       {
+        var targetType = targetTypeInfo.TargetType;
+        if (targetType.IsGenericIList() || targetType.IsGenericICollection()) // mutable interface - List<T>
+        {
+          var genericListTypeElement = argumentsOwner.GetPredefinedType().GenericList.GetTypeElement();
+          if (genericListTypeElement == null) return;
+
+          var genericListOfElementType = TypeFactory.CreateType(genericListTypeElement, [targetTypeInfo.ElementType]);
+
+          ReportParamsAllocation(
+            argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+            state: genericListOfElementType,
+            allocationReasonMessageFactory: static (context, collectionType) =>
+            {
+              var collectionTypeText = collectionType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+              return new RichText($"new '{collectionTypeText}' instance creation if");
+            },
+            consumer);
+        }
+        else
+        {
+          if (firstExpandedArgument is null
+              && data.IsSystemArrayEmptyMemberAvailable(targetTypeInfo.ElementType!))
+          {
+            return; // Array<T>.Empty()
+          }
+
+          var targetInterfaceTypeText = targetTypeInfo.TargetType.GetPresentableName(
+            argumentsOwner.Language, CommonUtils.DefaultTypePresentationStyle);
+
+          RichText allocationMessage;
+          if (argumentsOwner.EnumerateAllExpandedArguments(paramsParameter.Element).SingleItem() != null)
+          {
+            allocationMessage = new RichText(
+              $"new '{targetInterfaceTypeText}' implementation instance creation");
+          }
+          else
+          {
+            allocationMessage = new RichText(
+              $"new array and '{targetInterfaceTypeText}' implementation instance creation");
+          }
+
+          ReportParamsAllocation(
+            argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+            state: allocationMessage,
+            allocationReasonMessageFactory: static (_, message) => message,
+            consumer);
+        }
+
         break;
       }
 
@@ -300,7 +351,8 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
 
     var allocationReason = allocationReasonMessageFactory(nodeToHighlight, state);
 
-    var parameterName = DeclaredElementPresenter.Format(CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, paramsParameter);
+    var parameterName = DeclaredElementPresenter.Format(
+      CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, paramsParameter);
     var paramsKeyword = "params".Colorize(DeclaredElementPresentationPartKind.Keyword);
 
     var description = new RichText($"{allocationReason} for {paramsKeyword} parameter '{parameterName}'");
@@ -312,11 +364,11 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
 
   [Pure]
   private static bool InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(
-    ICSharpInvocationInfo invocationInfo, IParameter paramsParameter, out ICSharpArgumentInfo? firstExpandedArgument)
+    ICSharpArgumentsOwner argumentsOwner, IParameter paramsParameter, out ICSharpArgument? firstExpandedArgument)
   {
-    foreach (var argumentInfo in invocationInfo.Arguments)
+    foreach (var argument in argumentsOwner.ArgumentsEnumerable)
     {
-      var parameter = argumentInfo.MatchingParameter;
+      var parameter = argument.MatchingParameter;
       if (parameter == null) continue;
 
       if (!Equals(parameter.Element, paramsParameter)) continue;
@@ -328,7 +380,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
           return false;
 
         case ArgumentsUtil.ExpandedKind.Expanded:
-          firstExpandedArgument = argumentInfo;
+          firstExpandedArgument = argument;
           return true;
       }
     }

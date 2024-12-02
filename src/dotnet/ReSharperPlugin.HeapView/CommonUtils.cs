@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
@@ -242,6 +243,21 @@ public static class CommonUtils
     return null;
   }
 
+  public static IEnumerable<ICSharpArgument> EnumerateAllExpandedArguments(
+    this ICSharpArgumentsOwner argumentsOwner, IParameter parameter)
+  {
+    foreach (var argument in argumentsOwner.ArgumentsEnumerable)
+    {
+      var instance = argument.MatchingParameter;
+      if (instance != null
+          && Equals(instance.Element, parameter)
+          && instance.Expanded == ArgumentsUtil.ExpandedKind.Expanded)
+      {
+        yield return argument;
+      }
+    }
+  }
+
   [Pure]
   public static bool CanBeLoweredToRuntimeHelpersCreateSpan(
     this ICSharpArgumentsOwner argumentsOwner, IParameter paramsParameter, IType? elementType)
@@ -258,20 +274,12 @@ public static class CommonUtils
       return false;
     }
 
-    foreach (var argument in argumentsOwner.ArgumentsEnumerable)
+    foreach (var argument in argumentsOwner.EnumerateAllExpandedArguments(paramsParameter))
     {
-      if (argument.MatchingParameter is
-          {
-            Expanded: ArgumentsUtil.ExpandedKind.Expanded,
-            Element: var parameterOfArgument
-          }
-          && paramsParameter.Equals(parameterOfArgument))
+      var argumentValue = argument.Value;
+      if (argumentValue is not null && !argumentValue.IsConstantValue())
       {
-        var argumentValue = argument.Value;
-        if (argumentValue is not null && !argumentValue.IsConstantValue())
-        {
-          return false;
-        }
+        return false;
       }
     }
 
