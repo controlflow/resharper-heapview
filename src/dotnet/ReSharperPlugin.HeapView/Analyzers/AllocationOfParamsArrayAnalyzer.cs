@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
@@ -9,6 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.TestFramework.Components.Settings;
 using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -16,7 +18,10 @@ namespace ReSharperPlugin.HeapView.Analyzers;
 
 [ElementProblemAnalyzer(
   ElementTypes: [ typeof(ICSharpArgumentsOwner) ],
-  HighlightingTypes = [ typeof(ObjectAllocationHighlighting) ])]
+  HighlightingTypes = [
+    typeof(ObjectAllocationHighlighting),
+    typeof(ObjectAllocationPossibleHighlighting)
+  ])]
 public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICSharpArgumentsOwner>
 {
   protected override void Run(
@@ -118,22 +123,61 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
           return;
         }
 
-        // heap allocated array
-        ReportParamsAllocation(
-          argumentsOwner, firstExpandedArgument, paramsParameter.Element,
-          state: targetTypeInfo.ElementType!,
-          allocationReasonMessageFactory: static (context, elementType) =>
-          {
-            var arrayType = TypeFactory.CreateArrayType(elementType, rank: 1);
-            var parameterTypeText = arrayType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
-            return new RichText($"new '{parameterTypeText}' array instance creation");
-          },
-          consumer);
-        break;
+        goto ReportArrayAllocation;
+      }
+
+      case CollectionExpressionKind.CollectionBuilder when targetTypeInfo.TargetType.IsGenericImmutableArray(out _):
+      {
+        // the array is constructed and moved into the ImmutableArray<T> struct
+
+        if (firstExpandedArgument is null)
+        {
+          return; // ImmutableCollectionsMarshal.AsImmutableArray<T>(Array.Empty<T>())
+        }
+
+        goto ReportArrayAllocation;
       }
 
       case CollectionExpressionKind.CollectionBuilder:
+      {
+        // we need to always construct the ReadOnlySpan<T> to call the factory method
+
+        if (firstExpandedArgument != null
+            && !argumentsOwner.CanBeLoweredToRuntimeHelpersCreateSpan(paramsParameter.Element, targetTypeInfo.ElementType)
+            && !argumentsOwner.GetPsiModule().RuntimeSupportsInlineArrayTypes())
+        {
+          // we need heap array
+
+          ReportParamsAllocation(
+            argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+            state: targetTypeInfo,
+            allocationReasonMessageFactory: static (context, typeInfo) =>
+            {
+              var arrayType = TypeFactory.CreateArrayType(typeInfo.ElementType!, rank: 1);
+              var arrayTypeText = arrayType.GetPresentableName(
+                context.Language, CommonUtils.DefaultTypePresentationStyle);
+              var collectionTypeText = typeInfo.TargetType!.GetPresentableName(
+                context.Language, CommonUtils.DefaultTypePresentationStyle);
+
+              return new RichText($"new '{arrayTypeText}' array instance creation and new '{collectionTypeText}' collection creation");
+            },
+            consumer);
+        }
+        else // span is not on the heap (empty or not)
+        {
+          ReportParamsAllocation(
+            argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+            state: targetTypeInfo.TargetType,
+            allocationReasonMessageFactory: static (context, targetType) =>
+            {
+              var collectionTypeText = targetType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+              return new RichText($"new '{collectionTypeText}' collection creation");
+            },
+            consumer, possibleAllocation: true);
+        }
+
         break;
+      }
 
       case CollectionExpressionKind.ImplementsIEnumerable:
         break;
@@ -149,6 +193,20 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     // todo: can be span/list<T>/collectionbuilder/ilist/etc
     // todo: reuse collection expressions code somehow...
     // todo: nested allocations from .ctor invocation?
+
+    return;
+
+    ReportArrayAllocation:
+    ReportParamsAllocation(
+      argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+      state: targetTypeInfo.ElementType!,
+      allocationReasonMessageFactory: static (context, elementType) =>
+      {
+        var arrayType = TypeFactory.CreateArrayType(elementType, rank: 1);
+        var parameterTypeText = arrayType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+        return new RichText($"new '{parameterTypeText}' array instance creation");
+      },
+      consumer);
   }
 
   private static void ReportParamsAllocation<TState>(
@@ -156,9 +214,9 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     ICSharpArgumentInfo? firstExpandedArgument,
     IParameter paramsParameter,
     TState state,
-    [RequireStaticDelegate]
-    Func<ITreeNode, TState, RichText> allocationReasonMessageFactory,
-    IHighlightingConsumer consumer)
+    [RequireStaticDelegate] Func<ITreeNode, TState, RichText> allocationReasonMessageFactory,
+    IHighlightingConsumer consumer,
+    bool possibleAllocation = false)
   {
     ITreeNode? nodeToHighlight;
     if (firstExpandedArgument == null)
@@ -209,8 +267,11 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     var parameterName = DeclaredElementPresenter.Format(CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, paramsParameter);
     var paramsKeyword = "params".Colorize(DeclaredElementPresentationPartKind.Keyword);
 
-    consumer.AddHighlighting(new ObjectAllocationHighlighting(
-      nodeToHighlight, new RichText($"{allocationReason} for {paramsKeyword} parameter '{parameterName}'")));
+    var description = new RichText($"{allocationReason} for {paramsKeyword} parameter '{parameterName}'");
+    consumer.AddHighlighting(
+      possibleAllocation
+      ? new ObjectAllocationPossibleHighlighting(nodeToHighlight, description)
+      : new ObjectAllocationHighlighting(nodeToHighlight, description));
   }
 
   [Pure]

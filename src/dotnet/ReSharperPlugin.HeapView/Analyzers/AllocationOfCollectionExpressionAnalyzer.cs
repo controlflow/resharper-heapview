@@ -102,7 +102,7 @@ public class AllocationOfCollectionExpressionAnalyzer : HeapAllocationAnalyzerBa
             arrayType, additionalAllocation: new RichText(
               $"new '{PresentTypeName(targetTypeInfo.TargetType)}' collection creation"));
         }
-        else // span is static (empty or not)
+        else // span is not on the heap (empty or not)
         {
           consumer.AddHighlighting(
             new ObjectAllocationPossibleHighlighting(

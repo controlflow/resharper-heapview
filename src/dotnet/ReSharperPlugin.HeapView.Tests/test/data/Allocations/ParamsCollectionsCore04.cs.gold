@@ -1,0 +1,33 @@
+﻿using System.Collections.Immutable;
+// ReSharper disable RedundantExplicitParamsArrayCreation
+
+var array = ImmutableList.Create(1);
+
+|ParamsBuilder|(0)<int>();
+ParamsBuilder<int>(|[]|(1));
+ParamsBuilder(|1|(2));
+ParamsBuilder(|[1]|(3));
+ParamsBuilder(|1|(4), 2, 3);
+ParamsBuilder(|[|(5)1, 2, 3]);
+ParamsBuilder(|"abc"|(6));
+ParamsBuilder(|["a|(7)bc"]);
+ParamsBuilder(array);
+ParamsBuilder(|"abc"|(8), args[0]);
+ParamsBuilder(|["a|(9)bc", args[0]]);
+return;
+
+void ParamsBuilder<T>(params ImmutableList<T> xs)
+{
+  _ = xs;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation
+(2): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation
+(4): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation for params parameter 'xs'
+(5): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<int>' collection creation
+(6): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<string>' collection creation for params parameter 'xs'
+(7): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<string>' collection creation
+(8): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<string>' collection creation for params parameter 'xs'
+(9): ReSharper HeapView Allocation: Possible object allocation: new 'ImmutableList<string>' collection creation

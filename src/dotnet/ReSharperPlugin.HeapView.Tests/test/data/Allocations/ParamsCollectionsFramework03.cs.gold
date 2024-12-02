@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+// ReSharper disable RedundantExplicitParamsArrayCreation
+
+var collection = |new|(0) MyCollection<int>();
+
+|ParamsBuilder|(1)<int>();
+ParamsBuilder<int>(|[]|(2));
+ParamsBuilder(|1|(3));
+ParamsBuilder(|[1]|(4));
+ParamsBuilder(|1|(5), 2, 3);
+ParamsBuilder(|[|(6)1, 2, 3]);
+ParamsBuilder(|"abc"|(7));
+ParamsBuilder(|["a|(8)bc"]);
+ParamsBuilder(collection);
+ParamsBuilder(|"abc"|(9), args[0]);
+ParamsBuilder(|["a|(10)bc", args[0]]);
+return;
+
+void ParamsBuilder<T>(params MyCollection<T> xs)
+{
+  _ = xs;
+}
+
+[CollectionBuilder(typeof(MyCollection), nameof(MyCollection.Create))]
+public class MyCollection<T> : List<T>;
+
+public static class MyCollection
+{
+  public static MyCollection<T> Create<T>(ReadOnlySpan<T> xs) => |new|(11)();
+}
+
+namespace System.Runtime.CompilerServices
+{
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, Inherited = false)]
+  public sealed class CollectionBuilderAttribute(Type builderType, string methodName) : Attribute
+  {
+    public Type BuilderType { get; } = builderType;
+    public string MethodName { get; } = methodName;
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'MyCollection<int>' instance creation
+(1): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation for params parameter 'xs'
+(2): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(3): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation for params parameter 'xs'
+(4): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(5): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation for params parameter 'xs'
+(6): ReSharper HeapView Allocation: Possible object allocation: new 'MyCollection<int>' collection creation
+(7): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation and new 'MyCollection<string>' collection creation for params parameter 'xs'
+(8): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation and new 'MyCollection<string>' collection creation
+(9): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation and new 'MyCollection<string>' collection creation for params parameter 'xs'
+(10): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation and new 'MyCollection<string>' collection creation
+(11):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'MyCollection<T>' instance creation
