@@ -1,0 +1,26 @@
+﻿using System;
+// ReSharper disable RedundantExplicitParamsArrayCreation
+
+ParamsSpan<int>();
+ParamsSpan<int>([]);
+ParamsSpan(Span<int>.Empty);
+ParamsSpan(|1|(0));
+ParamsSpan(|[1]|(1));
+ParamsSpan(|1|(2), 2, 3);
+ParamsSpan(|[|(3)1, 2, 3]);
+ParamsSpan(|"abc"|(4));
+ParamsSpan<string>(args);
+ParamsSpan(|"abc"|(5), args[0]);
+return;
+
+void ParamsSpan<T>(params Span<T> xs)
+{
+  _ = xs;
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(2): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'xs'
+(3): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation
+(4): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(5): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'

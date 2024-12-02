@@ -6,11 +6,10 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.UI.RichText;
-using JetBrains.Util;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
@@ -40,88 +39,125 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     var lastParameter = parameters[^1];
     if (lastParameter.IsParameterArray)
     {
-      if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
-        return;
-
-      if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var firstExpandedArgument))
-        return; // explicit array passed
-
-      var paramsParameterType = substitution[lastParameter.Type];
-      if (firstExpandedArgument is null && data.IsSystemArrayEmptyMemberAvailable(paramsParameterType))
-        return; // empty arguments sometimes do not allocate
-
-      ReportParamsAllocation(
-        argumentsOwner, firstExpandedArgument,
-        lastParameter, paramsParameterType,
-        allocationReasonMessageFactory: parameterTypeText => new RichText($"new '{parameterTypeText}' array instance creation"),
-        consumer);
+      AnalyzeParameterAllayAllocation(
+        argumentsOwner,
+        new DeclaredElementInstanceSlim<IParameter>(lastParameter, substitution),
+        data, consumer);
     }
     else if (lastParameter.IsParameterCollection
              && lastParameter.IsParameterArrayLike(data.GetLanguageLevel()))
     {
-      if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(argumentsOwner, lastParameter, out var paramsArgument))
-        return; // explicit collection passed
-
-      var paramsParameterType = substitution[lastParameter.Type];
-      var targetTypeInfo = CSharpCollectionTypeUtil.GetCollectionExpressionTargetTypeInfo(paramsParameterType, argumentsOwner);
-
-      switch (targetTypeInfo.Kind)
-      {
-        case CollectionExpressionKind.None:
-        case CollectionExpressionKind.Array: // should never happen
-        {
-          break;
-        }
-
-        case CollectionExpressionKind.Span:
-        case CollectionExpressionKind.ReadOnlySpan:
-        {
-          if (paramsArgument is null)
-          {
-            return; // Span<T>.Empty
-          }
-
-          // if (targetTypeInfo.Kind == CollectionExpressionKind.ReadOnlySpan
-          //     && collectionExpression.CanBeLoweredToRuntimeHelpersCreateSpan())
-          // {
-          //   return; // inline data or RuntimeHelpers.CreateSpan
-          // }
-          //
-          // if (collectionExpression.CanBeLoweredToInlineArray())
-          // {
-          //   return; // stack allocated inline array
-          // }
-          //
-          // var arrayType = TypeFactory.CreateArrayType(targetTypeInfo.ElementType.NotNull(), rank: 1);
-          // ReportArrayAndPossibleTemporaryListAllocation(arrayType);
-          // return;
-
-          break;
-        }
-
-        case CollectionExpressionKind.CollectionBuilder:
-          break;
-        case CollectionExpressionKind.ImplementsIEnumerable:
-          break;
-        case CollectionExpressionKind.ArrayInterface:
-          break;
-        default:
-          throw new ArgumentOutOfRangeException();
-      }
-
-      // todo: classify params collection creation
-      // todo: can be span/list<T>/collectionbuilder/ilist/etc
-      // todo: reuse collection expressions code somehow...
-      // todo: nested allocations from .ctor invocation?
+      AnalyzeParamsCollectionAllocation(
+        argumentsOwner,
+        new DeclaredElementInstanceSlim<IParameter>(lastParameter, substitution),
+        consumer);
     }
   }
 
-  private static void ReportParamsAllocation(
+  private static void AnalyzeParameterAllayAllocation(
+    ICSharpArgumentsOwner argumentsOwner, DeclaredElementInstanceSlim<IParameter> paramsParameter,
+    ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+  {
+    if (argumentsOwner.IsInTheContextWhereAllocationsAreNotImportant())
+      return;
+
+    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(
+          argumentsOwner, paramsParameter.Element, out var firstExpandedArgument))
+      return;
+
+    var paramsParameterType = paramsParameter.Substitution[paramsParameter.Element.Type];
+    if (firstExpandedArgument is null && data.IsSystemArrayEmptyMemberAvailable(paramsParameterType))
+      return;
+
+    ReportParamsAllocation(
+      argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+      state: paramsParameterType,
+      allocationReasonMessageFactory: static (context, paramsParameterType) =>
+      {
+        var parameterTypeText = paramsParameterType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+        return new RichText($"new '{parameterTypeText}' array instance creation");
+      },
+      consumer);
+  }
+
+  private static void AnalyzeParamsCollectionAllocation(
+    ICSharpArgumentsOwner argumentsOwner, DeclaredElementInstanceSlim<IParameter> paramsParameter,
+    IHighlightingConsumer consumer)
+  {
+    if (!InvocationHasParamsArgumentsInExpandedFormOrNoCorrespondingArguments(
+          argumentsOwner, paramsParameter.Element, out var firstExpandedArgument))
+      return;
+
+    var paramsParameterType = paramsParameter.Substitution[paramsParameter.Element.Type];
+    var targetTypeInfo = CSharpCollectionTypeUtil.GetCollectionExpressionTargetTypeInfo(paramsParameterType, argumentsOwner);
+
+    switch (targetTypeInfo.Kind)
+    {
+      case CollectionExpressionKind.None:
+      case CollectionExpressionKind.Array: // should never happen
+      {
+        break;
+      }
+
+      case CollectionExpressionKind.Span:
+      case CollectionExpressionKind.ReadOnlySpan:
+      {
+        if (firstExpandedArgument is null)
+        {
+          return;
+        }
+
+        if (targetTypeInfo.Kind == CollectionExpressionKind.ReadOnlySpan
+            && argumentsOwner.CanBeLoweredToRuntimeHelpersCreateSpan(paramsParameter.Element, targetTypeInfo.ElementType))
+        {
+          return;
+        }
+
+        if (argumentsOwner.GetPsiModule().RuntimeSupportsInlineArrayTypes())
+        {
+          return;
+        }
+
+        // heap allocated array
+        ReportParamsAllocation(
+          argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+          state: targetTypeInfo.ElementType!,
+          allocationReasonMessageFactory: static (context, elementType) =>
+          {
+            var arrayType = TypeFactory.CreateArrayType(elementType, rank: 1);
+            var parameterTypeText = arrayType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+            return new RichText($"new '{parameterTypeText}' array instance creation");
+          },
+          consumer);
+        break;
+      }
+
+      case CollectionExpressionKind.CollectionBuilder:
+        break;
+
+      case CollectionExpressionKind.ImplementsIEnumerable:
+        break;
+
+      case CollectionExpressionKind.ArrayInterface:
+        break;
+
+      default:
+        throw new ArgumentOutOfRangeException();
+    }
+
+    // todo: classify params collection creation
+    // todo: can be span/list<T>/collectionbuilder/ilist/etc
+    // todo: reuse collection expressions code somehow...
+    // todo: nested allocations from .ctor invocation?
+  }
+
+  private static void ReportParamsAllocation<TState>(
     ICSharpArgumentsOwner argumentsOwner,
     ICSharpArgumentInfo? firstExpandedArgument,
     IParameter paramsParameter,
-    IType paramsParameterType,
-    Func<RichText, RichText> allocationReasonMessageFactory,
+    TState state,
+    [RequireStaticDelegate]
+    Func<ITreeNode, TState, RichText> allocationReasonMessageFactory,
     IHighlightingConsumer consumer)
   {
     ITreeNode? nodeToHighlight;
@@ -166,10 +202,9 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     }
 
     if (nodeToHighlight == null)
-      return;
+      return; // normally should not happen
 
-    var parameterTypeText = paramsParameterType.GetPresentableName(nodeToHighlight.Language, CommonUtils.DefaultTypePresentationStyle);
-    var allocationReason = allocationReasonMessageFactory(parameterTypeText);
+    var allocationReason = allocationReasonMessageFactory(nodeToHighlight, state);
 
     var parameterName = DeclaredElementPresenter.Format(CSharpLanguage.Instance!, DeclaredElementPresenter.NAME_PRESENTER, paramsParameter);
     var paramsKeyword = "params".Colorize(DeclaredElementPresentationPartKind.Keyword);

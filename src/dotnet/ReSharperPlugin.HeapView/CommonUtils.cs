@@ -241,4 +241,40 @@ public static class CommonUtils
 
     return null;
   }
+
+  [Pure]
+  public static bool CanBeLoweredToRuntimeHelpersCreateSpan(
+    this ICSharpArgumentsOwner argumentsOwner, IParameter paramsParameter, IType? elementType)
+  {
+    if (elementType is null) return false;
+
+    if (elementType.GetEnumType() is { } enumType)
+    {
+      elementType = enumType.GetUnderlyingType();
+    }
+
+    if (!elementType.IsTypeAllowedInBlobWrapper())
+    {
+      return false;
+    }
+
+    foreach (var argument in argumentsOwner.ArgumentsEnumerable)
+    {
+      if (argument.MatchingParameter is
+          {
+            Expanded: ArgumentsUtil.ExpandedKind.Expanded,
+            Element: var parameterOfArgument
+          }
+          && paramsParameter.Equals(parameterOfArgument))
+      {
+        var argumentValue = argument.Value;
+        if (argumentValue is not null && !argumentValue.IsConstantValue())
+        {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
 }

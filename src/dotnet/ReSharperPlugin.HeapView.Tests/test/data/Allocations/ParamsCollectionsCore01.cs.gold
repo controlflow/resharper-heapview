@@ -1,0 +1,20 @@
+﻿using System;
+// ReSharper disable RedundantExplicitParamsArrayCreation
+
+ParamsSpan<int>();
+ParamsSpan<int>([]);
+ParamsSpan(Span<int>.Empty);
+ParamsSpan(1);
+ParamsSpan([1]);
+ParamsSpan(1, 2, 3);
+ParamsSpan([1, 2, 3]);
+ParamsSpan("abc");
+ParamsSpan<string>(args);
+ParamsSpan("abc", args[0]);
+return;
+
+void ParamsSpan<T>(params Span<T> xs)
+{
+  _ = xs;
+}
+---------------------------------------------------------
