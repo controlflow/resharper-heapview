@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TestFramework.Components.Settings;
 using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
@@ -101,7 +102,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       case CollectionExpressionKind.None:
       case CollectionExpressionKind.Array: // should never happen
       {
-        break;
+        return;
       }
 
       case CollectionExpressionKind.Span:
@@ -180,19 +181,54 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
       }
 
       case CollectionExpressionKind.ImplementsIEnumerable:
+      {
+        if (targetTypeInfo.TargetType is IDeclaredType createdType)
+        {
+          switch (createdType.Classify)
+          {
+            case TypeClassification.REFERENCE_TYPE:
+            {
+              ReportParamsAllocation(
+                argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+                state: targetTypeInfo.TargetType,
+                allocationReasonMessageFactory: static (context, targetType) =>
+                {
+                  var collectionTypeText = targetType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+                  return new RichText($"new '{collectionTypeText}' instance creation");
+                },
+                consumer);
+              break;
+            }
+
+            case TypeClassification.UNKNOWN when createdType.IsTypeParameterType():
+            {
+              ReportParamsAllocation(
+                argumentsOwner, firstExpandedArgument, paramsParameter.Element,
+                state: targetTypeInfo.TargetType,
+                allocationReasonMessageFactory: static (context, targetType) =>
+                {
+                  var collectionTypeText = targetType.GetPresentableName(context.Language, CommonUtils.DefaultTypePresentationStyle);
+                  return new RichText(
+                    $"new instance creation if '{collectionTypeText}' " +
+                    $"type parameter will be substituted with the reference type,");
+                },
+                consumer, possibleAllocation: true);
+              break;
+            }
+          }
+        }
+
         break;
+      }
 
       case CollectionExpressionKind.ArrayInterface:
+      {
         break;
+      }
 
       default:
         throw new ArgumentOutOfRangeException();
     }
-
-    // todo: classify params collection creation
-    // todo: can be span/list<T>/collectionbuilder/ilist/etc
-    // todo: reuse collection expressions code somehow...
-    // todo: nested allocations from .ctor invocation?
 
     return;
 
