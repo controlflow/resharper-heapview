@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
-using JetBrains.Util.DataStructures;
+using JetBrains.Util.DataStructures.Specialized;
 
 namespace ReSharperPlugin.HeapView;
 

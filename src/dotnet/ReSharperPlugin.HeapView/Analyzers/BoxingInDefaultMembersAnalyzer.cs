@@ -11,8 +11,8 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
+using JetBrains.Util.DataStructures.Specialized;
 using ReSharperPlugin.HeapView.Highlightings;
 
 namespace ReSharperPlugin.HeapView.Analyzers;

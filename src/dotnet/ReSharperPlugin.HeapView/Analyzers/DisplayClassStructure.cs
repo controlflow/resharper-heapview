@@ -17,8 +17,8 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
+using JetBrains.Util.DataStructures.Specialized;
 
 namespace ReSharperPlugin.HeapView.Analyzers;
 

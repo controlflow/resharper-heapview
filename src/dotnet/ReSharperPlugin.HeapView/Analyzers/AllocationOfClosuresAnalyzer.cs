@@ -13,8 +13,8 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures;
 using JetBrains.Util.DataStructures.Collections;
+using JetBrains.Util.DataStructures.Specialized;
 using ReSharperPlugin.HeapView.Highlightings;
 using ReSharperPlugin.HeapView.Settings;
 
