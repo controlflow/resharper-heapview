@@ -80,7 +80,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, deconstructionPatternClause,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -97,7 +97,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       dispatchType, targetType, varDeconstructionPattern.VarKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -114,7 +114,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, declarationExpression.TypeDesignator,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -130,7 +130,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       dispatchType, targetType, tupleExpression,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -150,7 +150,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, collectionElementInitializer,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -170,7 +170,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, foreachHeader.InKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
@@ -190,7 +190,7 @@ public class BoxingInImplicitInvocationsAnalyzer : HeapAllocationAnalyzerBase<IT
 
     BoxingInExpressionConversionsAnalyzer.CheckConversionRequiresBoxing(
       sourceExpressionType, targetType, awaitExpression.AwaitKeyword,
-      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target),
+      static (rule, source, target) => rule.ClassifyImplicitExtensionMethodThisArgumentConversion(source, target, isMethodGroupConversion: false),
       data, consumer);
   }
 
