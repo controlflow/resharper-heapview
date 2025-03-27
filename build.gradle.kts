@@ -143,7 +143,6 @@ dependencies {
     intellijPlatform {
         rider(ProductVersion, useInstaller = false)
         jetbrainsRuntime()
-        instrumentationTools()
 
         // TODO: add plugins
         // bundledPlugin("uml")
