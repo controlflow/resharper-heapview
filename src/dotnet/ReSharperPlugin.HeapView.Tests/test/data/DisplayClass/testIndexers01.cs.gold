@@ -1,0 +1,28 @@
+﻿Owner: accessor 'Func<int> C.this[int p].get'
+Closures:
+> lambda expression 'int () => p'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => p'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'int () => p'
+
+========
+Owner: accessor 'Func<int> C.this[int p].set'
+Closures:
+> lambda expression 'int () => p'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ var f = () => p; }'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'int () => p'
+
+========

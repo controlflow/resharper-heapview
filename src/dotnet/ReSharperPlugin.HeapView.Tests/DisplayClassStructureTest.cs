@@ -64,6 +64,10 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestClassPrimary01() { DoNamedTest(); }
   [Test] public void TestClassPrimary02() { DoNamedTest(); }
 
+  [Test] public void TestExtensions01() { DoNamedTest(); }
+
+  [Test] public void TestIndexers01() { DoNamedTest(); }
+
   [Test] public void TestQuery01() { DoNamedTest(); }
   [Test] public void TestQuery02() { DoNamedTest(); }
   [Test] public void TestQuery03() { DoNamedTest(); }

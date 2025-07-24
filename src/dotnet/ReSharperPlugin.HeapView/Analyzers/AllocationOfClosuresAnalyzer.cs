@@ -109,6 +109,26 @@ public class AllocationOfClosuresAnalyzer : HeapAllocationAnalyzerBase<ITreeNode
             }
           }
 
+          var extensionDeclaration = ExtensionDeclarationNavigator.GetByParameterDeclaration(parameterDeclaration);
+          if (extensionDeclaration != null)
+          {
+            var blockBody = displayClass.ScopeNode as IBlock;
+            var arrowBody = displayClass.ScopeNode as IArrowExpressionClause;
+
+            var functionDeclaration = CSharpFunctionDeclarationNavigator.GetByBody(blockBody) ??
+                                      CSharpFunctionDeclarationNavigator.GetByArrowClause(arrowBody);
+            if (functionDeclaration != null)
+            {
+              return functionDeclaration.NameIdentifier;
+            }
+
+            var expressionBodyOwnerDeclaration = ExpressionBodyOwnerDeclarationNavigator.GetByArrowClause(arrowBody);
+            if (expressionBodyOwnerDeclaration != null)
+            {
+              return expressionBodyOwnerDeclaration.NameIdentifier;
+            }
+          }
+
           return parameterDeclaration.NameIdentifier;
         }
       }

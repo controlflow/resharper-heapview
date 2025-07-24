@@ -1,0 +1,41 @@
+﻿using System;
+
+static class Extensions
+{
+  extension (string p)
+  {
+    public int Count => p.Length;
+
+    public Func<int> |Property|(0) => () |=>|(1) p.Length;
+
+    public Func<int> Property2
+    {
+      |get|(2) => () |=>|(3) p.Length;
+    }
+
+    public Func<int> Property3
+    {
+      |get|(4) { return () |=>|(5) p.Length; }
+    }
+
+    public Func<string> |Method1|(6)() => () |=>|(7) p;
+
+    public Func<string> |Method2|(8)() { return () |=>|(9) p; }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Closure allocation: capture of 'p' parameter
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'p'
+(2):<overlapped> ReSharper HeapView Allocation: Closure allocation: capture of 'p' parameter
+(3): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'p'
+(4): ReSharper HeapView Allocation: Closure allocation: capture of 'p' parameter
+(5): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of parameter 'p'
+(6): ReSharper HeapView Allocation: Closure allocation: capture of 'p' parameter
+(7): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'p'
+(8): ReSharper HeapView Allocation: Closure allocation: capture of 'p' parameter
+(9): ReSharper HeapView Allocation: Delegate allocation: new 'Func<string>' instance creation
+Capture of parameter 'p'

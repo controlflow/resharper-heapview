@@ -560,6 +560,16 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         var parameterScopeNode = ScopingUtil.FindParameterScopeNode(parameter, referenceExpression);
         if (parameterScopeNode != null)
         {
+          // todo: in the future remove this temporary fix
+          if (parameterScopeNode is IClassBody { Parent: IExtensionDeclaration extensionDeclaration })
+          {
+            if (referenceExpression.GetContainingTypeMemberDeclarationIgnoringClosures() is IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwnerDeclaration
+                && extensionDeclaration.Contains(expressionBodyOwnerDeclaration))
+            {
+              parameterScopeNode = arrowClause;
+            }
+          }
+
           NoteCapture(parameterScopeNode, parameter);
         }
 

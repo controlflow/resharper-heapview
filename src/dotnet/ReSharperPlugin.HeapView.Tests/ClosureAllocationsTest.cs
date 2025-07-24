@@ -46,8 +46,9 @@ public abstract class ClosureAllocationsTestBase : CSharpHighlightingTestBase
 
   [Test] public void TestStructClosure01() { DoNamedTest(); }
 
-  [Test] public void TestExpressionTree01() { DoNamedTest2(); }
   [Test] public void TestExpressionTree01() { DoNamedTest(); }
+
+  [Test] public void TestExtensions01() { DoNamedTest(); }
 
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp100)]
   [Test] public void TestMethodGroup01() { DoNamedTest(); }

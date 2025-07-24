@@ -1,0 +1,73 @@
+﻿Owner: property 'int Extensions.extension(string).Count'
+
+========
+Owner: property 'Func<int> Extensions.extension(string).Property'
+Closures:
+> lambda expression 'int () => p.Length'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => p.Length'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'int () => p.Length'
+
+========
+Owner: accessor 'Func<int> Extensions.extension(string).Property2.get'
+Closures:
+> lambda expression 'int () => p.Length'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => p.Length'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'int () => p.Length'
+
+========
+Owner: accessor 'Func<int> Extensions.extension(string).Property3.get'
+Closures:
+> lambda expression 'int () => p.Length'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ return () => p.Length; }'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'int () => p.Length'
+
+========
+Owner: method 'Func<string> Extensions.extension(string).Method1()'
+Closures:
+> lambda expression 'string () => p'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IArrowExpressionClause '=> () => p'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'string () => p'
+
+========
+Owner: method 'Func<string> Extensions.extension(string).Method2()'
+Closures:
+> lambda expression 'string () => p'
+    Captures:
+    > parameter 'p'
+Display classes:
+  Display class #1
+    Scope: IBlock '{ return () => p; }'
+    Members:
+    > parameter 'p'
+    Closures:
+    > lambda expression 'string () => p'
+
+========
