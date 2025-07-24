@@ -24,36 +24,36 @@ public class HeapViewHighlightingTest : CSharpHighlightingTestBase
     return highlighting is PerformanceHighlightingBase;
   }
 
-  [Test] public void TestBoxing01() { DoNamedTest2(); }
+  [Test] public void TestBoxing01() { DoNamedTest(); }
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
-  [Test] public void TestBoxing02() { DoNamedTest2(); }
-  [Test] public void TestBoxing03() { DoNamedTest2(); }
-  [Test] public void TestBoxing04() { DoNamedTest2(); }
+  [Test] public void TestBoxing02() { DoNamedTest(); }
+  [Test] public void TestBoxing03() { DoNamedTest(); }
+  [Test] public void TestBoxing04() { DoNamedTest(); }
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
-  [Test] public void TestBoxing05() { DoNamedTest2(); }
-  [Test] public void TestBoxing06() { DoNamedTest2(); }
-  [Test] public void TestBoxing07() { DoNamedTest2(); }
-  [Test] public void TestBoxing08() { DoNamedTest2(); }
-  [Test] public void TestBoxing09() { DoNamedTest2(); }
-  [Test] public void TestBoxing10() { DoNamedTest2(); }
-  [Test] public void TestBoxing11() { DoNamedTest2(); }
-  [Test] public void TestBoxing12() { DoNamedTest2(); }
-  [Test] public void TestBoxing13() { DoNamedTest2(); }
-  [Test] public void TestBoxing14() { DoNamedTest2(); }
-  [Test] public void TestBoxing15() { DoNamedTest2(); }
+  [Test] public void TestBoxing05() { DoNamedTest(); }
+  [Test] public void TestBoxing06() { DoNamedTest(); }
+  [Test] public void TestBoxing07() { DoNamedTest(); }
+  [Test] public void TestBoxing08() { DoNamedTest(); }
+  [Test] public void TestBoxing09() { DoNamedTest(); }
+  [Test] public void TestBoxing10() { DoNamedTest(); }
+  [Test] public void TestBoxing11() { DoNamedTest(); }
+  [Test] public void TestBoxing12() { DoNamedTest(); }
+  [Test] public void TestBoxing13() { DoNamedTest(); }
+  [Test] public void TestBoxing14() { DoNamedTest(); }
+  [Test] public void TestBoxing15() { DoNamedTest(); }
   [CSharpLanguageLevel(CSharpLanguageLevel.CSharp73)]
-  [Test] public void TestBoxing15_73() { DoNamedTest2(); }
-  [Test] public void TestBoxing16() { DoNamedTest2(); }
-  [Test] public void TestBoxing17() { DoNamedTest2(); }
-  [Test] public void TestBoxing18() { DoNamedTest2(); }
+  [Test] public void TestBoxing15_73() { DoNamedTest(); }
+  [Test] public void TestBoxing16() { DoNamedTest(); }
+  [Test] public void TestBoxing17() { DoNamedTest(); }
+  [Test] public void TestBoxing18() { DoNamedTest(); }
 
-  [Test] public void TestClosure01() { DoNamedTest2(); }
-  [Test] public void TestClosure02() { DoNamedTest2(); }
-  [Test] public void TestClosure03() { DoNamedTest2(); }
+  [Test] public void TestClosure01() { DoNamedTest(); }
+  [Test] public void TestClosure02() { DoNamedTest(); }
+  [Test] public void TestClosure03() { DoNamedTest(); }
 
-  [Test] public void TestHeap01() { DoNamedTest2(); }
-  [Test] public void TestHeap02() { DoNamedTest2(); }
-  [Test] public void TestHeap03() { DoNamedTest2(); }
+  [Test] public void TestHeap01() { DoNamedTest(); }
+  [Test] public void TestHeap02() { DoNamedTest(); }
+  [Test] public void TestHeap03() { DoNamedTest(); }
 }
 
 [TestNetCore30]
@@ -71,8 +71,8 @@ public class HeapViewNetCoreHighlightingTest : CSharpHighlightingTestBase
     return highlighting is PerformanceHighlightingBase;
   }
 
-  [Test] public void TestBoxing11() { DoNamedTest2(); }
-  [Test] public void TestBoxing13() { DoNamedTest2(); }
-  [Test] public void TestBoxing14() { DoNamedTest2(); }
-  [Test] public void TestBoxing16() { DoNamedTest2(); }
+  [Test] public void TestBoxing11() { DoNamedTest(); }
+  [Test] public void TestBoxing13() { DoNamedTest(); }
+  [Test] public void TestBoxing14() { DoNamedTest(); }
+  [Test] public void TestBoxing16() { DoNamedTest(); }
 }
