@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
@@ -29,7 +30,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
   {
     if (argumentsOwner is IAttribute) return;
 
-    var invocationReference = argumentsOwner.Reference;
+    var invocationReference = TryGetInvocationReference(argumentsOwner);
     if (invocationReference == null) return;
 
     var (declaredElement, substitution, resolveErrorType) = invocationReference.Resolve();
@@ -57,6 +58,21 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
         new DeclaredElementInstanceSlim<IParameter>(lastParameter, substitution),
         data, consumer);
     }
+  }
+
+  private IReference? TryGetInvocationReference(ICSharpArgumentsOwner argumentsOwner)
+  {
+    var invocationReference = argumentsOwner.Reference;
+    if (invocationReference != null) return invocationReference;
+
+    // `class C : BaseTypeWithParamsCtor;`
+    if (argumentsOwner is IExtendedType { ArgumentList: null } extendedType
+        && extendedType.TypeReference?.Resolve() is (IClass baseClass, _))
+    {
+      return new CSharpImplicitBaseConstructorInvocationReference(extendedType, baseClass);
+    }
+
+    return null;
   }
 
   private static void AnalyzeParameterAllayAllocation(

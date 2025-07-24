@@ -2,6 +2,7 @@
 record Derived1(int X) : |Base|(0); // alloc
 record Derived2(int Y) : |Base|(1)(); // alloc
 record Derived3(int Z) : Base(|Z|(2)); // alloc
+record Derived4 : |Base|(3); // alloc
 
 namespace System.Runtime.CompilerServices
 {
@@ -11,3 +12,4 @@ namespace System.Runtime.CompilerServices
 (0): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'Items'
 (1): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'Items'
 (2): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'Items'
+(3): ReSharper HeapView Allocation: Object allocation: new 'int[]' array instance creation for params parameter 'Items'
