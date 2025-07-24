@@ -79,6 +79,7 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
   [Test] public void TestLocalFunctions07() { DoNamedTest(); }
   [Test] public void TestLocalFunctions08() { DoNamedTest(); }
   [Test] public void TestLocalFunctions09() { DoNamedTest(); }
+  [Test] public void TestLocalFunctions10() { DoNamedTest(); }
 
   [Test] public void TestThisCapture01() { DoNamedTest(); }
   [Test] public void TestThisCapture02() { DoNamedTest(); }
@@ -117,18 +118,6 @@ public class DisplayClassStructureTest : BaseTestWithSingleProject
                 writer.WriteLine("========");
               }
 
-              break;
-            }
-          }
-
-          switch (current)
-          {
-            case IBlock:
-            case IArrowExpressionClause:
-            case IVariableInitializer:
-            case ITopLevelCode:
-            {
-              enumerator.SkipThisNode();
               break;
             }
           }

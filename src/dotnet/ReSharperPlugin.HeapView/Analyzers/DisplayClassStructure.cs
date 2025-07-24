@@ -51,6 +51,12 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     {
       switch (declaration)
       {
+        // only top-level declarations, holders of the closers
+        case ICSharpClosure:
+        {
+          return null;
+        }
+
         // record R(int X) : B(...) { int Member = ...; }
         case IClassLikeDeclaration classLikeDeclaration:
         {
@@ -63,7 +69,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         // public Ctor() : base(...) { }
         case ICSharpFunctionDeclaration { Body: { } bodyBlock } functionDeclaration:
         {
-          structure = new DisplayClassStructure(declaration);
+          structure = new DisplayClassStructure(functionDeclaration);
 
           if (functionDeclaration is IConstructorDeclaration { Initializer: { } constructorInitializer })
           {
@@ -75,9 +81,9 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         }
 
         // int ExpressionBodiedProperty => expr;
-        case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause }:
+        case IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwnerDeclaration:
         {
-          structure = new DisplayClassStructure(declaration);
+          structure = new DisplayClassStructure(expressionBodyOwnerDeclaration);
           arrowClause.ProcessThisAndDescendants(structure);
           break;
         }
@@ -85,7 +91,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         // TopLevelCode();
         case ITopLevelCode topLevelCode:
         {
-          structure = new DisplayClassStructure(declaration);
+          structure = new DisplayClassStructure(topLevelCode);
           topLevelCode.ProcessThisAndDescendants(structure);
           break;
         }
@@ -801,7 +807,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     private ClosureCaptures() { }
     private static readonly ObjectPool<ClosureCaptures> Pool = new(static _ => new ClosureCaptures());
 
-    [Pure]
+    [Pure, MustDisposeResource]
     public static ClosureCaptures Create(ICSharpClosure closure)
     {
       var captures = Pool.Allocate();

@@ -1,0 +1,16 @@
+﻿Owner: method 'void R.Method()'
+Closures:
+> local function 'Func<int> LocalCapturingThis()'
+> lambda expression 'int () => myField'
+    Captures:
+    > 'this' reference
+Display classes:
+  Display class #1
+    Scope: IBlock '{ System.Func<int> LocalCapturingThis() ...'
+    OPTIMIZED: Closures lowered into instance members
+    Members:
+    > 'this' reference
+    Closures:
+    > lambda expression 'int () => myField'
+
+========

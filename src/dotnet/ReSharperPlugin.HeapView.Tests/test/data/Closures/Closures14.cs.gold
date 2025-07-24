@@ -1,0 +1,14 @@
+﻿record R
+{
+  private int myField;
+
+  public void Method()
+  {
+    System.Func<int> LocalCapturingThis() => () |=>|(0) myField;
+    var f = |LocalCapturingThis|(1);
+  }
+}
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Delegate allocation: new 'Func<int>' instance creation
+Capture of 'this' reference
+(1): ReSharper HeapView Allocation: Delegate allocation: new 'Func<Func<int>>' instance creation
