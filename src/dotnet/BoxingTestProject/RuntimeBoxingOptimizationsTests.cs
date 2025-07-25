@@ -19,14 +19,17 @@ public class RuntimeBoxingOptimizationsTests
   {
 #if RELEASE && NETCOREAPP
     Allocations.AssertNoAllocations(() => EnumValue.HasFlag(EnumFlag));
+    Allocations.AssertNoAllocations(() => NullableEnumFlag?.HasFlag(EnumFlag));
 #else
     Allocations.AssertAllocates(() => EnumValue.HasFlag(EnumFlag));
+    Allocations.AssertAllocates(() => NullableEnumFlag?.HasFlag(EnumFlag));
 #endif
 
     Allocations.AssertAllocates(() => EnumValueBoxed.HasFlag(NullableEnumFlag!)); // not optimized
 
     Allocations.AssertAllocates(() => EnumValueBoxed.HasFlag(EnumFlag)); // arg boxing
     Allocations.AssertAllocates(() => EnumValue.HasFlag(EnumValueBoxed)); // this boxing
+    Allocations.AssertAllocates(() => NullableEnumFlag?.HasFlag(NullableEnumFlag)); // arg boxing
 
     Allocations.AssertNoAllocations(() => EnumValueBoxed.HasFlag(EnumValueBoxed)); // nothing to optimize
   }

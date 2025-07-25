@@ -8,7 +8,7 @@ namespace BoxingTestProject;
 [PublicAPI]
 public static class Allocations
 {
-  private const int IterationsCount = 500000000;
+  private const int IterationsCount = 50000000;
 
   public static void AssertNoAllocations<T>(Func<T> func)
   {

@@ -343,6 +343,13 @@ public class BoxingInStructInvocationsAnalyzer : HeapAllocationAnalyzerBase<ICSh
     var argumentType = argumentValue.GetExpressionType().ToIType();
     if (argumentType == null) return false;
 
+    // `nullableEnum?.HasFlag()` is also optimized
+    if (invocationExpression.InvokedExpression.GetOperandThroughParenthesis()
+          is IConditionalAccessExpression { HasConditionalAccessSign: true })
+    {
+      qualifierType = qualifierType.Unlift();
+    }
+
     if (!TypeEqualityComparer.Default.Equals(argumentType, qualifierType)) return false;
 
     return data.GetTargetRuntime() == TargetRuntime.NetCore

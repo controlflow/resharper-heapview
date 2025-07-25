@@ -7,6 +7,8 @@ class EnumHasFlags
   private bool Test03(Flags value, Enum flag) => value.HasFlag(flag); // yes, this invocation
   private bool Test04(Enum value, Flags flag) => value.HasFlag(flag); // yes, arg boxing
   private bool Test05(Enum value, Enum flag) => value.HasFlag(flag);
+  private bool Test06(Flags? value, Flags flag) => value?.HasFlag(flag);
+  private bool Test07(Flags? value, Flags? flag) => value?.HasFlag(flag); // yes, arg boxing
 
   private bool Generic01<TEnum>(TEnum value, TEnum flag) where TEnum : Enum => value.HasFlag(flag);
   private bool Generic02<TEnum>(TEnum value, TEnum? flag) where TEnum : Enum => value.HasFlag(flag!);
