@@ -155,7 +155,7 @@ public class BoxingAllocationsNetCoreTest : BoxingAllocationsTestBase
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestConstrainedBoxingCore02() { DoNamedTest(); }
 
-  [Test] [Ignore("TODO")] public void TestEnumHasFlagCore01() { DoNamedTest(); }
+  [Test] public void TestEnumHasFlagCore01() { DoNamedTest(); }
   [TestSetting(typeof(HeapViewAnalysisSettings), nameof(HeapViewAnalysisSettings.OptimizationsHandling), OptimizationsHandling.AnalyzeAssumingOptimizationsAreDisabled)]
   [Test] public void TestEnumHasFlagCore02() { DoNamedTest(); }
 
