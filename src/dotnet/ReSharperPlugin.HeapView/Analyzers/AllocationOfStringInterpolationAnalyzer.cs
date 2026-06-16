@@ -1,13 +1,11 @@
 using System;
 using JetBrains.Annotations;
-using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.UI.RichText;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -32,7 +30,7 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     var highlighting = TryFindAllocationInConcatenation(concatenations);
     if (highlighting != null)
     {
-      consumer.AddHighlighting(highlighting, GetRangeToHighlight(interpolatedStringExpression));
+      consumer.AddHighlighting(highlighting, interpolatedStringExpression.GetExpressionRange());
     }
 
     return;
@@ -108,7 +106,8 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
   private static IHighlighting? TryReportFormattableStringAllocations(IInterpolatedStringExpression interpolatedStringExpression)
   {
     var resolveResult = interpolatedStringExpression.FormatReference.Resolve();
-    if (resolveResult is not { DeclaredElement: IMethod method, ResolveErrorType.IsAcceptable: true }) return null;
+    if (resolveResult is not { DeclaredElement: IMethod method, ResolveErrorType.IsAcceptable: true })
+      return null;
 
     var returnType = resolveResult.Substitution[method.ReturnType];
     var interpolationType = returnType.GetPresentableName(
@@ -177,7 +176,7 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
     }
 
     var byRight = AdditiveExpressionNavigator.GetByRightOperand(currentExpression);
-    return byRight?.OperatorReference.Resolve().DeclaredElement is InterpolatedStringConcatenationOperator;
+    return byRight?.OperatorReference?.Resolve().DeclaredElement is InterpolatedStringConcatenationOperator;
   }
 
   [Pure]
@@ -234,20 +233,5 @@ public class AllocationOfStringInterpolationAnalyzer : HeapAllocationAnalyzerBas
         default: return false;
       }
     }
-  }
-
-  [Pure]
-  private static DocumentRange GetRangeToHighlight(IInterpolatedStringExpression interpolatedStringExpression)
-  {
-    var firstToken = interpolatedStringExpression.LiteralsEnumerable.FirstOrDefault();
-    if (firstToken == null) return DocumentRange.InvalidRange;
-
-    var tokenText = firstToken.GetText();
-    var index = 0;
-
-    while (index < tokenText.Length && tokenText[index] is '@' or '$') index++;
-    while (index < tokenText.Length && tokenText[index] == '"') index++;
-
-    return firstToken.GetDocumentStartOffset().ExtendRight(index);
   }
 }

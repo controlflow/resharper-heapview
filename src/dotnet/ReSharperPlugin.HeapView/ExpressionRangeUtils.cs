@@ -5,6 +5,7 @@ using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using ReSharperPlugin.HeapView.Highlightings;
 
@@ -15,7 +16,7 @@ public static class ExpressionRangeUtils
   [Pure]
   public static DocumentRange GetExpressionRange(this ICSharpExpression expression)
   {
-    switch (expression)
+    switch (expression.GetContainingParenthesizedExpressionStrict())
     {
       case IReferenceExpression referenceExpression:
         return referenceExpression.NameIdentifier.GetDocumentRange();
@@ -23,12 +24,30 @@ public static class ExpressionRangeUtils
       case IInvocationExpression { InvokedExpression: IReferenceExpression { QualifierExpression: not null } invokedExpression }:
         return invokedExpression.NameIdentifier.GetDocumentRange();
 
-      case IParenthesizedExpression parenthesizedExpression:
-        return parenthesizedExpression.Expression.GetExpressionRange();
+      case IInterpolatedStringExpression interpolatedStringExpression:
+        return GetRangeToHighlight(interpolatedStringExpression);
 
-      default:
-        return expression.GetDocumentRange();
+      case var expr:
+        return expr.GetHighlightingRange();
     }
+  }
+
+  [Pure]
+  private static DocumentRange GetRangeToHighlight(IInterpolatedStringExpression interpolatedStringExpression)
+  {
+    var firstToken = interpolatedStringExpression.LiteralsEnumerable.FirstOrDefault();
+    if (firstToken == null) return DocumentRange.InvalidRange;
+
+    var tokenText = firstToken.GetText();
+    var index = 0;
+
+    while (index < tokenText.Length && tokenText[index] is '@' or '$')
+      index++;
+
+    while (index < tokenText.Length && tokenText[index] is '"')
+      index++;
+
+    return firstToken.GetDocumentStartOffset().ExtendRight(index);
   }
 }
 

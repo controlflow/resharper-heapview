@@ -15,7 +15,7 @@ class StringConcat
   public string Folding08(string s) => EmptyConst + s + null;
   public string Folding09(string s) => null + EmptyConst + s;
 
-  public string ConstantFolding(int x, int y) => (|x|(2) |+|(3) "aaa") + "bbb" + (|'9' + y|(4));
+  public string ConstantFolding(int x, int y) => (|x|(2) |+|(3) "aaa") + "bbb" + |('9' + y)|(4);
 
   public string CustomStruct(S1 s1, S2 s2)
     => s1

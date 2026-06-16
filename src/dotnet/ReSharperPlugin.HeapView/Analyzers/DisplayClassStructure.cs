@@ -112,7 +112,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
   {
     var seenBodies = false;
 
-    // if type declaration is partial and has primary parameters in some part
+    // if the type declaration is partial and has primary parameters in some part,
     // we need to scan the other parts to find possible captures of such parameters
     if (classLikeDeclaration is
         {
@@ -296,7 +296,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
 
       foreach (var (_, displayClass) in myScopeToDisplayClass)
       {
-        // if some non-struct display class references parent struct display class,
+        // if some non-struct display class references a parent struct display class,
         // we must promote the parent to non-struct kind as well
         if (!displayClass.IsStruct)
         {
@@ -478,14 +478,14 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
         if (resolveResult.DeclaredElement is IParameter { ContainingParametersOwner: IPrimaryConstructor } primaryParameter
             && !IsCapturedPrimaryParameter(primaryParameter))
         {
-          // note: use current type as a scope for primary parameter captures in other type parts
+          // note: use the current type as a scope for primary parameter captures in other type parts
           Assertion.Assert(myDeclaration is IClassLikeDeclaration);
 
           var displayClass = myScopeToDisplayClass.GetOrCreateValue(myDeclaration, static key => DisplayClass.Create(key));
           displayClass.AddMember(primaryParameter);
 
-          // note: this is not entirely correct, if C# introduces primary ctor bodies - local functions can be allowed there
-          //       and initializer scope display class probably can be compiled into struct
+          // note: this is not entirely correct if C# introduces primary constructor bodies.
+          //       Local functions can be allowed there, and the initializer scope display class probably can be compiled into struct
           displayClass.IsStruct = false;
         }
       }
@@ -539,7 +539,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
           }
           else
           {
-            // primary constructor can be declared in other type part, use current part declaration as a scope node
+            // primary constructor can be declared in another type part, use the current part declaration as a scope node
             var initializerScopeNode = referenceExpression.GetContainingNode<IClassLikeDeclaration>();
             if (initializerScopeNode != null)
             {
@@ -563,7 +563,8 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
           // todo: in the future remove this temporary fix
           if (parameterScopeNode is IClassBody { Parent: IExtensionDeclaration extensionDeclaration })
           {
-            if (referenceExpression.GetContainingTypeMemberDeclarationIgnoringClosures() is IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwnerDeclaration
+            if (referenceExpression.GetContainingTypeMemberDeclarationIgnoringClosures()
+                  is IExpressionBodyOwnerDeclaration { ArrowClause: { } arrowClause } expressionBodyOwnerDeclaration
                 && extensionDeclaration.Contains(expressionBodyOwnerDeclaration))
             {
               parameterScopeNode = arrowClause;
@@ -840,7 +841,7 @@ public sealed class DisplayClassStructure : IRecursiveElementProcessor, IDisposa
     public HashSet<DisplayClass> CapturedDisplayClasses { get; } = [];
     public HashSet<IDeclaredElement> CapturedEntities { get; } = [];
 
-    // note: can be null if closure only captures closureless local functions
+    // note: can be null if the closure only captures closureless local functions
     private DisplayClass? AttachedDisplayClass { get; set; }
 
     IDisplayClass IClosureCaptures.AttachedDisplayClass => AttachedDisplayClass.NotNull();

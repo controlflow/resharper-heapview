@@ -1,0 +1,32 @@
+﻿// ReSharper disable RedundantStringInterpolation
+// ReSharper disable RawStringCanBeSimplified
+
+Params(
+  |"""
+  aaa
+  bbbbbb
+  cccc
+  """|(0));
+Params(|"very long string literal"|(1));
+Params(
+  ||$"""|(2)
+|(3)  aaa
+  bbbbbb{args}
+  cccc
+  """);
+Params(
+  |$$$$$"""""
+|(4)  aaa
+  bbbbbb{args}
+  cccc
+  """"");
+
+return;
+
+void Params(params string[] xs) { }
+---------------------------------------------------------
+(0): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(1): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(2): ReSharper HeapView Allocation: Object allocation: new 'String' instance creation
+(3):<overlapped> ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'
+(4): ReSharper HeapView Allocation: Object allocation: new 'string[]' array instance creation for params parameter 'xs'

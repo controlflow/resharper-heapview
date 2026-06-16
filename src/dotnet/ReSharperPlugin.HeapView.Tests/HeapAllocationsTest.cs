@@ -57,6 +57,8 @@ public abstract class HeapAllocationsTestBase : CSharpHighlightingTestBase
   [Test] public void TestIterators01() { DoNamedTest(); }
 
   [Test] public void TestForeach01() { DoNamedTest(); }
+
+  [Test] public void TestHighlightingRanges01() { DoNamedTest(); }
 }
 
 [TestNetFramework45]

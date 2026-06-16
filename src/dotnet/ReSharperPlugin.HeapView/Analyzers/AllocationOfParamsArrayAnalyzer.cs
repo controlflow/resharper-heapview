@@ -60,7 +60,7 @@ public class AllocationOfParamsArrayAnalyzer : HeapAllocationAnalyzerBase<ICShar
     }
   }
 
-  private IReference? TryGetInvocationReference(ICSharpArgumentsOwner argumentsOwner)
+  private static IReference? TryGetInvocationReference(ICSharpArgumentsOwner argumentsOwner)
   {
     var invocationReference = argumentsOwner.Reference;
     if (invocationReference != null) return invocationReference;
