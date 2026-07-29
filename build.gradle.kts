@@ -6,7 +6,7 @@ import org.jetbrains.intellij.platform.gradle.Constants
 plugins {
     id("java")
     alias(libs.plugins.kotlinJvm)
-    id("org.jetbrains.intellij.platform") version "2.16.0"     // See https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
+    id("org.jetbrains.intellij.platform") version "2.18.1"     // See https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
     id("me.filippov.gradle.jvm.wrapper") version "0.15.0"
 }
 
@@ -105,7 +105,7 @@ val testDotNet by tasks.registering {
 tasks.buildPlugin {
     doLast {
         copy {
-            from("${buildDir}/distributions/${rootProject.name}-${version}.zip")
+            from(layout.buildDirectory.file("distributions/${rootProject.name}-${version}.zip"))
             into("${rootDir}/output")
         }
 
@@ -135,6 +135,9 @@ dependencies {
             useInstaller = false
         }
         jetbrainsRuntime()
+
+        // Required for SimpleOptionsPage and other Rider frontend/.NET bridge APIs (split out in 2026.2)
+        bundledModule("intellij.rider.rdclient.dotnet")
 
         // TODO: add plugins
         // bundledPlugin("uml")
