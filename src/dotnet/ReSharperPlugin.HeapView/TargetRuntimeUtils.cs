@@ -46,7 +46,7 @@ public static class TargetRuntimeUtils
       var predefinedType = data.GetPredefinedType();
       if (predefinedType.Array.GetTypeElement() is IClass systemArrayTypeElement)
       {
-        foreach (var typeMember in systemArrayTypeElement.EnumerateMembers(nameof(Array.Empty), caseSensitive: true))
+        foreach (var typeMember in systemArrayTypeElement.EnumerateOwnMembersWithName(nameof(Array.Empty), caseSensitive: true))
         {
           if (typeMember is IMethod { Parameters.Count: 0, TypeParameters.Count: 1 } method
               && method.GetAccessRights() == AccessRights.PUBLIC)
